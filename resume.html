@@ -13,20 +13,80 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
+        
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1e40af; /* Dark blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #preloader.fade-out {
+            opacity: 0;
+        }
+
+        /* Spinner animation */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffffff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fade-in animation for content sections */
+        .content-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .content-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 p-8">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
     
     <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         
         <!-- Header Section -->
-        <header class="bg-blue-600 text-white p-8 sm:p-12 text-center rounded-t-2xl">
+        <header class="bg-blue-600 text-white p-8 sm:p-12 text-center rounded-t-2xl content-section">
             <!-- Profile Picture -->
             <div class="w-32 h-32 mx-auto mb-4 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
                 <!--
                     IMPORTANT: Replace the URL below with the public URL of your photo.
-                    You can upload your photo to a service like Google Photos or a dedicated image host to get a URL.
                 -->
                 <img src="nabin.jpg" alt="Nabin Chalise" class="w-full h-full object-cover">
             </div>
@@ -39,7 +99,7 @@
             <aside class="md:col-span-1 space-y-8">
 
                 <!-- Contact Information -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.1s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Contact</h2>
                     <ul class="text-sm space-y-2">
                         <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779847705747" class="text-blue-600 hover:underline">+977-9847705747</a></li>
@@ -48,7 +108,7 @@
                 </section>
                 
                 <!-- Profile Details -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.2s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Profile</h2>
                     <ul class="text-sm space-y-2">
                         <li><strong class="font-medium">Address:</strong> Galkot Municipality-3, Baglung (Permanent)</li>
@@ -62,7 +122,7 @@
                 </section>
                 
                 <!-- Hobbies -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.3s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Hobbies</h2>
                     <div class="flex flex-wrap gap-2">
                         <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Photography</span>
@@ -74,7 +134,7 @@
                 </section>
 
                 <!-- Skills -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.4s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Skills</h2>
                     <div class="flex flex-wrap gap-2">
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Fast Learner</span>
@@ -90,7 +150,7 @@
             <main class="md:col-span-2 space-y-8">
                 
                 <!-- Work Experience -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.5s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Work Experience</h2>
                     <div class="space-y-6">
                         <!-- Job 1 -->
@@ -117,7 +177,7 @@
                 </section>
                 
                 <!-- Education -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.6s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Education</h2>
                     <div class="space-y-2">
                         <div>
@@ -132,7 +192,7 @@
                 </section>
 
                 <!-- Rotaract Journey -->
-                <section>
+                <section class="content-section" style="transition-delay: 0.7s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Rotaract Journey</h2>
                     <div class="space-y-2">
                         <div>
@@ -158,11 +218,32 @@
         </div>
 
         <!-- Footer (optional) -->
-        <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl">
+        <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.8s;">
             <p class="text-sm">© 2024 Nabin Chalise. All rights reserved.</p>
         </footer>
 
     </div>
 
+    <script>
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const body = document.body;
+
+            // Fade out the preloader
+            preloader.classList.add('fade-out');
+
+            // Show the main content after a slight delay
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                body.style.opacity = '1';
+                
+                // Animate the content sections
+                const contentSections = document.querySelectorAll('.content-section');
+                contentSections.forEach(section => {
+                    section.classList.add('show');
+                });
+            }, 600); // Wait for the fade-out transition to complete
+        });
+    </script>
 </body>
 </html>
