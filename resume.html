@@ -81,17 +81,24 @@
     
     <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         
-        <!-- Header Section -->
-        <header class="bg-blue-600 text-white p-8 sm:p-12 text-center rounded-t-2xl content-section">
-            <!-- Profile Picture -->
-            <div class="w-32 h-32 mx-auto mb-4 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
-                <!--
-                    IMPORTANT: Replace the URL below with the public URL of your photo.
-                -->
-                <img src="nabin.jpg" alt="Nabin Chalise" class="w-full h-full object-cover">
+        <!-- Header Section with Cover Photo -->
+        <header class="relative w-full h-80 bg-blue-600 rounded-t-2xl content-section flex items-center justify-center text-center">
+            <!-- Cover Photo Background (Placeholder) -->
+            <!-- IMPORTANT: Replace the URL below with your actual cover photo URL if you have one. -->
+            <img src="cover.jpg" alt="Cover Photo" class="absolute inset-0 w-full h-full object-cover opacity-70">
+            
+            <!-- Content Overlay -->
+            <div class="absolute inset-0 bg-blue-800 opacity-80 rounded-t-2xl"></div>
+            
+            <!-- Profile Content -->
+            <div class="relative z-10 p-8 text-white">
+                <!-- Profile Picture -->
+                <div class="w-32 h-32 mx-auto mb-4 bg-white rounded-full overflow-hidden flex items-center justify-center p-1">
+                    <img src="http://googleusercontent.com/file_content/1" alt="Nabin Chalise" class="w-full h-full object-cover rounded-full">
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2">Nabin Chalise</h1>
+                <p class="text-xl sm:text-2xl font-light">Assistant Employment Officer</p>
             </div>
-            <h1 class="text-4xl sm:text-5xl font-bold mb-2">Nabin Chalise</h1>
-            <p class="text-xl sm:text-2xl font-light">Assistant Employment Officer</p>
         </header>
 
         <div class="p-8 sm:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -102,7 +109,7 @@
                 <section class="content-section" style="transition-delay: 0.1s;">
                     <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Contact</h2>
                     <ul class="text-sm space-y-2">
-                        <li><strong class="font-medium">Phone:</strong> <a href="tel:+977-9851338747" class="text-blue-600 hover:underline">+977-9847705747</a></li>
+                        <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779847705747" class="text-blue-600 hover:underline">+977-9847705747</a></li>
                         <li><strong class="font-medium">Email:</strong> <a href="mailto:pilotprosoft@gmail.com" class="text-blue-600 hover:underline">pilotprosoft@gmail.com</a></li>
                     </ul>
                 </section>
@@ -219,7 +226,7 @@
 
         <!-- Footer (optional) -->
         <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.8s;">
-            <p class="text-sm">© 2025 Nabin Chalise. All rights reserved.</p>
+            <p class="text-sm">© 2024 Nabin Chalise. All rights reserved.</p>
         </footer>
 
     </div>
