@@ -30,6 +30,7 @@
             z-index: 9999;
             opacity: 1;
             transition: opacity 0.5s ease-out;
+            background-color: #2563eb; /* Blue preloader background */
         }
 
         #preloader.fade-out {
@@ -48,7 +49,7 @@
             animation: rotation 1s linear infinite;
         }
 
-        @keyframes rotation {
+        @keyframes rotation { 
             0% {
                 transform: rotate(0deg);
             }
@@ -81,13 +82,11 @@
     <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         
         <!-- Header Section with Cover Photo -->
-        <header class="relative w-full h-80 bg-green-600 rounded-t-2xl content-section flex items-center justify-center text-center">
+        <header class="relative w-full h-80 rounded-t-2xl content-section flex items-center justify-center text-center">
             <!-- Cover Photo Background (Placeholder) -->
             <!-- IMPORTANT: Replace the URL below with your actual cover photo URL if you have one. -->
-            <img src="https://placehold.co/1920x1080/0e7490/ffffff?text=cover.jpg" alt="Cover Photo" class="absolute inset-0 w-full h-full object-cover opacity-70">
+            <img src="https://images.unsplash.com/photo-1689876673591-215e6f1b8a31?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cover Photo" class="absolute inset-0 w-full h-full object-cover">
             
-            <!-- Content Overlay -->
-            <div class="absolute inset-0 bg-green-700 opacity-80 rounded-t-2xl"></div>
             
             <!-- Profile Content -->
             <div class="relative z-10 p-8 text-white">
@@ -106,16 +105,16 @@
 
                 <!-- Contact Information -->
                 <section class="content-section" style="transition-delay: 0.1s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Contact</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Contact</h2>
                     <ul class="text-sm space-y-2">
-                        <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779847705747" class="text-green-600 hover:underline">+977-9847705747</a></li>
-                        <li><strong class="font-medium">Email:</strong> <a href="mailto:pilotprosoft@gmail.com" class="text-green-600 hover:underline">pilotprosoft@gmail.com</a></li>
+                        <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779847705747" class="text-blue-600 hover:underline">+977-9847705747</a></li>
+                        <li><strong class="font-medium">Email:</strong> <a href="mailto:pilotprosoft@gmail.com" class="text-blue-600 hover:underline">pilotprosoft@gmail.com</a></li>
                     </ul>
                 </section>
                 
                 <!-- Profile Details -->
                 <section class="content-section" style="transition-delay: 0.2s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Profile</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Profile</h2>
                     <ul class="text-sm space-y-2">
                         <li><strong class="font-medium">Address:</strong> Galkot Municipality-3, Baglung (Permanent)</li>
                         <li><strong class="font-medium">Sex:</strong> Male</li>
@@ -129,7 +128,7 @@
                 
                 <!-- Hobbies -->
                 <section class="content-section" style="transition-delay: 0.3s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Hobbies</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Hobbies</h2>
                     <div class="flex flex-wrap gap-2">
                         <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Photography</span>
                         <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Table Tennis</span>
@@ -141,13 +140,13 @@
 
                 <!-- Skills -->
                 <section class="content-section" style="transition-delay: 0.4s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Skills</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Skills</h2>
                     <div class="flex flex-wrap gap-2">
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Fast Learner</span>
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Problem Solving</span>
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Email/Internet</span>
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Computing</span>
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Office Package</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Fast Learner</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Problem Solving</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Email/Internet</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Computing</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Office Package</span>
                     </div>
                 </section>
             </aside>
@@ -157,7 +156,7 @@
                 
                 <!-- Work Experience -->
                 <section class="content-section" style="transition-delay: 0.5s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Work Experience</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Work Experience</h2>
                     <div class="space-y-6">
                         <!-- Job 1 -->
                         <div>
@@ -184,7 +183,7 @@
                 
                 <!-- Education -->
                 <section class="content-section" style="transition-delay: 0.6s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Education</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Education</h2>
                     <div class="space-y-2">
                         <div>
                             <h3 class="text-lg font-bold">Inter of Science (I.Sc.) with 58%</h3>
@@ -199,7 +198,7 @@
 
                 <!-- Rotaract Journey -->
                 <section class="content-section" style="transition-delay: 0.7s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-green-600 pb-2">Rotaract Journey</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Rotaract Journey</h2>
                     <div class="space-y-2">
                         <div>
                             <h3 class="text-lg font-bold">RAC Galkot Baglung</h3>
@@ -225,7 +224,7 @@
 
         <!-- Footer (optional) -->
         <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.8s;">
-         <p class="text-sm">© 2025 <a href="https://nabinchalise.com.np/" class="text-green-500 hover:underline">Nabin Chalise</a>. All rights reserved.</p>
+         <p class="text-sm">© 2025 <a href="https://nabinchalise.com.np/" class="text-blue-500 hover:underline">Nabin Chalise</a>. All rights reserved.</p>
 
         </footer>
 
