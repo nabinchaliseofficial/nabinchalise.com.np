@@ -5,23 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nabin Chalise</title>
     <link rel="icon" type="image/x-icon" href="https://placehold.co/16x16/000000/FFFFFF?text=NC">
+    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- The main container for the portfolio card -->
     <div class="card" data-state="#about">
         <div class="card-header">
+            <!-- Background cover image for the card header -->
             <div class="card-cover" style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"></div>
+            <!-- Profile avatar image -->
             <img class="card-avatar" src="https://placehold.co/100x100/000000/FFFFFF?text=NC" alt="avatar" />
+            <!-- Full name and job title -->
             <h1 class="card-fullname">Nabin Chalise</h1>
             <h2 class="card-jobtitle">CS Student</h2>
         </div>
+        
+        <!-- Main content area for different sections -->
         <div class="card-main">
-            <!-- About Section -->
+            <!-- About Section (initially active) -->
             <div class="card-section is-active" id="about">
                 <div class="card-content">
                     <div class="card-subtitle">ABOUT</div>
                     <p class="card-desc">"It doesn't matter how small you are and where you are from; It matters only what intention do you have."</p>
                 </div>
+                <!-- Social media links with SVG icons -->
                 <div class="card-social">
                     <a href="https://www.facebook.com/officialnabincs3/"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M15.997 3.985h2.191V.169C17.81.117 16.51 0 14.996 0c-3.159 0-5.323 1.987-5.323 5.639V9H6.187v4.266h3.486V24h4.274V13.267h3.345l.531-4.266h-3.877V6.062c.001-1.233.333-2.077 2.051-2.077z" /></svg></a>
@@ -34,6 +42,7 @@
                         <path d="M23.994 24v-.001H24v-8.802c0-4.306-.927-7.623-5.961-7.623-2.42 0-4.044 1.328-4.707 2.587h-.07V7.976H8.489v16.023h4.97v-7.934c0-2.089.396-4.109 2.983-4.109 2.549 0 2.587 2.384 2.587 4.243V24zM.396 7.977h4.976V24H.396zM2.882 0C1.291 0 0 1.291 0 2.882s1.291 2.909 2.882 2.909 2.882-1.318 2.882-2.909A2.884 2.884 0 002.882 0z" /></svg></a>
                 </div>
             </div>
+            
             <!-- Experience Section -->
             <div class="card-section" id="experience">
                 <div class="card-content">
@@ -58,6 +67,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Contact Section -->
             <div class="card-section" id="contact">
                 <div class="card-content">
@@ -91,6 +101,8 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Navigation buttons at the bottom of the card -->
         <div class="card-buttons">
             <button data-section="#about" class="is-active">ABOUT</button>
             <button data-section="#experience">EXPERIENCE</button>
@@ -98,6 +110,7 @@
         </div>
     </div>
     
+    <!-- JavaScript for handling the section switching functionality -->
     <script>
         const buttons = document.querySelectorAll('.card-buttons button');
         const sections = document.querySelectorAll('.card-section');
