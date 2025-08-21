@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style> 
+  <style>
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f3f4f6;
@@ -69,7 +69,7 @@
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
 
         <div class="text-center mb-6">
-            <img src="rotaract logo.jpg"=RAC" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
+            <img src="https://placehold.co/100x100/4f46e5/ffffff?text=RAC" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
       <h2 class="text-3xl font-bold text-gray-800">RAC Galkot Baglung Member Directory</h2>
     </div>
 
@@ -116,6 +116,7 @@
         // Use a placeholder image for the logo since the original URL is not accessible.
         // You can replace this with your actual logo image URL.
         const logo = "https://placehold.co/100x100/4f46e5/ffffff?text=RAC";
+        const profileImageUrl = "https://placehold.co/96x96/4f46e5/ffffff?text=RAC";
 
         // Updated member data based on the provided text
         const members = [
@@ -190,10 +191,8 @@
                     memberCard.className = 'member-card bg-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center transition-all duration-300 ease-in-out';
                     memberCard.innerHTML = `
                         <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                            <!-- Placeholder SVG for profile picture -->
-                            <svg class="h-full w-full text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 20.993c-.438-.438-1.57-.75-2.585-.894-1.205-.169-2.386-.153-3.606.046-1.22.199-2.285.441-3.398.705-1.114.264-2.274.52-3.415.753-.59.124-.951.272-1.396.42-.445.148-.908.318-1.39.467-.482.149-1.01.277-1.597.352-.588.075-1.24.113-1.922.083-.682-.03-1.288-.088-1.84-.199-.553-.111-1.026-.265-1.423-.423-.397-.158-.707-.34-1.15-.534-.443-.194-.962-.416-1.535-.658-1.332-.55-2.825-.896-4.318-1.096-1.493-.201-2.924-.26-4.331-.17-.113.007-.225.014-.336.02-.11.006-.217.013-.322.02-.276.018-.549.034-.823.05-.275.016-.549.032-.824.047-.56.031-1.11.059-1.66.082-.55.023-1.08.04-1.6.05-.519.01-1.01.011-1.49-.001-.48-.012-.93-.035-1.36-.067-.429-.033-.827-.08-1.18-.14-.353-.06-.66-.143-.91-.237-.25-.094-.43-.208-.55-.357-.12-.15-.17-.33-.17-.54-.002-.212.046-.412.14-.582.095-.171.218-.328.37-.47.151-.143.32-.266.5-.378.18-.112.37-.206.57-.282.2-.076.41-.137.62-.182.21-.045.42-.077.62-.095.2-.018.39-.028.59-.029.2-.001.40-.001.60-.001.52.001 1.05.019 1.58.056.53.037 1.08.093 1.63.167.55.074 1.11.166 1.68.275.56.109 1.14.23 1.7.358.57.128 1.15.253 1.72.37.57.117 1.15.228 1.73.332.58.104 1.17.202 1.76.294.59.092 1.19.178 1.79.258.59.079 1.2.152 1.8.219.6.067 1.2.128 1.8.183.59.055 1.18.104 1.78.146.59.042 1.19.077 1.78.105.59.028 1.18.049 1.77.062.59.013 1.18.019 1.77.017.59-.002 1.18-.01.176-.023c.588-.014 1.17-.037 1.75-.07.576-.033 1.15-.077 1.71-.129.56-.052 1.11-.112 1.65-.179.54-.067 1.07-.142 1.59-.224.52-.082 1.03-.173 1.54-.269.51-.096 1-.202 1.5-.313.499-.112.986-.232 1.46-.358.475-.126.937-.258 1.385-.395.448-.137.88-.28 1.3-.429.42-.149.82-.303 1.2-.46.38-.158.74-.316 1.07-.47.33-.153.64-.306.92-.454.28-.148.53-.29.74-.423.21-.133.39-.258.54-.377.15-.119.27-.233.36-.34.09-.108.16-.21.21-.308.05-.097.07-.19.06-.277.002-.087-.02-.17-.06-.24-.04-.07-.09-.13-.16-.18-.07-.05-.15-.08-.24-.1z" />
-                            </svg>
+                            <!-- Using a placeholder image for the Rotaract logo -->
+                            <img src="${profileImageUrl}" alt="Rotaract Member Profile" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-bold text-gray-800 text-lg">${member.name}</h4>
                         <p class="text-sm text-gray-600">${member.designation}</p>
