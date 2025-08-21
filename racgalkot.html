@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galkot Baglung Rotaract Member Directory</title>
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for a clean, modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .member-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .member-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    /* Specific styling for the logo to make it display correctly */
+    .logo {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+
+  <!-- Main container centered on the page -->
+  <div class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
+
+    <!-- Container for the logo and the title -->
+    <div class="text-center mb-6">
+      <!-- The logo image, centered and responsive -->
+      <img src="http://googleusercontent.com/file_content/1" alt="Rotaract Club of Galkot Baglung Logo" class="mx-auto h-20 md:h-24 logo mb-4">
+      <h2 class="text-3xl font-bold text-gray-800">RAC Galkot Baglung Club Member Search</h2>
+    </div>
+
+    <!-- Search input field -->
+    <div class="mb-8">
+      <input type="text" id="searchInput" placeholder="Search by name, address, email, or profession..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors">
+    </div>
+
+    <!-- Container for displaying the search results -->
+    <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Member cards will be injected here by JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    // Manually structured and cleaned data from the user's input.
+    const members = [
+      { id: 1, timestamp: '8/21/2025 11:22:20 AM', name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotaryId: '1111111111', phone: '9867694789', bloodGroup: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
+      { id: 2, timestamp: '8/12/2023 2:51:33 PM', name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotaryId: '11723715', phone: '9846850809', bloodGroup: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/2055', designation: 'Club Member', profession: 'Teacher' },
+      { id: 3, timestamp: '10/25/2021 2:16:53 PM', name: 'Anil Shrestha', address: 'galkot municipality -03', rotaryId: '11361814', phone: '9841888908', bloodGroup: 'B+', gender: 'Male', email: 'theanilshrestha@gmail.com', dob: '1/7/1990', designation: 'PP/Rotaract Advisor/International Relation Chair', profession: '' },
+      { id: 4, timestamp: '8/24/2023 11:20:05 AM', name: 'Bibek Kharel', address: 'Galkot 09 baglung', rotaryId: '12098226', phone: '9844334609', bloodGroup: 'O+', gender: 'Male', email: 'Bibekkharel97@gmail.com', dob: '6/17/1997', designation: 'Rotaract Service Projects Chair', profession: 'Teacher' },
+      { id: 5, timestamp: '10/29/2021 9:49:51 AM', name: 'Bidur Kharel', address: 'Ga.Na.Pa 9 Darbara', rotaryId: '', phone: '9845548677', bloodGroup: 'AB+', gender: 'Male', email: 'Kharelbidur23@gmail.com', dob: '5/23/1995', designation: 'Club Member', profession: '' },
+      { id: 6, timestamp: '10/26/2021 3:35:23 AM', name: 'Binita Galami', address: 'Galkot na.pa.-3,hatiya', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Female', email: 'Newlooksprintigshop@gmail.com', dob: '9/11/1996', designation: 'Club Member', profession: '' },
+      { id: 7, timestamp: '8/11/2023 3:01:21 PM', name: 'Bipin Chalise', address: 'Galkot municipality -08', rotaryId: '12098496', phone: '9745985562', bloodGroup: 'O+', gender: 'Male', email: 'bipansharma0123@gmail.com', dob: '10/22/2001', designation: 'IT Officer', profession: 'Teacher' },
+      { id: 8, timestamp: '8/12/2023 7:07:44 AM', name: 'Deepak Khattri', address: 'Galkot Municipality -04', rotaryId: '11726103', phone: '9849664430', bloodGroup: 'O+', gender: 'Male', email: 'Khattridep2048@gmail.com', dob: '5/5/1991', designation: 'Club Member', profession: 'Teacher' },
+      { id: 9, timestamp: '9/7/2023 3:39:09 PM', name: 'Ganesh Sapkota', address: 'Galkot -9, Baglung', rotaryId: '11964599', phone: '9867743075', bloodGroup: 'B+', gender: 'Male', email: 'ganesh1sapkota2@gmail.com', dob: '10/24/2001', designation: 'Rotaract Young Leaders Contact', profession: 'Student' },
+      { id: 10, timestamp: '8/12/2023 6:58:00 AM', name: 'Ishor Gautam', address: 'Galkot municipality 9 Baglung', rotaryId: '11453673', phone: '9860260680', bloodGroup: 'A+', gender: 'Male', email: 'ishworgautam2073@gmail.com', dob: '1/14/1993', designation: 'Past President', profession: 'Lecturer' },
+      { id: 11, timestamp: '9/8/2023 11:24:51 AM', name: 'Jit Bahadur B.K.', address: 'Tarakhola RM. -2, Argal Baglung', rotaryId: '12239441', phone: '9857649995', bloodGroup: 'O+', gender: 'Male', email: 'jeevananuragi8@gmail.com', dob: '9/27/1982', designation: 'Club Member', profession: 'IT Business' },
+      { id: 12, timestamp: '10/26/2021 1:47:04 AM', name: 'Kamal Kharel', address: 'Galkot ,9', rotaryId: '11723334', phone: '9860718751', bloodGroup: 'B+', gender: 'Male', email: 'kharelkamal8751@gmail.com', dob: '3/27/1996', designation: 'PP/Rotaract Public Image Chair', profession: 'Furniture Business' },
+      { id: 13, timestamp: '10/27/2021 4:44:57 AM', name: 'Laxmi Pun', address: 'Ga na pa 8', rotaryId: '11855933', phone: '9844090869', bloodGroup: 'O+', gender: 'Female', email: 'Punlaxmi216@gmail.com', dob: '12/24/1998', designation: 'IPP/ Sergeant at-Arms', profession: '' },
+      { id: 14, timestamp: '8/18/2023 8:03:17 AM', name: 'Lila Adhikari (Mamata)', address: 'Galkot-3, baglung', rotaryId: '', phone: '', bloodGroup: 'O-', gender: 'Female', email: 'adhikarimamata223@gmail.com', dob: '8/21/2000', designation: 'Club Member', profession: 'Student' },
+      { id: 15, timestamp: '3/1/2023 10:24:26 AM', name: 'Lokendra Gaire', address: 'Galkot-4, Thana', rotaryId: '11723018', phone: '9869065252', bloodGroup: 'O+', gender: 'Male', email: 'lokendragaire9@gmail.com', dob: '5/22/2001', designation: 'Rotaract Foundation Chair', profession: 'Computer operator at galkot municipality' },
+      { id: 16, timestamp: '8/11/2023 5:02:56 PM', name: 'Madan Sharma', address: 'Galkot municipality', rotaryId: '11855833', phone: '9860191219', bloodGroup: 'B+', gender: 'Male', email: 'madanbsharma98@gmail.com', dob: '3/2/2002', designation: 'Joint Secretary', profession: 'Teacher' },
+      { id: 17, timestamp: '3/7/2023 7:40:28 AM', name: 'Manish Gurung', address: 'Galkot Municipality 1 Dudilabhati Baglung', rotaryId: '12031057', phone: '9843824191', bloodGroup: 'B+', gender: 'Male', email: 'manishgurung209@gmail.com', dob: '2/20/2003', designation: 'Treasurer', profession: 'Employee in Saplyapatri Multipurpose Co-operative Ltd.' },
+      { id: 18, timestamp: '8/15/2023 10:25:24 AM', name: 'Manjeela Shrestha', address: 'Galkot municipality-03', rotaryId: '11723077', phone: '9840808640', bloodGroup: 'B+', gender: 'Female', email: 'catchmeifucan2046@gmail.com', dob: '2/11/1997', designation: 'Club Member', profession: 'House wife' },
+      { id: 19, timestamp: '8/20/2024 12:36:49 PM', name: 'MANOJ KARKI', address: 'Galkot-2, Baglung', rotaryId: '', phone: '9749724157', bloodGroup: 'A+', gender: 'Male', email: '', dob: '7/14/1995', designation: 'Club Member', profession: 'medical doctor' },
+      { id: 20, timestamp: '2/16/2022 3:21:42 AM', name: 'Nabin Chalise', address: 'Galkot Municipality-3, Baglung', rotaryId: '11722218', phone: '9851338747', bloodGroup: 'O+', gender: 'Male', email: 'pilotprosoft@gmail.com', dob: '8/26/1995', designation: 'President Elect/ Rotaract Learning Facilitator', profession: 'ICT Teacher' },
+      { id: 21, timestamp: '7/24/2024 8:12:15 AM', name: 'Nabin Sharma', address: 'Galkot -1 Dudilabhati Jhanktisthan', rotaryId: '12119325', phone: '9846829984', bloodGroup: 'O+', gender: 'Male', email: 'dnabingautam79@gmail.com', dob: '12/23/2000', designation: 'Club Member', profession: 'Business' },
+      { id: 22, timestamp: '10/26/2021 2:04:51 AM', name: 'Neetu Khadka', address: 'Baglung Municipality-01', rotaryId: '', phone: '9867945381', bloodGroup: 'O+', gender: 'Female', email: 'Khadkaneetu123@gmail.com', dob: '5/16/1989', designation: 'Chartered President', profession: 'Nurse' },
+      { id: 23, timestamp: '8/19/2023 1:48:06 AM', name: 'Niraj Shrestha', address: 'Galkot -03,Baglung', rotaryId: '', phone: '9847770262', bloodGroup: 'O+', gender: 'Male', email: 'nirajshrestha666@gmail.com', dob: '2/4/1994', designation: 'Club Member', profession: 'Banker' },
+      { id: 24, timestamp: '2/15/2022 2:51:05 PM', name: 'Pratap Sen', address: 'Galkot- 05, baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'Pratapsen2011@gmail.com', dob: '2/22/1992', designation: 'Club Member', profession: 'Self employed' },
+      { id: 25, timestamp: '8/28/2024 11:54:00 AM', name: 'Pratikshya Pariyar', address: 'Galkot municipality-9, Chisa', rotaryId: '', phone: '', bloodGroup: "O'", gender: 'Female', email: 'pratikshyapariayar@gmail.com', dob: '2/6/2006', designation: 'Club Member', profession: 'Student' },
+      { id: 26, timestamp: '8/12/2023 2:24:11 AM', name: 'Radha Gautam', address: 'Galkot municipality-03 Hatiya Baglung', rotaryId: '12047154', phone: '9846705657', bloodGroup: 'AB+', gender: 'Female', email: 'rg2508305@gmail.com', dob: '3/4/2003', designation: 'Joint Treasurer', profession: 'No' },
+      { id: 27, timestamp: '7/16/2024 6:32:37 AM', name: 'Raju Sahani', address: 'Dhalepipal, Dhalepipal ward 4', rotaryId: '12119302', phone: '9860414802', bloodGroup: 'A+', gender: 'Male', email: 'erjsahani@gmail.com', dob: '5/31/1991', designation: 'Club Member', profession: 'It engineer' },
+      { id: 28, timestamp: '8/21/2025 12:18:17 PM', name: 'Roman Subedi', address: 'Galkot-04, Baglung', rotaryId: '11111111', phone: '9845351157', bloodGroup: 'B+', gender: 'Male', email: 'Roomaansubedi123@gmail.com', dob: '12/28/2002', designation: 'Club Member', profession: 'Business(mobile phone sales and maintenance)' },
+      { id: 29, timestamp: '8/11/2023 2:40:30 PM', name: 'Rtr Nabin Subedi', address: 'Galkot Municipality -04,Chamuwa Baglung', rotaryId: '11716194', phone: '9857631742', bloodGroup: 'B+', gender: 'Male', email: 'nsubedi162@gmail.com', dob: '10/6/1997', designation: 'President', profession: 'Teacher' },
+      { id: 30, timestamp: '8/22/2024 2:16:41 AM', name: 'Sagar Chalise', address: 'Galkot-8, Baglung', rotaryId: '12131866', phone: '9745985560', bloodGroup: 'Ab+', gender: 'Male', email: 'chalisesagar120@gmail.com', dob: '8/6/2001', designation: 'Club Member', profession: 'Accountain' },
+      { id: 31, timestamp: '9/7/2023 2:02:14 PM', name: 'Samjhana Thapa', address: 'Galkot municipality 07 malma', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'Ssthapa392@gmail.com', dob: '5/22/2001', designation: 'Club Member', profession: 'Teaching' },
+      { id: 32, timestamp: '8/21/2025 1:18:42 PM', name: 'Sanju Neupane', address: 'Galkot Municipality-3, BAglung', rotaryId: '11855899', phone: '9863271796', bloodGroup: 'B+', gender: 'Female', email: 'neupanesanju87@gmail.com', dob: '11/19/1997', designation: 'Club Member', profession: 'Banker' },
+      { id: 33, timestamp: '9/7/2023 9:59:58 AM', name: 'Shishir Sunar', address: 'Galkot Municipality- 4', rotaryId: '', phone: '', bloodGroup: 'A+', gender: 'Male', email: 'shishirju2005@gmail.com', dob: '6/27/2005', designation: 'Club Member', profession: 'Student' },
+      { id: 34, timestamp: '3/1/2023 6:26:22 AM', name: 'Shyam Subedi', address: 'Galkot 04 Baglung Nepal', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Male', email: 'imperialshyam6939@gmail.com', dob: '8/17/2000', designation: 'Club Member', profession: 'Employer' },
+      { id: 35, timestamp: '8/11/2023 3:01:05 PM', name: 'Sima Sunar', address: 'Galkot municipality 3, Hatiya', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'simasunar456@gmail.com', dob: '5/21/1999', designation: 'Club Member', profession: 'Job' },
+      { id: 36, timestamp: '8/27/2024 5:13:15 PM', name: 'Smriti Budhathoki', address: 'Galkot municipality-8, Kandebas', rotaryId: '', phone: '9749396716', bloodGroup: 'AB+', gender: 'Female', email: 'msmriti285@gmail.com', dob: '8/25/2024', designation: 'Club Member', profession: 'Students' },
+      { id: 37, timestamp: '8/11/2023 3:02:12 PM', name: 'SUNIL BOHORA', address: 'Galkot Municipality-3, Baglung', rotaryId: '11723041', phone: '9847658392', bloodGroup: 'O+', gender: 'Male', email: 'gajalsansar1989@gmail.com', dob: '3/27/1989', designation: 'Club Member', profession: 'Teaching' },
+      { id: 38, timestamp: '8/21/2025 11:35:43 AM', name: 'Sunil Chhetri', address: 'Galkot 3 bagling', rotaryId: '11963844', phone: '9857638138', bloodGroup: 'O+', gender: 'Male', email: 'skc844251@gmail.com', dob: '13th Jan, 1999', designation: 'Club Member', profession: 'Business/ Enterpreneur' },
+      { id: 39, timestamp: '8/25/2023 9:13:43 AM', name: 'Sunil Khatiwal', address: 'Baglung 03 guthi', rotaryId: '', phone: '9857664347', bloodGroup: 'B+', gender: 'Male', email: 'Sunilkhatiwal6@gmail.com', dob: '7/10/1987', designation: 'Club Member', profession: 'Shopkeeper' },
+      { id: 40, timestamp: '8/11/2023 3:28:13 PM', name: 'Tika Ram Gautam', address: 'Galkot-09, Baglung', rotaryId: '11722743', phone: '9847797869', bloodGroup: 'B+', gender: 'Male', email: 'gautamarjun933@gmail.com', dob: '10/14/1993', designation: 'SECRETARY', profession: 'Teacher' },
+      { id: 41, timestamp: '9/10/2023 4:23:08 AM', name: 'Tul Bahadur BK', address: 'Galkot-11, Righa', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'tulbahadurbk130@gmail.com', dob: '5/11/1995', designation: 'Club Member', profession: 'Workshop' },
+      { id: 42, timestamp: '8/21/2024 4:25:33 AM', name: 'Umesh Sharma Subedi', address: 'Galkot-4, Baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: '', dob: '9/9/2001', designation: 'Club Member', profession: 'Teacher' },
+      { id: 43, timestamp: '8/21/2025 11:35:43 AM', name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotaryId: '12098183', phone: '9847705363', bloodGroup: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Vice President/Public Relation Chair', profession: 'Co- operative' }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('results-container');
+
+    // Function to render member cards on the page
+    const renderMembers = (items) => {
+      // Clear previous results
+      resultsContainer.innerHTML = '';
+      if (items.length === 0) {
+        // Display a message if no members are found
+        resultsContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No members found matching your search.</p>';
+        return;
+      }
+
+      // Loop through each item and create an HTML card for it
+      items.forEach(member => {
+        const memberCard = document.createElement('div');
+        memberCard.className = 'member-card bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg';
+        memberCard.innerHTML = `
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">${member.name}</h3>
+          <p class="text-sm text-gray-600 mb-1"><strong>Designation:</strong> ${member.designation}</p>
+          <p class="text-sm text-gray-600 mb-1"><strong>Profession:</strong> ${member.profession}</p>
+          <p class="text-sm text-gray-600 mb-1"><strong>Address:</strong> ${member.address}</p>
+          <p class="text-sm text-gray-600 mb-1"><strong>Email:</strong> ${member.email}</p>
+          <p class="text-sm text-gray-600"><strong>Phone:</strong> ${member.phone}</p>
+        `;
+        resultsContainer.appendChild(memberCard);
+      });
+    };
+
+    // Event listener for the search input
+    searchInput.addEventListener('input', (event) => {
+      // Get the search query and convert it to lowercase
+      const query = event.target.value.toLowerCase();
+
+      // Filter the members based on the query
+      const filteredMembers = members.filter(member => {
+        // Check if the query matches the name, address, email, or profession
+        return member.name.toLowerCase().includes(query) ||
+               member.address.toLowerCase().includes(query) ||
+               member.email.toLowerCase().includes(query) ||
+               member.profession.toLowerCase().includes(query);
+      });
+
+      // Render the filtered members
+      renderMembers(filteredMembers);
+    });
+
+    // Initial render of all members when the page loads
+    window.onload = () => {
+      renderMembers(members);
+    };
+
+  </script>
+
+</body>
+</html>
