@@ -20,17 +20,15 @@
       transform: translateY(-5px);
       box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     }
-    /* Specific styling for the logo to make it display correctly */
     .logo {
       max-width: 100%;
       height: auto;
     }
-    /* Custom styling for birthday and blood group sections */
     .birthday-card {
       border-left: 4px solid #f97316;
     }
     .today-birthday-card {
-      border-left: 4px solid #ef4444; /* Brighter red for today's birthday */
+      border-left: 4px solid #ef4444;
       animation: pulse 1.5s infinite;
     }
     @keyframes pulse {
@@ -63,7 +61,10 @@
     </div>
 
         <div class="mb-8">
-      <input type="text" id="searchInput" placeholder="Search by name, address, email, or profession..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <input type="text" id="searchInput" placeholder="Search by name, address, email, or profession..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors">
+        <button id="searchButton" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors">Search</button>
+      </div>
     </div>
 
         <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -71,7 +72,6 @@
   </div>
 
   <script>
-    // Manually structured and cleaned data from the user's input.
     const members = [
       { id: 1, timestamp: '8/21/2025 11:22:20 AM', name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotaryId: '1111111111', phone: '9867694789', bloodGroup: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
       { id: 2, timestamp: '8/12/2023 2:51:33 PM', name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotaryId: '11723715', phone: '9846850809', bloodGroup: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/2055', designation: 'Club Member', profession: 'Teacher' },
@@ -119,6 +119,7 @@
     ];
 
     const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
     const resultsContainer = document.getElementById('results-container');
     const bloodGroupCountsContainer = document.getElementById('blood-group-counts');
     const nearestBirthdaysContainer = document.getElementById('nearest-birthdays');
@@ -144,6 +145,18 @@
         `;
         resultsContainer.appendChild(memberCard);
       });
+    };
+
+    // Function to perform the search
+    const performSearch = () => {
+      const query = searchInput.value.toLowerCase();
+      const filteredMembers = members.filter(member => {
+        return (member.name && member.name.toLowerCase().includes(query)) ||
+               (member.address && member.address.toLowerCase().includes(query)) ||
+               (member.email && member.email.toLowerCase().includes(query)) ||
+               (member.profession && member.profession.toLowerCase().includes(query));
+      });
+      renderMembers(filteredMembers);
     };
 
     // Function to count and display blood groups
@@ -187,7 +200,7 @@
         })
         .filter(member => member.diffDays >= 0)
         .sort((a, b) => a.diffDays - b.diffDays)
-        .slice(0, 2); // Show up to the next 2 birthdays as requested
+        .slice(0, 2);
 
       nearestBirthdaysContainer.innerHTML = '';
       if (upcomingBirthdays.length > 0) {
@@ -215,19 +228,15 @@
       }
     };
 
-    // Event listener for the search input
-    searchInput.addEventListener('input', (event) => {
-      const query = event.target.value.toLowerCase();
-      const filteredMembers = members.filter(member => {
-        return (member.name && member.name.toLowerCase().includes(query)) ||
-               (member.address && member.address.toLowerCase().includes(query)) ||
-               (member.email && member.email.toLowerCase().includes(query)) ||
-               (member.profession && member.profession.toLowerCase().includes(query));
-      });
-      renderMembers(filteredMembers);
+    // Event listeners
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        performSearch();
+      }
     });
 
-    // Initial render of all members and the new sections when the page loads
+    // Initial render
     window.onload = () => {
       renderBloodGroupCounts();
       renderNearestBirthdays();
