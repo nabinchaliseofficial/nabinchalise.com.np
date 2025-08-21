@@ -69,7 +69,7 @@
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
 
         <div class="text-center mb-6">
-            <img src="rotaract logo.jpg" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
+            <img src="https://placehold.co/100x100/4f46e5/ffffff?text=RAC" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
       <h2 class="text-3xl font-bold text-gray-800">RAC Galkot Baglung Member Directory</h2>
     </div>
 
@@ -115,8 +115,8 @@
     <script>
         // Use a placeholder image for the logo since the original URL is not accessible.
         // You can replace this with your actual logo image URL.
-        const logo = "rotaract logo.jpg";
-        const profileImageUrl = "rotaract logo.jpg";
+        const logo = "https://placehold.co/100x100/4f46e5/ffffff?text=RAC";
+        const profileImageUrl = "https://placehold.co/96x96/4f46e5/ffffff?text=RAC";
 
         // Updated member data based on the provided text
         const members = [
@@ -165,6 +165,74 @@
             { id: 43, name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotaryId: '12098183', phone: '9847705363', bloodGroup: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Vice President/Public Relation Chair', profession: 'Co- operative' }
         ];
 
+        // Define the order of designations
+        const designationOrder = [
+            'President',
+            'Vice President',
+            'President Elect',
+            'SECRETARY',
+            'Treasurer',
+            'Joint Secretary',
+            'Avenue Director', // Group for titles like Rotaract Service Projects Chair, etc.
+            'Editor', // No editor in the list, but keeping for the sorting logic.
+            'Board Member', // Group for various board-level titles
+            'Past President',
+            'Club Member'
+        ];
+
+        // Helper function to get a member's primary designation for sorting
+        function getPrimaryDesignation(designation) {
+            const lowerCaseDesignation = designation.toLowerCase();
+            if (lowerCaseDesignation.includes('president') && !lowerCaseDesignation.includes('past') && !lowerCaseDesignation.includes('elect') && !lowerCaseDesignation.includes('vice')) {
+                return 'President';
+            }
+            if (lowerCaseDesignation.includes('vice president')) {
+                return 'Vice President';
+            }
+            if (lowerCaseDesignation.includes('president elect')) {
+                return 'President Elect';
+            }
+            if (lowerCaseDesignation.includes('secretary')) {
+                return 'SECRETARY';
+            }
+            if (lowerCaseDesignation.includes('treasurer')) {
+                return 'Treasurer';
+            }
+            if (lowerCaseDesignation.includes('joint secretary')) {
+                return 'Joint Secretary';
+            }
+            if (lowerCaseDesignation.includes('chair') || lowerCaseDesignation.includes('officer') || lowerCaseDesignation.includes('facilitator')) {
+                return 'Avenue Director';
+            }
+            if (lowerCaseDesignation.includes('past president') || lowerCaseDesignation.includes('pp')) {
+                return 'Past President';
+            }
+            if (lowerCaseDesignation.includes('advisor') || lowerCaseDesignation.includes('sergeant')) {
+                return 'Board Member';
+            }
+            if (lowerCaseDesignation.includes('club member')) {
+                return 'Club Member';
+            }
+            return 'Club Member'; // Default to club member if designation is not recognized
+        }
+
+        // Custom sort function
+        const sortMembers = (a, b) => {
+            const designationA = getPrimaryDesignation(a.designation);
+            const designationB = getPrimaryDesignation(b.designation);
+
+            const orderA = designationOrder.indexOf(designationA);
+            const orderB = designationOrder.indexOf(designationB);
+
+            // Sort by designation first
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+
+            // If designations are the same, sort alphabetically by name
+            return a.name.localeCompare(b.name);
+        };
+
         // Function to render member cards
         const renderMembers = (query = '', filter = 'all') => {
             const resultsContainer = document.getElementById('results-container');
@@ -175,184 +243,4 @@
                 const matchesQuery = Object.values(member).some(value =>
                     String(value).toLowerCase().includes(query.toLowerCase())
                 );
-                const matchesFilter = filter === 'all' || 
-                                      (filter === 'executive' && (member.designation.includes('President') || member.designation.includes('Treasurer') || member.designation.includes('Advisor') || member.designation.includes('Officer') || member.designation.includes('Secretary'))) ||
-                                      (filter === 'teacher' && member.profession.toLowerCase().includes('teacher')) ||
-                                      (filter === 'student' && member.profession.toLowerCase().includes('student')) ||
-                                      (filter === 'business' && member.profession.toLowerCase().includes('business') || member.profession.toLowerCase().includes('entrepreneur'));
-
-                return matchesQuery && matchesFilter;
-            });
-
-            // Display member cards or a "no members found" message
-            if (filteredMembers.length > 0) {
-                filteredMembers.forEach(member => {
-                    const memberCard = document.createElement('div');
-                    memberCard.className = 'member-card bg-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center transition-all duration-300 ease-in-out';
-                    memberCard.innerHTML = `
-                        <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                            <!-- Using a placeholder image for the Rotaract logo -->
-                            <img src="${profileImageUrl}" alt="Rotaract Member Profile" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold text-gray-800 text-lg">${member.name}</h4>
-                        <p class="text-sm text-gray-600">${member.designation}</p>
-                        <div class="mt-4 text-left w-full">
-                            <p class="text-xs text-gray-500 mb-1"><strong>Profession:</strong> ${member.profession || 'N/A'}</p>
-                            <p class="text-xs text-gray-500 mb-1"><strong>Address:</strong> ${member.address}</p>
-                            <p class="text-xs text-gray-500 mb-1"><strong>Email:</strong> ${member.email}</p>
-                            <p class="text-xs text-gray-500"><strong>Phone:</strong> ${member.phone}</p>
-                        </div>
-                        <div class="flex justify-between mt-3 w-full">
-                            <span class="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded-full">${member.gender}</span>
-                            <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">${member.bloodGroup || 'Unknown'}</span>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(memberCard);
-                });
-            } else {
-                resultsContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No members found matching your search.</p>';
-            }
-        };
-
-        // Function to calculate and display upcoming birthdays
-        const renderBirthdays = () => {
-            const nearestBirthdaysContainer = document.getElementById('nearest-birthdays');
-            nearestBirthdaysContainer.innerHTML = '';
-            const today = new Date();
-            const todayDayMonth = `${today.getMonth() + 1}/${today.getDate()}`;
-            
-            const birthdays = members.map(member => {
-                let dob;
-                const dateString = member.dob;
-                if (dateString.includes(',')) {
-                    // Handles format like "13th Jan, 1999"
-                    const parts = dateString.replace('th', '').replace('st', '').replace('nd', '').replace('rd', '').split(', ');
-                    dob = new Date(`${parts[0].trim()} 1, ${parts[1]}`);
-                } else if (dateString.length > 8) {
-                     // Handles Nepali date format like "3/31/2055" by treating it as a standard MM/DD/YYYY format
-                     const parts = dateString.split('/');
-                     dob = new Date(`${parts[0]}/${parts[1]}/${parts[2]}`);
-                } else {
-                    // Handles standard format like "12/27/1997"
-                    const parts = dateString.split('/');
-                    dob = new Date(`${parts[0]}/${parts[1]}/${parts[2]}`);
-                }
-
-                const birthMonth = dob.getMonth();
-                const birthDay = dob.getDate();
-
-                let nextBirthday = new Date(today.getFullYear(), birthMonth, birthDay);
-
-                // If birthday has passed this year, set it for next year
-                if (nextBirthday < today) {
-                    nextBirthday.setFullYear(today.getFullYear() + 1);
-                }
-
-                const diffTime = nextBirthday - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const isToday = todayDayMonth === `${birthMonth + 1}/${birthDay}`;
-
-                return {
-                    ...member,
-                    nextBirthday,
-                    diffDays,
-                    isToday
-                };
-            }).sort((a, b) => a.diffDays - b.diffDays);
-
-            const upcomingBirthdays = birthdays.filter(b => b.diffDays <= 30 || b.isToday).slice(0, 5);
-
-            if (upcomingBirthdays.length > 0) {
-                upcomingBirthdays.forEach(member => {
-                    const birthdayElement = document.createElement('div');
-                    birthdayElement.className = `p-3 rounded-lg flex items-center ${member.isToday ? 'bg-red-200 today-birthday-card' : 'bg-blue-200 birthday-card'}`;
-                    
-                    const formattedDate = member.nextBirthday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                    const message = member.isToday ? 'Happy Birthday! 🎉' : `in ${member.diffDays} days`;
-
-                    birthdayElement.innerHTML = `
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center font-bold text-blue-900 text-sm">
-                            ${member.nextBirthday.getDate()}
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-gray-800">${member.name}</h4>
-                            <p class="text-sm text-gray-600">${member.isToday ? '' : formattedDate}</p>
-                        </div>
-                        <div class="ml-auto text-sm font-semibold ${member.isToday ? 'text-red-600' : 'text-blue-600'}">
-                            ${message}
-                        </div>
-                    `;
-                    nearestBirthdaysContainer.appendChild(birthdayElement);
-                });
-            } else {
-                nearestBirthdaysContainer.innerHTML = '<p class="text-center text-gray-500">No upcoming birthdays in the next 30 days.</p>';
-            }
-        };
-
-        // Function to calculate and display blood group donor counts
-        const renderBloodGroupCounts = () => {
-            const bloodCountsContainer = document.getElementById('blood-group-counts');
-            bloodCountsContainer.innerHTML = '';
-            
-            const bloodGroups = members.reduce((counts, member) => {
-                let group = member.bloodGroup.toUpperCase().replace(/\s|'|POSITIVE/g, '');
-                if (group.includes('+VE')) {
-                    group = group.replace('+VE', '+');
-                }
-                if (group) {
-                    counts[group] = (counts[group] || 0) + 1;
-                }
-                return counts;
-            }, {});
-
-            const sortedBloodGroups = Object.entries(bloodGroups).sort(([a], [b]) => {
-                const order = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
-                return order.indexOf(a) - order.indexOf(b);
-            });
-
-            sortedBloodGroups.forEach(([group, count]) => {
-                const bloodGroupElement = document.createElement('div');
-                bloodGroupElement.className = 'p-3 bg-red-100 rounded-lg text-center stat-card';
-                bloodGroupElement.innerHTML = `
-                    <div class="font-bold text-red-800 text-xl">${count}</div>
-                    <div class="text-sm text-red-600">${group}</div>
-                `;
-                bloodCountsContainer.appendChild(bloodGroupElement);
-            });
-        };
-
-        // Set up event listeners when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            
-            // Initial render
-            renderMembers();
-            renderBirthdays();
-            renderBloodGroupCounts();
-            
-            // Search input event listener
-            searchInput.addEventListener('input', (event) => {
-                const query = event.target.value;
-                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-                renderMembers(query, activeFilter);
-            });
-            
-            // Filter button event listeners
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    // Add active class to clicked button
-                    button.classList.add('active');
-                    
-                    const filter = button.dataset.filter;
-                    const query = searchInput.value;
-                    renderMembers(query, filter);
-                });
-            });
-        });
-    </script>
-
-</body>
-</html>
+                const matchesF
