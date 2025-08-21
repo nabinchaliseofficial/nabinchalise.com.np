@@ -1,0 +1,140 @@
+import React, { useState, useEffect } from 'react';
+
+// The main application component
+const App = () => {
+  // Use state hooks to manage data, loading state, and any errors
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // A helper function to parse CSV text into a structured JSON array
+  const parseCSV = (csvText) => {
+    // Split the text into an array of lines
+    const lines = csvText.trim().split('\n');
+    // The first line is the header row
+    const headers = lines[0].split(',');
+    const result = [];
+
+    // Iterate over the data lines (skipping the header)
+    for (let i = 1; i < lines.length; i++) {
+      const currentline = lines[i].split(',');
+      const obj = {};
+      for (let j = 0; j < headers.length; j++) {
+        // Map header to value for each row
+        obj[headers[j].trim()] = currentline[j] ? currentline[j].trim() : '';
+      }
+      result.push(obj);
+    }
+    return result;
+  };
+
+  // Use useEffect to perform the data fetch operation once when the component mounts
+  useEffect(() => {
+    // Define an async function to handle the fetching logic
+    const fetchData = async () => {
+      // The public CSV export URL for your Google Sheet.
+      // This URL works because your sheet is shared with "Anyone with the link".
+      const url = 'https://docs.google.com/spreadsheets/d/e/18inkMAtPdW_dpSSlQXcvDZsRDGlHndxL3Op5a8kOKrA/pub?output=csv';
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // Fetch the data as plain text (CSV)
+        const csvText = await response.text();
+        // Parse the CSV text into a structured array of objects
+        const parsedData = parseCSV(csvText);
+        setMembers(parsedData); // Set the parsed data to the state
+      } catch (e) {
+        setError("Failed to fetch data. Please ensure the Google Sheet is shared with 'Anyone with the link' and the URL is correct.");
+        console.error("Fetching error: ", e);
+      } finally {
+        setLoading(false); // Update loading state regardless of success or failure
+      }
+    };
+
+    fetchData();
+  }, []); // The empty dependency array ensures this effect runs only once
+
+  // Filter the members based on the search term
+  const filteredMembers = members.filter(member => {
+    const query = searchTerm.toLowerCase();
+    // Check if the query matches any of the key fields in the member object
+    return (
+      member.name?.toLowerCase().includes(query) ||
+      member.address?.toLowerCase().includes(query) ||
+      member.email?.toLowerCase().includes(query) ||
+      member.profession?.toLowerCase().includes(query) ||
+      member.designation?.toLowerCase().includes(query)
+    );
+  });
+
+  // Render different UI based on the state (loading, error, or data)
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="p-6 md:p-10 rounded-2xl shadow-xl text-center">
+          <svg className="animate-spin h-10 w-10 text-indigo-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 1116 0A8 8 0 014 12z"></path>
+          </svg>
+          <p className="mt-4 text-gray-600">Loading member data from Google Sheet...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="p-6 md:p-10 rounded-2xl shadow-xl text-center text-red-600">
+          <p className="text-xl font-semibold">Error:</p>
+          <p className="mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 md:p-8 font-['Inter'] bg-gray-100 min-h-screen">
+      <div className="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
+        <div className="text-center mb-6">
+          <img src="http://googleusercontent.com/file_content/1" alt="Rotaract Club of Galkot Baglung Logo" className="mx-auto h-20 md:h-24 logo mb-4" />
+          <h2 className="text-3xl font-bold text-gray-800">RAC Galkot Baglung Club Member Search</h2>
+        </div>
+
+        <div className="mb-8">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by name, address, email, or profession..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+          />
+        </div>
+
+        <div id="results-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredMembers.length > 0 ? (
+            filteredMembers.map(member => (
+              <div key={member.id} className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-transform duration-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{member.name}</h3>
+                <p className="text-sm text-gray-600 mb-1"><strong>Designation:</strong> {member.designation}</p>
+                <p className="text-sm text-gray-600 mb-1"><strong>Profession:</strong> {member.profession}</p>
+                <p className="text-sm text-gray-600 mb-1"><strong>Address:</strong> {member.address}</p>
+                <p className="text-sm text-gray-600 mb-1"><strong>Email:</strong> {member.email}</p>
+                <p className="text-sm text-gray-600"><strong>Phone:</strong> {member.phone}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 col-span-full">No members found matching your search.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
