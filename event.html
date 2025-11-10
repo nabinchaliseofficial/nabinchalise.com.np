@@ -50,19 +50,20 @@
         
         <!-- Header -->
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Upcoming Online Events</h1>
-            <p class="text-lg text-gray-600">Join us for our latest series of web workshops and talks.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Upcoming Online Event</h1>
+            <p class="text-lg text-gray-600">Join us for our latest web workshop.</p>
         </header>
 
         <!-- Event Cards Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Centering the single card -->
+        <main class="flex justify-center">
 
             <!-- 
                 EVENT CARD 1 
                 - Add the 'event-card' class to each card you want to animate.
                 - Replace 'YOUR_DOC_ID_HERE' with your actual Google Doc ID.
             -->
-            <div class="event-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+            <div class="event-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 w-full max-w-md">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-sm font-semibold text-blue-600">Webinar</span>
@@ -87,52 +88,7 @@
                 </div>
             </div>
 
-            <!-- 
-                EVENT CARD 2 
-            -->
-            <div class="event-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-sm font-semibold text-purple-600">Workshop</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Advanced CSS Techniques</h2>
-                    <p class="text-gray-500 text-sm mb-4"><strong>Date:</strong> December 5, 2025 @ 11:00 AM (GMT)</p>
-                    <p class="text-gray-700 mb-6">
-                        Dive deep into Grid, Flexbox, and custom animations to build stunning, responsive layouts.
-                    </p>
-                    <!-- GOOGLE DOC LINK -->
-                    <a href="https://docs.google.com/document/d/YOUR_DOC_ID_HERE/edit?usp=sharing" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="inline-block w-full text-center bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg">
-                        View Event Details (Google Doc)
-                    </a>
-                </div>
-            </div>
-
-            <!-- 
-                EVENT CARD 3 
-            -->
-            <div class="event-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-sm font-semibold text-teal-600">Live Q&A</span>
-                        <span class="inline-block bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full font-semibold">Coming Soon</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">AMA with a Senior Developer</h2>
-                    <p class="text-gray-500 text-sm mb-4"><strong>Date:</strong> December 12, 2025 @ 4:00 PM (GMT)</p>
-                    <p class="text-gray-700 mb-6">
-                        Ask anything! Career advice, tech stacks, or how to land your first job in the tech industry.
-                    </p>
-                    <!-- GOOGLE DOC LINK -->
-                    <a href="https://docs.google.com/document/d/YOUR_DOC_ID_HERE/edit?usp=sharing" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="inline-block w-full text-center bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg">
-                        View Event Details (Google Doc)
-                    </a>
-                </div>
-            </div>
+            <!-- Removed Event Card 2 and 3 -->
 
         </main>
 
