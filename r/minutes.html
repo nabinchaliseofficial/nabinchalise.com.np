@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minutes Builder | Rotaract Club of Galkot Baglung</title>
+    <style>
+        :root {
+            --primary-color: #D70060; /* Rotaract Pink */
+            --secondary-color: #015491; /* Rotary Blue */
+            --dark-color: #2C3E50;
+            --light-bg: #F4F6F9;
+            --border-color: #BDC3C7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            padding: 30px 15px;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative; /* थपिएको: होम बटनलाई सहि ठाउँमा राख्न */
+        }
+
+        /* होम बटनको लागि नयाँ CSS */
+        .home-btn-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(1, 84, 145, 0.2);
+        }
+
+        .home-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        /* Form Styling */
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #E0E0E0;
+        }
+
+        .form-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .dynamic-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-add {
+            background: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .btn-add:hover { background: #013d6b; }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-submit:hover { background: #b50051; }
+
+        /* Attendance Checklist Styling */
+        .checklist-container {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-weight: normal;
+        }
+
+        .member-role {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Hidden Printable Letterhead Document Structure */
+        #print-preview {
+            display: none;
+        }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                color: #000;
+            }
+            .container, .form-section, input, button, .btn-submit, label, h2, .home-btn-container {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+            }
+            .letterhead {
+                text-align: center;
+                border-bottom: 3px double var(--primary-color);
+                padding-bottom: 15px;
+                margin-bottom: 30px;
+            }
+            .letterhead h1 { color: var(--primary-color); font-size: 26px; }
+            .letterhead h2 { color: var(--secondary-color); font-size: 18px; display: block !important;}
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25px;
+            }
+            .meta-table td {
+                padding: 6px;
+                border: 1px solid #ddd;
+                font-size: 14px;
+            }
+            .meta-title { font-weight: bold; background: #f9f9f9; width: 20%; }
+            .content-section {
+                margin-bottom: 20px;
+            }
+            .content-section h4 {
+                color: var(--secondary-color);
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+                font-size: 16px;
+            }
+            .agenda-item {
+                margin-bottom: 12px;
+                font-size: 14px;
+            }
+            .footer-sign {
+                margin-top: 60px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+            .sign-line {
+                border-top: 1px solid #000;
+                width: 200px;
+                text-align: center;
+                padding-top: 5px;
+                font-size: 13px;
+            }
+            
+            /* Vertical Table List Styles for Print */
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .print-table th, .print-table td {
+                border: 1px solid #ccc;
+                padding: 6px 10px;
+                font-size: 13px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f5f5f5;
+                font-weight: bold;
+            }
+            .col-sn { width: 8%; text-align: center; }
+            .col-name { width: 52%; }
+            .col-role { width: 40%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- नयाँ थपिएको होम बटन कंटेनर -->
+    <div class="home-btn-container">
+        <a href="index.html" class="home-btn">🏠 Home</a>
+    </div>
+
+    <h2 style="text-align:center; color: var(--secondary-color); margin-bottom: 25px;">
+        📝 Minutes Writer Engine (R.Y. 2026-27)
+    </h2>
+
+    <div class="form-section">
+        <h3>1. Meeting Coordinates</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Meeting Number</label>
+                <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting">
+            </div>
+            <div class="form-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="meetDate">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Venue Location</label>
+                <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot">
+            </div>
+            <div class="form-group">
+                <label>Meeting Chairperson</label>
+                <input type="text" id="meetChair" value="Nabin Chalise" placeholder="President Name">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>2. Attendance Checklist (Official Members)</h3>
+            <button class="btn-add" onclick="addNewMemberRow()">+ Add More Rotaractor</button>
+        </div>
+        
+        <div class="checklist-container" id="members-checklist">
+            <!-- Official members roster generated automatically via JS -->
+        </div>
+
+        <div id="additional-members-container" style="margin-bottom: 20px;">
+            <!-- Dynamic rows for newly added rotaractors will sit here -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top: 20px;">
+            <h3>3. Special Guests (Outside of Club)</h3>
+            <button class="btn-add" onclick="addGuestRow()">+ Add Special Guest</button>
+        </div>
+        <div id="guests-container">
+            <!-- Dynamic rows for non-club special guests -->
+        </div>
+
+        <div class="grid-2" style="margin-top: 20px;">
+            <div class="form-group">
+                <label>Members Present Count (Auto)</label>
+                <input type="number" id="countPresent" value="0" readonly style="background-color: #eaeded; font-weight: bold;">
+            </div>
+            <div class="form-group">
+                <label>Guests Count (Auto)</label>
+                <input type="number" id="countGuests" value="0" readonly style="background-color: #eaeded; font-weight: bold;">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>4. Agendas & Resolutions Log</h3>
+            <button class="btn-add" onclick="addAgendaRow()">+ Add Agenda</button>
+        </div>
+        <div id="agenda-container">
+            <div class="dynamic-row agenda-group">
+                <input type="text" class="agenda-title" placeholder="Agenda Title (e.g., Blood Donation)" style="width:35%;">
+                <textarea class="agenda-desc" placeholder="Decisions / Action points resolved..." rows="1" style="width:65%; resize:vertical;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="generateMinutesPDF()">✨ Compile & Save PDF</button>
+</div>
+
+<div id="print-preview">
+    <div class="letterhead">
+        <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+        <h2>Rotary International District 3292, Nepal</h2>
+        <p style="font-size:12px; color:#555;">Club No: 90214 | Rota Year 2026-27</p>
+    </div>
+
+    <h3 style="text-align: center; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px;" id="outTitle">MINUTES OF MEETING</h3>
+
+    <table class="meta-table">
+        <tr>
+            <td class="meta-title">Meeting Title</td>
+            <td id="outMeetNo" style="width:30%;"></td>
+            <td class="meta-title">Date / Time</td>
+            <td id="outDate"></td>
+        </tr>
+        <tr>
+            <td class="meta-title">Venue</td>
+            <td id="outVenue"></td>
+            <td class="meta-title">Chairperson</td>
+            <td id="outChair"></td>
+        </tr>
+        <tr>
+            <td class="meta-title">Attendance Summary</td>
+            <td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td>
+        </tr>
+    </table>
+
+    <div class="content-section" id="print-section-members">
+        <h4>Attended Members</h4>
+        <div id="outPresentMembersNames"></div>
+    </div>
+
+    <div class="content-section" id="print-section-guests" style="display: none;">
+        <h4>Special Guests / Observers</h4>
+        <div id="outGuestsNames"></div>
+    </div>
+
+    <div class="content-section">
+        <h4>Agendas & Key Resolutions</h4>
+        <div id="outAgendas"></div>
+    </div>
+
+    <div class="footer-sign">
+        <div class="sign-line">
+            <p id="outChairSign">Nabin Chalise</p>
+            <p>Meeting Chairperson</p>
+        </div>
+        <div class="sign-line">
+            <br>
+            <p>Club Secretary</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Master database roster mapping
+    const rosterData = [
+        { role: "CHARTERED PRESIDENT", name: "RTR. NEETU KHADKA" },
+        { role: "PRESIDENT", name: "RTR. NABIN CHALISE" },
+        { role: "SECRETARY", name: "RTR. MADAN SHARMA" },
+        { role: "TREASURER", name: "RTR. MANISH KANDEL" },
+        { role: "PP/ISD/ADVISOR", name: "RTR. ANIL SHRESTHA" },
+        { role: "IPP/MENTOR", name: "RTR. NABIN SUBEDI" },
+        { role: "PAST PRESIDENT/ADVISOR", name: "RTR. KAMAL KHAREL" },
+        { role: "PAST PRESIDENT/ADVISOR", name: "RTR. ISHOR GAUTAM" },
+        { role: "JOINT SECRETARY", name: "RTR. SAGAR CHALISE" },
+        { role: "PRESIDENT ELECT", name: "RTR. TIKA RAM GAUTAM" },
+        { role: "MEDICAL OFFICER", name: "RTR. DR. MANOJ KARKI" },
+        { role: "PP/ROTARACT LEARNING FACILITATOR", name: "RTR. LAXMI PUN" },
+        { role: "ROTARACT VICE PRESIDENT", name: "RTR. VIKASH SUBEDI" },
+        { role: "ROTARACT MEMBERSHIP CHAIR", name: "RTR. BIPIN CHALISE" },
+        { role: "IT OFFICER", name: "RTR. RAJU SAHANI (RJ)" },
+        { role: "SERGEANT AT ARMS", name: "RTR. LOKENDRA GAIRE" },
+        { role: "ROTARACT FOUNDATION CHAIR", name: "RTR. MANJEELA SHRESTHA" },
+        { role: "ROTARACT SERVICE PROJECTS CHAIR", name: "RTR. SMRITI BUDHATHOKI" },
+        { role: "ROTARACT YOUNG LEADERS CONTACT", name: "RTR. MELINA KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. AMRIT SUBEDI" },
+        { role: "CLUB MEMBER", name: "RTR. ANIL GANDARVA" },
+        { role: "CLUB MEMBER", name: "RTR. BALARAM ADHIKARI" },
+        { role: "CLUB MEMBER", name: "RTR. BIBEK KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. BIDUR KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. DEEPAK KHATTRI" },
+        { role: "CLUB MEMBER", name: "RTR. DURGA DARLAMI" },
+        { role: "CLUB MEMBER", name: "RTR. GANESH SAPKOTA" },
+        { role: "CLUB MEMBER", name: "RTR. JIT BAHADUR B.K." },
+        { role: "CLUB MEMBER", name: "RTR. KRIPA KANDEL" },
+        { role: "CLUB MEMBER", name: "RTR. MANISH GURUNG" },
+        { role: "CLUB MEMBER", name: "RTR. MIN THAPA" },
+        { role: "CLUB MEMBER", name: "RTR. NABIN GAIRE" },
+        { role: "CLUB MEMBER", name: "RTR. NABIN SHARMA POUDEL" },
+        { role: "CLUB MEMBER", name: "RTR. NETRA PRASAD LAMICHHANE" },
+        { role: "CLUB MEMBER", name: "RTR. PRAKASH KHADKA" },
+        { role: "CLUB MEMBER", name: "RTR. PRANSU RAM REGMI" },
+        { role: "CLUB MEMBER", name: "RTR. PRATAP SEN" },
+        { role: "CLUB MEMBER", name: "RTR. PRATIKSHYA DARJI" },
+        { role: "CLUB MEMBER", name: "RTR. RADHA GAUTAM" },
+        { role: "CLUB MEMBER", name: "RTR. ROMAN SUBEDI" },
+        { role: "CLUB MEMBER", name: "RTR. SANJU NEUPANE" },
+        { role: "CLUB MEMBER", name: "RTR. SANTOSH BOHORA CHETTRI" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL CHHETRI" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL GAUTAM" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL KHATIWAL" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL ROKA MAGAR" },
+        { role: "CLUB MEMBER", name: "TARA PRASAD SUNAR" },
+        { role: "CLUB MEMBER", name: "RTR. TUL BAHADUR B.K." }
+    ];
+
+    // Build roster table checkboxes dynamically on init
+    const checklistContainer = document.getElementById('members-checklist');
+    rosterData.forEach((member, i) => {
+        const div = document.createElement('div');
+        div.className = 'checklist-item';
+        div.innerHTML = `
+            <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
+            <label for="memb_${i}">
+                <span>${member.name}</span>
+                <span class="member-role">${member.role}</span>
+            </label>
+        `;
+        checklistContainer.appendChild(div);
+    });
+
+    // Set local system time securely as default value in input
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+    document.getElementById('meetDate').value = localISOTime;
+
+    // Attendance processing controller engine
+    function calculateAttendanceCounts() {
+        const checkedOfficialCount = document.querySelectorAll('.member-checkbox:checked').length;
+        const additionalCheckedCount = document.querySelectorAll('.add-member-checkbox:checked').length;
+        
+        document.getElementById('countPresent').value = checkedOfficialCount + additionalCheckedCount;
+        document.getElementById('countGuests').value = document.querySelectorAll('.guest-input-name').length;
+    }
+
+    // Dynamic row addition engines
+    function addNewMemberRow() {
+        const container = document.getElementById('additional-members-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row';
+        row.innerHTML = `
+            <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width: auto; margin-right: 5px; transform: scale(1.1);">
+            <input type="text" class="add-member-name" placeholder="Rtr. Name" style="width: 55%;" oninput="calculateAttendanceCounts()">
+            <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="width: 40%;">
+        `;
+        container.appendChild(row);
+        calculateAttendanceCounts();
+    }
+
+    // Dynamic guest addition
+    function addGuestRow() {
+        const container = document.getElementById('guests-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row';
+        row.innerHTML = `
+            <input type="text" class="guest-input-name" placeholder="Guest Full Name & Club/Designation Details" style="width: 100%;" oninput="calculateAttendanceCounts()">
+        `;
+        container.appendChild(row);
+        calculateAttendanceCounts();
+    }
+
+    // Dynamic agenda addition
+    function addAgendaRow() {
+        const container = document.getElementById('agenda-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row agenda-group';
+        row.innerHTML = `
+            <input type="text" class="agenda-title" placeholder="Agenda Title" style="width:35%;">
+            <textarea class="agenda-desc" placeholder="Decisions / Action points resolved..." rows="1" style="width:65%; resize:vertical;"></textarea>
+        `;
+        container.appendChild(row);
+    }
+
+    // Map UI data to structural print layer and launch PDF/print handler
+    function generateMinutesPDF() {
+        // Core Meta Mapping
+        document.getElementById('outMeetNo').innerText = document.getElementById('meetNo').value || 'Regular Meeting';
+        
+        const dateObj = new Date(document.getElementById('meetDate').value);
+        document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        
+        document.getElementById('outVenue').innerText = document.getElementById('meetVenue').value || 'N/A';
+        document.getElementById('outChair').innerText = document.getElementById('meetChair').value || 'Club President';
+        document.getElementById('outChairSign').innerText = document.getElementById('meetChair').value || '_______________________';
+        
+        // Recalculate explicitly
+        calculateAttendanceCounts();
+        document.getElementById('outPres').innerText = document.getElementById('countPresent').value;
+        document.getElementById('outGst').innerText = document.getElementById('countGuests').value;
+
+        // Compile Attended Members into Vertical Table
+        let memberTableHTML = `
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th class="col-sn">S.N.</th>
+                        <th class="col-name">Name</th>
+                        <th class="col-role">Designation</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let serialCounter = 1;
+        
+        // 1. Fetch from Main Checklist
+        document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+            const name = cb.getAttribute('data-name');
+            const role = cb.getAttribute('data-role');
+            memberTableHTML += `
+                <tr>
+                    <td style="text-align:center;">${serialCounter++}</td>
+                    <td>${name}</td>
+                    <td>${role}</td>
+                </tr>
+            `;
+        });
+        
+        // 2. Fetch from Manually Added Rotaractors
+        document.querySelectorAll('.add-member-checkbox:checked').forEach(cb => {
+            const row = cb.parentElement;
+            const name = row.querySelector('.add-member-name').value.trim();
+            const role = row.querySelector('.add-member-role').value.trim();
+            if (name) {
+                memberTableHTML += `
+                    <tr>
+                        <td style="text-align:center;">${serialCounter++}</td>
+                        <td>${name.toUpperCase()}</td>
+                        <td>${role.toUpperCase()}</td>
+                    </tr>
+                `;
+            }
+        });
+
+        memberTableHTML += `</tbody></table>`;
+
+        const outMembersNode = document.getElementById('outPresentMembersNames');
+        if(serialCounter > 1) {
+            outMembersNode.innerHTML = memberTableHTML;
+            document.getElementById('print-section-members').style.display = 'block';
+        } else {
+            outMembersNode.innerHTML = "<p style='font-size:13px; color:#666;'>No members marked present.</p>";
+        }
+
+        // Compile Guest Data into Vertical Table
+        let guestTableHTML = `
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th class="col-sn">S.N.</th>
+                        <th style="width: 92%;">Guest Details (Name / Club / Designation)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let guestCounter = 1;
+        document.querySelectorAll('.guest-input-name').forEach(input => {
+            const val = input.value.trim();
+            if(val) {
+                guestTableHTML += `
+                    <tr>
+                        <td style="text-align:center;">${guestCounter++}</td>
+                        <td>${val}</td>
+                    </tr>
+                `;
+            }
+        });
+        
+        guestTableHTML += `</tbody></table>`;
+
+        const guestSectionNode = document.getElementById('print-section-guests');
+        if(guestCounter > 1) {
+            document.getElementById('outGuestsNames').innerHTML = guestTableHTML;
+            guestSectionNode.style.display = 'block';
+        } else {
+            guestSectionNode.style.display = 'none'; // Conditional auto-hide if empty
+        }
+
+        // Process composite lists (Agendas/Notes)
+        const agendaBlocks = document.querySelectorAll('.agenda-group');
+        let htmlContent = '';
+        
+        agendaBlocks.forEach((block, index) => {
+            const title = block.querySelector('.agenda-title').value;
+            const desc = block.querySelector('.agenda-desc').value;
+            if(title || desc) {
+                htmlContent += `
+                    <div class="agenda-item">
+                        <strong>Agenda ${index + 1}: ${title || 'General Floor Discussion'}</strong>
+                        <p style="margin: 4px 0 0 15px; color: #333; text-align: justify;">${desc || 'No resolutions documented.'}</p>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById('outAgendas').innerHTML = htmlContent || '<p>No formal agendas recorded.</p>';
+
+        // Trigger native system layout generation/PDF compiler
+        window.print();
+    }
+</script>
+
+</body>
+</html>
