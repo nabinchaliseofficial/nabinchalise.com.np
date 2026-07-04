@@ -1,180 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Supabase Auth</title>
-    <!-- Supabase JS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-        }
-
-        .login-container {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header h2 {
-            color: #1f2937;
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .login-header p {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #374151;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #1f2937;
-            transition: all 0.2s ease;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .login-btn:hover {
-            background: #1d4ed8;
-        }
-
-        .message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            display: none;
-            text-align: center;
-        }
-        .error { background: #fee2e2; color: #991b1b; display: block; }
-        .success { background: #dcfce7; color: #166534; display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase SSR Browser Auth</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f3f4f6; margin: 0; }
+    .auth-card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 380px; }
+    h2 { margin: 0 0 1.5rem 0; font-size: 1.5rem; text-align: center; color: #111827; }
+    label { font-size: 0.875rem; font-weight: 500; color: #374151; display: block; margin-bottom: 0.35rem; }
+    input { width: 100%; padding: 0.75rem; margin-bottom: 1.25rem; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+    input:focus { outline: 2px solid #2563eb; border-color: transparent; }
+    button { width: 100%; padding: 0.75rem; border: none; border-radius: 6px; font-size: 1rem; font-weight: 500; cursor: pointer; margin-bottom: 0.75rem; transition: background 0.2s; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary { background: transparent; border: 1px solid #d1d5db; color: #4b5563; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .message { display: none; padding: 0.75rem; border-radius: 6px; font-size: 0.875rem; text-align: center; margin-bottom: 1rem; }
+    .error { display: block; background: #fee2e2; color: #991b1b; }
+    .success { display: block; background: #d1fae5; color: #065f46; }
+  </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="login-header">
-            <h2>Welcome Back</h2>
-            <p>Sign in using your Supabase account</p>
-        </div>
+<div class="auth-card">
+  <h2>Account Sign In</h2>
+  <div id="msg" class="message"></div>
+  
+  <form id="auth-form">
+    <label for="email">Email Address</label>
+    <input type="email" id="email" placeholder="name@example.com" required>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="enter your email" required>
-            </div>
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="••••••••" required>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
-            </div>
+    <button type="button" id="btn-login" class="btn-primary">Log In</button>
+    <button type="button" id="btn-signup" class="btn-secondary">Create Account</button>
+  </form>
+</div>
 
-            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
-        </form>
+<script type="module">
+  // Using esm.sh CDN to load the specific tools you installed via npm
+  import { createBrowserClient } from 'https://esm.sh/@supabase/ssr';
 
-        <div id="messageBox" class="message"></div>
-    </div>
+  // Your exact provided project credentials
+  const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
 
-    <script>
-        // तपाईँको Supabase Credentials यहाँ सेट गरिएको छ
-        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+  // Initialize the browser client exactly like the SSR documentation recommends
+  const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Supabase Client सुरु गर्ने
-        const supabase = _supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // DOM Elements
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const loginBtn = document.getElementById('btn-login');
+  const signupBtn = document.getElementById('btn-signup');
+  const msgBox = document.getElementById('msg');
 
-        const loginForm = document.getElementById('loginForm');
-        const messageBox = document.getElementById('messageBox');
-        const loginBtn = document.getElementById('loginBtn');
+  function updateStatus(text, statusType) {
+    msgBox.textContent = text;
+    msgBox.className = `message ${statusType}`;
+  }
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+  // Handle Login Action
+  loginBtn.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    if (!email || !password) return updateStatus("Please enter both fields.", "error");
 
-            loginBtn.innerText = "Signing in...";
-            loginBtn.disabled = true;
-            messageBox.className = "message"; 
-            messageBox.style.display = "none";
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-            // Supabase Auth लगइन प्रकृया
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+    if (error) {
+      updateStatus(error.message, "error");
+    } else {
+      updateStatus("Success! You are now logged in.", "success");
+      console.log("Logged in user details:", data.user);
+    }
+  });
 
-            if (error) {
-                messageBox.innerText = "Error: " + error.message;
-                messageBox.classList.add('error');
-                loginBtn.innerText = "Sign In";
-                loginBtn.disabled = false;
-            } else {
-                messageBox.innerText = "Login Successful! Redirecting...";
-                messageBox.classList.add('success');
-                
-                // सफल भएपछि १.५ सेकेन्डमा अर्को पेजमा लैजाने
-                setTimeout(() => {
-                    window.location.href = "dashboard.html"; 
-                }, 1500);
-            }
-        });
-    </script>
+  // Handle Sign Up Action
+  signupBtn.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    if (!email || !password) return updateStatus("Please enter both fields.", "error");
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      updateStatus(error.message, "error");
+    } else {
+      updateStatus("Account created! Check your email inbox to verify.", "success");
+    }
+  });
+</script>
+
 </body>
 </html>
