@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Projects | Rotaract Club of Galkot Baglung</title>
+    <!-- Include Qrcode.js via safe standard CDN for completely client-side QR generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #D70060; /* Rotaract Pink */
+            --secondary-color: #015491; /* Rotary Blue */
+            --dark-color: #2C3E50;
+            --light-bg: #F4F6F9;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--primary-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Projects Grid Layout */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border-top: 5px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-body {
+            padding: 25px;
+        }
+
+        .project-name {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #7F8C8D;
+            display: inline-block;
+            width: 130px;
+        }
+
+        /* QR Code Modal Footer Area Inside Card */
+        .project-footer {
+            background: #FDFEFE;
+            padding: 20px;
+            border-top: 1px solid #ECEFF1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .qr-info-text {
+            font-size: 0.8rem;
+            color: #7F8C8D;
+            max-width: 55%;
+        }
+
+        /* QR Output Container Container */
+        .qr-holder {
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #BDC3C7;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        @media (max-width: 600px) {
+            .project-footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .qr-info-text { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Upcoming Project Dashboard</h1>
+        <p>Rotaract Club of Galkot Baglung — R.Y. 2026-27</p>
+    </header>
+
+    <div class="projects-grid" id="projects-container">
+        <!-- Project Cards will inject programmatically here via Javascript -->
+    </div>
+</div>
+
+<script>
+    // 1. Define your upcoming projects dataset here
+    const upcomingProjects = [
+        {
+            name: "Project Akshara: Rural E-Library Set up",
+            targetAudience: "Public School Students",
+            location: "Ward No. 3, Galkot, Baglung",
+            targetUrl: "https://galkotrotaract.org/projects/akshara-signup" // URL embedded into the QR code
+        },
+        {
+            name: "Maternal Health & Sanitation Awareness Campaign",
+            targetAudience: "Local Women & Expecting Mothers",
+            location: "Hatiya Health Post, Galkot",
+            targetUrl: "https://galkotrotaract.org/projects/maternal-health"
+        },
+        {
+            name: "RYLA 2026: Youth Leadership Conclave",
+            targetAudience: "Local High-school & College Students",
+            location: "Galkot City Hall Assembly Room",
+            targetUrl: "https://galkotrotaract.org/projects/ryla-2026"
+        }
+    ];
+
+    // 2. Render Project Cards on page load
+    const container = document.getElementById('projects-container');
+
+    upcomingProjects.forEach((project, index) => {
+        // Unique ID string for individual QR placeholder hooks
+        const qrContainerId = `qrcode-target-${index}`;
+
+        // Create card markup block
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.innerHTML = `
+            <div class="project-body">
+                <h3 class="project-name">${project.name}</h3>
+                <div class="detail-item">
+                    <span class="detail-label">🎯 Target Audience:</span>
+                    <span>${project.targetAudience}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">📍 Project Location:</span>
+                    <span>${project.location}</span>
+                </div>
+            </div>
+            <div class="project-footer">
+                <div class="qr-info-text">
+                    <strong>Scan QR Code</strong> to view live updates, join volunteer rosters, or access project donation options.
+                </div>
+                <div class="qr-holder" id="${qrContainerId}"></div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+
+        // 3. Fire up the dynamic QR engine targeting the element just created
+        new QRCode(document.getElementById(qrContainerId), {
+            text: project.targetUrl,
+            width: 90,
+            height: 90,
+            colorDark : "#015491", // Styled beautifully in Rotary Blue
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    });
+</script>
+
+</body>
+</html>

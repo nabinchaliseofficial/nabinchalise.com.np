@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Projects Archive | Rotaract Club of Galkot Baglung</title>
+    <style>
+        :root {
+            --primary-color: #D70060; /* Rotaract Pink */
+            --secondary-color: #015491; /* Rotary Blue */
+            --dark-color: #2C3E50;
+            --light-bg: #F4F6F9;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            color: var(--secondary-color);
+            font-size: 2.3rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #7F8C8D;
+            font-size: 1.1rem;
+        }
+
+        /* Filter Section Styling */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: #E0E6ED;
+            color: var(--dark-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(215, 0, 96, 0.2);
+        }
+
+        /* Projects Table Container */
+        .table-responsive {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #ECEFF1;
+        }
+
+        th {
+            background-color: #F8F9FA;
+            color: var(--secondary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tr.project-row {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        tr.project-row:hover {
+            background-color: #FFF9FB;
+        }
+
+        /* Badges */
+        .ry-badge {
+            background-color: #E1F5FE;
+            color: var(--secondary-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .avenue-badge {
+            background-color: #FCE4EC;
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* CSS Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border: 1px solid #ECEFF1;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                padding: 10px;
+                background: #fff;
+            }
+            td {
+                border: none;
+                border-bottom: 1px solid #f1f1f1;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            td:last-child { border-bottom: none; }
+            td:before {
+                position: absolute;
+                left: 20px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: var(--secondary-color);
+            }
+            td:nth-of-type(1):before { content: "Project Name"; }
+            td:nth-of-type(2):before { content: "Rotary Year"; }
+            td:nth-of-type(3):before { content: "Avenue"; }
+            td:nth-of-type(4):before { content: "Location"; }
+            td:nth-of-type(5):before { content: "Cost"; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Past Projects Repository</h1>
+        <p>Rotaract Club of Galkot Baglung — Legacy & Impact Record</p>
+    </header>
+
+    <!-- Interactive Rotary Year Filter Buttons -->
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterProjects('all')">All Years</button>
+        <button class="filter-btn" onclick="filterProjects('2025-26')">R.Y. 2025-26</button>
+        <button class="filter-btn" onclick="filterProjects('2024-25')">R.Y. 2024-25</button>
+        <button class="filter-btn" onclick="filterProjects('2023-24')">R.Y. 2023-24</button>
+    </div>
+
+    <!-- Responsive Project Ledger Table -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Rotary Year</th>
+                    <th>Avenue of Service</th>
+                    <th>Location</th>
+                    <th>Total Cost</th>
+                </tr>
+            </thead>
+            <tbody id="projects-table-body">
+                <!-- Data populated dynamically via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 1. Core Past Projects Dataset
+    const pastProjects = [
+        { name: "Mega Health & Eye Screening Camp", ry: "2025-26", avenue: "Community Service", location: "Galkot Bazaar", cost: "NPR 85,000" },
+        { name: "Public School Stationary Distribution", ry: "2025-26", avenue: "International Service", location: "Baman, Baglung", cost: "NPR 35,000" },
+        { name: "Public Speaking & Leadership Masterclass", ry: "2024-25", avenue: "Professional Dev.", location: "Club Hall, Hatiya", cost: "NPR 15,000" },
+        { name: "Tree Plantation & Environment Awareness", ry: "2024-25", avenue: "Community Service", location: "Galkot Area Ridges", cost: "NPR 22,000" },
+        { name: "Inter-Club Youth Sports Fellowship", ry: "2023-24", avenue: "Club Service", location: "Galkot Sports Ground", cost: "NPR 40,000" },
+        { name: "Basic Sanitation & Clean Drinking Water Drive", ry: "2023-24", avenue: "Community Service", location: "Madyamiki Vidyalaya", cost: "NPR 60,000" }
+    ];
+
+    // 2. Function to Render Table Content
+    function renderTable(dataset) {
+        const tableBody = document.getElementById('projects-table-body');
+        tableBody.innerHTML = ''; // Clear existing content
+
+        if(dataset.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#7f8c8d;">No historical logs found for this filter.</td></tr>`;
+            return;
+        }
+
+        dataset.forEach(project => {
+            const row = document.createElement('tr');
+            row.className = 'project-row';
+            row.innerHTML = `
+                <td style="font-weight: 600; color: var(--dark-color);">${project.name}</td>
+                <td><span class="ry-badge">R.Y. ${project.ry}</span></td>
+                <td><span class="avenue-badge">${project.avenue}</span></td>
+                <td>📍 ${project.location}</td>
+                <td style="font-weight: bold; color: #2E7D32;">${project.cost}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // 3. Dynamic Filter Engine Logic
+    function filterProjects(selectedYear) {
+        // Update active button state styling
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Apply array data filter conditional
+        if (selectedYear === 'all') {
+            renderTable(pastProjects);
+        } else {
+            const filteredData = pastProjects.filter(project => project.ry === selectedYear);
+            renderTable(filteredData);
+        }
+    }
+
+    // Initial render call on window page configuration loading
+    window.onload = () => {
+        renderTable(pastProjects);
+    };
+</script>
+
+</body>
+</html>

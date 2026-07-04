@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAC Galkot Baglung Member Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .member-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            max-width: 100%;
+            height: auto;
+        }
+        .birthday-card {
+            border-left: 4px solid #f97316;
+        }
+        .today-birthday-card {
+            border-left: 4px solid #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        /* Style for the search input and filter buttons */
+        .search-container {
+            position: relative;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        .search-input {
+            padding-left: 45px;
+        }
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
+
+        <div class="text-center mb-6">
+            <img src="rotaract logo.jpg" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
+            <h2 class="text-3xl font-bold text-gray-800">RAC Galkot Baglung Member Directory</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                <h3 class="text-xl font-bold text-blue-800 mb-2">Upcoming Birthdays 🎂</h3>
+                <div id="nearest-birthdays" class="space-y-2">
+                </div>
+            </div>
+
+            <div class="bg-red-50 p-6 rounded-xl border border-red-200">
+                <h3 class="text-xl font-bold text-red-800 mb-2">Blood Group Donor Count ❤️</h3>
+                <div id="blood-group-counts" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <div class="search-container flex-grow">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search by name, address, designation, profession..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors search-input">
+                </div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button class="filter-btn active px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="all">All Members</button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="executive">Executive</button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="teacher">Teachers</button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="student">Students</button>
+                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="business">Business</button>
+            </div>
+        </div>
+
+        <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+    </div>
+
+    <script>
+        // Use a placeholder image for the logo since the original URL is not accessible.
+        const logo = "rotaract logo.jpg";
+        const profileImageUrl = "rotaract logo.jpg";
+
+        // Reordered member data based on the provided text and sorting criteria
+        const members = [
+            // President
+            { id: 29, name: 'Rtr Nabin Subedi', address: 'Galkot Municipality -04,Chamuwa Baglung', rotaryId: '11716194', phone: '9857631742', bloodGroup: 'B+', gender: 'Male', email: 'nsubedi162@gmail.com', dob: '10/6/1997', designation: 'President', profession: 'Teacher' },
+            // Vice President
+            { id: 43, name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotaryId: '12098183', phone: '9847705363', bloodGroup: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Vice President/Public Relation Chair', profession: 'Co- operative' },
+            // President Elect
+            { id: 20, name: 'Nabin Chalise', address: 'Galkot Municipality-3, Baglung', rotaryId: '11722218', phone: '9851338747', bloodGroup: 'O+', gender: 'Male', email: 'pilotprosoft@gmail.com', dob: '8/26/1995', designation: 'President Elect/ Rotaract Learning Facilitator', profession: 'ICT Teacher' },
+            // Secretary
+            { id: 40, name: 'Tika Ram Gautam', address: 'Galkot-09, Baglung', rotaryId: '11722743', phone: '9847797869', bloodGroup: 'B+', gender: 'Male', email: 'gautamarjun933@gmail.com', dob: '10/14/1993', designation: 'SECRETARY', profession: 'Teacher' },
+            // Treasurer
+            { id: 17, name: 'Manish Gurung', address: 'Galkot Municipality 1 Dudilabhati Baglung', rotaryId: '12031057', phone: '9843824191', bloodGroup: 'B+', gender: 'Male', email: 'manishgurung209@gmail.com', dob: '2/20/2003', designation: 'Treasurer', profession: 'Employee in Saplyapatri Multipurpose Co-operative Ltd.' },
+            // Joint Secretary
+            { id: 16, name: 'Madan Sharma', address: 'Galkot municipality', rotaryId: '11855833', phone: '9860191219', bloodGroup: 'B+', gender: 'Male', email: 'madanbsharma98@gmail.com', dob: '3/2/2002', designation: 'Joint Secretary', profession: 'Teacher' },
+            // Joint Treasurer
+            { id: 26, name: 'Radha Gautam', address: 'Galkot municipality-03 Hatiya Baglung', rotaryId: '12047154', phone: '9846705657', bloodGroup: 'AB+', gender: 'Female', email: 'rg2508305@gmail.com', dob: '3/4/2003', designation: 'Joint Treasurer', profession: '' },
+            // Avenue Directors/Chairs (alphabetical by name)
+            { id: 4, name: 'Bibek Kharel', address: 'Galkot 09 baglung', rotaryId: '12098226', phone: '9844334609', bloodGroup: 'O+', gender: 'Male', email: 'Bibekkharel97@gmail.com', dob: '6/17/1997', designation: 'Rotaract Service Projects Chair', profession: 'Teacher' },
+            { id: 9, name: 'Ganesh Sapkota', address: 'Galkot -9, Baglung', rotaryId: '11964599', phone: '9867743075', bloodGroup: 'B+', gender: 'Male', email: 'ganesh1sapkota2@gmail.com', dob: '10/24/2001', designation: 'Rotaract Young Leaders Contact', profession: 'Student' },
+            { id: 12, name: 'Kamal Kharel', address: 'Galkot ,9', rotaryId: '11723334', phone: '9860718751', bloodGroup: 'B+', gender: 'Male', email: 'kharelkamal8751@gmail.com', dob: '3/27/1996', designation: 'PP/Rotaract Public Image Chair', profession: 'Furniture Business' },
+            { id: 44, name: 'Rtr. Manish Kandel', address: 'Galkot Municipality-08, kandebash, Baglung', rotaryId: '1111111', phone: '9865437798', bloodGroup: 'B+', gender: 'Male', email: 'manishkandel73@gmail.com', dob: '6/11/1997', designation: 'Service Project Chair', profession: 'Business / Entrepreneur' },
+            { id: 15, name: 'Lokendra Gaire', address: 'Galkot-4, Thana', rotaryId: '11723018', phone: '9869065252', bloodGroup: 'O+', gender: 'Male', email: 'lokendragaire9@gmail.com', dob: '5/22/2001', designation: 'Rotaract Foundation Chair', profession: 'Computer operator at galkot municipality' },
+            // Other Board Members/Officers (alphabetical by name)
+            { id: 7, name: 'Bipin Chalise', address: 'Galkot municipality -08', rotaryId: '12098496', phone: '9745985562', bloodGroup: 'O+', gender: 'Male', email: 'bipansharma0123@gmail.com', dob: '10/22/2001', designation: 'IT Officer', profession: 'Teacher' },
+            { id: 13, name: 'Laxmi Pun', address: 'Ga na pa 8', rotaryId: '11855933', phone: '9844090869', bloodGroup: 'O+', gender: 'Female', email: 'Punlaxmi216@gmail.com', dob: '12/24/1998', designation: 'IPP/ Sergeant at-Arms', profession: '' },
+            // Past Presidents (alphabetical by name)
+            { id: 3, name: 'Anil Shrestha', address: 'galkot municipality -03', rotaryId: '11361814', phone: '9841888908', bloodGroup: 'B+', gender: 'Male', email: 'theanilshrestha@gmail.com', dob: '1/7/1990', designation: 'PP/Rotaract Advisor/International Relation Chair', profession: '' },
+            { id: 10, name: 'Ishor Gautam', address: 'Galkot municipality 9 Baglung', rotaryId: '11453673', phone: '9860260680', bloodGroup: 'A+', gender: 'Male', email: 'ishworgautam2073@gmail.com', dob: '1/14/1993', designation: 'Past President', profession: 'Lecturer' },
+            { id: 22, name: 'Neetu Khadka', address: 'Baglung Municipality-01', rotaryId: '', phone: '9867945381', bloodGroup: 'O+', gender: 'Female', email: 'Khadkaneetu123@gmail.com', dob: '5/16/1989', designation: 'Chartered President', profession: 'Nurse' },
+            // Regular Members (alphabetical by name)
+            { id: 1, name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotaryId: '1111111111', phone: '9867694789', bloodGroup: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
+            { id: 2, name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotaryId: '11723715', phone: '9846850809', bloodGroup: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/2055', designation: 'Club Member', profession: 'Teacher' },
+            { id: 5, name: 'Bidur Kharel', address: 'Ga.Na.Pa 9 Darbara', rotaryId: '', phone: '9845548677', bloodGroup: 'AB+', gender: 'Male', email: 'Kharelbidur23@gmail.com', dob: '5/23/1995', designation: 'Club Member', profession: '' },
+            { id: 6, name: 'Binita Galami', address: 'Galkot na.pa.-3,hatiya', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Female', email: 'Newlooksprintigshop@gmail.com', dob: '9/11/1996', designation: 'Club Member', profession: '' },
+            { id: 8, name: 'Deepak Khattri', address: 'Galkot Municipality -04', rotaryId: '11726103', phone: '9849664430', bloodGroup: 'O+', gender: 'Male', email: 'Khattridep2048@gmail.com', dob: '5/5/1991', designation: 'Club Member', profession: 'Teacher' },
+            { id: 11, name: 'Jit Bahadur B.K.', address: 'Tarakhola RM. -2, Argal Baglung', rotaryId: '12239441', phone: '9857649995', bloodGroup: 'O+', gender: 'Male', email: 'jeevananuragi8@gmail.com', dob: '9/27/1982', designation: 'Club Member', profession: 'IT Business' },
+            { id: 14, name: 'Lila Adhikari (Mamata)', address: 'Galkot-3, baglung', rotaryId: '', phone: '', bloodGroup: 'O-', gender: 'Female', email: 'adhikarimamata223@gmail.com', dob: '8/21/2000', designation: 'Club Member', profession: 'Student' },
+            { id: 18, name: 'Manjeela Shrestha', address: 'Galkot municipality-03', rotaryId: '11723077', phone: '9840808640', bloodGroup: 'B+', gender: 'Female', email: 'catchmeifucan2046@gmail.com', dob: '2/11/1997', designation: 'Club Member', profession: 'House wife' },
+            { id: 19, name: 'Manoj Karki', address: 'Galkot-2, Baglung', rotaryId: '', phone: '9749724157', bloodGroup: 'A+', gender: 'Male', email: '', dob: '7/14/1995', designation: 'Club Member', profession: 'Medical doctor' },
+            { id: 21, name: 'Nabin Sharma', address: 'Galkot -1 Dudilabhati Jhanktisthan', rotaryId: '12119325', phone: '9846829984', bloodGroup: 'O+', gender: 'Male', email: 'dnabingautam79@gmail.com', dob: '12/23/2000', designation: 'Club Member', profession: 'Business' },
+            { id: 23, name: 'Niraj Shrestha', address: 'Galkot -03,Baglung', rotaryId: '', phone: '9847770262', bloodGroup: 'O+', gender: 'Male', email: 'nirajshrestha666@gmail.com', dob: '2/4/1994', designation: 'Club Member', profession: 'Banker' },
+            { id: 24, name: 'Pratap Sen', address: 'Galkot- 05, baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'Pratapsen2011@gmail.com', dob: '2/22/1992', designation: 'Club Member', profession: 'Self employed' },
+            { id: 25, name: 'Pratikshya Darjee', address: 'Galkot Municipality-09, Baglung', rotaryId: '11111', phone: '9867687014', bloodGroup: 'N/A', gender: 'Female', email: 'pratikshyapariyar@gmail.com', dob: '2/4/2006', designation: 'Club Member', profession: 'Student - Business' },
+            { id: 45, name: 'Rtr. Prasu Ram Regmi', address: 'Sainamaina-11, Rupendehi', rotaryId: '111111111', phone: '9867233476', bloodGroup: 'O+', gender: 'Male', email: 'Parshuregmi3472@gmail.com', dob: '8/29/1994', designation: 'Club Member', profession: 'Teaching / Education' },
+            { id: 27, name: 'Raju Sahani', address: 'Dhalepipal, Dhalepipal ward 4', rotaryId: '12119302', phone: '9860414802', bloodGroup: 'A+', gender: 'Male', email: 'erjsahani@gmail.com', dob: '5/31/1991', designation: 'Club Member', profession: 'IT engineer' },
+            { id: 28, name: 'Roman Subedi', address: 'Galkot-04, Baglung', rotaryId: '11111', phone: '9845351157', bloodGroup: 'B+', gender: 'Male', email: 'Roomaansubedi123@gmail.com', dob: '12/28/2002', designation: 'Club Member', profession: 'Business / Entrepreneur' },
+            { id: 30, name: 'Sagar Chalise', address: 'Galkot-8, Baglung', rotaryId: '12131866', phone: '9745985560', bloodGroup: 'AB+', gender: 'Male', email: 'chalisesagar120@gmail.com', dob: '8/6/2001', designation: 'Club Member', profession: 'Accountant' },
+            { id: 46, name: 'Rtr. Santosh Bohora Chettri', address: 'Galkot Municipality-03, Baglung', rotaryId: '111111', phone: '9869720402', bloodGroup: 'O+', gender: 'Male', email: 'bohorasantosh789@gmail.com', dob: '2/11/2005', designation: 'Club Member', profession: 'Teaching / Education' },
+            { id: 31, name: 'Samjhana Thapa', address: 'Galkot municipality 07 malma', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'Ssthapa392@gmail.com', dob: '5/22/2001', designation: 'Club Member', profession: 'Teaching' },
+            { id: 32, name: 'Sanju Neupane', address: 'Galkot Municipality-3, BAglung', rotaryId: '11855899', phone: '9863271796', bloodGroup: 'B+', gender: 'Female', email: 'neupanesanju87@gmail.com', dob: '11/19/1997', designation: 'Club Member', profession: 'Banker' },
+            { id: 33, name: 'Shishir Sunar', address: 'Galkot Municipality- 4', rotaryId: '', phone: '', bloodGroup: 'A+', gender: 'Male', email: 'shishirju2005@gmail.com', dob: '6/27/2005', designation: 'Club Member', profession: 'Student' },
+            { id: 34, name: 'Shyam Subedi', address: 'Galkot 04 Baglung Nepal', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Male', email: 'imperialshyam6939@gmail.com', dob: '8/17/2000', designation: 'Club Member', profession: 'Employer' },
+            { id: 35, name: 'Sima Sunar', address: 'Galkot municipality 3, Hatiya', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'simasunar456@gmail.com', dob: '5/21/1999', designation: 'Club Member', profession: 'Job' },
+            { id: 36, name: 'Smriti Budhathoki', address: 'Galkot municipality-8, Kandebas', rotaryId: '', phone: '9749396716', bloodGroup: 'AB+', gender: 'Female', email: 'msmriti285@gmail.com', dob: '8/25/2024', designation: 'Club Member', profession: 'Student' },
+            { id: 47, name: 'Rtr. Sunil Gautam', address: 'Galkot Municipality-06, Baglung', rotaryId: '111111111', phone: '9867770257', bloodGroup: 'B+', gender: 'Male', email: 'sunilgautam70257@gmail.com', dob: '11/17/1997', designation: 'Club Member', profession: 'Teaching / Education' },
+            { id: 37, name: 'Sunil Bohora', address: 'Galkot Municipality-3, Baglung', rotaryId: '11723041', phone: '9847658392', bloodGroup: 'O+', gender: 'Male', email: 'gajalsansar1989@gmail.com', dob: '3/27/1989', designation: 'Club Member', profession: 'Teaching' },
+            { id: 38, name: 'Sunil Chhetri', address: 'Galkot 3 bagling', rotaryId: '11963844', phone: '9857638138', bloodGroup: 'O+', gender: 'Male', email: 'skc844251@gmail.com', dob: '1/13/1999', designation: 'Club Member', profession: 'Business/ Enterpreneur' },
+            { id: 39, name: 'Sunil Khatiwal', address: 'Baglung 03 guthi', rotaryId: '', phone: '9857664347', bloodGroup: 'B+', gender: 'Male', email: 'Sunilkhatiwal6@gmail.com', dob: '7/10/1987', designation: 'Club Member', profession: 'Shopkeeper' },
+            { id: 41, name: 'Tul Bahadur B.K.', address: 'Galkot-11, Righa', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'tulbahadurbk130@gmail.com', dob: '5/11/1995', designation: 'Club Member', profession: 'Workshop' },
+            { id: 42, name: 'Umesh Sharma Subedi', address: 'Galkot-4, Baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: '', dob: '9/9/2001', designation: 'Club Member', profession: 'Teacher' }
+        ];
+
+        // Function to render member cards
+        const renderMembers = (query = '', filter = 'all') => {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = ''; // Clear previous results
+
+            // Filter members based on the search query and selected filter
+            const filteredMembers = members.filter(member => {
+                const matchesQuery = Object.values(member).some(value =>
+                    String(value).toLowerCase().includes(query.toLowerCase())
+                );
+                const matchesFilter = filter === 'all' || 
+                                    (filter === 'executive' && (member.designation.includes('President') || member.designation.includes('Treasurer') || member.designation.includes('Advisor') || member.designation.includes('Officer') || member.designation.includes('Secretary') || member.designation.includes('Sergeant'))) ||
+                                    (filter === 'teacher' && (member.profession.toLowerCase().includes('teacher') || member.profession.toLowerCase().includes('teaching') || member.profession.toLowerCase().includes('lecturer'))) ||
+                                    (filter === 'student' && member.profession.toLowerCase().includes('student')) ||
+                                    (filter === 'business' && (member.profession.toLowerCase().includes('business') || member.profession.toLowerCase().includes('entrepreneur')));
+
+                return matchesQuery && matchesFilter;
+            });
+
+            // Display member cards or a "no members found" message
+            if (filteredMembers.length > 0) {
+                filteredMembers.forEach(member => {
+                    const memberCard = document.createElement('div');
+                    memberCard.className = 'member-card bg-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center transition-all duration-300 ease-in-out';
+                    memberCard.innerHTML = `
+                        <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-4">
+                            <img src="${profileImageUrl}" alt="Rotaract Member Profile" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg">${member.name}</h4>
+                        <p class="text-sm text-gray-600">${member.designation}</p>
+                        <div class="mt-4 text-left w-full">
+                            <p class="text-xs text-gray-500 mb-1"><strong>Profession:</strong> ${member.profession || 'N/A'}</p>
+                            <p class="text-xs text-gray-500 mb-1"><strong>Address:</strong> ${member.address}</p>
+                            <p class="text-xs text-gray-500 mb-1"><strong>Email:</strong> ${member.email || 'N/A'}</p>
+                            <p class="text-xs text-gray-500"><strong>Phone:</strong> ${member.phone || 'N/A'}</p>
+                        </div>
+                        <div class="flex justify-between mt-3 w-full">
+                            <span class="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded-full">${member.gender}</span>
+                            <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">${member.bloodGroup || 'Unknown'}</span>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(memberCard);
+                });
+            } else {
+                resultsContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No members found matching your search.</p>';
+            }
+        };
+
+        // Function to calculate and display upcoming birthdays
+        const renderBirthdays = () => {
+            const nearestBirthdaysContainer = document.getElementById('nearest-birthdays');
+            nearestBirthdaysContainer.innerHTML = '';
+            const today = new Date();
+            const todayDayMonth = `${today.getMonth() + 1}/${today.getDate()}`;
+            
+            const birthdays = members.map(member => {
+                let dob;
+                const dateString = member.dob;
+                if (!dateString) return null; // Skip members with no DOB
+
+                if (dateString.includes(',')) {
+                    // Handles format like "11th Jun, 1997"
+                    const parts = dateString.replace(/(\d+)(st|nd|rd|th)/, "$1").split(', '); // "11 Jun, 1997"
+                    const dateParts = parts[0].split(' '); // ["11", "Jun"]
+                    dob = new Date(`${dateParts[1]} ${dateParts[0]}, ${parts[1]}`);
+                } else {
+                    // Handles standard format like "12/27/1997" and Nepali format "3/31/2055"
+                    const parts = dateString.split('/');
+                    dob = new Date(`${parts[0]}/${parts[1]}/${parts[2]}`);
+                }
+
+                if (isNaN(dob.getTime())) return null; // Skip invalid dates
+
+                const birthMonth = dob.getMonth();
+                const birthDay = dob.getDate();
+
+                let nextBirthday = new Date(today.getFullYear(), birthMonth, birthDay);
+
+                // If birthday has passed this year, set it for next year
+                if (nextBirthday < today && !(today.getMonth() === birthMonth && today.getDate() === birthDay)) {
+                    nextBirthday.setFullYear(today.getFullYear() + 1);
+                }
+
+                const diffTime = nextBirthday - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const isToday = today.getMonth() === birthMonth && today.getDate() === birthDay;
+
+                return {
+                    ...member,
+                    nextBirthday,
+                    diffDays,
+                    isToday
+                };
+            }).filter(Boolean).sort((a, b) => a.diffDays - b.diffDays);
+
+            const upcomingBirthdays = birthdays.filter(b => b.diffDays <= 30 || b.isToday).slice(0, 5);
+
+            if (upcomingBirthdays.length > 0) {
+                upcomingBirthdays.forEach(member => {
+                    const birthdayElement = document.createElement('div');
+                    birthdayElement.className = `p-3 rounded-lg flex items-center ${member.isToday ? 'bg-red-200 today-birthday-card' : 'bg-blue-200 birthday-card'}`;
+                    
+                    const formattedDate = member.nextBirthday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                    const message = member.isToday ? 'Happy Birthday! 🎉' : `in ${member.diffDays} days`;
+
+                    birthdayElement.innerHTML = `
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center font-bold text-blue-900 text-sm">
+                            ${member.nextBirthday.getDate()}
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold text-gray-800">${member.name}</h4>
+                            <p class="text-sm text-gray-600">${member.isToday ? '' : formattedDate}</p>
+                        </div>
+                        <div class="ml-auto text-sm font-semibold ${member.isToday ? 'text-red-600' : 'text-blue-600'}">
+                            ${message}
+                        </div>
+                    `;
+                    nearestBirthdaysContainer.appendChild(birthdayElement);
+                });
+            } else {
+                nearestBirthdaysContainer.innerHTML = '<p class="text-center text-gray-500">No upcoming birthdays in the next 30 days.</p>';
+            }
+        };
+
+        // Function to calculate and display blood group donor counts
+        const renderBloodGroupCounts = () => {
+            const bloodCountsContainer = document.getElementById('blood-group-counts');
+            bloodCountsContainer.innerHTML = '';
+            
+            const bloodGroups = members.reduce((counts, member) => {
+                if(member.bloodGroup && member.bloodGroup !== 'N/A') {
+                    let group = member.bloodGroup.toUpperCase().replace(/\s|\(|\)|VE|POSITIVE/g, '');
+                    if (group) {
+                        counts[group] = (counts[group] || 0) + 1;
+                    }
+                }
+                return counts;
+            }, {});
+
+            const sortedBloodGroups = Object.entries(bloodGroups).sort(([a], [b]) => {
+                const order = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
+                return order.indexOf(a) - order.indexOf(b);
+            });
+
+            sortedBloodGroups.forEach(([group, count]) => {
+                const bloodGroupElement = document.createElement('div');
+                bloodGroupElement.className = 'p-3 bg-red-100 rounded-lg text-center stat-card';
+                bloodGroupElement.innerHTML = `
+                    <div class="font-bold text-red-800 text-xl">${count}</div>
+                    <div class="text-sm text-red-600">${group}</div>
+                `;
+                bloodCountsContainer.appendChild(bloodGroupElement);
+            });
+        };
+
+        // Set up event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            // Initial render
+            renderMembers();
+            renderBirthdays();
+            renderBloodGroupCounts();
+            
+            // Search input event listener
+            searchInput.addEventListener('input', (event) => {
+                const query = event.target.value;
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                renderMembers(query, activeFilter);
+            });
+            
+            // Filter button event listeners
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    const filter = button.dataset.filter;
+                    const query = searchInput.value;
+                    renderMembers(query, filter);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
