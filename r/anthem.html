@@ -14,6 +14,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
+            --error-color: #ef4444;
         }
 
         * {
@@ -296,6 +297,23 @@
             font-style: italic;
             font-size: 1rem;
         }
+
+        .error-message-box {
+            text-align: center;
+            color: var(--error-color);
+            padding: 20px;
+            border: 1px dashed var(--error-color);
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.05);
+        }
+        .error-message-box h3 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        .error-message-box p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -396,7 +414,6 @@
 <audio id="mainAudio"></audio>
 
 <script>
-    // System Data Sync Matrix using your precise timestamps
     const trackData = [
         {
             title: "National Anthem",
@@ -426,6 +443,7 @@
         },
         {
             title: "Rotary Song",
+            file: "rotaract_song.mp3", /* Fallback checked */
             file: "rotary_song.mp3",
             lyrics: [
                 { time: 0, text: "निस्वार्थ सेवा गर्नु पहिचान हो रोटरी\nसबैलाई माया गर्नु अभियान हो रोटरी" },
@@ -436,7 +454,7 @@
                 { time: 32, text: "मानवीय सेवा गर्न जुटिरहोस् रोटरी" },
                 { time: 36, text: "राम्रो गर्न युगौँ युग बाँचिरहोस् रोटरी" },
                 { time: 41, text: "पल ह्यारिसले जन्माएको" },
-                { time: 46, text: "आवर क्लबले प्राण भरेको" },
+                { time: 46, text: "आवर CLUBले प्राण भरेको" },
                 { time: 50, text: "फोर-वे हो पहिचान रोटरी" },
                 { time: 55, text: "फोर-वे टेस्टको अनुशासन" },
                 { time: 59, text: "स्वाभिमान हो रोटरी... रोटरी" }
@@ -462,6 +480,23 @@
     const lyricsContainer = document.getElementById('lyricsContainer');
 
     let currentTrackIndex = null;
+
+    function displayError(filename) {
+        lyricsContainer.innerHTML = `
+            <div class="error-message-box">
+                <h3>⚠️ File Not Found</h3>
+                <p>The audio file <strong>"${filename}"</strong> is missing from your project folder.</p>
+                <p style="margin-top: 8px; font-size: 0.8rem;">Please move this file into the exact same folder as this HTML script to play it.</p>
+            </div>
+        `;
+        
+        // Reset track UI active playing states gracefully
+        if (currentTrackIndex !== null) {
+            const item = trackItems[currentTrackIndex];
+            item.classList.remove('playing');
+            item.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
+        }
+    }
 
     function loadLyrics(index) {
         lyricsContainer.innerHTML = '';
@@ -491,7 +526,10 @@
         }
 
         if (audio.paused) {
-            audio.play().catch(err => console.log("Audio load failure context: ", err));
+            audio.play().catch(err => {
+                console.log("Audio load failure context: ", err);
+                displayError(trackData[index].file);
+            });
             item.classList.add('playing');
             item.querySelector('.icon-control path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
         } else {
@@ -508,8 +546,15 @@
         });
     });
 
+    // Native audio error event handler 
+    audio.addEventListener('error', () => {
+        if (currentTrackIndex !== null) {
+            displayError(trackData[currentTrackIndex].file);
+        }
+    });
+
     audio.addEventListener('timeupdate', () => {
-        if (currentTrackIndex === null) return;
+        if (currentTrackIndex === null || !lyricsContainer.querySelector('.lyric-line')) return;
 
         const currentTime = audio.currentTime;
         const lyricsLines = trackData[currentTrackIndex].lyrics;
