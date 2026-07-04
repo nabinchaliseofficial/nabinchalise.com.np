@@ -14,7 +14,6 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
-            --error-color: #ef4444;
         }
 
         * {
@@ -35,7 +34,6 @@
             padding: 20px;
         }
 
-        /* --- New Premium Home Button Wrapper & Styling --- */
         .home-btn-container {
             width: 100%;
             max-width: 950px;
@@ -70,7 +68,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Hover Effects */
         .custom-home-btn::before {
             content: '';
             position: absolute;
@@ -96,7 +93,6 @@
         .custom-home-btn:hover::before {
             left: 100%;
         }
-        /* --- End of Home Button Styling --- */
 
         .container {
             width: 100%;
@@ -108,7 +104,6 @@
             overflow: hidden;
         }
 
-        /* Tab Header */
         .tab-header {
             background: #111827;
             padding: 24px;
@@ -123,7 +118,6 @@
             text-transform: uppercase;
         }
 
-        /* Layout Grid */
         .player-layout {
             display: grid;
             grid-template-columns: 1fr;
@@ -135,7 +129,6 @@
             }
         }
 
-        /* Playlist Sidebar */
         .track-list {
             padding: 20px;
             border-right: 1px solid var(--border-color);
@@ -185,7 +178,6 @@
             font-family: monospace;
         }
 
-        /* Play Buttons */
         .btn-play {
             width: 44px;
             height: 44px;
@@ -210,7 +202,6 @@
             fill: #0f172a;
         }
 
-        /* Animated Audio Waves */
         .wave-container {
             display: none;
             align-items: flex-end;
@@ -244,7 +235,6 @@
             100% { height: 100%; }
         }
 
-        /* Lyrics Box Screen */
         .lyrics-panel {
             padding: 30px 20px;
             background: #0b0f19;
@@ -281,7 +271,6 @@
             opacity: 0.25;
         }
 
-        /* Dynamic Highlighting Rules */
         .lyric-line.active {
             color: var(--accent-color);
             opacity: 1;
@@ -297,31 +286,12 @@
             font-style: italic;
             font-size: 1rem;
         }
-
-        .error-message-box {
-            text-align: center;
-            color: var(--error-color);
-            padding: 20px;
-            border: 1px dashed var(--error-color);
-            border-radius: 8px;
-            background: rgba(239, 68, 68, 0.05);
-        }
-        .error-message-box h3 {
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-        .error-message-box p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
     </style>
 </head>
 <body>
 
-<!-- New Premium Home Button Container -->
 <div class="home-btn-container">
     <a href="index.html" class="custom-home-btn">
-        <!-- SVG House Icon -->
         <svg class="home-icon" viewBox="0 0 24 24">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -335,9 +305,8 @@
     </div>
 
     <div class="player-layout">
-        <!-- Sidebar Menu Elements -->
         <div class="track-list" id="playlist">
-            <!-- Track 1: National Anthem -->
+            <!-- Track 1 -->
             <div class="track-item" data-index="0">
                 <div class="track-info">
                     <div class="track-title">National Anthem</div>
@@ -353,7 +322,7 @@
                 </button>
             </div>
 
-            <!-- Track 2: Rotaract Song -->
+            <!-- Track 2 -->
             <div class="track-item" data-index="1">
                 <div class="track-info">
                     <div class="track-title">Rotaract Song</div>
@@ -369,7 +338,7 @@
                 </button>
             </div>
 
-            <!-- Track 3: Rotary Song -->
+            <!-- Track 3 -->
             <div class="track-item" data-index="2">
                 <div class="track-info">
                     <div class="track-title">Rotary Song</div>
@@ -385,7 +354,7 @@
                 </button>
             </div>
 
-            <!-- Track 4: Club Song -->
+            <!-- Track 4 -->
             <div class="track-item" data-index="3">
                 <div class="track-info">
                     <div class="track-title">Club Song</div>
@@ -402,7 +371,6 @@
             </div>
         </div>
 
-        <!-- Text Monitor Side Screen -->
         <div class="lyrics-panel">
             <div class="lyrics-container" id="lyricsContainer">
                 <p class="no-track-placeholder">Select an item to stream audio & display text lines</p>
@@ -443,7 +411,6 @@
         },
         {
             title: "Rotary Song",
-            file: "rotaract_song.mp3", /* Fallback checked */
             file: "rotary_song.mp3",
             lyrics: [
                 { time: 0, text: "निस्वार्थ सेवा गर्नु पहिचान हो रोटरी\nसबैलाई माया गर्नु अभियान हो रोटरी" },
@@ -481,23 +448,6 @@
 
     let currentTrackIndex = null;
 
-    function displayError(filename) {
-        lyricsContainer.innerHTML = `
-            <div class="error-message-box">
-                <h3>⚠️ File Not Found</h3>
-                <p>The audio file <strong>"${filename}"</strong> is missing from your project folder.</p>
-                <p style="margin-top: 8px; font-size: 0.8rem;">Please move this file into the exact same folder as this HTML script to play it.</p>
-            </div>
-        `;
-        
-        // Reset track UI active playing states gracefully
-        if (currentTrackIndex !== null) {
-            const item = trackItems[currentTrackIndex];
-            item.classList.remove('playing');
-            item.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
-        }
-    }
-
     function loadLyrics(index) {
         lyricsContainer.innerHTML = '';
         trackData[index].lyrics.forEach((line, i) => {
@@ -526,10 +476,7 @@
         }
 
         if (audio.paused) {
-            audio.play().catch(err => {
-                console.log("Audio load failure context: ", err);
-                displayError(trackData[index].file);
-            });
+            audio.play().catch(err => console.log("Audio load failure context: ", err));
             item.classList.add('playing');
             item.querySelector('.icon-control path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
         } else {
@@ -546,15 +493,8 @@
         });
     });
 
-    // Native audio error event handler 
-    audio.addEventListener('error', () => {
-        if (currentTrackIndex !== null) {
-            displayError(trackData[currentTrackIndex].file);
-        }
-    });
-
     audio.addEventListener('timeupdate', () => {
-        if (currentTrackIndex === null || !lyricsContainer.querySelector('.lyric-line')) return;
+        if (currentTrackIndex === null) return;
 
         const currentTime = audio.currentTime;
         const lyricsLines = trackData[currentTrackIndex].lyrics;
