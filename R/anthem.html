@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthem Tab Player</title>
+    <!-- External stylesheet attachment -->
+    <link rel="stylesheet" href="anthem.css">
+</head>
+<body>
+
+<div class="home-btn-container">
+    <div class="home-btn-container">
+        <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+            <span class="icon">🏠</span> HOME
+        </a>
+    </div>
+
+    <script>
+        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.getAttribute('href');
+            const button = this;
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            
+            button.appendChild(ripple);
+            button.classList.add('clicked-exit');
+
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 450);
+        });
+    </script>
+</div>
+
+<div class="container">
+    <div class="tab-header">
+        <h1>National Anthem/Rotary-Rotaract Song</h1>
+    </div>
+
+    <div class="player-layout">
+        <div class="track-list" id="playlist">
+            <!-- Track 1 -->
+            <div class="track-item" data-index="0">
+                <div class="track-info">
+                    <div class="track-title">National Anthem</div>
+                    <div class="track-filename">national_anthem.mp3</div>
+                </div>
+                <button class="btn-play" aria-label="Play Track">
+                    <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
+                    <div class="wave-container">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Track 2 -->
+            <div class="track-item" data-index="1">
+                <div class="track-info">
+                    <div class="track-title">Rotaract Song</div>
+                    <div class="track-filename">rotaract_song.mp3</div>
+                </div>
+                <button class="btn-play" aria-label="Play Track">
+                    <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
+                    <div class="wave-container">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Track 3 -->
+            <div class="track-item" data-index="2">
+                <div class="track-info">
+                    <div class="track-title">Rotary Song</div>
+                    <div class="track-filename">rotary_song.mp3</div>
+                </div>
+                <button class="btn-play" aria-label="Play Track">
+                    <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
+                    <div class="wave-container">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Track 4 -->
+            <div class="track-item" data-index="3">
+                <div class="track-info">
+                    <div class="track-title">Club Song</div>
+                    <div class="track-filename">club_song.mp3</div>
+                </div>
+                <button class="btn-play" aria-label="Play Track">
+                    <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
+                    <div class="wave-container">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="lyrics-panel">
+            <div class="lyrics-container" id="lyricsContainer">
+                <p class="no-track-placeholder">Select an item to stream audio & display text lines</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="mainAudio"></audio>
+
+<script>
+    const trackData = [
+        {
+            title: "National Anthem",
+            file: "national_anthem.mp3",
+            lyrics: [
+                { time: 0, text: "🎵 (राष्ट्रिय धुन सुरु...) 🎵" },
+                { time: 15, text: "सयौं थूंगा फूलका हामी, एउटै माला नेपाली\nसार्वभौम भई फैलिएका, मेची–महाकाली।" },
+                { time: 25, text: "सयौं थूंगा फूलका हामी, एउटै माला नेपाली\nसार्वभौम भई फैलिएका, मेची–महाकाली।" },
+                { time: 36, text: "प्रकृतिका कोटी–कोटी सम्पदाको आँचल\nवीरहरूका रगतले, स्वतन्त्र र अटल।" },
+                { time: 46, text: "ज्ञानभूमि, शान्तिभूमि, तराई, पहाड, हिमाल\nअखण्ड यो प्यारो हाम्रो मातृभूमि नेपाल।" },
+                { time: 57, text: "बहुल जाति, भाषा, धर्म, संस्कृति छन् विशाल\nअग्रगामी राष्ट्र हाम्रो, जय जय नेपाल।" }
+            ]
+        },
+        {
+            title: "Rotaract Song",
+            file: "rotaract_song.mp3",
+            lyrics: [
+                { time: 0, text: "🎵 (रोट्रयाक्ट गीत धुन...) 🎵" },
+                { time: 9, text: "फर्किएका ती हातहरू, उदाएका ती साथहरू\nरमाइला ती पलहरू, रमाएका ती यादहरू" },
+                { time: 19, text: "एउटै धर्म हाम्रो हो, एउटै बाटो हाम्रो हो\n१८ पुगेका युवाहरूको सञ्जाल यो" },
+                { time: 28, text: "रोट्रयाक्ट... रोट्रयाक्ट..." },
+                { time: 38, text: "समाजका कुरीति पन्छाउँदै, समाजकै लागि लड्दै\nलक्ष्य हाम्रो धेरै टाढा छ, जोसका साथ अघि बढ्दै" },
+                { time: 48, text: "रोटरीसँग हिँड्छौँ हामी एउटै पाइला बनाउँदै\nफोर-वे टेस्ट मान्दै हामी नाच्दै गाउँदै रमाउँदै" },
+                { time: 57, text: "कलिला ओठहरूमा हामीले हाँसो छर्नु छ\nसमाज रूपान्तरण गर्न नेतृत्व नि गर्नु छ" },
+                { time: 67, text: "फेलोसिप थ्रु सर्भिस भन्दै... जोड्छौँ सबैलाई\nत्यसैले त हामी हौँ रोट्रयाक्टर साथीभाइ\nत्यसैले हामी हौँ डिस्ट्रिक्ट ३२९२" }
+            ]
+        },
+        {
+            title: "Rotary Song",
+            file: "rotary_song.mp3",
+            lyrics: [
+                { time: 0, text: "निस्वार्थ सेवा गर्नु पहिचान हो रोटरी\nसबैलाई माया गर्नु अभियान हो रोटरी" },
+                { time: 9, text: "निस्वार्थ सेवा गर्नु पहिचान हो रोटरी\nसबैलाई माया गर्नु अभियान हो रोटरी" },
+                { time: 18, text: "स्वास्थ्य, शिक्षा, विश्व शान्ति" },
+                { time: 23, text: "रोटरीका चाहना\nमित्रता, विविधता र नेतृत्व" },
+                { time: 28, text: "रोटरीकै साधन" },
+                { time: 32, text: "मानवीय सेवा गर्न जुटिरहोस् रोटरी" },
+                { time: 36, text: "राम्रो गर्न युगौँ युग बाँचिरहोस् रोटरी" },
+                { time: 41, text: "पल ह्यारिसले जन्माएको" },
+                { time: 46, text: "आवर CLUBले प्राण भरेको" },
+                { time: 50, text: "फोर-वे हो पहिचान रोटरी" },
+                { time: 55, text: "फोर-वे टेस्टको अनुशासन" },
+                { time: 59, text: "स्वाभिमान हो रोटरी... रोटरी" }
+            ]
+        },
+        {
+            title: "Club Song",
+            file: "club_song.mp3",
+            lyrics: [
+                { time: 0, text: "🎵 (म्युजिक) 🎵" },
+                { time: 5, text: "गलकोटको काखमा गौरवको गान छ" },
+                { time: 10, text: "रोट्र्याक्ट बागलुङ हाम्रो पहिचान छ" },
+                { time: 16, text: "निस्वार्थ सेवाको संकल्प बोकेर" },
+                { time: 21, text: "देश बनाउने युवाको यो अभियान छ" },
+                { time: 26, text: "जय रोट्र्याक्ट, जय गलकोट, हाम्रो गौरव वर्ष" },
+                { time: 32, text: "🎵 (म्युजिक) 🎵" }
+            ]
+        }
+    ];
+
+    const audio = document.getElementById('mainAudio');
+    const trackItems = document.querySelectorAll('.track-item');
+    const lyricsContainer = document.getElementById('lyricsContainer');
+
+    let currentTrackIndex = null;
+
+    function loadLyrics(index) {
+        lyricsContainer.innerHTML = '';
+        trackData[index].lyrics.forEach((line, i) => {
+            const p = document.createElement('p');
+            p.classList.add('lyric-line');
+            p.id = `line-${index}-${i}`;
+            p.innerHTML = line.text.replace(/\n/g, '<br>');
+            lyricsContainer.appendChild(p);
+        });
+    }
+
+    function selectTrack(index) {
+        const item = trackItems[index];
+        
+        if (currentTrackIndex !== index) {
+            trackItems.forEach(el => {
+                el.classList.remove('active', 'playing');
+                el.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z'); 
+            });
+
+            currentTrackIndex = index;
+            item.classList.add('active');
+            
+            audio.src = trackData[index].file;
+            loadLyrics(index);
+        }
+
+        if (audio.paused) {
+            audio.play().catch(err => console.log("Audio load failure context: ", err));
+            item.classList.add('playing');
+            item.querySelector('.icon-control path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
+        } else {
+            audio.pause();
+            item.classList.remove('playing');
+            item.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
+        }
+    }
+
+    trackItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const index = parseInt(item.getAttribute('data-index'));
+            selectTrack(index);
+        });
+    });
+
+    audio.addEventListener('timeupdate', () => {
+        if (currentTrackIndex === null) return;
+
+        const currentTime = audio.currentTime;
+        const lyricsLines = trackData[currentTrackIndex].lyrics;
+        let activeLineIndex = -1;
+
+        for (let i = 0; i < lyricsLines.length; i++) {
+            if (currentTime >= lyricsLines[i].time) {
+                activeLineIndex = i;
+            } else {
+                break;
+            }
+        }
+
+        if (activeLineIndex !== -1) {
+            const linesElements = lyricsContainer.querySelectorAll('.lyric-line');
+            linesElements.forEach((lineEl, idx) => {
+                if (idx === activeLineIndex) {
+                    if (!lineEl.classList.contains('active')) {
+                        lineEl.classList.add('active');
+                        lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    lineEl.classList.remove('active');
+                }
+            });
+        }
+    });
+
+    audio.addEventListener('ended', () => {
+        if (currentTrackIndex !== null) {
+            const activeItem = trackItems[currentTrackIndex];
+            activeItem.classList.remove('playing');
+            activeItem.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategic Planning | Rotaract Club of Galkot Baglung</title>
+    <!-- Linking external CSS file -->
+    <link rel="stylesheet" href="strategic-planning.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Rotaract Club of Galkot Baglung</h1>
+        <p>Strategic Blueprint & Plan of Action | Rota Year 2026-27</p>
+
+        <!-- HOME BUTTON -->
+        <div class="home-btn-container">
+            <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+                <span class="icon">🏠</span> HOME
+            </a>
+        </div>
+    </header>
+
+    <!-- Vision and Mission Section -->
+    <div class="vision-mission-container">
+        <div class="vision-card">
+            <h3>👁️ Our Vision</h3>
+            <p>"To be a strong, community-driven Rotaract Club that empowers youth and brings sustainable development to Galkot."</p>
+        </div>
+        <div class="mission-card">
+            <h3>⚡ Our Mission</h3>
+            <p>"To foster leadership, innovation, and service through action-oriented projects that target education, healthcare, and professional readiness in our region."</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">🎯 Our Strategic Pillars</h2>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openPillar(event, 'growth')">Club Growth & Retention</button>
+        <button class="tab-btn" onclick="openPillar(event, 'impact')">Sustainable Impact</button>
+        <button class="tab-btn" onclick="openPillar(event, 'publicity')">Public Image & Bonding</button>
+    </div>
+
+    <div id="growth" class="tab-content active">
+        <h3>Membership Fellowship & Engagement</h3>
+        <p>Focusing heavily on shifting from mere numbers to active youth engagement across Galkot. Ensuring every new member finds value, professional mentorship, and leadership pathways inside the club structure.</p>
+    </div>
+
+    <div id="impact" class="tab-content">
+        <h3>Community-First Initiatives</h3>
+        <p>Developing long-term, high-impact regional initiatives in healthcare literacy, digital education integration in public schools, and climate resilience specialized for the hilly typography of Baglung District.</p>
+    </div>
+
+    <div id="publicity" class="tab-content">
+        <h3>Digital Footprint & Rotary Synergy</h3>
+        <p>Enhancing our grassroots communication channel networks, maintaining an active local press presence, and organizing deep joint fellowships with our parent Rotary Club of Baglung.</p>
+    </div>
+
+    <h2 class="section-title">🚀 Club Goals (RY 2026-27)</h2>
+    <div class="goals-grid">
+        <div class="goal-card">
+            <h3>85% Retention Rate</h3>
+            <p>Retain existing members through customized leadership progression tracks and interactive professional development circles.</p>
+        </div>
+        <div class="goal-card">
+            <h3>2 Signature Projects</h3>
+            <p>Launch two long-term, sustainable signature projects within Galkot targeted at literacy and primary community healthcare infrastructure.</p>
+        </div>
+        <div class="goal-card">
+            <h3>Rotary Citation Excellence</h3>
+            <p>Fulfill all mandatory criteria laid down by Rotary International to achieve the Platinum level Rotary Citation.</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">📋 Plan of Action Execution Matrix</h2>
+    <p class="matrix-instruction">Track the operational progress of planned projects dynamically below:</p>
+     
+    <ul class="poa-list">
+        <li class="poa-item">
+            <div class="task-left">
+                <span class="quarter-badge">Q1</span>
+                <span class="task-text">Conduct Club Officers Orientation & Leadership Training Seminar</span>
+            </div>
+            <button class="btn-complete" onclick="toggleTask(this)">✓ Done</button>
+        </li>
+        <li class="poa-item">
+            <div class="task-left">
+                <span class="quarter-badge">Q1</span>
+                <span class="task-text">Massive Emergency Blood Grouping & Donation Camp at Galkot Bazaar</span>
+            </div>
+            <button class="btn-complete" onclick="toggleTask(this)">✓ Done</button>
+        </li>
+        <li class="poa-item">
+            <div class="task-left">
+                <span class="quarter-badge">Q2</span>
+                <span class="task-text">Establish Digital E-Library corner in a remote public school of Baglung</span>
+            </div>
+            <button class="btn-complete" onclick="toggleTask(this)">✓ Done</button>
+        </li>
+        <li class="poa-item">
+            <div class="task-left">
+                <span class="quarter-badge">Q3</span>
+                <span class="task-text">Joint Professional Networking Conclave with Rotary Club of Baglung</span>
+            </div>
+            <button class="btn-complete" onclick="toggleTask(this)">✓ Done</button>
+        </li>
+        <li class="poa-item">
+            <div class="task-left">
+                <span class="quarter-badge">Q4</span>
+                <span class="task-text">Execute 6th Annual Galkot Community Cleanliness & Sanitation Run</span>
+            </div>
+            <button class="btn-complete" onclick="toggleTask(this)">✓ Done</button>
+        </li>
+    </ul>
+</div>
+
+<script>
+    // Home Button Animation Sequence
+    document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetUrl = this.getAttribute('href');
+        const button = this;
+
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+        ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+        
+        button.appendChild(ripple);
+        button.classList.add('clicked-exit');
+
+        setTimeout(() => {
+            window.location.href = targetUrl;
+        }, 450);
+    });
+
+    // Tab Navigation Logic for Strategic Pillars
+    function openPillar(evt, pillarName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(pillarName).style.display = "block";
+        document.getElementById(pillarName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Dynamic Task Complete Toggle for Plan of Action Matrix
+    function toggleTask(button) {
+        const listItem = button.parentElement;
+        listItem.classList.toggle('completed');
+         
+        if(listItem.classList.contains('completed')) {
+            button.innerText = "Completed";
+        } else {
+            button.innerText = "✓ Done";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Upcoming Initiatives | RAC Galkot Baglung</title>
+    <style>
+        :root {
+            --accent-pink: #D70060;
+            --rotary-blue: #015491;
+            --slate-900: #0F172A;
+            --slate-800: #1E293B;
+            --slate-600: #475569;
+            --slate-400: #94A3B8;
+            --slate-100: #F1F5F9;
+            --slate-50: #F8FAFC;
+            --border-color: #E2E8F0;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--slate-50);
+            color: var(--slate-800);
+            padding: 100px 16px 40px 16px;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* PREMIUM STICKY HEADER */
+        .premium-nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-branding {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--rotary-blue);
+            letter-spacing: 0.5px;
+        }
+
+        .back-home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--slate-900);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+            transition: var(--transition-smooth);
+        }
+
+        .back-home-link:hover {
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+            transform: translateY(-1px);
+        }
+
+        /* HERO SECTION */
+        .dashboard-hero {
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .dashboard-hero h1 {
+            font-size: 2.2rem;
+            color: var(--slate-900);
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-hero p {
+            color: var(--accent-pink);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* INTERACTIVE CONTROL BAR */
+        .search-filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 40px;
+            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            color: var(--slate-900);
+            outline: none;
+            transition: var(--transition-smooth);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .search-input:focus {
+            border-color: var(--rotary-blue);
+            box-shadow: 0 0 0 3px rgba(1, 84, 145, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-400);
+            pointer-events: none;
+        }
+
+        /* DATA MATRIX CONTAINER */
+        .table-container {
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.03);
+            overflow: hidden;
+        }
+
+        .project-row-header {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr 1.3fr 1.5fr 1fr;
+            background: var(--slate-100);
+            padding: 16px 24px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--slate-600);
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .project-row {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr 1.3fr 1.5fr 1fr;
+            padding: 20px 24px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .project-row:last-child {
+            border-bottom: none;
+        }
+
+        .project-row:hover {
+            background: rgba(1, 84, 145, 0.02);
+        }
+
+        .row-title {
+            font-weight: 700;
+            color: var(--slate-900);
+            font-size: 1.05rem;
+            padding-right: 12px;
+        }
+
+        .row-date {
+            font-weight: 700;
+            color: var(--rotary-blue);
+            font-size: 0.9rem;
+        }
+
+        .row-audience, .row-location {
+            color: var(--slate-600);
+            font-size: 0.95rem;
+            padding-right: 10px;
+        }
+
+        /* TOUCH-FRIENDLY BUTTONS */
+        .btn-action-trigger {
+            background: var(--slate-900);
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-action-trigger:hover, .btn-action-trigger:active {
+            background: var(--accent-pink);
+            transform: translateY(-1px);
+        }
+
+        /* PERSISTENT SIDE DRAWER MODULE */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            background: #FFFFFF;
+            box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12);
+            z-index: 201;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .drawer-overlay.open .side-drawer {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .drawer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--slate-100);
+            border: none;
+            font-size: 1.25rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-600);
+            transition: var(--transition-smooth);
+        }
+
+        .drawer-close:hover {
+            background: var(--accent-pink);
+            color: white;
+        }
+
+        .drawer-header h3 {
+            color: var(--slate-900);
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .drawer-header p {
+            font-size: 0.8rem;
+            color: var(--accent-pink);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .drawer-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* FORM MANAGEMENT UTILITIES */
+        .input-block {
+            margin-bottom: 18px;
+        }
+
+        .input-block label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition-smooth);
+            background: #FFFFFF;
+            color: var(--slate-900);
+        }
+
+        .input-field:focus {
+            border-color: var(--rotary-blue);
+            box-shadow: 0 0 0 3px rgba(1, 84, 145, 0.12);
+        }
+
+        .input-field[readonly] {
+            background: var(--slate-100);
+            color: var(--slate-600);
+            border-color: var(--border-color);
+            font-weight: 600;
+        }
+
+        .btn-drawer-submit {
+            background: var(--rotary-blue);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-top: 8px;
+            box-shadow: 0 2px 4px rgba(1, 84, 145, 0.1);
+        }
+
+        .btn-drawer-submit:hover {
+            background: var(--accent-pink);
+            box-shadow: 0 4px 8px rgba(215, 0, 96, 0.2);
+        }
+
+        /* MOBILE ARCHITECTURE STYLING */
+        @media (max-width: 900px) {
+            body { padding-top: 84px; }
+            .premium-nav-bar { padding: 12px 16px; }
+            .dashboard-hero h1 { font-size: 1.75rem; }
+            .project-row-header { display: none; }
+            
+            .project-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 20px 16px;
+                border-bottom: 8px solid var(--slate-100);
+            }
+            
+            .project-row:last-child {
+                border-bottom: none;
+            }
+
+            .row-title {
+                font-size: 1.1rem;
+                margin-bottom: 2px;
+            }
+
+            .row-date::before { content: "📅 "; }
+            .row-audience::before { content: "🎯 Focus: "; font-weight: 700; color: var(--slate-900); font-size: 0.85rem;}
+            .row-location::before { content: "📍 Hub: "; font-weight: 700; color: var(--slate-900); font-size: 0.85rem;}
+            
+            .row-audience, .row-location, .row-date {
+                font-size: 0.9rem;
+            }
+
+            .action-cell {
+                margin-top: 6px;
+                width: 100%;
+            }
+            
+            .btn-action-trigger {
+                padding: 14px;
+                font-size: 0.9rem;
+            }
+
+            .side-drawer {
+                max-width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<nav class="premium-nav-bar">
+    <div class="nav-branding">ROTARACT GALKOT BAGLUNG</div>
+    <a href="index.html" class="back-home-link">🏠 Home</a>
+</nav>
+
+<div class="main-wrapper">
+    <section class="dashboard-hero">
+        <h1>Upcoming Project Schedule</h1>
+        <p>Rotaract Year 2026-27 Strategic Matrix</p>
+    </section>
+
+    <!-- SEARCH & FILTER INTERACTION DESK -->
+    <div class="search-filter-bar">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="matrixSearchInput" class="search-input" placeholder="Search initiatives, deployments, or tracks..." oninput="filterMatrixGrid()">
+        </div>
+    </div>
+
+    <!-- ENGINE OUTPUT CONTAINER -->
+    <div class="table-container">
+        <div class="project-row-header">
+            <div>Initiative Title</div>
+            <div>Timeline</div>
+            <div>Target Focus</div>
+            <div>Deployment Hub</div>
+            <div>Action Grid</div>
+        </div>
+        <div id="dynamic-rows-hook">
+            <!-- Programmatic updates route here -->
+        </div>
+    </div>
+</div>
+
+<!-- CONTAINER SIDE-DRAWER CONFIGURATION -->
+<div class="drawer-overlay" id="formDrawerOverlay" onclick="handleOverlayClick(event)">
+    <div class="side-drawer" id="sideDrawerMenu">
+        <div class="drawer-header">
+            <button class="drawer-close" onclick="closeDrawer()">&times;</button>
+            <h3>Volunteer Desk</h3>
+            <p>Deployment Application Form</p>
+        </div>
+        
+        <div class="drawer-body">
+            <form action="https://formspree.io/f/mrewrrer" method="POST" id="engagementForm">
+                <div class="input-block">
+                    <label>Selected Activity</label>
+                    <input type="text" id="target-project-field" name="project_name" class="input-field" readonly>
+                </div>
+
+                <div class="input-block">
+                    <label for="applicant-name">Full Name</label>
+                    <input type="text" id="applicant-name" name="name" class="input-field" placeholder="Enter full identity name" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="applicant-email">Email Address</label>
+                    <input type="email" id="applicant-email" name="email" class="input-field" placeholder="yourname@gmail.com" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="applicant-phone">Mobile Network Number</label>
+                    <input type="tel" id="applicant-phone" name="phone_number" class="input-field" placeholder="98XXXXXXXX" pattern="[9][7-8][0-9]{8}" title="Please match the valid mobile network parameters." required>
+                </div>
+
+                <div class="input-block">
+                    <label for="applicant-notes">Statement / Background Skills</label>
+                    <textarea id="applicant-notes" name="message" class="input-field" rows="4" placeholder="Brief details regarding competencies or alignment..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-drawer-submit">Register Engagement</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Core Matrix Datastore
+    const matrixProjects = [
+        {
+            name: "Project Akshara: Rural E-Library Set up",
+            date: "August 2026",
+            targetAudience: "Public School Students",
+            location: "Ward No. 3, Galkot, Baglung"
+        },
+        {
+            name: "Maternal Health & Sanitation Awareness Campaign",
+            date: "September 2026",
+            targetAudience: "Local Women & Expecting Mothers",
+            location: "Hatiya Health Post, Galkot"
+        },
+        {
+            name: "RYLA 2026: Youth Leadership Conclave",
+            date: "November 2026",
+            targetAudience: "High-school & College Students",
+            location: "Galkot City Hall Assembly Room"
+        }
+    ];
+
+    // Layout Generator Engine
+    function paintMatrixGrid(dataset) {
+        const targetHook = document.getElementById('dynamic-rows-hook');
+        targetHook.innerHTML = '';
+
+        if(dataset.length === 0) {
+            targetHook.innerHTML = `<div style="padding: 40px; text-align: center; color: #64748B; font-weight: 600;">No matching initiatives identified in this cluster.</div>`;
+            return;
+        }
+
+        dataset.forEach(item => {
+            const rowNode = document.createElement('div');
+            rowNode.className = 'project-row';
+            rowNode.innerHTML = `
+                <div class="row-title">${item.name}</div>
+                <div class="row-date">${item.date}</div>
+                <div class="row-audience">${item.targetAudience}</div>
+                <div class="row-location">${item.location}</div>
+                <div class="action-cell">
+                    <button class="btn-action-trigger" onclick="openDrawer('${item.name.replace(/'/g, "\\'")}')">Apply Now</button>
+                </div>
+            `;
+            targetHook.appendChild(rowNode);
+        });
+    }
+
+    // Dynamic Live Filter Logic
+    function filterMatrixGrid() {
+        const query = document.getElementById('matrixSearchInput').value.toLowerCase();
+        const isolatedResults = matrixProjects.filter(project => {
+            return project.name.toLowerCase().includes(query) || 
+                   project.targetAudience.toLowerCase().includes(query) || 
+                   project.location.toLowerCase().includes(query) ||
+                   project.date.toLowerCase().includes(query);
+        });
+        paintMatrixGrid(isolatedResults);
+    }
+
+    // Interactive UI Controls
+    const drawerOverlay = document.getElementById('formDrawerOverlay');
+    const inputField = document.getElementById('target-project-field');
+
+    function openDrawer(nameValue) {
+        inputField.value = nameValue;
+        drawerOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden'; // Prevents background layout scroll structural shifts
+    }
+
+    function closeDrawer() {
+        drawerOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(event) {
+        if(event.target.id === 'formDrawerOverlay') {
+            closeDrawer();
+        }
+    }
+
+    // Initialize Viewport Execution 
+    document.addEventListener("DOMContentLoaded", () => {
+        paintMatrixGrid(matrixProjects);
+    });
+</script>
+
+</body>
+</html>

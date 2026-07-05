@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>ROTARACT ADMIN</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="auth-card">
+  <!-- Home Button -->
+  <div class="home-btn-container">
+    <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+      <span class="icon">🏠</span> HOME
+    </a>
+  </div>
+
+  <h2>Account Sign In</h2>
+  <div id="msg" class="message"></div>
+  
+  <form id="auth-form" novalidate>
+    <!-- Email Input Group -->
+    <div class="input-group">
+      <input type="email" id="email" placeholder=" " required autocomplete="email">
+      <label for="email">Email Address</label>
+      <span class="focus-border"></span>
+    </div>
+
+    <!-- Password Input Group -->
+    <div class="input-group">
+      <input type="password" id="password" placeholder=" " required autocomplete="current-password">
+      <label for="password">Password</label>
+      <span class="focus-border"></span>
+      <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">👁️</button>
+    </div>
+
+    <!-- Actions -->
+    <button type="button" id="btn-login" class="btn-primary">
+      <span class="btn-text">Log In</span>
+      <span class="spinner"></span>
+    </button>
+    <button type="button" id="btn-signup" class="btn-secondary">
+      <span class="btn-text">Create Account</span>
+      <span class="spinner"></span>
+    </button>
+  </form>
+</div>
+
+<script type="module">
+  import { createBrowserClient } from 'https://esm.sh/@supabase/ssr';
+
+  const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+  const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // DOM Elements
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const loginBtn = document.getElementById('btn-login');
+  const signupBtn = document.getElementById('btn-signup');
+  const msgBox = document.getElementById('msg');
+  const togglePasswordBtn = document.getElementById('togglePassword');
+  const homeBtn = document.getElementById('interactiveHomeBtn');
+
+  // --- Home Button Animation Logic ---
+  homeBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const targetUrl = this.getAttribute('href');
+    
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+    
+    this.appendChild(ripple);
+    this.classList.add('clicked-exit');
+
+    setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 450);
+  });
+
+  // --- Interactive Password Visibility Toggle ---
+  togglePasswordBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    togglePasswordBtn.textContent = isPassword ? '🙈' : '👁️';
+  });
+
+  // --- UI Feedback & Loading States ---
+  function updateStatus(text, statusType) {
+    msgBox.textContent = text;
+    msgBox.className = `message ${statusType}`;
+    // Micro-interaction bounce on message update
+    msgBox.style.animation = 'none';
+    msgBox.offsetHeight; 
+    msgBox.style.animation = 'fadeIn 0.3s ease forwards';
+  }
+
+  function setButtonLoading(button, isLoading) {
+    if (isLoading) {
+      button.classList.add('loading');
+      loginBtn.disabled = true;
+      signupBtn.disabled = true;
+    } else {
+      button.classList.remove('loading');
+      loginBtn.disabled = false;
+      signupBtn.disabled = false;
+    }
+  }
+
+  // --- Form Actions ---
+  loginBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) return updateStatus("Please enter both fields.", "error");
+
+    setButtonLoading(loginBtn, true);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    setButtonLoading(loginBtn, false);
+
+    if (error) {
+      updateStatus(error.message, "error");
+    } else {
+      updateStatus("Success! You are now logged in.", "success");
+    }
+  });
+
+  signupBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) return updateStatus("Please enter both fields.", "error");
+
+    setButtonLoading(signupBtn, true);
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    setButtonLoading(signupBtn, false);
+
+    if (error) {
+      updateStatus(error.message, "error");
+    } else {
+      updateStatus("Account created! Check your email inbox to verify.", "success");
+    }
+  });
+</script>
+
+</body>
+</html>

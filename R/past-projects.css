@@ -1,0 +1,382 @@
+:root {
+    --primary-color: #D70060; /* Rotaract Pink */
+    --secondary-color: #015491; /* Rotary Blue */
+    --dark-color: #2C3E50;
+    --light-bg: #F4F6F9;
+    --card-bg: #FFFFFF;
+    --accent-green: #2E7D32;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light-bg);
+    color: var(--dark-color);
+    line-height: 1.6;
+    padding: 30px 15px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+    position: relative;
+}
+
+header h1 {
+    color: var(--secondary-color);
+    font-size: 2.3rem;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #7F8C8D;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+/* --- Stats Dashboard Styles --- */
+.stats-section {
+    margin-bottom: 35px;
+}
+
+.stats-section h2 {
+    color: var(--secondary-color);
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.total-box {
+    text-align: center;
+    border: 2px dashed rgba(215, 0, 96, 0.2);
+    background: #FFF9FB;
+}
+
+.total-num {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.total-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    color: var(--dark-color);
+}
+
+.breakdown-box h3 {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    border-bottom: 2px solid #ECEFF1;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.sub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.stat-item {
+    background: var(--light-bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.stat-item .label {
+    font-weight: 600;
+    color: #546E7A;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+.stat-item .count {
+    font-weight: 700;
+    color: var(--dark-color);
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.avenue-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+
+/* --- Filter Bar --- */
+.filter-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    padding: 15px 25px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.filter-label {
+    font-weight: 700;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+}
+
+.filter-select {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    background-color: #E0E6ED;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus, .filter-select:hover {
+    border-color: var(--primary-color);
+    background-color: #fff;
+}
+
+/* --- Table Styling --- */
+.table-responsive {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #ECEFF1;
+}
+
+th {
+    background-color: #F8F9FA;
+    color: var(--secondary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+tr {
+    transition: background-color 0.2s ease;
+}
+
+tr.project-row {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+tr.project-row:hover {
+    background-color: #FFF9FB;
+}
+
+/* --- Badges --- */
+.ry-badge {
+    background-color: #E1F5FE;
+    color: var(--secondary-color);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.avenue-badge {
+    background-color: #FCE4EC;
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* --- HOME BUTTON STYLES --- */
+.home-btn-container {
+    text-align: center;
+    margin-bottom: 20px;
+    perspective: 1000px;
+}
+
+.home-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #015491;
+    color: white;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 3px 6px rgba(1, 84, 145, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.home-btn .icon {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.home-btn:hover {
+    background-color: #D70060;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
+}
+
+.home-btn:hover .icon {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+.home-btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple-effect 0.45s linear;
+    pointer-events: none;
+}
+
+.home-btn.clicked-exit {
+    animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ripple-effect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes exit-bounce {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(0.92);
+        background-color: #D70060;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-15px) scale(0.8);
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+}
+
+/* --- Responsive & Print Media Queries --- */
+@media print {
+    .home-btn-container { display: none !important; }
+}
+
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    tr {
+        border: 1px solid #ECEFF1;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+    }
+    td {
+        border: none;
+        border-bottom: 1px solid #f1f1f1;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+    td:last-child { border-bottom: none; }
+    td:before {
+        position: absolute;
+        left: 20px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: var(--secondary-color);
+    }
+    td:nth-of-type(1):before { content: "Project Name"; }
+    td:nth-of-type(2):before { content: "Rotary Year"; }
+    td:nth-of-type(3):before { content: "Avenue"; }
+    td:nth-of-type(4):before { content: "Location"; }
+    td:nth-of-type(5):before { content: "Cost"; }
+}
