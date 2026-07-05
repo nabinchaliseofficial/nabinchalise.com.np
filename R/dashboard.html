@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotaract Admin Dashboard</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f4f7f6;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+    .dashboard-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; color: #111; }
+    .user-info { font-weight: 600; color: #0066cc; }
+    .btn-logout {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-logout:hover { background: #e03333; }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="header">
+    <h1>Rotaract Portal</h1>
+    <button id="btn-logout" class="btn-logout">Sign Out</button>
+  </div>
+  
+  <p>Welcome back, <span id="user-email" class="user-info">Loading...</span>!</p>
+  <p>This is your secure administration dashboard zone.</p>
+</div>
+
+<script type="module">
+  import { createBrowserClient } from 'https://esm.sh/@supabase/ssr';
+
+  const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+  const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const userEmailDisplay = document.getElementById('user-email');
+  const logoutBtn = document.getElementById('btn-logout');
+
+  // --- Route Guard: Check Auth Session ---
+  async function secureRoute() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error || !session) {
+      // Not logged in -> kick out to login.html
+      window.location.href = 'login.html';
+    } else {
+      // User authenticated successfully
+      userEmailDisplay.textContent = session.user.email;
+    }
+  }
+  
+  // Run verification immediately
+  secureRoute();
+
+  // --- Sign Out Handling ---
+  logoutBtn.addEventListener('click', async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      window.location.href = 'login.html';
+    } else {
+      alert("Error signing out: " + error.message);
+    }
+  });
+</script>
+
+</body>
+</html>
