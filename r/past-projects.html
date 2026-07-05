@@ -11,6 +11,7 @@
             --dark-color: #2C3E50;
             --light-bg: #F4F6F9;
             --card-bg: #FFFFFF;
+            --accent-green: #2E7D32;
         }
 
         * {
@@ -69,6 +70,112 @@
             background-color: var(--primary-color);
             transform: translateY(-1px);
         }
+
+        /* --- New Stats Dashboard Styles --- */
+        .stats-section {
+            margin-bottom: 35px;
+        }
+
+        .stats-section h2 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .total-box {
+            text-align: center;
+            border: 2px dashed rgba(215, 0, 96, 0.2);
+            background: #FFF9FB;
+        }
+
+        .total-num {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .total-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            color: var(--dark-color);
+        }
+
+        .breakdown-box h3 {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            border-bottom: 2px solid #ECEFF1;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: var(--light-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .stat-item .label {
+            font-weight: 600;
+            color: #546E7A;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+
+        .stat-item .count {
+            font-weight: 700;
+            color: var(--dark-color);
+            background: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .avenue-grid {
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        }
+
+        /* --- End Stats Styles --- */
 
         /* Modernized Filter Bar */
         .filter-wrapper {
@@ -228,6 +335,28 @@
         <a href="index.html" class="home-btn">🏠 Home</a>
     </header>
 
+    <!-- Dynamic Metrics Dashboard Component -->
+    <section class="stats-section">
+        <h2>📊 Cumulative Project Analytics Dashboard</h2>
+        <div class="stats-grid">
+            <div class="stat-card total-box">
+                <div class="total-num" id="stat-total-count">0</div>
+                <div class="total-label">Total Projects Logged</div>
+            </div>
+            <div class="stat-card breakdown-box">
+                <h3>Timeline Distribution (Year Wise)</h3>
+                <div class="sub-grid" id="stat-years-grid">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+                
+                <h3 style="margin-top: 20px;">Scope of Impact (Avenues Wise)</h3>
+                <div class="sub-grid avenue-grid" id="stat-avenues-grid">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Selection Filter Menus -->
     <div class="filter-wrapper">
         <span class="filter-label">Filter by Rotary Year:</span>
@@ -292,7 +421,7 @@
         // R.Y. 2026-27
         { name: "Strategic Plan Formulation & Board Retreat", ry: "2026-27", avenue: "Club Administration", location: "Hatiya, Galkot", cost: "NPR 12,000" },
         
-        // R.Y. 2025-26 (Updated with your custom data entries)
+        // R.Y. 2025-26
         { name: "FUTURE FORGE: Session on Goal Setting & Career Planning", ry: "2025-26", avenue: "Professional Development", location: "Galkot Hall", cost: "Collaborated" },
         { name: "Healthy Lifestyles: A Healthy Outside Starts From The Inside", ry: "2025-26", avenue: "Service Project", location: "Community Venue", cost: "Collaborated" },
         { name: "Debunking Myths & Highlighting Facts", ry: "2025-26", avenue: "International Service", location: "Online (Global)", cost: "Collaborated" },
@@ -356,6 +485,49 @@
         { name: "Club Officer Training Session (COTS)", ry: "2023-24", avenue: "Membership Development", location: "Club Office", cost: "NPR 9,000" }
     ];
 
+    // Engine to compile metrics dynamically out of pastProjects data array
+    function calculateStatistics() {
+        const totalCount = pastProjects.length;
+        const yearMetrics = {};
+        const avenueMetrics = {};
+
+        pastProjects.forEach(project => {
+            // Compute Year Counts
+            yearMetrics[project.ry] = (yearMetrics[project.ry] || 0) + 1;
+            // Compute Avenue Counts
+            avenueMetrics[project.avenue] = (avenueMetrics[project.avenue] || 0) + 1;
+        });
+
+        // Update total counter element
+        document.getElementById('stat-total-count').innerText = totalCount;
+
+        // Render Year Grid UI
+        const yearsGrid = document.getElementById('stat-years-grid');
+        yearsGrid.innerHTML = '';
+        // Sort years descending
+        Object.keys(yearMetrics).sort((a,b) => b.localeCompare(a)).forEach(year => {
+            yearsGrid.innerHTML += `
+                <div class="stat-item">
+                    <span class="label">R.Y. ${year}</span>
+                    <span class="count">${yearMetrics[year]}</span>
+                </div>
+            `;
+        });
+
+        // Render Avenues Grid UI
+        const avenuesGrid = document.getElementById('stat-avenues-grid');
+        avenuesGrid.innerHTML = '';
+        // Sort by highest project count first
+        Object.keys(avenueMetrics).sort((a,b) => avenueMetrics[b] - avenueMetrics[a]).forEach(ave => {
+            avenuesGrid.innerHTML += `
+                <div class="stat-item">
+                    <span class="label" title="${ave}">${ave}</span>
+                    <span class="count">${avenueMetrics[ave]}</span>
+                </div>
+            `;
+        });
+    }
+
     function renderTable(dataset) {
         const tableBody = document.getElementById('projects-table-body');
         tableBody.innerHTML = '';
@@ -397,6 +569,7 @@
     }
 
     window.onload = () => {
+        calculateStatistics();
         renderTable(pastProjects);
     };
 </script>
