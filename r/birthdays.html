@@ -3,410 +3,662 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAC Galkot Baglung Member Directory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Minutes Builder | Rotaract Club of Galkot Baglung</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .member-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .member-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        .logo {
-            max-width: 100%;
-            height: auto;
-        }
-        .birthday-card {
-            border-left: 4px solid #f97316;
-        }
-        .today-birthday-card {
-            border-left: 4px solid #ef4444;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-        .stat-card {
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: scale(1.05);
-        }
-        .search-container {
-            position: relative;
-        }
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-        }
-        .search-input {
-            padding-left: 45px;
-        }
-        .filter-btn {
-            transition: all 0.3s ease;
-        }
-        .filter-btn.active {
-            background-color: #4f46e5;
-            color: white;
+        :root {
+            --primary-color: #D70060; /* Rotaract Pink */
+            --secondary-color: #015491; /* Rotary Blue */
+            --dark-color: #2C3E50;
+            --light-bg: #F4F6F9;
+            --border-color: #BDC3C7;
         }
 
-        /* नयाँ प्रिमियम होम बटनको लागि थपिएको CSS प्रभावहरू */
-        .custom-home-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            padding: 30px 15px;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative; /* थपिएको: होम बटनलाई सहि ठाउँमा राख्न */
+        }
+
+        /* होम बटनको लागि नयाँ CSS */
+        .home-btn-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(1, 84, 145, 0.2);
+        }
+
+        .home-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        /* Form Styling */
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #E0E0E0;
+        }
+
+        .form-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(213, 0, 96, 0.08), transparent);
-            transition: all 0.5s ease;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
         }
-        .custom-home-btn:hover {
-            color: #D70060 !important; /* Rotaract Pink */
-            border-color: rgba(213, 0, 96, 0.2) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(213, 0, 96, 0.1) !important;
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-color);
         }
-        .custom-home-btn:hover .home-icon {
-            transform: scale(1.15) rotate(-5deg);
+
+        .dynamic-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
         }
-        .custom-home-btn:hover::before {
-            left: 100%;
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-add {
+            background: var(--secondary-color);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .btn-add:hover { background: #013d6b; }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-submit:hover { background: #b50051; }
+
+        /* Attendance Checklist Styling */
+        .checklist-container {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-weight: normal;
+        }
+
+        .member-role {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Hidden Printable Letterhead Document Structure */
+        #print-preview {
+            display: none;
+        }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                color: #000;
+            }
+            .container, .form-section, input, button, .btn-submit, label, h2, .home-btn-container {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+            }
+            .letterhead {
+                text-align: center;
+                border-bottom: 3px double var(--primary-color);
+                padding-bottom: 15px;
+                margin-bottom: 30px;
+            }
+            .letterhead h1 { color: var(--primary-color); font-size: 26px; }
+            .letterhead h2 { color: var(--secondary-color); font-size: 18px; display: block !important;}
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25px;
+            }
+            .meta-table td {
+                padding: 6px;
+                border: 1px solid #ddd;
+                font-size: 14px;
+            }
+            .meta-title { font-weight: bold; background: #f9f9f9; width: 20%; }
+            .content-section {
+                margin-bottom: 20px;
+            }
+            .content-section h4 {
+                color: var(--secondary-color);
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+                font-size: 16px;
+            }
+            .agenda-item {
+                margin-bottom: 12px;
+                font-size: 14px;
+            }
+            .footer-sign {
+                margin-top: 60px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+            .sign-line {
+                border-top: 1px solid #000;
+                width: 200px;
+                text-align: center;
+                padding-top: 5px;
+                font-size: 13px;
+            }
+            
+            /* Vertical Table List Styles for Print */
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .print-table th, .print-table td {
+                border: 1px solid #ccc;
+                padding: 6px 10px;
+                font-size: 13px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f5f5f5;
+                font-weight: bold;
+            }
+            .col-sn { width: 8%; text-align: center; }
+            .col-name { width: 52%; }
+            .col-role { width: 40%; }
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <div class="max-w-6xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
-
-        <div class="text-center mb-6">
-            <img src="rotaract logo.jpg" class="mx-auto h-20 md:h-24 logo mb-4 rounded-full" alt="Rotaract Logo">
-            <h2 class="text-3xl font-bold text-gray-800">RAC Galkot Baglung Member Directory</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
-                <h3 class="text-xl font-bold text-blue-800 mb-2">Upcoming Birthdays 🎂</h3>
-                <div id="nearest-birthdays" class="space-y-2"></div>
-            </div>
-
-            <div class="bg-red-50 p-6 rounded-xl border border-red-200">
-                <h3 class="text-xl font-bold text-red-800 mb-2">Blood Group Donor Count ❤️</h3>
-                <div id="blood-group-counts" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-            </div>
-        </div>
-
-        <div class="mb-8">
-            <!-- Search & Home Button Container -->
-            <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
-                
-                <!-- नयाँ थपिएको प्रिमियम होम बटन (Rotary / Rotaract Theme) -->
-                <div style="display: flex; justify-content: center; font-family: 'Segoe UI', system-ui, sans-serif;">
-                    <a href="index.html" id="homeBtn" class="custom-home-btn" style="
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 10px;
-                        text-decoration: none;
-                        color: #015491; /* Rotary Blue */
-                        background: #FFFFFF;
-                        padding: 12px 28px;
-                        border-radius: 30px;
-                        font-weight: 600;
-                        font-size: 0.95rem;
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-                        border: 1px solid rgba(1, 84, 145, 0.1);
-                        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                        position: relative;
-                        overflow: hidden;
-                        cursor: pointer;
-                    ">
-                        <!-- SVG House Icon -->
-                        <svg class="home-icon" viewBox="0 0 24 24" style="width: 1.2rem; height: 1.2rem; fill: currentColor; transition: transform 0.3s ease;">
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                        </svg>
-                        <span>HOME</span>
-                    </a>
-                </div>
-                
-                <!-- Search Input -->
-                <div class="search-container flex-grow w-full">
-                    <div class="search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Search by name, address, designation, profession..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors search-input">
-                </div>
-            </div>
-            
-            <div class="flex flex-wrap justify-center gap-2">
-                <button class="filter-btn active px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="all">All Members</button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="executive">Executive Board</button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="teacher">Teachers</button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="student">Students</button>
-                <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-800 rounded-lg" data-filter="business">Business</button>
-            </div>
-        </div>
-
-        <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+<div class="container">
+    <!-- नयाँ थपिएको होम बटन कंटेनर -->
+    <div class="home-btn-container">
+        <a href="index.html" class="home-btn">🏠 Home</a>
     </div>
 
-    <script>
-        const profileImageUrl = "rotaract logo.jpg";
+    <h2 style="text-align:center; color: var(--secondary-color); margin-bottom: 25px;">
+        📝 Minutes Writer Engine (R.Y. 2026-27)
+    </h2>
 
-        const members = [
-            { id: 29, name: 'Rtr Nabin Subedi', address: 'Galkot Municipality -04,Chamuwa Baglung', rotaryId: '11716194', phone: '9857631742', bloodGroup: 'B+', gender: 'Male', email: 'nsubedi162@gmail.com', dob: '10/6/1997', designation: 'IPP/Mentor', profession: 'Teacher' },
-            { id: 43, name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotaryId: '12098183', phone: '9847705363', bloodGroup: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Rotaract Vice President', profession: 'Co- operative' },
-            { id: 20, name: 'Nabin Chalise', address: 'Galkot Municipality-3, Baglung', rotaryId: '11722218', phone: '9851338747', bloodGroup: 'O+', gender: 'Male', email: 'pilotprosoft@gmail.com', dob: '8/26/1995', designation: 'President', profession: 'ICT Teacher' },
-            { id: 40, name: 'Tika Ram Gautam', address: 'Galkot-09, Baglung', rotaryId: '11722743', phone: '9847797869', bloodGroup: 'B+', gender: 'Male', email: 'gautamarjun933@gmail.com', dob: '10/14/1993', designation: 'President Elect', profession: 'Teacher' },
-            { id: 17, name: 'Manish Gurung', address: 'Galkot Municipality 1 Dudilabhati Baglung', rotaryId: '12031057', phone: '9843824191', bloodGroup: 'B+', gender: 'Male', email: 'manishgurung209@gmail.com', dob: '2/20/2003', designation: 'Club Member', profession: 'Employee in Saplyapatri Multipurpose Co-operative Ltd.' },
-            { id: 16, name: 'Madan Sharma', address: 'Galkot municipality', rotaryId: '11855833', phone: '9860191219', bloodGroup: 'B+', gender: 'Male', email: 'madanbsharma98@gmail.com', dob: '3/2/2002', designation: 'Secretary', profession: 'Teacher' },
-            { id: 26, name: 'Radha Gautam', address: 'Galkot municipality-03 Hatiya Baglung', rotaryId: '12047154', phone: '9846705657', bloodGroup: 'AB+', gender: 'Female', email: 'rg2508305@gmail.com', dob: '3/4/2003', designation: 'Club Member', profession: '' },
-            { id: 4, name: 'Bibek Kharel', address: 'Galkot 09 baglung', rotaryId: '12098226', phone: '9844334609', bloodGroup: 'O+', gender: 'Male', email: 'Bibekkharel97@gmail.com', dob: '6/17/1997', designation: 'Club Member', profession: 'Teacher' },
-            { id: 9, name: 'Ganesh Sapkota', address: 'Galkot -9, Baglung', rotaryId: '11964599', phone: '9867743075', bloodGroup: 'B+', gender: 'Male', email: 'ganesh1sapkota2@gmail.com', dob: '10/24/2001', designation: 'Club Member', profession: 'Student' },
-            { id: 12, name: 'Kamal Kharel', address: 'Galkot ,9', rotaryId: '11723334', phone: '9860718751', bloodGroup: 'B+', gender: 'Male', email: 'kharelkamal8751@gmail.com', dob: '3/27/1996', designation: 'Past President/Advisor', profession: 'Furniture Business' },
-            { id: 44, name: 'Rtr. Manish Kandel', address: 'Galkot Municipality-08, kandebash, Baglung', rotaryId: '1111111', phone: '9865437798', bloodGroup: 'B+', gender: 'Male', email: 'manishkandel73@gmail.com', dob: '6/11/1997', designation: 'Treasurer', profession: 'Business / Entrepreneur' },
-            { id: 15, name: 'Lokendra Gaire', address: 'Galkot-4, Thana', rotaryId: '11723018', phone: '9869065252', bloodGroup: 'O+', gender: 'Male', email: 'lokendragaire9@gmail.com', dob: '5/22/2001', designation: 'Sergeant At Arms', profession: 'Computer operator at galkot municipality' },
-            { id: 7, name: 'Bipin Chalise', address: 'Galkot municipality -08', rotaryId: '12098496', phone: '9745985562', bloodGroup: 'O+', gender: 'Male', email: 'bipansharma0123@gmail.com', dob: '10/22/2001', designation: 'Rotaract Membership Chair', profession: 'Teacher' },
-            { id: 13, name: 'Laxmi Pun', address: 'Ga na pa 8', rotaryId: '11855933', phone: '9844090869', bloodGroup: 'O+', gender: 'Female', email: 'Punlaxmi216@gmail.com', dob: '12/24/1998', designation: 'PP/Rotaract Learning Facilitator', profession: '' },
-            { id: 3, name: 'Anil Shrestha', address: 'galkot municipality -03', rotaryId: '11361814', phone: '9841888908', bloodGroup: 'B+', gender: 'Male', email: 'theanilshrestha@gmail.com', dob: '1/7/1990', designation: 'PP/ISD/Advisor', profession: '' },
-            { id: 10, name: 'Ishor Gautam', address: 'Galkot municipality 9 Baglung', rotaryId: '11453673', phone: '9860260680', bloodGroup: 'A+', gender: 'Male', email: 'ishworgautam2073@gmail.com', dob: '1/14/1993', designation: 'Past President/Advisor', profession: 'Lecturer' },
-            { id: 22, name: 'Neetu Khadka', address: 'Baglung Municipality-01', rotaryId: '', phone: '9867945381', bloodGroup: 'O+', gender: 'Female', email: 'Khadkaneetu123@gmail.com', dob: '5/16/1989', designation: 'Chartered President', profession: 'Nurse' },
-            { id: 1, name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotaryId: '1111111111', phone: '9867694789', bloodGroup: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
-            { id: 2, name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotaryId: '11723715', phone: '9846850809', bloodGroup: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/1998', designation: 'Club Member', profession: 'Teacher' },
-            { id: 5, name: 'Bidur Kharel', address: 'Ga.Na.Pa 9 Darbara', rotaryId: '', phone: '9845548677', bloodGroup: 'AB+', gender: 'Male', email: 'Kharelbidur23@gmail.com', dob: '5/23/1995', designation: 'Club Member', profession: '' },
-            { id: 6, name: 'Binita Galami', address: 'Galkot na.pa.-3,hatiya', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Female', email: 'Newlooksprintigshop@gmail.com', dob: '9/11/1996', designation: 'Club Member', profession: '' },
-            { id: 8, name: 'Deepak Khattri', address: 'Galkot Municipality -04', rotaryId: '11726103', phone: '9849664430', bloodGroup: 'O+', gender: 'Male', email: 'Khattridep2048@gmail.com', dob: '5/5/1991', designation: 'Club Member', profession: 'Teacher' },
-            { id: 11, name: 'Jit Bahadur B.K.', address: 'Tarakhola RM. -2, Argal Baglung', rotaryId: '12239441', phone: '9857649995', bloodGroup: 'O+', gender: 'Male', email: 'jeevananuragi8@gmail.com', dob: '9/27/1982', designation: 'Club Member', profession: 'IT Business' },
-            { id: 14, name: 'Lila Adhikari (Mamata)', address: 'Galkot-3, baglung', rotaryId: '', phone: '', bloodGroup: 'O-', gender: 'Female', email: 'adhikarimamata223@gmail.com', dob: '8/21/2000', designation: 'Club Member', profession: 'Student' },
-            { id: 18, name: 'Manjeela Shrestha', address: 'Galkot municipality-03', rotaryId: '11723077', phone: '9840808640', bloodGroup: 'B+', gender: 'Female', email: 'catchmeifucan2046@gmail.com', dob: '2/11/1997', designation: 'Rotaract Foundation Chair', profession: 'House wife' },
-            { id: 19, name: 'Manoj Karki', address: 'Galkot-2, Baglung', rotaryId: '', phone: '9749724157', bloodGroup: 'A+', gender: 'Male', email: '', dob: '7/14/1995', designation: 'Medical Officer', profession: 'Medical doctor' },
-            { id: 21, name: 'Nabin Sharma', address: 'Galkot -1 Dudilabhati Jhanktisthan', rotaryId: '12119325', phone: '9846829984', bloodGroup: 'O+', gender: 'Male', email: 'dnabingautam79@gmail.com', dob: '12/23/2000', designation: 'Club Member', profession: 'Business' },
-            { id: 23, name: 'Niraj Shrestha', address: 'Galkot -03,Baglung', rotaryId: '', phone: '9847770262', bloodGroup: 'O+', gender: 'Male', email: 'nirajshrestha666@gmail.com', dob: '2/4/1994', designation: 'Club Member', profession: 'Banker' },
-            { id: 24, name: 'Pratap Sen', address: 'Galkot- 05, baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'Pratapsen2011@gmail.com', dob: '2/22/1992', designation: 'Club Member', profession: 'Self employed' },
-            { id: 25, name: 'Pratikshya Darjee', address: 'Galkot Municipality-09, Baglung', rotaryId: '11111', phone: '9867687014', bloodGroup: 'N/A', gender: 'Female', email: 'pratikshyapariyar@gmail.com', dob: '2/4/2006', designation: 'Club Member', profession: 'Student - Business' },
-            { id: 45, name: 'Rtr. Prasu Ram Regmi', address: 'Sainamaina-11, Rupendehi', rotaryId: '111111111', phone: '9867233476', bloodGroup: 'O+', gender: 'Male', email: 'Parshuregmi3472@gmail.com', dob: '8/29/1994', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 27, name: 'Raju Sahani', address: 'Dhalepipal, Dhalepipal ward 4', rotaryId: '12119302', phone: '9860414802', bloodGroup: 'A+', gender: 'Male', email: 'erjsahani@gmail.com', dob: '5/31/1991', designation: 'IT Officer', profession: 'IT engineer' },
-            { id: 30, name: 'Sagar Chalise', address: 'Galkot-8, Baglung', rotaryId: '12131866', phone: '9745985560', bloodGroup: 'AB+', gender: 'Male', email: 'chalisesagar120@gmail.com', dob: '8/6/2001', designation: 'Joint Secretary', profession: 'Accountant' },
-            { id: 46, name: 'Rtr. Santosh Bohora Chettri', address: 'Galkot Municipality-03, Baglung', rotaryId: '111111', phone: '9869720402', bloodGroup: 'O+', gender: 'Male', email: 'bohorasantosh789@gmail.com', dob: '2/11/2005', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 31, name: 'Samjhana Thapa', address: 'Galkot municipality 07 malma', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'Ssthapa392@gmail.com', dob: '5/22/2001', designation: 'Club Member', profession: 'Teaching' },
-            { id: 32, name: 'Sanju Neupane', address: 'Galkot Municipality-3, BAglung', rotaryId: '11855899', phone: '9863271796', bloodGroup: 'B+', gender: 'Female', email: 'neupanesanju87@gmail.com', dob: '11/19/1997', designation: 'Club Member', profession: 'Banker' },
-            { id: 33, name: 'Shishir Sunar', address: 'Galkot Municipality- 4', rotaryId: '', phone: '', bloodGroup: 'A+', gender: 'Male', email: 'shishirju2005@gmail.com', dob: '6/27/2005', designation: 'Club Member', profession: 'Student' },
-            { id: 34, name: 'Shyam Subedi', address: 'Galkot 04 Baglung Nepal', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Male', email: 'imperialshyam6939@gmail.com', dob: '8/17/2000', designation: 'Club Member', profession: 'Employer' },
-            { id: 35, name: 'Sima Sunar', address: 'Galkot municipality 3, Hatiya', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'simasunar456@gmail.com', dob: '5/21/1999', designation: 'Club Member', profession: 'Job' },
-            { id: 36, name: 'Smriti Budhathoki', address: 'Galkot municipality-8, Kandebas', rotaryId: '', phone: '9749396716', bloodGroup: 'AB+', gender: 'Female', email: 'msmriti285@gmail.com', dob: '8/25/1995', designation: 'Rotaract Service Projects Chair', profession: 'Student' },
-            { id: 47, name: 'Rtr. Sunil Gautam', address: 'Galkot Municipality-06, Baglung', rotaryId: '111111111', phone: '9867770257', bloodGroup: 'B+', gender: 'Male', email: 'sunilgautam70257@gmail.com', dob: '11/17/1997', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 37, name: 'Sunil Bohora', address: 'Galkot Municipality-3, Baglung', rotaryId: '11723041', phone: '9847658392', bloodGroup: 'O+', gender: 'Male', email: 'gajalsansar1989@gmail.com', dob: '3/27/1989', designation: 'Club Member', profession: 'Teaching' },
-            { id: 38, name: 'Sunil Chhetri', address: 'Galkot 3 bagling', rotaryId: '11963844', phone: '9857638138', bloodGroup: 'O+', gender: 'Male', email: 'skc844251@gmail.com', dob: '1/13/1999', designation: 'Club Member', profession: 'Business/ Enterpreneur' },
-            { id: 39, name: 'Sunil Khatiwal', address: 'Baglung 03 guthi', rotaryId: '', phone: '9857664347', bloodGroup: 'B+', gender: 'Male', email: 'Sunilkhatiwal6@gmail.com', dob: '7/10/1987', designation: 'Club Member', profession: 'Shopkeeper' },
-            { id: 41, name: 'Tul Bahadur B.K.', address: 'Galkot-11, Righa', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'tulbahadurbk130@gmail.com', dob: '5/11/1995', designation: 'Club Member', profession: 'Workshop' },
-            { id: 42, name: 'Umesh Sharma Subedi', address: 'Galkot-4, Baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: '', dob: '9/9/2001', designation: 'Club Member', profession: 'Teacher' }
-        ];
+    <div class="form-section">
+        <h3>1. Meeting Coordinates</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Meeting Number</label>
+                <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting">
+            </div>
+            <div class="form-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="meetDate">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Venue Location</label>
+                <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot">
+            </div>
+            <div class="form-group">
+                <label>Meeting Chairperson</label>
+                <input type="text" id="meetChair" value="Nabin Chalise" placeholder="President Name">
+            </div>
+        </div>
+    </div>
 
-        const renderMembers = (query = '', filter = 'all') => {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            const cleanQuery = query.toLowerCase().trim();
+    <div class="form-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>2. Attendance Checklist (Official Members)</h3>
+            <button class="btn-add" onclick="addNewMemberRow()">+ Add More Rotaractor</button>
+        </div>
+        
+        <div class="checklist-container" id="members-checklist">
+            <!-- Official members roster generated automatically via JS -->
+        </div>
 
-            const filteredMembers = members.filter(member => {
-                const matchesQuery = Object.values(member).some(value =>
-                    String(value).toLowerCase().includes(cleanQuery)
-                );
-                
-                const designation = member.designation.toLowerCase();
-                const profession = member.profession.toLowerCase();
+        <div id="additional-members-container" style="margin-bottom: 20px;">
+            <!-- Dynamic rows for newly added rotaractors will sit here -->
+        </div>
 
-                let matchesFilter = false;
-                if (filter === 'all') matchesFilter = true;
-                else if (filter === 'executive') {
-                    matchesFilter = !designation.includes('club member');
-                } else if (filter === 'teacher') {
-                    matchesFilter = profession.includes('teacher') || profession.includes('teaching') || profession.includes('lecturer');
-                } else if (filter === 'student') {
-                    matchesFilter = profession.includes('student');
-                } else if (filter === 'business') {
-                    matchesFilter = profession.includes('business') || profession.includes('entrepreneur') || profession.includes('shopkeeper');
-                }
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top: 20px;">
+            <h3>3. Special Guests (Outside of Club)</h3>
+            <button class="btn-add" onclick="addGuestRow()">+ Add Special Guest</button>
+        </div>
+        <div id="guests-container">
+            <!-- Dynamic rows for non-club special guests -->
+        </div>
 
-                return matchesQuery && matchesFilter;
-            });
+        <div class="grid-2" style="margin-top: 20px;">
+            <div class="form-group">
+                <label>Members Present Count (Auto)</label>
+                <input type="number" id="countPresent" value="0" readonly style="background-color: #eaeded; font-weight: bold;">
+            </div>
+            <div class="form-group">
+                <label>Guests Count (Auto)</label>
+                <input type="number" id="countGuests" value="0" readonly style="background-color: #eaeded; font-weight: bold;">
+            </div>
+        </div>
+    </div>
 
-            if (filteredMembers.length > 0) {
-                filteredMembers.forEach(member => {
-                    const memberCard = document.createElement('div');
-                    memberCard.className = 'member-card bg-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center transition-all duration-300 ease-in-out';
-                    memberCard.innerHTML = `
-                        <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                            <img src="${profileImageUrl}" alt="Profile Image" class="w-full h-full object-cover">
-                        </div>
-                        <h4 class="font-bold text-gray-800 text-lg">${member.name}</h4>
-                        <p class="text-sm text-indigo-600 font-semibold">${member.designation}</p>
-                        <div class="mt-4 text-left w-full">
-                            <p class="text-xs text-gray-500 mb-1"><strong>Profession:</strong> ${member.profession || 'N/A'}</p>
-                            <p class="text-xs text-gray-500 mb-1"><strong>Address:</strong> ${member.address}</p>
-                            <p class="text-xs text-gray-500 mb-1"><strong>Email:</strong> ${member.email || 'N/A'}</p>
-                            <p class="text-xs text-gray-500"><strong>Phone:</strong> ${member.phone || 'N/A'}</p>
-                        </div>
-                        <div class="flex justify-between mt-3 w-full">
-                            <span class="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded-full">${member.gender}</span>
-                            <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">${member.bloodGroup || 'Unknown'}</span>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(memberCard);
-                });
-            } else {
-                resultsContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No members found matching your search.</p>';
-            }
-        };
+    <div class="form-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>4. Agendas & Resolutions Log</h3>
+            <button class="btn-add" onclick="addAgendaRow()">+ Add Agenda</button>
+        </div>
+        <div id="agenda-container">
+            <div class="dynamic-row agenda-group">
+                <input type="text" class="agenda-title" placeholder="Agenda Title (e.g., Blood Donation)" style="width:35%;">
+                <textarea class="agenda-desc" placeholder="Decisions / Action points resolved..." rows="1" style="width:65%; resize:vertical;"></textarea>
+            </div>
+        </div>
+    </div>
 
-        const renderBirthdays = () => {
-            const nearestBirthdaysContainer = document.getElementById('nearest-birthdays');
-            nearestBirthdaysContainer.innerHTML = '';
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            const birthdays = members.map(member => {
-                if (!member.dob) return null;
-                
-                const parts = member.dob.split('/');
-                if (parts.length !== 3) return null;
-                
-                const birthMonth = parseInt(parts[0], 10) - 1;
-                const birthDay = parseInt(parts[1], 10);
-                
-                let nextBirthday = new Date(today.getFullYear(), birthMonth, birthDay);
-                
-                if (nextBirthday < today) {
-                    nextBirthday.setFullYear(today.getFullYear() + 1);
-                }
+    <button class="btn-submit" onclick="generateMinutesPDF()">✨ Compile & Save PDF</button>
+</div>
 
-                const diffTime = nextBirthday - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const isToday = today.getMonth() === birthMonth && today.getDate() === birthDay;
+<div id="print-preview">
+    <div class="letterhead">
+        <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+        <h2>Rotary International District 3292, Nepal</h2>
+        <p style="font-size:12px; color:#555;">Club No: 90214 | Rota Year 2026-27</p>
+    </div>
 
-                return { ...member, nextBirthday, diffDays, isToday };
-            }).filter(Boolean).sort((a, b) => a.diffDays - b.diffDays);
+    <h3 style="text-align: center; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px;" id="outTitle">MINUTES OF MEETING</h3>
 
-            const upcomingBirthdays = birthdays.slice(0, 5);
+    <table class="meta-table">
+        <tr>
+            <td class="meta-title">Meeting Title</td>
+            <td id="outMeetNo" style="width:30%;"></td>
+            <td class="meta-title">Date / Time</td>
+            <td id="outDate"></td>
+        </tr>
+        <tr>
+            <td class="meta-title">Venue</td>
+            <td id="outVenue"></td>
+            <td class="meta-title">Chairperson</td>
+            <td id="outChair"></td>
+        </tr>
+        <tr>
+            <td class="meta-title">Attendance Summary</td>
+            <td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td>
+        </tr>
+    </table>
 
-            if (upcomingBirthdays.length > 0) {
-                upcomingBirthdays.forEach(member => {
-                    const birthdayElement = document.createElement('div');
-                    birthdayElement.className = `p-3 rounded-lg flex items-center ${member.isToday ? 'bg-red-200 today-birthday-card' : 'bg-blue-200 birthday-card'}`;
-                    
-                    const formattedDate = member.nextBirthday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                    const message = member.isToday ? 'Happy Birthday! 🎉' : `in ${member.diffDays} days`;
+    <div class="content-section" id="print-section-members">
+        <h4>Attended Members</h4>
+        <div id="outPresentMembersNames"></div>
+    </div>
 
-                    birthdayElement.innerHTML = `
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center font-bold text-blue-900 text-sm">
-                            ${member.nextBirthday.getDate()}
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-gray-800">${member.name}</h4>
-                            <p class="text-sm text-gray-600">${member.isToday ? 'Today!' : formattedDate}</p>
-                        </div>
-                        <div class="ml-auto text-sm font-semibold ${member.isToday ? 'text-red-600' : 'text-blue-600'}">
-                            ${message}
-                        </div>
-                    `;
-                    nearestBirthdaysContainer.appendChild(birthdayElement);
-                });
-            } else {
-                nearestBirthdaysContainer.innerHTML = '<p class="text-center text-gray-500">No upcoming birthdays.</p>';
-            }
-        };
+    <div class="content-section" id="print-section-guests" style="display: none;">
+        <h4>Special Guests / Observers</h4>
+        <div id="outGuestsNames"></div>
+    </div>
 
-        const renderBloodGroupCounts = () => {
-            const bloodCountsContainer = document.getElementById('blood-group-counts');
-            bloodCountsContainer.innerHTML = '';
-            
-            const bloodGroups = members.reduce((counts, member) => {
-                if(member.bloodGroup && member.bloodGroup !== 'N/A' && member.bloodGroup !== 'Unknown') {
-                    let group = member.bloodGroup.toUpperCase().trim();
-                    if (group) counts[group] = (counts[group] || 0) + 1;
-                }
-                return counts;
-            }, {});
+    <div class="content-section">
+        <h4>Agendas & Key Resolutions</h4>
+        <div id="outAgendas"></div>
+    </div>
 
-            const order = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
-            const sortedBloodGroups = Object.entries(bloodGroups).sort(([a], [b]) => {
-                return (order.indexOf(a) !== -1 ? order.indexOf(a) : 99) - (order.indexOf(b) !== -1 ? order.indexOf(b) : 99);
-            });
+    <div class="footer-sign">
+        <div class="sign-line">
+            <p id="outChairSign">Nabin Chalise</p>
+            <p>Meeting Chairperson</p>
+        </div>
+        <div class="sign-line">
+            <br>
+            <p>Club Secretary</p>
+        </div>
+    </div>
+</div>
 
-            sortedBloodGroups.forEach(([group, count]) => {
-                const bloodGroupElement = document.createElement('div');
-                bloodGroupElement.className = 'p-3 bg-red-100 rounded-lg text-center stat-card';
-                bloodGroupElement.innerHTML = `
-                    <div class="font-bold text-red-800 text-xl">${count}</div>
-                    <div class="text-sm text-red-600">${group}</div>
-                `;
-                bloodCountsContainer.appendChild(bloodGroupElement);
-            });
-        };
+<script>
+    // Master database roster mapping
+    const rosterData = [
+        { role: "CHARTERED PRESIDENT", name: "RTR. NEETU KHADKA" },
+        { role: "PRESIDENT", name: "RTR. NABIN CHALISE" },
+        { role: "SECRETARY", name: "RTR. MADAN SHARMA" },
+        { role: "TREASURER", name: "RTR. MANISH KANDEL" },
+        { role: "PP/ISD/ADVISOR", name: "RTR. ANIL SHRESTHA" },
+        { role: "IPP/MENTOR", name: "RTR. NABIN SUBEDI" },
+        { role: "PAST PRESIDENT/ADVISOR", name: "RTR. KAMAL KHAREL" },
+        { role: "PAST PRESIDENT/ADVISOR", name: "RTR. ISHOR GAUTAM" },
+        { role: "JOINT SECRETARY", name: "RTR. SAGAR CHALISE" },
+        { role: "PRESIDENT ELECT", name: "RTR. TIKA RAM GAUTAM" },
+        { role: "MEDICAL OFFICER", name: "RTR. DR. MANOJ KARKI" },
+        { role: "PP/ROTARACT LEARNING FACILITATOR", name: "RTR. LAXMI PUN" },
+        { role: "ROTARACT VICE PRESIDENT", name: "RTR. VIKASH SUBEDI" },
+        { role: "ROTARACT MEMBERSHIP CHAIR", name: "RTR. BIPIN CHALISE" },
+        { role: "IT OFFICER", name: "RTR. RAJU SAHANI (RJ)" },
+        { role: "SERGEANT AT ARMS", name: "RTR. LOKENDRA GAIRE" },
+        { role: "ROTARACT FOUNDATION CHAIR", name: "RTR. MANJEELA SHRESTHA" },
+        { role: "ROTARACT SERVICE PROJECTS CHAIR", name: "RTR. SMRITI BUDHATHOKI" },
+        { role: "ROTARACT YOUNG LEADERS CONTACT", name: "RTR. MELINA KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. AMRIT SUBEDI" },
+        { role: "CLUB MEMBER", name: "RTR. ANIL GANDARVA" },
+        { role: "CLUB MEMBER", name: "RTR. BALARAM ADHIKARI" },
+        { role: "CLUB MEMBER", name: "RTR. BIBEK KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. BIDUR KHAREL" },
+        { role: "CLUB MEMBER", name: "RTR. DEEPAK KHATTRI" },
+        { role: "CLUB MEMBER", name: "RTR. DURGA DARLAMI" },
+        { role: "CLUB MEMBER", name: "RTR. GANESH SAPKOTA" },
+        { role: "CLUB MEMBER", name: "RTR. JIT BAHADUR B.K." },
+        { role: "CLUB MEMBER", name: "RTR. KRIPA KANDEL" },
+        { role: "CLUB MEMBER", name: "RTR. MANISH GURUNG" },
+        { role: "CLUB MEMBER", name: "RTR. MIN THAPA" },
+        { role: "CLUB MEMBER", name: "RTR. NABIN GAIRE" },
+        { role: "CLUB MEMBER", name: "RTR. NABIN SHARMA POUDEL" },
+        { role: "CLUB MEMBER", name: "RTR. NETRA PRASAD LAMICHHANE" },
+        { role: "CLUB MEMBER", name: "RTR. PRAKASH KHADKA" },
+        { role: "CLUB MEMBER", name: "RTR. PRANSU RAM REGMI" },
+        { role: "CLUB MEMBER", name: "RTR. PRATAP SEN" },
+        { role: "CLUB MEMBER", name: "RTR. PRATIKSHYA DARJI" },
+        { role: "CLUB MEMBER", name: "RTR. RADHA GAUTAM" },
+        { role: "CLUB MEMBER", name: "RTR. ROMAN SUBEDI" },
+        { role: "CLUB MEMBER", name: "RTR. SANJU NEUPANE" },
+        { role: "CLUB MEMBER", name: "RTR. SANTOSH BOHORA CHETTRI" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL CHHETRI" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL GAUTAM" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL KHATIWAL" },
+        { role: "CLUB MEMBER", name: "RTR. SUNIL ROKA MAGAR" },
+        { role: "CLUB MEMBER", name: "TARA PRASAD SUNAR" },
+        { role: "CLUB MEMBER", name: "RTR. TUL BAHADUR B.K." }
+    ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const homeBtn = document.getElementById('homeBtn');
-            
-            renderMembers();
-            renderBirthdays();
-            renderBloodGroupCounts();
-            
-            // Search Input Event
-            searchInput.addEventListener('input', (event) => {
-                const query = event.target.value;
-                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-                renderMembers(query, activeFilter);
-            });
-            
-            // Filter Buttons Event
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    filterButtons.forEach(btn => btn.classList.remove('active', 'bg-indigo-600', 'text-white'));
-                    filterButtons.forEach(btn => btn.classList.add('bg-gray-200', 'text-gray-800'));
-                    
-                    button.classList.remove('bg-gray-200', 'text-gray-800');
-                    button.classList.add('active', 'bg-indigo-600', 'text-white');
-                    
-                    const filter = button.dataset.filter;
-                    const query = searchInput.value;
-                    renderMembers(query, filter);
-                });
-            });
+    // Build roster table checkboxes dynamically on init
+    const checklistContainer = document.getElementById('members-checklist');
+    rosterData.forEach((member, i) => {
+        const div = document.createElement('div');
+        div.className = 'checklist-item';
+        div.innerHTML = `
+            <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
+            <label for="memb_${i}">
+                <span>${member.name}</span>
+                <span class="member-role">${member.role}</span>
+            </label>
+        `;
+        checklistContainer.appendChild(div);
+    });
 
-            // Home Button Click Event (Resets filters and searches, then navigates if double clicked or acts as link)
-            homeBtn.addEventListener('click', (e) => {
-                // Clear search box
-                searchInput.value = '';
-                
-                // Reset filter buttons to 'All Members'
-                filterButtons.forEach(btn => btn.classList.remove('active', 'bg-indigo-600', 'text-white'));
-                filterButtons.forEach(btn => btn.classList.add('bg-gray-200', 'text-gray-800'));
-                
-                const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-                allBtn.classList.remove('bg-gray-200', 'text-gray-800');
-                allBtn.classList.add('active', 'bg-indigo-600', 'text-white');
-                
-                // Re-render full list
-                renderMembers('', 'all');
-                
-                // नोट: यदि तपाइँ यो बटन थिच्दा सिधै "index.html" मा जान चाहनुहुन्छ भने `e.preventDefault()` नगर्नुहोला।
-                // अहिले यसले फिल्टर पनि सफा गर्छ र तपाइँलाई मुख्य इन्डेक्स पेजमा पनि लैजान्छ।
-            });
+    // Set local system time securely as default value in input
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+    document.getElementById('meetDate').value = localISOTime;
+
+    // Attendance processing controller engine
+    function calculateAttendanceCounts() {
+        const checkedOfficialCount = document.querySelectorAll('.member-checkbox:checked').length;
+        const additionalCheckedCount = document.querySelectorAll('.add-member-checkbox:checked').length;
+        
+        document.getElementById('countPresent').value = checkedOfficialCount + additionalCheckedCount;
+        document.getElementById('countGuests').value = document.querySelectorAll('.guest-input-name').length;
+    }
+
+    // Dynamic row addition engines
+    function addNewMemberRow() {
+        const container = document.getElementById('additional-members-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row';
+        row.innerHTML = `
+            <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width: auto; margin-right: 5px; transform: scale(1.1);">
+            <input type="text" class="add-member-name" placeholder="Rtr. Name" style="width: 55%;" oninput="calculateAttendanceCounts()">
+            <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="width: 40%;">
+        `;
+        container.appendChild(row);
+        calculateAttendanceCounts();
+    }
+
+    // Dynamic guest addition
+    function addGuestRow() {
+        const container = document.getElementById('guests-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row';
+        row.innerHTML = `
+            <input type="text" class="guest-input-name" placeholder="Guest Full Name & Club/Designation Details" style="width: 100%;" oninput="calculateAttendanceCounts()">
+        `;
+        container.appendChild(row);
+        calculateAttendanceCounts();
+    }
+
+    // Dynamic agenda addition
+    function addAgendaRow() {
+        const container = document.getElementById('agenda-container');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row agenda-group';
+        row.innerHTML = `
+            <input type="text" class="agenda-title" placeholder="Agenda Title" style="width:35%;">
+            <textarea class="agenda-desc" placeholder="Decisions / Action points resolved..." rows="1" style="width:65%; resize:vertical;"></textarea>
+        `;
+        container.appendChild(row);
+    }
+
+    // Map UI data to structural print layer and launch PDF/print handler
+    function generateMinutesPDF() {
+        // Core Meta Mapping
+        document.getElementById('outMeetNo').innerText = document.getElementById('meetNo').value || 'Regular Meeting';
+        
+        const dateObj = new Date(document.getElementById('meetDate').value);
+        document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        
+        document.getElementById('outVenue').innerText = document.getElementById('meetVenue').value || 'N/A';
+        document.getElementById('outChair').innerText = document.getElementById('meetChair').value || 'Club President';
+        document.getElementById('outChairSign').innerText = document.getElementById('meetChair').value || '_______________________';
+        
+        // Recalculate explicitly
+        calculateAttendanceCounts();
+        document.getElementById('outPres').innerText = document.getElementById('countPresent').value;
+        document.getElementById('outGst').innerText = document.getElementById('countGuests').value;
+
+        // Compile Attended Members into Vertical Table
+        let memberTableHTML = `
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th class="col-sn">S.N.</th>
+                        <th class="col-name">Name</th>
+                        <th class="col-role">Designation</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let serialCounter = 1;
+        
+        // 1. Fetch from Main Checklist
+        document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+            const name = cb.getAttribute('data-name');
+            const role = cb.getAttribute('data-role');
+            memberTableHTML += `
+                <tr>
+                    <td style="text-align:center;">${serialCounter++}</td>
+                    <td>${name}</td>
+                    <td>${role}</td>
+                </tr>
+            `;
         });
-    </script>
+        
+        // 2. Fetch from Manually Added Rotaractors
+        document.querySelectorAll('.add-member-checkbox:checked').forEach(cb => {
+            const row = cb.parentElement;
+            const name = row.querySelector('.add-member-name').value.trim();
+            const role = row.querySelector('.add-member-role').value.trim();
+            if (name) {
+                memberTableHTML += `
+                    <tr>
+                        <td style="text-align:center;">${serialCounter++}</td>
+                        <td>${name.toUpperCase()}</td>
+                        <td>${role.toUpperCase()}</td>
+                    </tr>
+                `;
+            }
+        });
+
+        memberTableHTML += `</tbody></table>`;
+
+        const outMembersNode = document.getElementById('outPresentMembersNames');
+        if(serialCounter > 1) {
+            outMembersNode.innerHTML = memberTableHTML;
+            document.getElementById('print-section-members').style.display = 'block';
+        } else {
+            outMembersNode.innerHTML = "<p style='font-size:13px; color:#666;'>No members marked present.</p>";
+        }
+
+        // Compile Guest Data into Vertical Table
+        let guestTableHTML = `
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th class="col-sn">S.N.</th>
+                        <th style="width: 92%;">Guest Details (Name / Club / Designation)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let guestCounter = 1;
+        document.querySelectorAll('.guest-input-name').forEach(input => {
+            const val = input.value.trim();
+            if(val) {
+                guestTableHTML += `
+                    <tr>
+                        <td style="text-align:center;">${guestCounter++}</td>
+                        <td>${val}</td>
+                    </tr>
+                `;
+            }
+        });
+        
+        guestTableHTML += `</tbody></table>`;
+
+        const guestSectionNode = document.getElementById('print-section-guests');
+        if(guestCounter > 1) {
+            document.getElementById('outGuestsNames').innerHTML = guestTableHTML;
+            guestSectionNode.style.display = 'block';
+        } else {
+            guestSectionNode.style.display = 'none'; // Conditional auto-hide if empty
+        }
+
+        // Process composite lists (Agendas/Notes)
+        const agendaBlocks = document.querySelectorAll('.agenda-group');
+        let htmlContent = '';
+        
+        agendaBlocks.forEach((block, index) => {
+            const title = block.querySelector('.agenda-title').value;
+            const desc = block.querySelector('.agenda-desc').value;
+            if(title || desc) {
+                htmlContent += `
+                    <div class="agenda-item">
+                        <strong>Agenda ${index + 1}: ${title || 'General Floor Discussion'}</strong>
+                        <p style="margin: 4px 0 0 15px; color: #333; text-align: justify;">${desc || 'No resolutions documented.'}</p>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById('outAgendas').innerHTML = htmlContent || '<p>No formal agendas recorded.</p>';
+
+        // Trigger native system layout generation/PDF compiler
+        window.print();
+    }
+</script>
+
 </body>
 </html>
