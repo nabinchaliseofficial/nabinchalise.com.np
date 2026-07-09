@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nabin Chalise | Portfolio</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Official portfolio of Nabin Chalise - Computer Operator and ICT Professional specializing in municipal technical operations and education.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Nabin Chalise | Portfolio">
+    <meta property="og:description" content="Computer Operator and ICT Professional specializing in municipal technical operations and education.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nabinchalise.com.np">
+    <meta property="og:image" content="https://nabinchalise.com.np/og-image.jpg">
+    
+    <link rel="icon" type="image/x-icon" href="p/nabin.jpg">
+    
+    <!-- Performance Optimization: Preconnect to Font Delivery Systems -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase Official CDN Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Structured Data: Person Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Nabin Chalise",
+      "jobTitle": "Computer Operator",
+      "worksFor": {
+        "@type": "GovernmentOrganization",
+        "name": "Galkot Municipality"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Galkot, Gandaki Province",
+        "addressCountry": "Nepal"
+      },
+      "url": "https://nabinchalise.com.np"
+    }
+    </script>
+
+    <style>
+        /* ==========================================================================
+           1. DESIGN SYSTEM VARIABLES & TOKENS
+           ========================================================================== */
+        :root {
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 48px;
+            --spacing-xxl: 96px;
+
+            --bg-neutral-rgb: 248, 250, 252;
+            --bg-neutral: rgb(var(--bg-neutral-rgb));
+            --surface-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --brand-primary: #3b82f6;
+            --brand-hover: #1d4ed8;
+            --accent-cta: #10b981;
+            --accent-hover: #059669;
+            --border-color: #e2e8f0;
+            --focus-ring: #60a5fa;
+            
+            --radius-md: 12px;
+            --radius-sm: 6px;
+            --transition-smooth: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background-color 0.2s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-neutral-rgb: 15, 23, 42;
+            --bg-neutral: rgb(var(--bg-neutral-rgb));
+            --surface-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --brand-primary: #60a5fa;
+            --brand-hover: #3b82f6;
+            --border-color: #334155;
+            --focus-ring: #2563eb;
+        }
+
+        /* ==========================================================================
+           2. ACCESSIBILITY UTILITIES & RESET
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* App protection layout layer */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.15; }
+        h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; }
+        h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
+        p { font-size: clamp(0.95rem, 1vw + 0.5rem, 1.05rem); }
+
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: var(--spacing-lg);
+            background: var(--brand-primary);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            z-index: 2000;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus { top: var(--spacing-sm); }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        *:focus-visible {
+            outline: 3px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px; 
+            min-width: 44px;
+            padding: 10px var(--spacing-lg);
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+        }
+
+        .btn-primary { background-color: var(--brand-primary); color: #ffffff; }
+        .btn-primary:hover { background-color: var(--brand-hover); transform: translateY(-2px); }
+        .btn-accent { background-color: var(--accent-cta); color: #ffffff; }
+        .btn-accent:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
+
+        /* ==========================================================================
+           3. NAVIGATION MANAGEMENT
+           ========================================================================== */
+        .header-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(var(--bg-neutral-rgb), 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+
+        .header-nav.shrink {
+            padding: var(--spacing-xs) 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover { color: var(--brand-primary); }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .theme-toggle, .menu-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle { display: none; }
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background-color: var(--text-primary);
+            margin: 4px 0;
+            transition: var(--transition-smooth);
+        }
+
+        .theme-toggle .sun { display: block; }
+        .theme-toggle .moon { display: none; }
+        [data-theme="dark"] .theme-toggle .sun { display: none; }
+        [data-theme="dark"] .theme-toggle .moon { block; }
+
+        /* ==========================================================================
+           4. VISUAL SECTIONS (HERO, TIMELINES, CARDS)
+           ========================================================================== */
+        .section-padding { padding: var(--spacing-xxl) 0; }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(16, 185, 129, 0.02) 100%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: var(--spacing-xl);
+            align-items: center;
+        }
+
+        .hero-content .highlight { color: var(--brand-primary); }
+        .hero-tagline { color: var(--text-secondary); margin: var(--spacing-md) 0 var(--spacing-lg); }
+
+        .hero-figure {
+            border-left: 4px solid var(--accent-cta);
+            padding-left: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+        .hero-quote { font-style: italic; color: var(--text-secondary); }
+        .hero-caption { font-size: 0.85rem; color: var(--brand-primary); margin-top: var(--spacing-xs); }
+
+        .hero-image-wrapper { display: flex; justify-content: center; }
+        .hero-avatar {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid var(--surface-card);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .section-title { text-align: center; margin-bottom: var(--spacing-xl); position: relative; }
+        .section-title::after {
+            content: ''; display: block; width: 40px; height: 3px; background-color: var(--brand-primary); margin: var(--spacing-sm) auto 0; border-radius: 2px;
+        }
+
+        /* Skills Layout */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .skill-card {
+            background-color: var(--surface-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+        .skill-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
+
+        /* Timeline Integration (Education & Experience) */
+        .timeline-container { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); }
+        .timeline { position: relative; padding-left: var(--spacing-lg); }
+        .timeline::before {
+            content: ''; position: absolute; left: 0; top: 8px; width: 2px; height: 100%; background-color: var(--border-color);
+        }
+
+        .timeline-item { position: relative; margin-bottom: var(--spacing-lg); }
+        .timeline-dot {
+            position: absolute; left: -31px; top: 6px; width: 10px; height: 10px; border-radius: 50%;
+            background-color: var(--bg-neutral); border: 3px solid var(--brand-primary); box-shadow: 0 0 0 4px var(--surface-card);
+        }
+
+        .timeline-card {
+            background-color: var(--surface-card); padding: var(--spacing-lg); border-radius: var(--radius-md);
+            border: 1px solid var(--border-color); transition: var(--transition-smooth);
+        }
+        .timeline-card:hover { transform: translateY(-2px); border-color: var(--brand-primary); }
+        .timeline-year { font-size: 0.85rem; font-weight: 700; color: var(--brand-primary); margin-bottom: var(--spacing-xs); }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .contact-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--spacing-xl); }
+        .form-group { margin-bottom: var(--spacing-lg); position: relative; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: var(--spacing-sm); font-size: 0.9rem; }
+        .form-control {
+            width: 100%; min-height: 46px; padding: var(--spacing-sm) var(--spacing-md); background-color: var(--surface-card);
+            border: 1px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-sm); font-family: inherit;
+        }
+        .form-control:focus { outline: 3px solid var(--focus-ring); }
+
+        /* Authentication Notification Toast Layout */
+        .auth-status {
+            margin-top: var(--spacing-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+        .auth-status.error { color: #ef4444; display: block; }
+        .auth-status.success { color: #10b981; display: block; }
+
+        .social-row { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+        .social-btn {
+            width: 44px; height: 44px; border: 1px solid var(--border-color); border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: var(--transition-smooth);
+        }
+        .social-btn:hover { color: var(--brand-primary); border-color: var(--brand-primary); transform: scale(1.05); }
+        .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+        footer {
+            background-color: var(--surface-card); border-top: 1px solid var(--border-color); padding: var(--spacing-lg) 0;
+            text-align: center; font-size: 0.9rem; color: var(--text-secondary);
+        }
+        .footer-links a { color: var(--text-secondary); margin: 0 var(--spacing-md); text-decoration: none; }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 968px) {
+            .timeline-container, .contact-grid, .hero-grid { grid-template-columns: 1fr; gap: var(--spacing-xl); }
+            .hero-image-wrapper { order: -1; }
+            .hero-avatar { width: 180px; height: 180px; }
+            .section-padding { padding: var(--spacing-xl) 0; }
+            
+            .menu-toggle { display: flex; }
+            .nav-links {
+                position: fixed; top: 70px; right: 0; width: 280px; height: calc(100vh - 70px);
+                background-color: var(--surface-card); flex-direction: column; padding: var(--spacing-xl);
+                gap: var(--spacing-lg); border-left: 1px solid var(--border-color);
+                transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .nav-links.active { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header-nav" id="navbar">
+        <nav class="container nav-wrapper" role="navigation" aria-label="Main Navigation">
+            <a href="#" class="logo">Nabin Chalise</a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#history">History</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#auth-gateway">Portal Login</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle layout theme" aria-pressed="false">
+                    <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+                    <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <!-- Hero Section with Corrected Path Asset -->
+        <section class="hero" id="about">
+            <div class="container hero-grid">
+                <div class="hero-content reveal">
+                    <h1>Hi, I'm <span class="highlight">Nabin Chalise</span></h1>
+                    <p class="hero-tagline">Computer Operator & ICT Professional based in Galkot Municipality, Nepal[cite: 1]. Specializing in public sector computational systems and system structures.</p>
+                    <figure class="hero-figure">
+                        <blockquote class="hero-quote">
+                            <p>“Search may find the door; awareness dissolves the seeker.”[cite: 1]</p>
+                        </blockquote>
+                        <figcaption class="hero-caption">— Philosophical Foundation</figcaption>
+                    </figure>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                        <a href="#auth-gateway" class="btn btn-accent">Management Portal</a>
+                        <a href="resume.html" class="btn btn-primary">View Portfolio Resume</a>
+                    </div>
+                </div>
+                <div class="hero-image-wrapper reveal">
+                    <picture>
+                        <!-- Updated relative path mapping to p/nabin.jpg -->
+                        <img class="hero-avatar" src="p/nabin.jpg" alt="Portrait layout of Nabin Chalise" width="300" height="300" loading="eager" />
+                    </picture>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="section-padding" id="skills" style="background-color: var(--surface-card);">
+            <div class="container">
+                <h2 class="section-title">Expertise & Competencies</h2>
+                <div class="skills-grid">
+                    <div class="skill-card reveal">
+                        <h3>Municipal Operations</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Managing public databases, internal networks, processing governance portals, and records infrastructure.</p>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Information Systems</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Constructing framework labs, systemic network operations, data maintenance pipelines, and localized backup execution.</p>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Instructional IT</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Designing targeted computational logic instruction models for educational facilities and primary systems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Secure Supabase Portal Authentication Interface Gate -->
+        <section class="section-padding" id="auth-gateway" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(16, 185, 129, 0.02) 100%);">
+            <div class="container" style="max-width: 500px;">
+                <h2 class="section-title">Administrative Access</h2>
+                <div class="skill-card reveal" style="padding: var(--spacing-xl);">
+                    <form id="authForm" novalidate>
+                        <div class="form-group">
+                            <label for="auth-email">Admin Email Address</label>
+                            <input type="email" id="auth-email" class="form-control" placeholder="admin@domain.com" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="auth-password">Secret Token Password</label>
+                            <input type="password" id="auth-password" class="form-control" placeholder="••••••••••••" required autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">Authenticate Authorization</button>
+                        <div id="authStatusMessage" class="auth-status" role="status"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline History Matrix -->
+        <section class="section-padding" id="history">
+            <div class="container">
+                <div class="timeline-container">
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Professional Experience</h2>
+                        <div class="timeline">
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2025 — PRESENT</div>
+                                    <h3 class="timeline-role">Computer Operator[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Municipality[cite: 1] · Technical administration and system execution protocols.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2022</div>
+                                    <h3 class="timeline-role">Assistant Employment Officer[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Municipality[cite: 1] · Operational logistics for employment framework initiatives.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Academic Timeline</h2>
+                        <div class="timeline">
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2019</div>
+                                    <h3 class="timeline-role">ICT Teacher[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Secondary School[cite: 1] · Managed complete data framework literacy architectures.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2018</div>
+                                    <h3 class="timeline-role">Computer Lab Instruction[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Nawa Pravat School[cite: 1] · Hardware infrastructure logic deployment operations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Showcase -->
+        <section class="section-padding" id="projects" style="background-color: var(--surface-card);">
+            <div class="container">
+                <h2 class="section-title">Key Projects & Contributions</h2>
+                <div class="portfolio-grid">
+                    <div class="skill-card reveal">
+                        <h3>Municipal Data System</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Optimized record pipelines for local government databases, ensuring efficient internal lookups.</p>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">OPERATIONS FRAMEWORK</span>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Academic Lab Design</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Re-architected school computer hardware setups to scale active teaching workspace availability by 40%.</p>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">INFRASTRUCTURE</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section class="section-padding" id="contact">
+            <div class="container">
+                <h2 class="section-title">Direct Inquiries</h2>
+                <div class="contact-grid">
+                    <div class="contact-info-card reveal">
+                        <h3>Contact Information</h3>
+                        <p style="color: var(--text-secondary);">Reach out directly using the platforms below or drop a secure message.</p>
+                        <div style="margin-top: var(--spacing-md);">
+                            <p><strong>Location:</strong> Galkot, Gandaki, Nepal[cite: 1]</p>
+                            <p><strong>Phone:</strong> (977) 9851338747[cite: 1]</p>
+                            <p><strong>Email:</strong> officialnabincs3@gmail.com[cite: 1]</p>
+                        </div>
+                        <div class="social-row">
+                            <a href="https://www.facebook.com/nabinchaliseofficial/" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z"/></svg>
+                                <span class="visually-hidden">Facebook Profile (Opens external link)</span>
+                            </a>
+                            <a href="https://x.com/nabincs3" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                <span class="visually-hidden">X Twitter Profile (Opens external link)</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/nabinchalise/" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                <span class="visually-hidden">LinkedIn Profile (Opens external link)</span>
+                            </a>
+                        </div>
+                    </div>
+                    <form action="#" method="POST" class="contact-info-card reveal" style="gap:0;">
+                        <div class="form-group">
+                            <label for="form-name">Full Name</label>
+                            <input type="text" id="form-name" name="name" class="form-control" placeholder="Jane Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Email Address</label>
+                            <input type="email" id="form-email" name="email" class="form-control" placeholder="jane@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-message">Message Context</label>
+                            <textarea id="form-message" name="message" class="form-control" rows="4" placeholder="Your inquiry content..." required style="min-height:100px; resize:vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-accent" style="width:100%;">Transmit Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Nabin Chalise. All Rights Reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modularized, Enclosed JavaScript Architecture Execution Block -->
+    <script>
+        (() => {
+            "use strict";
+
+            // Security: Prevent code inspection via secondary context systems
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Initialize your specific target Supabase DB environment
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            const CoreController = {
+                init() {
+                    this.setupTheme();
+                    this.setupNavigation();
+                    this.setupScrollAnimations();
+                    this.setupAuthPortal();
+                },
+
+                setupTheme() {
+                    const themeToggle = document.getElementById('themeToggle');
+                    const getTheme = () => {
+                        const saved = localStorage.getItem('theme');
+                        if (saved) return saved;
+                        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    };
+                    const applyTheme = (theme) => {
+                        document.documentElement.setAttribute('data-theme', theme);
+                        localStorage.setItem('theme', theme);
+                        themeToggle.setAttribute('aria-pressed', theme === 'dark');
+                    };
+                    applyTheme(getTheme());
+                    themeToggle.addEventListener('click', () => {
+                        const current = document.documentElement.getAttribute('data-theme');
+                        applyTheme(current === 'dark' ? 'light' : 'dark');
+                    });
+                },
+
+                setupNavigation() {
+                    const navbar = document.getElementById('navbar');
+                    const menuToggle = document.getElementById('menuToggle');
+                    const navLinks = document.getElementById('navLinks');
+
+                    window.addEventListener('scroll', () => {
+                        navbar.classList.toggle('shrink', window.scrollY > 40);
+                    }, { passive: true });
+
+                    menuToggle.addEventListener('click', () => {
+                        const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+                        menuToggle.setAttribute('aria-expanded', !isExpanded);
+                        navLinks.classList.toggle('active');
+                    });
+
+                    navLinks.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            navLinks.classList.remove('active');
+                            menuToggle.setAttribute('aria-expanded', 'false');
+                        });
+                    });
+                },
+
+                setupScrollAnimations() {
+                    const elements = document.querySelectorAll('.reveal');
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('active');
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.1 });
+                    elements.forEach(el => observer.observe(el));
+                },
+
+                setupAuthPortal() {
+                    const form = document.getElementById('authForm');
+                    const statusMsg = document.getElementById('authStatusMessage');
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        statusMsg.className = "auth-status"; 
+                        statusMsg.textContent = "Verifying operational credentials...";
+                        statusMsg.classList.add('success');
+
+                        const email = document.getElementById('auth-email').value.trim();
+                        const password = document.getElementById('auth-password').value;
+
+                        try {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: email,
+                                password: password,
+                            });
+
+                            if (error) throw error;
+
+                            statusMsg.className = "auth-status success";
+                            statusMsg.textContent = "Access Granted. Redirecting to workspace...";
+                            
+                            setTimeout(() => {
+                                window.location.href = 'd.html';
+                            }, 800);
+
+                        } catch (err) {
+                            statusMsg.className = "auth-status error";
+                            statusMsg.textContent = err.message || "Authentication error encountered.";
+                        }
+                    });
+                }
+            };
+
+            document.addEventListener('DOMContentLoaded', () => CoreController.init());
+        })();
+    </script>
+</body>
+</html>
