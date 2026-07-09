@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>आन्तरिक राजस्व कार्यालय - गलकोट, बागलुङ</title>
+    <meta name="description" content="आन्तरिक राजस्व कार्यालय, गलकोटको आधिकारिक वेब पोर्टल। करदाता सेवा, प्यान दर्ता र अन्य जानकारी।">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--primary-light);
+        }
+
+        /* Hero Portal Section */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Portal Services Grid */
+        .main-content {
+            max-width: 1200px;
+            margin: -4rem auto 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .portal-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        /* Accent borders for specific cards */
+        .card-pan { border-top: 4px solid var(--primary-light); }
+        .card-tax { border-top: 4px solid #10b981; }
+        .card-charter { border-top: 4px solid #f59e0b; }
+        .card-docs { border-top: 4px solid #8b5cf6; }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-pan .icon-box { background-color: rgba(59, 130, 246, 0.1); color: var(--primary-light); }
+        .card-tax .icon-box { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .card-charter .icon-box { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .card-docs .icon-box { background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+
+        .portal-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .portal-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .btn-go {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .portal-card:hover .btn-go {
+            color: var(--primary-light);
+            gap: 12px;
+        }
+
+        /* Notice Section */
+        .notice-section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .notice-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .notice-box i {
+            font-size: 1.5rem;
+            color: #d97706;
+            margin-top: 3px;
+        }
+
+        .notice-box h4 {
+            font-size: 1.1rem;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+
+        .notice-box p {
+            color: #b45309;
+            font-size: 0.95rem;
+        }
+
+        /* Global Footer */
+        .main-footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .footer-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-info a {
+            color: #cbd5e1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .footer-info a:hover {
+            color: white;
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .nav-menu {
+                gap: 1.5rem;
+            }
+            .hero h2 {
+                font-size: 2rem;
+            }
+            .main-content {
+                margin-top: -2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Web Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <i class="fa-solid fa-building-columns logo-icon"></i>
+                <div class="logo-section-text">
+                    <h1 style="font-size: 1.25rem; color: var(--primary-color); font-weight: 700;">आन्तरिक राजस्व कार्यालय</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-light);">गलकोट, बागलुङ</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active">गृहपृष्ठ (Home)</a></li>
+                <li><a href="pan.html">प्यान दर्ता</a></li>
+                <li><a href="tel:068412111">सम्पर्क</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Portal Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h2>करदाता सेवा डिजिटल पोर्टल</h2>
+            <p>गलकोट नगरपालिका क्षेत्रभित्रका करदाताहरूका लागि आवश्यक सम्पूर्ण डिजिटल सेवा तथा मार्गदर्शनहरू।</p>
+        </div>
+    </header>
+
+    <!-- Main Entry Grid Content -->
+    <main class="main-content">
+        <div class="grid-container">
+            
+            <!-- Service 1: PAN Registration (LINKED TO PAN.HTML) -->
+            <a href="pan.html" class="portal-card card-pan">
+                <div class="icon-box"><i class="fa-solid fa-address-card"></i></div>
+                <h3>१. स्थायी लेखा नम्बर (PAN) दर्ता</h3>
+                <p>व्यावसायिक, व्यक्तिगत, प्रा.लि., र Joint-Venture (J.V.) प्यान दर्ताका लागि आवश्यक पर्ने सम्पूर्ण कागजातहरूको सूची र प्रिन्ट सेवा।</p>
+                <span class="btn-go">अगाडि बढ्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Service 2: Online Tax System -->
+            <div class="portal-card card-tax">
+                <div class="icon-box"><i class="fa-solid fa-calculator"></i></div>
+                <h3>२. अनलाइन कर प्रणाली</h3>
+                <p>आफ्नो व्यवसायको डिजिटल कर मूल्याङ्कन, आन्तरिक राजस्व दाखिला र अनलाइन कर तिर्ने विधिको बारेमा जानकारी प्राप्त गर्नुहोस्।</p>
+                <span class="btn-go" style="color: #10b981;">थप बुझ्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <!-- Service 3: Citizens Charter -->
+            <div class="portal-card card-charter">
+                <div class="icon-box"><i class="fa-solid fa-scroll"></i></div>
+                <h3>३. डिजिटल नागरिक बडापत्र</h3>
+                <p>कार्यालयबाट प्रदान गरिने सेवाहरू, लाग्ने समय, जिम्मेवार अधिकारी र आवश्यक दस्तुर सम्बन्धी पूर्ण नागरिक बडापत्र विवरण।</p>
+                <span class="btn-go" style="color: #f59e0b;">विवरण हेर्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <!-- Service 4: Downloadable Forms -->
+            <div class="portal-card card-docs">
+                <div class="icon-box"><i class="fa-solid fa-file-arrow-down"></i></div>
+                <h3>४. फारम तथा डाउनलोडहरू</h3>
+                <p>विभिन्न कर प्रयोजनका लागि आवश्यक पर्ने निवेदन ढाँचाहरू, दर्ता फारमहरू र सरकारी निर्देशिकाहरू निःशुल्क डाउनलोड गर्नुहोस्।</p>
+                <span class="btn-go" style="color: #8b5cf6;">डाउनलोड गर्नुहोस <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Important Notice Strip -->
+    <section class="notice-section">
+        <div class="notice-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                <h4>महत्वपूर्ण सूचना !</h4>
+                <p>नयाँ प्यान (PAN) दर्ताको लागि अनलाइन फारम भर्नु अघि आफूसँग सम्बन्धित सबै आवश्यक सक्कल कागजातहरू साथमा राख्नुहुन अनुरोध गरिन्छ। विस्तृत जानकारीको लागि 'प्यान दर्ता' मार्गदर्शनमा जानुहोस्।</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <h4>आन्तरिक राजस्व कार्यालय, गलकोट</h4>
+            <div class="footer-info">
+                <a href="tel:068412111"><i class="fa-solid fa-phone" style="color:var(--secondary-color)"></i> फोन: 068-412111</a>
+                <a href="mailto:irdgalkot@gmail.com"><i class="fa-solid fa-envelope" style="color:var(--primary-light)"></i> इमेल: irdgalkot@gmail.com</a>
+            </div>
+            <div class="copyright">
+                &copy; 2026 आन्तरिक राजस्व कार्यालय, गलकोट। सम्पूर्ण अधिकार सुरक्षित।
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>प्यान (PAN) दर्ताका लागि आवश्यक कागजातहरू - आन्तरिक राजस्व कार्यालय, गलकोट</title>
+    <meta name="description" content="व्यावसायिक प्यान, सहकारी, प्रा.लि., र Joint-Venture (J.V.) दर्ताका लागि आवश्यक पर्ने कागजातहरूको आधिकारिक सूची।">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #4b5563;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .nav-contact {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 500;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Main Section & Cards Grid */
+        .main-content {
+            max-width: 1200px;
+            margin: -3rem auto 4rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .card-header {
+            padding: 1.75rem 2rem;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .card:nth-child(2) .card-icon { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .card:nth-child(3) .card-icon { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .card:nth-child(4) .card-icon { background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+
+        .card-header h3 {
+            font-size: 1.35rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 2rem;
+            flex-grow: 1;
+        }
+
+        .doc-list {
+            list-style: none;
+        }
+
+        .doc-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            font-size: 1.05rem;
+            text-align: left;
+        }
+
+        .doc-list li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #10b981;
+            font-size: 0.95rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Actions Section for Buttons */
+        .card-actions {
+            padding: 0 2rem 1.5rem 2rem;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-print {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-print:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .card-footer {
+            padding: 1.25rem 2rem;
+            background-color: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .contact-pill {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .contact-pill:hover {
+            color: var(--primary-light);
+        }
+
+        /* Official Print Letterhead - Hidden on normal screen */
+        #print-letterhead {
+            display: none;
+        }
+
+        /* Global Footer */
+        .main-footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .footer-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-info a {
+            color: #cbd5e1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .footer-info a:hover {
+            color: white;
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* OPTIMIZED FOR A4 PAGE PRINTING */
+        @media print {
+            @page {
+                size: A4;
+                margin: 20mm 15mm 20mm 15mm; /* Clean official margins */
+            }
+
+            body {
+                background-color: white !important;
+                color: black !important;
+                font-size: 13pt; /* Maximized readability size for A4 */
+                padding: 0;
+                width: 100%;
+            }
+            
+            /* Hide non-print structures */
+            .navbar, .hero, .card-actions, .card-footer, .main-footer {
+                display: none !important;
+            }
+
+            /* Perfect Header Alignment from Photo */
+            #print-letterhead {
+                display: block !important;
+                width: 100%;
+                margin-bottom: 35px;
+            }
+
+            .lh-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .lh-left {
+                width: 20%;
+                text-align: left;
+            }
+
+            .lh-left img {
+                width: 115px;
+                height: auto;
+            }
+
+            .lh-center {
+                text-align: center;
+                width: 60%;
+                margin-top: 5px;
+            }
+
+            .lh-center h2 {
+                color: #ef4444 !important; /* Vivid Red from Image */
+                font-size: 22pt;
+                font-weight: 700;
+                margin-bottom: 4px;
+                letter-spacing: 0.5px;
+            }
+
+            .lh-center h3 {
+                color: #ef4444 !important;
+                font-size: 17pt;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            .lh-center p {
+                color: #ef4444 !important;
+                font-size: 13pt;
+                font-weight: 500;
+                margin-bottom: 3px;
+            }
+
+            .lh-right {
+                text-align: right;
+                width: 20%;
+                font-size: 11pt;
+                color: #000;
+                font-weight: 500;
+                line-height: 1.5;
+                margin-top: 5px;
+            }
+
+            /* Crisp double border layout line from the image */
+            .lh-border {
+                margin-top: 15px;
+                border-top: 3px solid #f97316;
+                border-bottom: 1px solid #f97316;
+                height: 5px;
+                width: 100%;
+            }
+
+            .main-content {
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            
+            .grid-container {
+                display: block !important;
+            }
+
+            /* Content fully sized to fit beautifully inside the A4 sheet grid */
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .card-header {
+                background: none !important;
+                border-bottom: 2px dashed #1e3a8a !important;
+                padding: 0 0 10px 0 !important;
+                margin-bottom: 20px;
+            }
+
+            .card-icon {
+                display: none !important;
+            }
+
+            .card-header h3 {
+                font-size: 16pt !important;
+                color: #1e3a8a !important;
+                font-weight: bold !important;
+            }
+
+            .card-body {
+                padding: 5px 0 0 0 !important;
+            }
+
+            .doc-list li {
+                color: black !important;
+                font-size: 13pt !important; /* Scaled text font size */
+                padding-left: 1.8rem !important;
+                margin-bottom: 14px !important; /* Comfortable spacing */
+                line-height: 1.5;
+            }
+
+            .doc-list li::before {
+                content: "✔" !important;
+                font-family: inherit !important;
+                color: #1e3a8a !important;
+                background: none !important;
+                width: auto !important;
+                height: auto !important;
+                font-size: 12pt !important;
+                top: 1px !important;
+                font-weight: bold !important;
+            }
+            
+            /* Logic to print only the selected card on a beautiful single page */
+            .print-single-card .card {
+                display: none !important;
+            }
+            .print-single-card .card.active-print {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .main-content {
+                margin-top: -1.5rem;
+                padding: 0 1rem;
+            }
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Official Letterhead Layout for PDF/Printing (A4 Fit) -->
+    <div id="print-letterhead">
+        <div class="lh-container">
+            <div class="lh-left">
+                <!-- Government Logo File Referenced Here -->
+                <img src="goverment-logo.jpg" alt="नेपाल सरकार लोगो">
+            </div>
+            <div class="lh-center">
+                <h2>गलकोट नगरपालिका</h2>
+                <h3>नगर कार्यपालिकाको कार्यालय</h3>
+                <p>गलकोट, बागलुङ</p>
+                <p>गण्डकी प्रदेश, नेपाल</p>
+            </div>
+            <div class="lh-right">
+                <div><strong>फोन नं:</strong> ०६८-४१२११०</div>
+                <div style="margin-top: 8px;"><strong>मिति:</strong> <span id="print-date"></span></div>
+                <div><strong>समय:</strong> <span id="print-time"></span></div>
+            </div>
+        </div>
+        <div class="lh-border"></div>
+    </div>
+
+    <!-- Web Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <i class="fa-solid fa-building-columns logo-icon"></i>
+                <div class="logo-text">
+                    <h1>आन्तरिक राजस्व कार्यालय</h1>
+                    <p>गलकोट, बागलुङ</p>
+                </div>
+            </div>
+            <div class="nav-contact">
+                <a href="tel:068412111" class="nav-link"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                <a href="mailto:irdgalkot@gmail.com" class="nav-link"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <span class="hero-tag"><i class="fa-solid fa-circle-info"></i> करदाता सेवा मार्गदर्शन</span>
+            <h2>स्थायी लेखा नम्बर (PAN) दर्ता</h2>
+            <p>विभिन्न प्रकृतिका व्यवसाय तथा संस्थाहरू दर्ता प्रक्रियाका लागि आवश्यक पर्ने कागजातहरूको आधिकारिक विवरण।</p>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="main-content">
+        <div class="grid-container">
+            
+            <!-- Card 1: Business PAN -->
+            <section class="card" id="card-1">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-briefcase"></i></div>
+                    <h3>१. व्यावसायिक प्यान (Business PAN)</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="doc-list">
+                        <li>दर्ता प्रमाण पत्रको फोटोकपी</li>
+                        <li>नागरिकताको फोटोकपी</li>
+                        <li>घरभाडा सम्झौता पत्र / मन्जुरीनामा (लालपुर्जा सहित)</li>
+                        <li>रु. १० को टिकेट</li>
+                        <li>रेकर्ड फाइल</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-print" onclick="printCard('card-1')">
+                        <i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड
+                    </button>
+                </div>
+                <div class="card-footer">
+                    <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                    <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+                </div>
+            </section>
+
+            <!-- Card 2: Cooperative/NGO/Committee -->
+            <section class="card" id="card-2">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                    <h3>२. सहकारी / संघ / संस्था / समूह / समिति / NGO</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="doc-list">
+                        <li>दर्ता प्रमाण पत्रको फोटोकपी</li>
+                        <li>माइन्युटमा प्यान नं. र अख्तियारी लिने सम्बन्धी निर्णय</li>
+                        <li>समितिमा भएका व्यक्तिहरूको नागरिकताको फोटोकपी</li>
+                        <li>विधानको फोटोकपी</li>
+                        <li>घरभाडा सम्झौता पत्र / मन्जुरीनामा (लालपुर्जा सहित)</li>
+                        <li>लेखा परीक्षण प्रतिवेदन <small style="color:var(--secondary-color); font-weight:500;">(यदि अघिल्लो आ.व. मा दर्ता भएको भए)</small></li>
+                        <li>संस्थाको आधिकारिक छाप</li>
+                        <li>रु. १० को टिकेट</li>
+                        <li>रेकर्ड फाइल</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-print" onclick="printCard('card-2')">
+                        <i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड
+                    </button>
+                </div>
+                <div class="card-footer">
+                    <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                    <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+                </div>
+            </section>
+
+            <!-- Card 3: Pvt. Ltd. -->
+            <section class="card" id="card-3">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-building"></i></div>
+                    <h3>३. प्रा.लि. (Private Limited)</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="doc-list">
+                        <li>प्रा.लि. दर्ताको प्रमाण पत्रको फोटोकपी (कम्पनी रजिष्ट्रारको कार्यालय)</li>
+                        <li>प्रबन्धपत्रको फोटोकपी (Memorandum of Association)</li>
+                        <li>नियमावलीको फोटोकपी (Articles of Association)</li>
+                        <li>सञ्चालकहरूको नागरिकताको फोटोकपी</li>
+                        <li>स्थायी लेखा नम्बर लिनका लागि कुनै सञ्चालकलाई अख्तियारी दिने सम्बन्धमा सञ्चालक समितिको निर्णयको फोटोकपी</li>
+                        <li>घरभाडा सम्झौता पत्र / मन्जुरीनामा (लालपुर्जा सहित)</li>
+                        <li>लेखा परीक्षण प्रतिवेदन <small style="color:var(--secondary-color); font-weight:500;">(यदि अघिल्लो आ.व. मा दर्ता भएको भए)</small></li>
+                        <li>कम्पनीको छाप</li>
+                        <li>रु. १० को टिकट</li>
+                        <li>अख्तियार प्राप्त सञ्चालकको स्थायी लेखा नम्बर (व्यावसायिक / व्यक्तिगत PAN)</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-print" onclick="printCard('card-3')">
+                        <i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड
+                    </button>
+                </div>
+                <div class="card-footer">
+                    <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                    <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+                </div>
+            </section>
+
+            <!-- Card 4: Joint Venture -->
+            <section class="card" id="card-4">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <h3>४. Joint-Venture (J.V.)</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="doc-list">
+                        <li>JV Document</li>
+                        <li>Power of Attorney</li>
+                        <li>छाप भएको बैठक बसेको निवेदन</li>
+                        <li>Contract Agreement</li>
+                        <li>SCC (to know project start date and end date)</li>
+                        <li>सबै Partner को PAN दर्ता फर्मको फोटोकपी</li>
+                        <li>सबै Partner को घरेलु दर्ताको फोटोकपी</li>
+                        <li>सबै Partner को कम्पनी रजिष्ट्रार दर्ताको फोटोकपी</li>
+                        <li>घरभाडा सम्झौता पत्र / मन्जुरीनामा (लालपुर्जा सहित)</li>
+                        <li>संस्थाको छाप</li>
+                        <li>रु. १० को टिकेट</li>
+                        <li>रेकर्ड फाइल</li>
+                        <li>सबै Partner को करचुक्ता प्रमाण पत्र (Tax Clearance)</li>
+                        <li>सम्बन्धित कार्यालयबाट VAT मा दर्ता गरिदिने पत्र</li>
+                        <li>सबै Partner को नागरिकताको फोटोकपी</li>
+                        <li>अख्तियार प्राप्त सञ्चालकको स्थायी लेखा नम्बर (व्यावसायिक / व्यक्तिगत)</li>
+                    </ul>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-print" onclick="printCard('card-4')">
+                        <i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड
+                    </button>
+                </div>
+                <div class="card-footer">
+                    <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                    <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <h4>आन्तरिक राजस्व कार्यालय, गलकोट</h4>
+            <div class="footer-info">
+                <a href="tel:068412111"><i class="fa-solid fa-phone" style="color:var(--secondary-color)"></i> फोन: 068-412111</a>
+                <a href="mailto:irdgalkot@gmail.com"><i class="fa-solid fa-envelope" style="color:var(--primary-light)"></i> इमेल: irdgalkot@gmail.com</a>
+            </div>
+            <div class="copyright">
+                &copy; 2026 आन्तरिक राजस्व कार्यालय, गलकोट। सम्पूर्ण अधिकार सुरक्षित।
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function printCard(cardId) {
+            // Update dynamic Date and Time instantly on the official layout
+            const now = new Date();
+            
+            // Format Date to YYYY-MM-DD
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('print-date').innerText = `${year}-${month}-${day}`;
+            
+            // Format Time to HH:MM
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('print-time').innerText = `${hours}:${minutes}`;
+
+            // Adjust document flow classes specifically for beautiful print targeting
+            document.body.classList.add('print-single-card');
+            const card = document.getElementById(cardId);
+            card.classList.add('active-print');
+            
+            // Fire off print dialog
+            window.print();
+            
+            // Reset state seamlessly back for continuous web viewing
+            document.body.classList.remove('print-single-card');
+            card.classList.remove('active-print');
+        }
+    </script>
+</body>
+</html>
