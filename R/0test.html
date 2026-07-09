@@ -2,591 +2,897 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Upcoming Initiatives | RAC Galkot Baglung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Rotaract Club of Galkot Baglung</title>
+    <meta name="description" content="Official dashboard for Rotaract Club of Galkot Baglung, RI District 3292. Tracking our milestones, strategic goals, and community updates.">
+    
+    <!-- Tailwind CSS CDN (Required for the Board Component) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        /* Modern CSS Custom Variables & Reset */
         :root {
-            --accent-pink: #D70060;
-            --rotary-blue: #015491;
-            --slate-900: #0F172A;
-            --slate-800: #1E293B;
-            --slate-600: #475569;
-            --slate-400: #94A3B8;
-            --slate-100: #F1F5F9;
-            --slate-50: #F8FAFC;
-            --border-color: #E2E8F0;
+            --primary-color: #D91A5C; /* Rotaract Cranberry Pink */
+            --primary-dark: #A61042;
+            --secondary-color: #1D2A44; /* Royal Navy */
+            --accent-gold: #D4AF37;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --radius-lg: 16px;
             --radius-md: 12px;
-            --radius-sm: 8px;
-            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--slate-50);
-            color: var(--slate-800);
-            padding: 100px 16px 40px 16px;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px 10px;
+            min-height: 100vh;
         }
 
-        .main-wrapper {
+        /* Accessibility: Skip to main link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.2s;
+        }
+        .skip-link:focus { top: 0; }
+
+        .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* PREMIUM STICKY HEADER */
-        .premium-nav-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-            padding: 14px 24px;
+        /* Modern Hero Header Section */
+        header {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #111827 100%);
+            color: #ffffff;
+            padding: 40px 30px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(217,26,92,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #f0f4f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        /* Portal Live Status Bar */
+        .status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-        }
-
-        .nav-branding {
-            font-weight: 800;
-            font-size: 0.95rem;
-            color: var(--rotary-blue);
-            letter-spacing: 0.5px;
-        }
-
-        .back-home-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            color: var(--slate-900);
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            background: #FFFFFF;
-            transition: var(--transition-smooth);
-        }
-
-        .back-home-link:hover {
-            border-color: var(--accent-pink);
-            color: var(--accent-pink);
-            transform: translateY(-1px);
-        }
-
-        /* HERO SECTION */
-        .dashboard-hero {
-            margin-bottom: 32px;
-            text-align: left;
-        }
-
-        .dashboard-hero h1 {
-            font-size: 2.2rem;
-            color: var(--slate-900);
-            font-weight: 800;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-
-        .dashboard-hero p {
-            color: var(--accent-pink);
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* INTERACTIVE CONTROL BAR */
-        .search-filter-bar {
-            display: flex;
+            flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .search-wrapper {
-            position: relative;
-            flex-grow: 1;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 16px 14px 40px;
-            border: 1px solid var(--border-color);
-            background: #FFFFFF;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            color: var(--slate-900);
-            outline: none;
-            transition: var(--transition-smooth);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
-
-        .search-input:focus {
-            border-color: var(--rotary-blue);
-            box-shadow: 0 0 0 3px rgba(1, 84, 145, 0.15);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--slate-400);
-            pointer-events: none;
-        }
-
-        /* DATA MATRIX CONTAINER */
-        .table-container {
-            background: #FFFFFF;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.03);
-            overflow: hidden;
-        }
-
-        .project-row-header {
-            display: grid;
-            grid-template-columns: 2.2fr 1fr 1.3fr 1.5fr 1fr;
-            background: var(--slate-100);
+            background: var(--card-bg);
             padding: 16px 24px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--slate-600);
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        .project-row {
-            display: grid;
-            grid-template-columns: 2.2fr 1fr 1.3fr 1.5fr 1fr;
-            padding: 20px 24px;
+        .status-item {
+            display: flex;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            transition: var(--transition-smooth);
-        }
-
-        .project-row:last-child {
-            border-bottom: none;
-        }
-
-        .project-row:hover {
-            background: rgba(1, 84, 145, 0.02);
-        }
-
-        .row-title {
-            font-weight: 700;
-            color: var(--slate-900);
-            font-size: 1.05rem;
-            padding-right: 12px;
-        }
-
-        .row-date {
-            font-weight: 700;
-            color: var(--rotary-blue);
-            font-size: 0.9rem;
-        }
-
-        .row-audience, .row-location {
-            color: var(--slate-600);
             font-size: 0.95rem;
-            padding-right: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        /* TOUCH-FRIENDLY BUTTONS */
-        .btn-action-trigger {
-            background: var(--slate-900);
-            color: #FFFFFF;
-            border: none;
-            padding: 12px 18px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            width: 100%;
+        .status-item strong {
+            color: var(--text-main);
+            margin-left: 6px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Navigation Grid */
+        .nav-tabs-container {
+            margin-bottom: 40px;
+        }
+
+        .nav-tabs {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .nav-tabs a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: var(--card-bg);
+            text-decoration: none;
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(226, 232, 240, 0.7);
+            transition: var(--transition);
             text-align: center;
         }
 
-        .btn-action-trigger:hover, .btn-action-trigger:active {
-            background: var(--accent-pink);
-            transform: translateY(-1px);
+        .nav-tabs a:hover, .nav-tabs a:focus {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            outline: none;
         }
 
-        /* PERSISTENT SIDE DRAWER MODULE */
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
+        .nav-tabs .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            transition: var(--transition);
         }
 
-        .drawer-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
+        .nav-tabs a:hover .icon {
+            transform: scale(1.15);
         }
 
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            max-width: 480px;
-            height: 100%;
-            background: #FFFFFF;
-            box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12);
-            z-index: 201;
+        .nav-tabs .tab-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+        }
+
+        /* Narrative/About Club Section */
+        .about-section {
+            background: var(--card-bg);
+            padding: 40px 35px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            margin-bottom: 40px;
+        }
+
+        .about-section h2 {
+            font-size: 1.75rem;
+            color: var(--secondary-color);
+            margin-bottom: 24px;
             display: flex;
-            flex-direction: column;
-            transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 12px;
         }
 
-        .drawer-overlay.open .side-drawer {
-            right: 0;
+        .about-text p {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.05rem;
         }
 
-        .drawer-header {
+        .highlight-box {
+            background: linear-gradient(to right, #fff5f7, #fff);
+            border-left: 4px solid var(--primary-color);
             padding: 24px;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 28px 0;
+            font-style: italic;
+            color: #319795;
+            font-size: 1.05rem;
+            box-shadow: inset 0 0 8px rgba(219,26,92,0.02);
         }
 
-        .drawer-close {
+        .jay-rotaract {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: #fff5f7;
+            border-radius: 20px;
+        }
+
+        /* Floating Modern Dynamic Interactive Button Design Component Layouts */
+        .home-btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-color);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home-btn:hover, .home-btn:focus {
+            background: #111827;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 20px -5px rgba(0,0,0,0.2);
+            outline: none;
+        }
+
+        /* Ripple Effect System Styles */
+        .ripple {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--slate-100);
-            border: none;
-            font-size: 1.25rem;
-            width: 36px;
-            height: 36px;
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
-            cursor: pointer;
+            transform: scale(0);
+            animation: ripple-animation 0.5s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .clicked-exit {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* Corporate Styled Footer Layout */
+        footer {
+            background: #111827;
+            color: #f9fafb;
+            padding: 50px 20px 30px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-club-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .footer-desc {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            max-width: 500px;
+            margin: 0 auto 28px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+
+        .social-icon-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1f2937;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--slate-600);
-            transition: var(--transition-smooth);
+            transition: var(--transition);
+            color: #fff;
+            text-decoration: none;
         }
 
-        .drawer-close:hover {
-            background: var(--accent-pink);
-            color: white;
+        .social-icon-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
         }
 
-        .drawer-header h3 {
-            color: var(--slate-900);
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .drawer-header p {
-            font-size: 0.8rem;
-            color: var(--accent-pink);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .drawer-body {
-            padding: 24px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        /* FORM MANAGEMENT UTILITIES */
-        .input-block {
-            margin-bottom: 18px;
-        }
-
-        .input-block label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--slate-900);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #CBD5E1;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
+        .social-icon-link:hover, .social-icon-link:focus {
+            transform: translateY(-4px);
             outline: none;
-            transition: var(--transition-smooth);
-            background: #FFFFFF;
-            color: var(--slate-900);
         }
 
-        .input-field:focus {
-            border-color: var(--rotary-blue);
-            box-shadow: 0 0 0 3px rgba(1, 84, 145, 0.12);
+        .social-icon-link.fb:hover { background-color: #1877F2; }
+        .social-icon-link.ig:hover { background-color: #E1306C; }
+        .social-icon-link.li:hover { background-color: #0077B5; }
+        .social-icon-link.mail:hover { background-color: var(--primary-color); }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: #6b7280;
+            border-top: 1px solid #1f2937;
+            padding-top: 24px;
         }
 
-        .input-field[readonly] {
-            background: var(--slate-100);
-            color: var(--slate-600);
-            border-color: var(--border-color);
-            font-weight: 600;
+        /* ------------------------------------------------------------- */
+        /* BOARD OF DIRECTORS ADDITIONS (FROM SOURCE 1)                  */
+        /* ------------------------------------------------------------- */
+        .cinzel-font {
+            font-family: 'Cinzel', serif;
         }
 
-        .btn-drawer-submit {
-            background: var(--rotary-blue);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            margin-top: 8px;
-            box-shadow: 0 2px 4px rgba(1, 84, 145, 0.1);
+        /* Interactive Animated Title Bar */
+        .interactive-title-bar {
+            background: linear-gradient(-45deg, #1e293b, #0f172a, #2d121c, #111827);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
+            transition: all 0.5s ease;
+        }
+        .interactive-title-bar:hover {
+            background-size: 200% 200%;
+            box-shadow: inset 0 0 20px rgba(219, 26, 92, 0.2);
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .btn-drawer-submit:hover {
-            background: var(--accent-pink);
-            box-shadow: 0 4px 8px rgba(215, 0, 96, 0.2);
+        /* Highly dynamic compound frame styling */
+        .dynamic-frame-container {
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* MOBILE ARCHITECTURE STYLING */
-        @media (max-width: 900px) {
-            body { padding-top: 84px; }
-            .premium-nav-bar { padding: 12px 16px; }
-            .dashboard-hero h1 { font-size: 1.75rem; }
-            .project-row-header { display: none; }
-            
-            .project-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
-                padding: 20px 16px;
-                border-bottom: 8px solid var(--slate-100);
-            }
-            
-            .project-row:last-child {
-                border-bottom: none;
-            }
+        /* Outer layered accent ring */
+        .dynamic-frame-container::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 2px solid #baa697;
+            opacity: 0.4;
+            clip-path: polygon(18px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 18px);
+            transition: all 0.4s ease;
+            z-index: 0;
+        }
 
-            .row-title {
-                font-size: 1.1rem;
-                margin-bottom: 2px;
-            }
+        /* Core asymmetrical inner frame */
+        .dynamic-cut-frame {
+            clip-path: polygon(16px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 16px);
+            border: 2px solid #a38a75;
+            background-color: #c4b2a4;
+            position: relative;
+            z-index: 10;
+        }
 
-            .row-date::before { content: "📅 "; }
-            .row-audience::before { content: "🎯 Focus: "; font-weight: 700; color: var(--slate-900); font-size: 0.85rem;}
-            .row-location::before { content: "📍 Hub: "; font-weight: 700; color: var(--slate-900); font-size: 0.85rem;}
-            
-            .row-audience, .row-location, .row-date {
-                font-size: 0.9rem;
-            }
+        /* Interactive hover state animations */
+        .dynamic-frame-container:hover {
+            transform: translateY(-6px) scale(1.03);
+        }
+        
+        .dynamic-frame-container:hover::before {
+            inset: -8px;
+            opacity: 0.8;
+            border-color: #D91A5C;
+        }
 
-            .action-cell {
-                margin-top: 6px;
-                width: 100%;
-            }
-            
-            .btn-action-trigger {
-                padding: 14px;
-                font-size: 0.9rem;
-            }
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
 
-            .side-drawer {
-                max-width: 100%;
-                height: 100%;
-                border-radius: 0;
-            }
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            body { padding: 12px 6px; }
+            header { padding: 30px 16px; }
+            header h1 { font-size: 1.75rem; }
+            .status-bar { flex-direction: column; align-items: flex-start; padding: 14px 18px; gap: 8px; }
+            .nav-tabs { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+            .nav-tabs a { padding: 16px 12px; }
+            .nav-tabs .icon { font-size: 1.6rem; margin-bottom: 8px; }
+            .about-section { padding: 25px 20px; }
+            .home-btn-container { bottom: 20px; right: 20px; }
         }
     </style>
 </head>
 <body>
 
-<!-- STICKY HEADER -->
-<nav class="premium-nav-bar">
-    <div class="nav-branding">ROTARACT GALKOT BAGLUNG</div>
-    <a href="index.html" class="back-home-link">🏠 Home</a>
-</nav>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
-<div class="main-wrapper">
-    <section class="dashboard-hero">
-        <h1>Upcoming Project Schedule</h1>
-        <p>Rotaract Year 2026-27 Strategic Matrix</p>
-    </section>
+<div class="dashboard-container">
+    <!-- Modern Hero Section -->
+    <header role="banner">
+        <h1>Rotaract Club of Galkot Baglung</h1>
+        <p>RI District 3292 | Rota Year 2026-27</p>
+    </header>
 
-    <!-- SEARCH & FILTER INTERACTION DESK -->
-    <div class="search-filter-bar">
-        <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="matrixSearchInput" class="search-input" placeholder="Search initiatives, deployments, or tracks..." oninput="filterMatrixGrid()">
+    <!-- Operational System Status Bar -->
+    <div class="status-bar" aria-label="System Status">
+        <div class="status-item">
+            <span>📅 Today:</span>
+            <strong id="live-date">Loading date...</strong>
+        </div>
+        <div class="status-item">
+            <span class="status-indicator" aria-hidden="true"></span>
+            <span>⚡ Portal Status:</span>
+            <strong>Operational (R.Y. Active)</strong>
         </div>
     </div>
+    
+    <main id="main-content">
+        <!-- Unified Administrative Dashboard Navigation Tabs -->
+        <nav class="nav-tabs-container" aria-label="Dashboard Navigation">
+            <ul class="nav-tabs">
+                <li>
+                    <a href="birthdays.html">
+                        <span class="icon" aria-hidden="true">📅</span>
+                        <span class="tab-title">RAC Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="minutes.html">
+                        <span class="icon" aria-hidden="true">📝</span>
+                        <span class="tab-title">e-Minutes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="strategic-planning.html">
+                        <span class="icon" aria-hidden="true">🎯</span>
+                        <span class="tab-title">Vision & Goals</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="upcomming-projects.html">
+                        <span class="icon" aria-hidden="true">🚀</span>
+                        <span class="tab-title">Upcoming Projects</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="past-projects.html">
+                        <span class="icon" aria-hidden="true">⏳</span>
+                        <span class="tab-title">Past Projects</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="anthem.html">
+                        <span class="icon" aria-hidden="true">🎵</span>
+                        <span class="tab-title">Club Anthem</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-    <!-- ENGINE OUTPUT CONTAINER -->
-    <div class="table-container">
-        <div class="project-row-header">
-            <div>Initiative Title</div>
-            <div>Timeline</div>
-            <div>Target Focus</div>
-            <div>Deployment Hub</div>
-            <div>Action Grid</div>
-        </div>
-        <div id="dynamic-rows-hook">
-            <!-- Programmatic updates route here -->
-        </div>
-    </div>
+        <!-- FULL INTERACTIVE BOARD OF DIRECTORS WRAPPER (INTEGRATED FROM SOURCE 1) -->
+        <section class="w-full bg-white shadow-xl border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between mb-10" aria-label="Club Board of Directors">
+            
+            <!-- INTERACTIVE BOARD OF DIRECTORS TITLE BAR -->
+            <div class="interactive-title-bar py-5 px-4 text-center border-b border-slate-800 shadow-lg relative group overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_ease-in-out] pointer-events-none"></div>
+                <h2 class="cinzel-font text-2xl sm:text-4xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 drop-shadow-sm transition-transform duration-300 group-hover:scale-[1.01]">
+                    BOARD OF DIRECTORS
+                </h2>
+                <div class="mt-1 flex items-center justify-center gap-3">
+                    <span class="h-[1px] w-8 bg-gradient-to-r from-transparent to-rose-500"></span>
+                    <p class="text-xs sm:text-sm font-extrabold text-rose-400 tracking-widest uppercase font-mono">
+                        R.Y. 2026/27
+                    </p>
+                    <span class="h-[1px] w-8 bg-gradient-to-l from-transparent to-rose-500"></span>
+                </div>
+            </div>
+
+            <!-- DYNAMIC BROAD HIERARCHICAL OFFICIALS SECTIONS LAYOUT -->
+            <div class="p-6 sm:p-12 flex-grow flex flex-col justify-center gap-12 bg-gradient-to-b from-white via-slate-50/50 to-white">
+                
+                <!-- TIER 1: CORE EXECUTIVE TOP LEADERSHIP (President, Secretary, Treasurer) -->
+                <div>
+                    <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto w-full items-end">
+                        <!-- Secretary -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-md">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative">
+                                        <img src="madansharma.jpg" alt="Rtr. Madan Sharma" class="w-full h-full object-cover" onerror="this.src='madan.jpg'; this.onerror=function(){this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200';}">
+                                        <div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Madan Sharma</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] sm:text-xs font-black text-slate-800 mt-3 text-center uppercase tracking-wide">Secretary</span>
+                        </div>
+
+                        <!-- President (Visual Core Center Piece) -->
+                        <div class="flex flex-col items-center transform scale-105 z-10">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1.5 w-full h-full shadow-xl border-2 border-rose-700/60">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative">
+                                        <img src="nabinchalise.jpg" alt="Rtr. Nabin Chalise" class="w-full h-full object-cover" onerror="this.src='nabin.jpg'; this.onerror=function(){this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200';}">
+                                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-rose-950 to-rose-900 text-white text-[10px] sm:text-sm font-black py-1 px-1.5 truncate text-center">Rtr. Nabin Chalise</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-xs sm:text-sm font-black text-rose-700 mt-3 text-center uppercase tracking-wider">President</span>
+                        </div>
+
+                        <!-- Treasurer -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-md">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative">
+                                        <img src="manishkandel.jpg" alt="Rtr. Manish Kandel" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200'">
+                                        <div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Manish Kandel</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] sm:text-xs font-black text-slate-800 mt-3 text-center uppercase tracking-wide">Treasurer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TIER 2: VICE-PRESIDENTS & ELECT/NOMINEE CHAIRS -->
+                <div>
+                    <div class="grid grid-cols-4 gap-6 max-w-4xl mx-auto w-full">
+                        <!-- IPP/Mentor -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="nabinsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Nabin Subedi</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">IPP / Mentor</span>
+                        </div>
+
+                        <!-- President Elect -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="tikaramgautam.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Tika Ram Gautam</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">President Elect</span>
+                        </div>
+
+                        <!-- Vice President -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="vikashsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Vikash Subedi</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Vice President</span>
+                        </div>
+
+                        <!-- Joint Secretary -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="sagarchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Sagar Chalise</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Joint Secretary</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TIER 3: ACTION CHAIR OFFICIALS AND OFFICERS -->
+                <div>
+                    <div class="grid grid-cols-5 gap-4 w-full">
+                        <!-- Membership Chair -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="bipinchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Bipin Chalise</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Membership Chair</span>
+                        </div>
+
+                        <!-- Public Image Chair -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="manishgurung.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manish Gurung</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Public Image Chair</span>
+                        </div>
+
+                        <!-- Service Projects Chair -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="smritibudhathoki.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Smriti Budhathoki</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Service Projects Chair</span>
+                        </div>
+
+                        <!-- Health Program Chair -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="manojkarki.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Dr. Manoj Karki</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Health Program Chair</span>
+                        </div>
+
+                        <!-- Foundation Chair -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-1 w-full h-full shadow-sm">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="manjeelashrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=150'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manjeela Shrestha</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Rotary Foundation Chair</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TIER 4: RECOGNIZED OFFICERS & CONTACT REPRESENTATIVES -->
+                <div>
+                    <div class="grid grid-cols-6 gap-3 w-full">
+                        <!-- Sergeant At Arms -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="lokendragaire.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1542103749-8ef59b94f4d3?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Lokendra Gaire</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Sergeant At Arms</span>
+                        </div>
+
+                        <!-- IT Officer -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="rajusahani.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Raju Sahani (RJ)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">IT Officer</span>
+                        </div>
+
+                        <!-- Young Leaders Contact -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="melinakharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1548142813-c348350df52b?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Melina Kharel</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Young Leaders Contact</span>
+                        </div>
+
+                        <!-- Learning Facilitator -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="laxmipun.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Laxmi Pun</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Learning Facilitator</span>
+                        </div>
+
+                        <!-- PP/ISD/Advisor -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="anilshrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Anil Shrestha</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/ISD/Advisor</span>
+                        </div>
+
+                        <!-- Club Advisor -->
+                        <div class="flex flex-col items-center">
+                            <div class="dynamic-frame-container w-full aspect-[4/5]">
+                                <div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs">
+                                    <div class="w-full h-full bg-[#baa697] overflow-hidden relative">
+                                        <img src="kamalkharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120'">
+                                        <div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Kamal Kharel</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Club Advisor</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- About Rotaract Narrative Narrative Context Layer -->
+        <section class="about-section">
+            <h2><span>✨</span> About Rotaract Club of Galkot Baglung</h2>
+            <div class="about-text">
+                <p>Embark on the dynamic journey of the Rotaract Club of Galkot Baglung, where visionary leaders have continuously inspired positive change. From our Chartered President, the visionary Rtr. Neetu Khadka, to the trailblazing leadership of Rtr. Anil Shrestha (President, RY 2020-21), the dynamic stewardship of Rtr. Ishor Gautam (President, RY 2022-23), the torch bearing dedication of Rtr. Kamal Kharel (President, RY 2023-24), the compassionate leadership of Rtr. Laxmi Pun (President, RY 2024-25), the progressive guidance of Rtr. Nabin Subedi (President, RY 2025-26), and the inspirational leadership of Rtr. Nabin Chalise (President, RY 2026-27), our club continues to thrive through the commitment and passion of its leaders.</p>
+                
+                <p>Together, we are a diverse group of young leaders, professionals, and change-makers aged 16 years and above, passionately dedicated to creating meaningful impact by spreading kindness through service. Join us on this exciting journey of positive change and vibrant community engagement with the Rotaract Club of Galkot Baglung!</p>
+                
+                <div class="highlight-box">
+                    Established on April 23, 2020, under the leadership of our Chartered President, Rtr. Neetu Khadka, the Rotaract Club of Galkot Baglung is a vibrant team committed to placing service above self in a world often driven by material pursuits. As the heart and soul of the organization, we, as Rotaractors, regularly come together to discuss, plan, and implement projects that positively transform our community.
+                </div>
+
+                <p>We envision ourselves as seeds of hope, leadership, and collaboration, committed to changing lives locally and globally, regardless of our numbers. Through fellowship, service, and professional development, we strive to inspire others and build a better world.</p>
+                
+                <div class="jay-rotaract">Jay Rotaract! 🤝</div>
+            </div>
+        </section>
+    </main>
 </div>
 
-<!-- CONTAINER SIDE-DRAWER CONFIGURATION -->
-<div class="drawer-overlay" id="formDrawerOverlay" onclick="handleOverlayClick(event)">
-    <div class="side-drawer" id="sideDrawerMenu">
-        <div class="drawer-header">
-            <button class="drawer-close" onclick="closeDrawer()">&times;</button>
-            <h3>Volunteer Desk</h3>
-            <p>Deployment Application Form</p>
+<!-- Accessible Floating Navigation Anchor Component Layer -->
+<div class="home-btn-container">
+    <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+        <span aria-hidden="true">🏠</span> HOME
+    </a>
+</div>
+
+<!-- Modern Corporate Footer -->
+<footer role="contentinfo">
+    <div class="footer-content">
+        <p class="footer-club-name">Rotaract Club of Galkot Baglung</p>
+        <p class="footer-desc">Follow us on social media to stay updated with our community service projects, events, and club activities.</p>
+        
+        <div class="social-icons">
+            <a href="https://www.facebook.com/rotaract.galkot/" class="social-icon-link fb" target="_blank" rel="noopener noreferrer" title="Facebook Page">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/rotaract.galkot/" class="social-icon-link ig" target="_blank" rel="noopener noreferrer" title="Instagram Profile">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/rotaract/" class="social-icon-link li" target="_blank" rel="noopener noreferrer" title="LinkedIn Page">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            </a>
+            <a href="mailto:galkot@rotaract3292.org" class="social-icon-link mail" title="Email Club Administration">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
         </div>
         
-        <div class="drawer-body">
-            <form action="https://formspree.io/f/mrewrrer" method="POST" id="engagementForm">
-                <div class="input-block">
-                    <label>Selected Activity</label>
-                    <input type="text" id="target-project-field" name="project_name" class="input-field" readonly>
-                </div>
-
-                <div class="input-block">
-                    <label for="applicant-name">Full Name</label>
-                    <input type="text" id="applicant-name" name="name" class="input-field" placeholder="Enter full identity name" required>
-                </div>
-
-                <div class="input-block">
-                    <label for="applicant-email">Email Address</label>
-                    <input type="email" id="applicant-email" name="email" class="input-field" placeholder="yourname@gmail.com" required>
-                </div>
-
-                <div class="input-block">
-                    <label for="applicant-phone">Mobile Network Number</label>
-                    <input type="tel" id="applicant-phone" name="phone_number" class="input-field" placeholder="98XXXXXXXX" pattern="[9][7-8][0-9]{8}" title="Please match the valid mobile network parameters." required>
-                </div>
-
-                <div class="input-block">
-                    <label for="applicant-notes">Statement / Background Skills</label>
-                    <textarea id="applicant-notes" name="message" class="input-field" rows="4" placeholder="Brief details regarding competencies or alignment..."></textarea>
-                </div>
-
-                <button type="submit" class="btn-drawer-submit">Register Engagement</button>
-            </form>
-        </div>
+        <p class="footer-copyright">&copy; 2026 Rotaract Club of Galkot Baglung. All Rights Reserved.</p>
     </div>
-</div>
+</footer>
 
 <script>
-    // Core Matrix Datastore
-    const matrixProjects = [
-        {
-            name: "Project Akshara: Rural E-Library Set up",
-            date: "August 2026",
-            targetAudience: "Public School Students",
-            location: "Ward No. 3, Galkot, Baglung"
-        },
-        {
-            name: "Maternal Health & Sanitation Awareness Campaign",
-            date: "September 2026",
-            targetAudience: "Local Women & Expecting Mothers",
-            location: "Hatiya Health Post, Galkot"
-        },
-        {
-            name: "RYLA 2026: Youth Leadership Conclave",
-            date: "November 2026",
-            targetAudience: "High-school & College Students",
-            location: "Galkot City Hall Assembly Room"
-        }
-    ];
-
-    // Layout Generator Engine
-    function paintMatrixGrid(dataset) {
-        const targetHook = document.getElementById('dynamic-rows-hook');
-        targetHook.innerHTML = '';
-
-        if(dataset.length === 0) {
-            targetHook.innerHTML = `<div style="padding: 40px; text-align: center; color: #64748B; font-weight: 600;">No matching initiatives identified in this cluster.</div>`;
-            return;
-        }
-
-        dataset.forEach(item => {
-            const rowNode = document.createElement('div');
-            rowNode.className = 'project-row';
-            rowNode.innerHTML = `
-                <div class="row-title">${item.name}</div>
-                <div class="row-date">${item.date}</div>
-                <div class="row-audience">${item.targetAudience}</div>
-                <div class="row-location">${item.location}</div>
-                <div class="action-cell">
-                    <button class="btn-action-trigger" onclick="openDrawer('${item.name.replace(/'/g, "\\'")}')">Apply Now</button>
-                </div>
-            `;
-            targetHook.appendChild(rowNode);
-        });
-    }
-
-    // Dynamic Live Filter Logic
-    function filterMatrixGrid() {
-        const query = document.getElementById('matrixSearchInput').value.toLowerCase();
-        const isolatedResults = matrixProjects.filter(project => {
-            return project.name.toLowerCase().includes(query) || 
-                   project.targetAudience.toLowerCase().includes(query) || 
-                   project.location.toLowerCase().includes(query) ||
-                   project.date.toLowerCase().includes(query);
-        });
-        paintMatrixGrid(isolatedResults);
-    }
-
-    // Interactive UI Controls
-    const drawerOverlay = document.getElementById('formDrawerOverlay');
-    const inputField = document.getElementById('target-project-field');
-
-    function openDrawer(nameValue) {
-        inputField.value = nameValue;
-        drawerOverlay.classList.add('open');
-        document.body.style.overflow = 'hidden'; // Prevents background layout scroll structural shifts
-    }
-
-    function closeDrawer() {
-        drawerOverlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    function handleOverlayClick(event) {
-        if(event.target.id === 'formDrawerOverlay') {
-            closeDrawer();
-        }
-    }
-
-    // Initialize Viewport Execution 
     document.addEventListener("DOMContentLoaded", () => {
-        paintMatrixGrid(matrixProjects);
+        // Dynamic Live Calendar Execution Block
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date();
+        const dateElement = document.getElementById("live-date");
+        if (dateElement) {
+            dateElement.innerText = today.toLocaleDateString("en-US", options);
+        }
+
+        // Optimized Material Design Component Ripple System
+        const homeBtn = document.getElementById('interactiveHomeBtn');
+        if (homeBtn) {
+            homeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetUrl = this.getAttribute('href');
+                const button = this;
+
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                
+                button.appendChild(ripple);
+                button.classList.add('clicked-exit');
+
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 400);
+            });
+        }
     });
 </script>
 
