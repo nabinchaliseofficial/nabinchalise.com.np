@@ -12,7 +12,6 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Supabase Official CDN Client Library Extension Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -349,7 +348,6 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            
             /* Scroll Reveal State */
             opacity: 0;
             transform: translateY(30px);
@@ -512,7 +510,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- USEFUL LINKS SECTION --- */
+        /* --- MODERN TABBED USEFUL LINKS SECTION --- */
         .links-section {
             max-width: 1200px;
             margin: 0 auto;
@@ -523,7 +521,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.75rem;
         }
@@ -531,10 +529,46 @@
         .links-header i { color: var(--cls-links); font-size: 1.5rem; }
         .links-header h2 { font-size: 1.5rem; font-weight: 600; }
 
+        /* Links Filter Tabs */
+        .links-tabs-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--cls-links);
+            color: #000;
+            border-color: var(--cls-links);
+        }
+
         .links-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 1.25rem;
+            transition: var(--transition-smooth);
         }
 
         .link-item {
@@ -555,8 +589,13 @@
             min-height: 44px;
         }
 
+        /* Tab filtering display styles */
+        .link-item.hidden {
+            display: none !important;
+        }
+
         .link-item span { display: flex; align-items: center; gap: 0.75rem; }
-        .link-item i.link-icon { color: var(--text-muted); transition: var(--transition-smooth); }
+        .link-item i.link-icon { color: var(--text-muted); font-size: 1.1rem; transition: var(--transition-smooth); width: 20px; text-align: center; }
         .link-item i.arrow-icon { transform: translateX(-5px); opacity: 0; color: var(--cls-links); transition: var(--transition-smooth); }
 
         .link-item::after {
@@ -662,7 +701,6 @@
         <p>Seamlessly navigate through your personal milestones, career development goals, municipal administration, and community service tracks.</p>
     </header>
 
-    <!-- SECURE INTERFACE FEED MATRIX FOR INCOMING FORM DATA -->
     <section class="inquiries-panel" id="inquiries-panel">
         <div class="panel-header">
             <h2><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Form Submissions Log</h2>
@@ -736,7 +774,6 @@
 
     </main>
 
-    <!-- KEY PROJECTS & CONTRIBUTIONS SECTION -->
     <section class="projects-section" id="projects-anchor">
         <div class="projects-header">
             <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
@@ -761,22 +798,237 @@
             <i class="fa-solid fa-link" aria-hidden="true"></i>
             <h2>Useful Resources</h2>
         </div>
+
+        <div class="links-tabs-container">
+            <button class="tab-btn active" data-filter="all">All Resources</button>
+            <button class="tab-btn" data-filter="learning">Learning</button>
+            <button class="tab-btn" data-filter="typing">Typing Tools</button>
+            <button class="tab-btn" data-filter="finance">Banks & Finance</button>
+            <button class="tab-btn" data-filter="official">Official Logs</button>
+            <button class="tab-btn" data-filter="pan">PAN Portals</button>
+            <button class="tab-btn" data-filter="news">News</button>
+            <button class="tab-btn" data-filter="social">Socials</button>
+            <button class="tab-btn" data-filter="google">Google Suite</button>
+            <button class="tab-btn" data-filter="emails">Emails</button>
+            <button class="tab-btn" data-filter="share">Share Market</button>
+        </div>
         
-        <div class="links-grid">
-            <a href="https://github.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-brands fa-github link-icon" aria-hidden="true"></i> GitHub Profile</span>
+        <div class="links-grid" id="links-grid">
+            <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-brands fa-laravel link-icon" aria-hidden="true"></i> Udemy</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-brands fa-linkedin-in link-icon" aria-hidden="true"></i> LinkedIn Network</span>
+            <a href="https://www.coursera.org/" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-solid fa-graduation-cap link-icon" aria-hidden="true"></i> Coursera</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
-            <a href="https://notion.so" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-solid fa-note-sticky link-icon" aria-hidden="true"></i> Notion Workspace</span>
+            <a href="https://www.linkedin.com/learning/" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-brands fa-linkedin link-icon" aria-hidden="true"></i> LinkedIn Learning</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
-            <a href="https://gmail.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-solid fa-envelope link-icon" aria-hidden="true"></i> Mail Client</span>
+            <a href="https://www.canvas.net/dashboard/in-progress" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-solid fa-chalkboard-user link-icon" aria-hidden="true"></i> Canvas</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://cursa.app/en" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-solid fa-mobile-screen-button link-icon" aria-hidden="true"></i> Cursa</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://academyeurope.org/all-courses" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-solid fa-school link-icon" aria-hidden="true"></i> Academy Europe</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.bbc.co.uk/learningenglish/" target="_blank" rel="noopener" class="link-item" data-category="learning">
+                <span><i class="fa-solid fa-language link-icon" aria-hidden="true"></i> BBC English</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://www.typerush.com/" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-keyboard link-icon" aria-hidden="true"></i> TypeRush</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.edclub.com/sportal/" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-gamepad link-icon" aria-hidden="true"></i> EdClub Portal</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.speedtypingonline.com/typing-test" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-stopwatch link-icon" aria-hidden="true"></i> Speed Typing Online</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.typing.com/student/lessons" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-medal link-icon" aria-hidden="true"></i> Typing.com Lessons</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.keybr.com/" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-gauge-high link-icon" aria-hidden="true"></i> Keybr Practice</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://typing.academy/" target="_blank" rel="noopener" class="link-item" data-category="typing">
+                <span><i class="fa-solid fa-award link-icon" aria-hidden="true"></i> Typing Academy</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://esewa.com.np/#/home" target="_blank" rel="noopener" class="link-item" data-category="finance">
+                <span><i class="fa-solid fa-wallet link-icon" style="color:#60bb46;" aria-hidden="true"></i> eSewa Wallet</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://globalonline.gibl.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="finance">
+                <span><i class="fa-solid fa-building-columns link-icon" aria-hidden="true"></i> Global IME Smart</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://web.khalti.com/?csrt=818048846804071483#/" target="_blank" rel="noopener" class="link-item" data-category="finance">
+                <span><i class="fa-solid fa-money-bill-transfer link-icon" style="color:#5c2d91;" aria-hidden="true"></i> Khalti Web</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://emis.nepp.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="official">
+                <span><i class="fa-solid fa-passport link-icon" aria-hidden="true"></i> Rojgar EMIS</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://emis.cehrd.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official">
+                <span><i class="fa-solid fa-book-bookmark link-icon" aria-hidden="true"></i> Education EMIS</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://phmis.molcpa.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official">
+                <span><i class="fa-solid fa-house-chimney-medical link-icon" aria-hidden="true"></i> PHIMS Portal</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://newpams.fcgo.gov.np/#/Login" target="_blank" rel="noopener" class="link-item" data-category="official">
+                <span><i class="fa-solid fa-gears link-icon" aria-hidden="true"></i> NEWPAMS Login</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://officerportal.ird.gov.np:8443/main/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-user-tie link-icon" aria-hidden="true"></i> IRD Officer Portal</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://taxpayerportal.ird.gov.np/taxpayer/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-id-card-clip link-icon" aria-hidden="true"></i> Taxpayer Portal</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://ird.gov.np/pan-search/" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-magnifying-glass link-icon" aria-hidden="true"></i> PAN Search Online</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://ird.gov.np/faq/" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-circle-question link-icon" aria-hidden="true"></i> PAN FAQs</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="http://ereturns.ird.gov.np:8289/incometax/d01/d01ReturnEntry" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-file-invoice-dollar link-icon" aria-hidden="true"></i> D01 Return Entry</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="http://ereturns.ird.gov.np:8289/general/taxpayerLogin" target="_blank" rel="noopener" class="link-item" data-category="pan">
+                <span><i class="fa-solid fa-stamp link-icon" aria-hidden="true"></i> Tax Clearance</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://www.hamropatro.com/newsStory" target="_blank" rel="noopener" class="link-item" data-category="news">
+                <span><i class="fa-solid fa-newspaper link-icon" aria-hidden="true"></i> Hamro Patro News</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://epaper.ekantipur.com/" target="_blank" rel="noopener" class="link-item" data-category="news">
+                <span><i class="fa-solid fa-paper-plane link-icon" aria-hidden="true"></i> eKantipur ePaper</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.techpana.com/" target="_blank" rel="noopener" class="link-item" data-category="news">
+                <span><i class="fa-solid fa-microchip link-icon" aria-hidden="true"></i> TechPana</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-facebook-f link-icon" aria-hidden="true"></i> Facebook</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-instagram link-icon" aria-hidden="true"></i> Instagram</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://x.com/home" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-x-twitter link-icon" aria-hidden="true"></i> Twitter / X</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-linkedin-in link-icon" aria-hidden="true"></i> LinkedIn</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://web.whatsapp.com/" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-whatsapp link-icon" aria-hidden="true"></i> WhatsApp Web</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="link-item" data-category="social">
+                <span><i class="fa-brands fa-youtube link-icon" aria-hidden="true"></i> YouTube</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://docs.google.com/" target="_blank" rel="noopener" class="link-item" data-category="google">
+                <span><i class="fa-solid fa-file-word link-icon" style="color: #4285F4;" aria-hidden="true"></i> Google Docs</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://workspace.google.com/products/slides/" target="_blank" rel="noopener" class="link-item" data-category="google">
+                <span><i class="fa-solid fa-file-powerpoint link-icon" style="color: #FBBC05;" aria-hidden="true"></i> Google Slides</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/u/0/" target="_blank" rel="noopener" class="link-item" data-category="google">
+                <span><i class="fa-solid fa-file-excel link-icon" style="color: #34A853;" aria-hidden="true"></i> Google Sheets</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener" class="link-item" data-category="emails">
+                <span><i class="fa-solid fa-envelope link-icon" aria-hidden="true"></i> Gmail Workspace</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://mail.nepal.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="emails">
+                <span><i class="fa-solid fa-shield-halved link-icon" aria-hidden="true"></i> Gov. NP Mail</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+
+            <a href="https://sunconnect.sunlife.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-heart-pulse link-icon" aria-hidden="true"></i> SunConnect Portfolio</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://auth.naasasecurities.com.np/realms/naasa/protocol/openid-connect/auth?client_id=kyc&scope=openid%20profile%20email%20roles&response_type=code&redirect_uri=https%3A%2F%2Fwww.naasasecurities.com.np%2Fapi%2Fauth%2Fcallback%2Fkeycloak&state=iQ0HmL3jhoEckqgKC_S20DZADWLrov95UiFv4x89LoA" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-user-shield link-icon" aria-hidden="true"></i> NASA Securities</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://tms59.nepsetms.com.np/login" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-arrow-trend-up link-icon" aria-hidden="true"></i> NEPSE TMS 59</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://merolagani.com/newsletter.aspx" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-mail-bulk link-icon" aria-hidden="true"></i> MeroLagani News</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.sharesansar.com/today-share-price" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-hand-holding-dollar link-icon" aria-hidden="true"></i> Today's Share Price</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.nepsealpha.com/candlestick" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-chart-candlestick link-icon" aria-hidden="true"></i> NEPSE Candlesticks</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.nepsealpha.com/trading-signals/tech" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-wave-square link-icon" aria-hidden="true"></i> Trading Signals</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.nepsealpha.com/floorsheet-analysis#broker_wise_top_buyer" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-chart-pie link-icon" aria-hidden="true"></i> Top Buyer Brokerwise</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.sebon.gov.np/right-share-approved" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-check-double link-icon" aria-hidden="true"></i> SEBON Approved</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.sebon.gov.np/right-share-pipeline" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-ellipsis-h link-icon" aria-hidden="true"></i> Right Share Pipeline</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.nepalstock.com/floor-sheet" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-table-list link-icon" aria-hidden="true"></i> Floorsheet Logs</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
+            </a>
+            <a href="https://chukul.com/nepse-charts" target="_blank" rel="noopener" class="link-item" data-category="share">
+                <span><i class="fa-solid fa-chart-line link-icon" aria-hidden="true"></i> Chukul NEPSE Charts</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
         </div>
@@ -807,7 +1059,6 @@
                 if (!feedContainer) return;
 
                 feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving live metrics logs...</div>';
-
                 try {
                     const { data, error } = await supabase
                         .from('inquiries')
@@ -834,7 +1085,6 @@
                             <div class="node-message">${escapeHtml(item.message)}</div>
                         </article>
                     `).join('');
-
                 } catch (err) {
                     feedContainer.innerHTML = `<div class="status-msg" style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error parsing relation rows: ${err.message}</div>`;
                 }
@@ -843,10 +1093,8 @@
             // Session Verification Checklist Logic
             const verifySecureAuthentication = async () => {
                 const panel = document.getElementById('inquiries-panel');
-                
                 // Get the current persistent local session context
                 const { data: { session } } = await supabase.auth.getSession();
-
                 if (session) {
                     // User is authenticated, mount data grid to UI viewport layout
                     panel.style.display = 'block';
@@ -894,13 +1142,36 @@
                     });
                 });
 
-                // 3. Scroll Triggered Reveals using Intersection Observer API
+                // 3. Dynamic Filtering Logic for Useful Resources Section
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                const linkItems = document.querySelectorAll('.link-item');
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Handle Active Class Swaps
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        const filter = button.getAttribute('data-filter');
+
+                        // Toggle Visibility with scale metrics
+                        linkItems.forEach(item => {
+                            const category = item.getAttribute('data-category');
+                            if (filter === 'all' || category === filter) {
+                                item.classList.remove('hidden');
+                            } else {
+                                item.classList.add('hidden');
+                            }
+                        });
+                    });
+                });
+
+                // 4. Scroll Triggered Reveals using Intersection Observer API
                 const cards = document.querySelectorAll('.dash-card');
                 const cardObserverOptions = {
                     threshold: 0.1,
                     rootMargin: "0px 0px -50px 0px"
                 };
-
                 const cardObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -914,9 +1185,8 @@
                     cardObserver.observe(card);
                 });
 
-                // 4. Register Interactive Panel Access Control Handlers
+                // 5. Register Interactive Panel Access Control Handlers
                 document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadDatabaseInquiries);
-
                 document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
                     const confirmation = confirm("Are you absolutely sure you want to delete all logged inquiries? This action cannot be undone and will erase them from both this screen and your live database.");
                     
@@ -936,7 +1206,6 @@
 
                         // Force clear interface message immediately
                         feedContainer.innerHTML = '<div class="status-msg">Database table truncated successfully. No entries remain.</div>';
-
                     } catch (err) {
                         feedContainer.innerHTML = `<div class="status-msg" style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Operations Error: ${err.message}</div>`;
                     }
