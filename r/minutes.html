@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minutes Builder | Rotaract Club of Galkot Baglung</title>
+    <!-- SEO and Meta Tags -->
+    <meta name="description" content="Official Meeting Minutes Writer Engine for Rotaract Club of Galkot Baglung, Rotary International District 3292 Nepal-Bhutan.">
+    <meta name="author" content="Rotaract Club of Galkot Baglung">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #D70060;       /* Rotaract Pink */
+            --primary-hover: #B50051;
+            --secondary: #015491;     /* Rotary Blue */
+            --secondary-hover: #003F6E;
+            --dark: #1E293B;          /* Slate 800 */
+            --text-muted: #64748B;    /* Slate 500 */
+            --light-bg: #F8FAFC;      /* Slate 50 */
+            --border: #E2E8F0;        /* Slate 200 */
+            --input-focus: #FDF2F8;   /* Light pink hue tint */
+            --success: #10B981;       /* Emerald 500 */
+            --white: #FFFFFF;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(215, 0, 96, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* --- NAVIGATION BAR --- */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .nav-logo-marker {
+            width: 8px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .nav-brand-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-brand-text span {
+            color: var(--primary);
+        }
+
+        .home-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--secondary);
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .home-btn svg {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .home-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(215, 0, 96, 0.3);
+        }
+
+        .home-btn:hover svg {
+            transform: scale(1.15) rotate(-8deg);
+        }
+
+        .home-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.45s linear;
+            pointer-events: none;
+        }
+
+        .home-btn.clicked-exit {
+            animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes ripple-effect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        @keyframes exit-bounce {
+            0% { transform: scale(1); }
+            20% { transform: scale(0.92); background-color: var(--primary); }
+            100% { transform: translateY(-15px) scale(0.8); opacity: 0; }
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--white);
+            padding: 60px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(217, 0, 96, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-tag {
+            background: rgba(215, 0, 96, 0.15);
+            color: #f472b6;
+            border: 1px solid rgba(215, 0, 96, 0.3);
+            padding: 6px 16px;
+            border-radius: var(--radius-lg);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px 80px 24px;
+        }
+
+        /* --- FORM CARDS --- */
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .form-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+
+        .card-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #eff6ff;
+            color: var(--secondary);
+            border-radius: var(--radius-sm);
+        }
+
+        .form-card:nth-of-type(2) .card-icon { background: #fdf2f8; color: var(--primary); }
+        .form-card:nth-of-type(3) .card-icon { background: #ecfdf5; color: var(--success); }
+
+        .form-card h2 {
+            color: var(--dark);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        /* --- INPUT FIELDS & LAYOUTS --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            color: #475569;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--dark);
+            outline: none;
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
+        }
+
+        .readonly-input {
+            background-color: #e2e8f0; 
+            font-weight: 700;
+            color: #475569;
+            cursor: not-allowed;
+            border-color: var(--border);
+        }
+
+        .dynamic-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .agenda-width-title { width: 35%; }
+        .agenda-width-desc { width: 65%; resize: vertical; }
+
+        /* --- INTERACTIVE CHECKLIST --- */
+        .checklist-container {
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: var(--transition);
+            background: var(--white);
+            border: 1px solid transparent;
+        }
+
+        .checklist-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .checklist-item:hover {
+            background: #fff1f2;
+            border-color: rgba(215, 0, 96, 0.15);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 14px;
+            transform: scale(1.25);
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .member-role {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            background: #f1f5f9;
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+
+        /* --- BUTTON STYLING --- */
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .btn-add {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-1px);
+        }
+
+        .action-buttons-group {
+            margin-top: 40px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
+            color: var(--white);
+            border: none;
+            padding: 18px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: -0.2px;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #be0055 0%, #910040 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(215, 0, 96, 0.25);
+        }
+
+        .additional-members-margin { margin-bottom: 24px; }
+        .guest-header-margin { margin-top: 32px; }
+        .guest-count-margin { margin-top: 24px; }
+
+        /* Hidden Layout Container elements */
+        #print-preview, .display-none {
+            display: none;
+        }
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .form-card {
+                padding: 20px;
+            }
+            .hero h1 {
+                font-size: 1.85rem;
+            }
+            .dynamic-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .agenda-width-title, .agenda-width-desc {
+                width: 100%;
+            }
+            .checklist-item label {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+
+        /* --- PRINT VIEW CONFIGURATIONS --- */
+        @media print {
+            body {
+                background: var(--white);
+                padding: 0;
+                color: #000000;
+            }
+            .navbar, .hero, .container, .form-card, input, button, .action-buttons-group, label {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+                position: relative;
+                min-height: 100vh;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+            
+            #print-preview::before {
+                content: "";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 480px;
+                height: 480px;
+                background-image: url('rotaract.jpg');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                opacity: 0.06;
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .letterhead {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 3px double var(--primary);
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            .letterhead-logo {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 75px;
+                width: auto;
+            }
+            .letterhead-text {
+                text-align: center;
+                width: 100%;
+            }
+            .letterhead h1 { color: var(--primary); font-size: 24px; font-weight: bold; margin-bottom: 2px; }
+            .letterhead h2 { color: var(--secondary); font-size: 15px; display: block !important; margin-bottom: 2px; }
+            .letterhead-subtext { font-size: 12px; color: #444; }
+            
+            #outTitle {
+                text-align: center; 
+                text-transform: uppercase; 
+                margin-bottom: 20px; 
+                letter-spacing: 1px;
+                font-size: 18px;
+                font-weight: bold;
+                color: var(--dark);
+            }
+
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25px;
+            }
+            .meta-table td {
+                padding: 8px;
+                border: 1px solid #cbd5e1;
+                font-size: 13px;
+            }
+            .meta-title { font-weight: bold; background: #f8fafc; width: 22%; }
+            .width-30 { width: 28%; }
+            
+            .content-section {
+                margin-bottom: 24px;
+            }
+            .content-section h4 {
+                color: var(--secondary);
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 5px;
+                margin-bottom: 12px;
+                font-size: 14px;
+                text-align: center;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .agenda-item {
+                margin-bottom: 14px;
+                font-size: 13.5px;
+            }
+            .footer-sign {
+                margin-top: 55px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+            .sign-line {
+                border-top: 1px solid #000000;
+                width: 210px;
+                text-align: center;
+                padding-top: 6px;
+                font-size: 13px;
+            }
+            
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .print-table th, .print-table td {
+                border: 1px solid #cbd5e1;
+                padding: 6px 12px;
+                font-size: 12.5px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f8fafc;
+                font-weight: bold;
+            }
+            .col-sn { width: 8%; text-align: center; }
+            .col-name { width: 52%; }
+            .col-role { width: 40%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STICKY NAVIGATION BAR -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-marker"></div>
+            <div class="nav-brand-text">Rotaract<span>Galkot</span></div>
+        </a>
+        <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            HOME
+        </a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-tag">R.Y. 2026-27 Console</div>
+        <h1>Minutes Writer Engine</h1>
+        <p>Compile official internal records, automatically aggregate attendance sheets, generate structured configurations, and dispatch logging parameters.</p>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container">
+        
+        <!-- CARD 1: MEET COORDINATES -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    </div>
+                    <h2>1. Meeting Coordinates</h2>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="meetNo">Meeting Number</label>
+                    <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting">
+                </div>
+                <div class="form-group">
+                    <label for="meetDate">Date & Time</label>
+                    <input type="datetime-local" id="meetDate">
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="meetVenue">Venue Location</label>
+                    <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot">
+                </div>
+                <div class="form-group">
+                    <label for="meetChair">Meeting Chairperson</label>
+                    <input type="text" id="meetChair" value="Rtr. Nabin Chalise" placeholder="President Name">
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: ROSTER & ATTENDANCE -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h2>2. Attendance Checklist (Official Members)</h2>
+                </div>
+                <button class="btn-add" onclick="addNewMemberRow()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                    Add Rotaractor
+                </button>
+            </div>
+            
+            <div class="checklist-container" id="members-checklist">
+                <!-- Roster dynamically mounted -->
+            </div>
+
+            <div id="additional-members-container" class="additional-members-margin"></div>
+
+            <div class="card-header-wrapper guest-header-margin">
+                <div class="card-title-group">
+                    <div class="card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <h2>3. Special Guests (Outside of Club)</h2>
+                </div>
+                <button class="btn-add" onclick="addGuestRow()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                    Add Special Guest
+                </button>
+            </div>
+            
+            <div id="guests-container"></div>
+
+            <div class="grid-2 guest-count-margin">
+                <div class="form-group">
+                    <label>Members Present Count (Auto)</label>
+                    <input type="number" id="countPresent" value="0" readonly class="readonly-input">
+                </div>
+                <div class="form-group">
+                    <label>Guests Count (Auto)</label>
+                    <input type="number" id="countGuests" value="0" readonly class="readonly-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3: AGENDAS -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    </div>
+                    <h2>4. Agendas & Resolutions Log</h2>
+                </div>
+                <button class="btn-add" onclick="addAgendaRow()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                    Add Agenda
+                </button>
+            </div>
+            
+            <div id="agenda-container">
+                <div class="dynamic-row agenda-group">
+                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title (e.g., Blood Donation)">
+                    <textarea class="agenda-desc agenda-width-desc" placeholder="Decisions / Action points resolved..." rows="1"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPILATION TRIGGER ACTION BUTTON -->
+        <div class="action-buttons-group">
+            <button class="btn-submit" onclick="compileSaveAndEmail()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><line x1="22" x2="11" y1="2" y2="13"/></svg>
+                Compile, Save PDF & Email Summary
+            </button>
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- PRINT PREVIEW SHEET STRUCTURE              -->
+    <!-- ========================================== -->
+    <div id="print-preview">
+        <div class="letterhead">
+            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo">
+            
+            <div class="letterhead-text">
+                <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+                <h2>Rotary International District 3292 Nepal-Bhutan</h2>
+                <p class="letterhead-subtext">Club ID: 8823562 | Rota Year 2026-27</p>
+                <p class="letterhead-subtext">Charter Day: April 23<sup>rd</sup> 2021</p>
+            </div>
+        </div>
+
+        <h3 id="outTitle">MINUTES OF MEETING</h3>
+
+        <table class="meta-table">
+            <tr>
+                <td class="meta-title">Meeting Title</td>
+                <td id="outMeetNo" class="width-30"></td>
+                <td class="meta-title">Date / Time</td>
+                <td id="outDate"></td>
+            </tr>
+            <tr>
+                <td class="meta-title">Venue</td>
+                <td id="outVenue"></td>
+                <td class="meta-title">Chairperson</td>
+                <td id="outChair"></td>
+            </tr>
+            <tr>
+                <td class="meta-title">Attendance Summary</td>
+                <td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td>
+            </tr>
+        </table>
+
+        <div class="content-section" id="print-section-members">
+            <h4>Attended Members</h4>
+            <div id="outPresentMembersNames"></div>
+        </div>
+
+        <div class="content-section" id="print-section-guests" style="display: none;">
+            <h4>Special Guests / Observers</h4>
+            <div id="outGuestsNames"></div>
+        </div>
+
+        <div class="content-section">
+            <h4>Agendas & Key Resolutions</h4>
+            <div id="outAgendas"></div>
+        </div>
+
+        <div class="footer-sign">
+            <div class="sign-line">
+                <p id="outChairSign">Rtr. Nabin Chalise</p>
+                <p>Meeting Chairperson</p>
+            </div>
+            <div class="sign-line">
+                <p id="outSecretarySign">Rtr. Madan Subedi</p>
+                <p>Club Secretary</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUSINESS LOGIC DRIVER LAYER -->
+    <script>
+        // Roster Database Definition
+        const rosterData = [
+            { role: "CHARTERED PRESIDENT", name: "RTR. NEETU KHADKA" },
+            { role: "PRESIDENT", name: "RTR. NABIN CHALISE" },
+            { role: "SECRETARY", name: "RTR. MADAN SHARMA" },
+            { role: "TREASURER", name: "RTR. MANISH KANDEL" },
+            { role: "PP/ISD/ADVISOR", name: "RTR. ANIL SHRESTHA" },
+            { role: "IPP/MENTOR", name: "RTR. NABIN SUBEDI" },
+            { role: "PAST PRESIDENT/ADVISOR", name: "RTR. KAMAL KHAREL" },
+            { role: "PAST PRESIDENT/ADVISOR", name: "RTR. ISHOR GAUTAM" },
+            { role: "JOINT SECRETARY", name: "RTR. SAGAR CHALISE" },
+            { role: "PRESIDENT ELECT", name: "RTR. TIKA RAM GAUTAM" },
+            { role: "MEDICAL OFFICER", name: "RTR. DR. MANOJ KARKI" },
+            { role: "PP/ROTARACT LEARNING FACILITATOR", name: "RTR. LAXMI PUN" },
+            { role: "ROTARACT VICE PRESIDENT", name: "RTR. VIKASH SUBEDI" },
+            { role: "ROTARACT MEMBERSHIP CHAIR", name: "RTR. BIPIN CHALISE" },
+            { role: "IT OFFICER", name: "RTR. RAJU SAHANI (RJ)" },
+            { role: "SERGEANT AT ARMS", name: "RTR. LOKENDRA GAIRE" },
+            { role: "ROTARACT FOUNDATION CHAIR", name: "RTR. MANJEELA SHRESTHA" },
+            { role: "ROTARACT SERVICE PROJECTS CHAIR", name: "RTR. SMRITI BUDHATHOKI" },
+            { role: "ROTARACT YOUNG LEADERS CONTACT", name: "RTR. MELINA KHAREL" },
+            { role: "CLUB MEMBER", name: "RTR. AMRIT SUBEDI" },
+            { role: "CLUB MEMBER", name: "RTR. ANIL GANDARVA" },
+            { role: "CLUB MEMBER", name: "RTR. BALARAM ADHIKARI" },
+            { role: "CLUB MEMBER", name: "RTR. BIBEK KHAREL" },
+            { role: "CLUB MEMBER", name: "RTR. BIDUR KHAREL" },
+            { role: "CLUB MEMBER", name: "RTR. DEEPAK KHATTRI" },
+            { role: "CLUB MEMBER", name: "RTR. DURGA DARLAMI" },
+            { role: "CLUB MEMBER", name: "RTR. GANESH SAPKOTA" },
+            { role: "CLUB MEMBER", name: "RIT. JIT BAHADUR B.K." },
+            { role: "CLUB MEMBER", name: "RTR. KRIPA KANDEL" },
+            { role: "CLUB MEMBER", name: "RTR. MANISH GURUNG" },
+            { role: "CLUB MEMBER", name: "RTR. MIN THAPA" },
+            { role: "CLUB MEMBER", name: "RTR. NABIN GAIRE" },
+            { role: "CLUB MEMBER", name: "RTR. NABIN SHARMA POUDEL" },
+            { role: "CLUB MEMBER", name: "RTR. NETRA PRASAD LAMICHHANE" },
+            { role: "CLUB MEMBER", name: "RTR. PRAKASH KHADKA" },
+            { role: "CLUB MEMBER", name: "RTR. PRANSU RAM REGMI" },
+            { role: "CLUB MEMBER", name: "RTR. PRATAP SEN" },
+            { role: "CLUB MEMBER", name: "RTR. PRATIKSHYA DARJI" },
+            { role: "CLUB MEMBER", name: "RTR. RADHA GAUTAM" },
+            { role: "CLUB MEMBER", name: "RTR. ROMAN SUBEDI" },
+            { role: "CLUB MEMBER", name: "RTR. SANJU NEUPANE" },
+            { role: "CLUB MEMBER", name: "RTR. SANTOSH BOHORA CHETTRI" },
+            { role: "CLUB MEMBER", name: "RTR. SUNIL CHHETRI" },
+            { role: "CLUB MEMBER", name: "RTR. SUNIL GAUTAM" },
+            { role: "CLUB MEMBER", name: "RTR. SUNIL KHATIWAL" },
+            { role: "CLUB MEMBER", name: "RTR. SUNIL ROKA MAGAR" },
+            { role: "CLUB MEMBER", name: "TARA PRASAD SUNAR" },
+            { role: "CLUB MEMBER", name: "RTR. TUL BAHADUR B.K." }
+        ];
+
+        // Mount Checklist DOM Items
+        const checklistContainer = document.getElementById('members-checklist');
+        rosterData.forEach((member, i) => {
+            const div = document.createElement('div');
+            div.className = 'checklist-item';
+            div.innerHTML = `
+                <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
+                <label for="memb_${i}">
+                    <span>${member.name}</span>
+                    <span class="member-role">${member.role}</span>
+                </label>
+            `;
+            checklistContainer.appendChild(div);
+        });
+
+        // Initialize Native Time Sync Fields
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+        document.getElementById('meetDate').value = localISOTime;
+
+        // Interactive Navigation Button Setup
+        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.getAttribute('href');
+            const button = this;
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            
+            button.appendChild(ripple);
+            button.classList.add('clicked-exit');
+
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 450);
+        });
+
+        // Core Aggregate Calculation Logic Engine
+        function calculateAttendanceCounts() {
+            const checkedOfficialCount = document.querySelectorAll('.member-checkbox:checked').length;
+            const additionalCheckedCount = document.querySelectorAll('.add-member-checkbox:checked').length;
+            
+            document.getElementById('countPresent').value = checkedOfficialCount + additionalCheckedCount;
+            document.getElementById('countGuests').value = document.querySelectorAll('.guest-input-name').length;
+        }
+
+        function addNewMemberRow() {
+            const container = document.getElementById('additional-members-container');
+            const row = document.createElement('div');
+            row.className = 'dynamic-row';
+            row.innerHTML = `
+                <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width: auto; margin-top: 14px; transform: scale(1.25); accent-color: var(--primary);">
+                <input type="text" class="add-member-name" placeholder="Rtr. Name" style="flex: 1;" oninput="calculateAttendanceCounts()">
+                <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="flex: 1;">
+            `;
+            container.appendChild(row);
+            calculateAttendanceCounts();
+        }
+
+        function addGuestRow() {
+            const container = document.getElementById('guests-container');
+            const row = document.createElement('div');
+            row.className = 'dynamic-row';
+            row.innerHTML = `
+                <input type="text" class="guest-input-name" placeholder="Guest Full Name & Club/Designation Details" style="width: 100%;" oninput="calculateAttendanceCounts()">
+            `;
+            container.appendChild(row);
+            calculateAttendanceCounts();
+        }
+
+        function addAgendaRow() {
+            const container = document.getElementById('agenda-container');
+            const row = document.createElement('div');
+            row.className = 'dynamic-row agenda-group';
+            row.innerHTML = `
+                <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title">
+                <textarea class="agenda-desc agenda-width-desc" placeholder="Decisions / Action points resolved..." rows="1"></textarea>
+            `;
+            container.appendChild(row);
+        }
+
+        // Processing Pipeline & Trigger Systems Execution
+        function compileSaveAndEmail() {
+            // --- STEP 1: PREPARE DATA FOR PRINT LAYOUT ---
+            document.getElementById('outMeetNo').innerText = document.getElementById('meetNo').value || 'Regular Meeting';
+            
+            const dateObj = new Date(document.getElementById('meetDate').value);
+            document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+            
+            document.getElementById('outVenue').innerText = document.getElementById('meetVenue').value || 'N/A';
+            document.getElementById('outChair').innerText = document.getElementById('meetChair').value || 'Club President';
+            document.getElementById('outChairSign').innerText = document.getElementById('meetChair').value || '_______________________';
+            
+            calculateAttendanceCounts();
+            const totalPresent = document.getElementById('countPresent').value;
+            document.getElementById('outPres').innerText = totalPresent;
+            document.getElementById('outGst').innerText = document.getElementById('countGuests').value;
+
+            // Compile Members Table for Printing
+            let memberTableHTML = `
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th class="col-sn">S.N.</th>
+                            <th class="col-name">Name</th>
+                            <th class="col-role">Designation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            let serialCounter = 1;
+            document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+                memberTableHTML += `<tr><td style="text-align:center;">${serialCounter++}</td><td>${cb.getAttribute('data-name')}</td><td>${cb.getAttribute('data-role')}</td></tr>`;
+            });
+            document.querySelectorAll('.add-member-checkbox:checked').forEach(cb => {
+                const row = cb.parentElement;
+                const name = row.querySelector('.add-member-name').value.trim();
+                const role = row.querySelector('.add-member-role').value.trim();
+                if (name) {
+                    memberTableHTML += `<tr><td style="text-align:center;">${serialCounter++}</td><td>${name.toUpperCase()}</td><td>${role.toUpperCase()}</td></tr>`;
+                }
+            });
+            memberTableHTML += `</tbody></table>`;
+            document.getElementById('outPresentMembersNames').innerHTML = serialCounter > 1 ? memberTableHTML : "<p style='font-size:13px; color:#666;'>No members marked present.</p>";
+
+            // Compile Guests Table for Printing
+            let guestTableHTML = `
+                <table class="print-table">
+                    <thead><tr><th class="col-sn">S.N.</th><th style="width: 92%;">Guest Details</th></tr></thead>
+                    <tbody>
+            `;
+            let guestCounter = 1;
+            document.querySelectorAll('.guest-input-name').forEach(input => {
+                const val = input.value.trim();
+                if(val) { guestTableHTML += `<tr><td style="text-align:center;">${guestCounter++}</td><td>${val}</td></tr>`; }
+            });
+            guestTableHTML += `</tbody></table>`;
+            const guestSectionNode = document.getElementById('print-section-guests');
+            if(guestCounter > 1) {
+                document.getElementById('outGuestsNames').innerHTML = guestTableHTML;
+                guestSectionNode.style.display = 'block';
+            } else {
+                guestSectionNode.style.display = 'none';
+            }
+
+            // Compile Agendas for Printing and Email Summary
+            let htmlContent = '';
+            let agendaSummary = '';
+            document.querySelectorAll('.agenda-group').forEach((block, index) => {
+                const title = block.querySelector('.agenda-title').value;
+                const desc = block.querySelector('.agenda-desc').value;
+                if(title || desc) {
+                    htmlContent += `
+                        <div class="agenda-item">
+                            <strong>Agenda ${index + 1}: ${title || 'General Floor Discussion'}</strong>
+                            <p style="margin: 4px 0 0 15px; color: #333; text-align: justify;">${desc || 'No resolutions documented.'}</p>
+                        </div>
+                    `;
+                    agendaSummary += `\n- Agenda ${index + 1}: ${title}\n  Resolution: ${desc}\n`;
+                }
+            });
+            document.getElementById('outAgendas').innerHTML = htmlContent || '<p>No formal agendas recorded.</p>';
+
+            // --- STEP 2: GENERATE EMAIL DISPATCH ---
+            const meetNo = document.getElementById('meetNo').value || 'Regular Meeting';
+            const dateStr = document.getElementById('meetDate').value ? new Date(document.getElementById('meetDate').value).toLocaleString() : 'N/A';
+            const venue = document.getElementById('meetVenue').value || 'N/A';
+            const chair = document.getElementById('meetChair').value || 'N/A';
+
+            const recipients = "galkot@rotaract3292.org,pilotprosoft@gmail.com,nabin.chalise@rotaract3292.org";
+            const subject = encodeURIComponent(`Meeting Minutes Log: ${meetNo} - RAC Galkot Baglung`);
+            
+            let bodyText = `Dear Admins,\n\nPlease find the summary coordinates for the logged meeting details below:\n\n`;
+            bodyText += `• Meeting: ${meetNo}\n`;
+            bodyText += `• Date/Time: ${dateStr}\n`;
+            bodyText += `• Venue: ${venue}\n`;
+            bodyText += `• Chairperson: ${chair}\n`;
+            bodyText += `• Attendance Count: ${totalPresent} Present\n\n`;
+            if(agendaSummary) { bodyText += `Recorded Business Details:${agendaSummary}\n`; }
+            bodyText += `Regards,\nRotaract Club of Galkot Baglung`;
+            
+            const mailtoUrl = `mailto:${recipients}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+            const secureLink = document.createElement('a');
+            secureLink.href = mailtoUrl;
+            secureLink.style.display = 'none';
+            document.body.appendChild(secureLink);
+            secureLink.click();
+            document.body.removeChild(secureLink);
+
+            // --- STEP 3: TRIGGER PRINT WINDOW FOR PDF ---
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+    </script>
+</body>
+</html>

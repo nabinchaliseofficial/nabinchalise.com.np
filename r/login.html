@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Rotaract Admin - Sign In</title>
+  <style>
+    :root {
+      --primary-color: #1d3557; /* Rotaract Deep Navy */
+      --secondary-color: #f1faee;
+      --accent-color: #d4af37; /* Rotaract Gold */
+      --text-color: #333333;
+      --error-color: #e63946;
+      --success-color: #2a9d8f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-color) 0%, #457b9d 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+    }
+
+    .home-btn-container {
+      margin-bottom: 25px;
+    }
+
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .home-btn:hover { color: var(--primary-color); }
+
+    h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 25px;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.4;
+    }
+    .message.success { display: block; background: #e8f5e9; color: var(--success-color); border: 1px solid #c8e6c9; }
+    .message.error { display: block; background: #ffebee; color: var(--error-color); border: 1px solid #ffcdd2; }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fafafa;
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary-color);
+      background: #ffffff;
+    }
+
+    .input-group .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .action-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover { background: #112237; }
+
+    .btn-secondary {
+      background: none;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(29, 53, 87, 0.05);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-card">
+  <div class="home-btn-container">
+    <a href="index.html" class="home-btn">
+      <span>🏠</span> HOME
+    </a>
+  </div>
+
+  <h2>Rotaract Admin</h2>
+  <p class="subtitle">Sign in to manage portal settings and activities.</p>
+  
+  <div id="msg" class="message"></div>
+  
+  <form id="auth-form" onsubmit="return false;">
+    <div class="input-group">
+      <input type="email" id="email" placeholder="Email Address" required autocomplete="email">
+    </div>
+
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+      <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">👁️</button>
+    </div>
+
+    <div class="action-container">
+      <button type="button" id="btn-login" class="btn-primary">Log In</button>
+      <button type="button" id="btn-signup" class="btn-secondary">Create Account</button>
+    </div>
+  </form>
+</div>
+
+<!-- Safe, globally cached production distribution build of Supabase JS client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+  
+  // Connect Client
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Bind DOM
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const loginBtn = document.getElementById('btn-login');
+  const signupBtn = document.getElementById('btn-signup');
+  const msgBox = document.getElementById('msg');
+  const togglePasswordBtn = document.getElementById('togglePassword');
+
+  // --- Session Check ---
+  async function checkSession() {
+    const { data } = await supabase.auth.getSession();
+    if (data?.session) {
+      window.location.href = 'dashboard.html';
+    }
+  }
+  checkSession();
+
+  // --- Password Reveal ---
+  togglePasswordBtn.addEventListener('click', () => {
+    const isPass = passwordInput.type === 'password';
+    passwordInput.type = isPass ? 'text' : 'password';
+    togglePasswordBtn.textContent = isPass ? '🙈' : '👁️';
+  });
+
+  // --- Notifications Helper ---
+  function showStatus(text, type) {
+    msgBox.textContent = text;
+    msgBox.className = `message ${type}`;
+  }
+
+  function setStatusLoading(loading) {
+    loginBtn.disabled = loading;
+    signupBtn.disabled = loading;
+    if (loading) {
+      showStatus("Connecting to authentication server...", "success");
+    }
+  }
+
+  // --- Login Handler ---
+  loginBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      return showStatus("Both email and password fields are required.", "error");
+    }
+
+    setStatusLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    setStatusLoading(false);
+
+    if (error) {
+      showStatus(error.message, "error");
+    } else {
+      showStatus("Login authorized! Opening dashboard...", "success");
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 700);
+    }
+  });
+
+  // --- Signup Handler ---
+  signupBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      return showStatus("Both email and password fields are required.", "error");
+    }
+
+    setStatusLoading(true);
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    setStatusLoading(false);
+
+    if (error) {
+      showStatus(error.message, "error");
+    } else {
+      showStatus("Registration complete! Check your email inbox to verify your account credentials.", "success");
+    }
+  });
+</script>
+
+</body>
+</html>
