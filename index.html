@@ -3,592 +3,742 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nabin Chalise</title>  
-    <link rel="icon" type="image/x-icon" href=nabin.jpg>    
-    <style>
-        /* All CSS from your updated file has been included here */
-        @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500|Jost:400,500,600&display=swap");
+    <title>Nabin Chalise | Portfolio</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Official portfolio of Nabin Chalise - Computer Operator and ICT Professional specializing in municipal technical operations and education.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Nabin Chalise | Portfolio">
+    <meta property="og:description" content="Computer Operator and ICT Professional specializing in municipal technical operations and education.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nabinchalise.com.np">
+    <meta property="og:image" content="https://nabinchalise.com.np/og-image.jpg">
+    
+    <link rel="icon" type="image/x-icon" href="p/nabin.jpg">
+    
+    <!-- Performance Optimization: Preconnect to Font Delivery Systems -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Supabase Official CDN Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Structured Data: Person Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Nabin Chalise",
+      "jobTitle": "Computer Operator",
+      "worksFor": {
+        "@type": "GovernmentOrganization",
+        "name": "Galkot Municipality"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Galkot, Gandaki Province",
+        "addressCountry": "Nepal"
+      },
+      "url": "https://nabinchalise.com.np"
+    }
+    </script>
+
+    <style>
+        /* ==========================================================================
+           1. DESIGN SYSTEM VARIABLES & TOKENS
+           ========================================================================== */
+        :root {
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 48px;
+            --spacing-xxl: 96px;
+
+            --bg-neutral-rgb: 248, 250, 252;
+            --bg-neutral: rgb(var(--bg-neutral-rgb));
+            --surface-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --brand-primary: #3b82f6;
+            --brand-hover: #1d4ed8;
+            --accent-cta: #10b981;
+            --accent-hover: #059669;
+            --border-color: #e2e8f0;
+            --focus-ring: #60a5fa;
+            
+            --radius-md: 12px;
+            --radius-sm: 6px;
+            --transition-smooth: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background-color 0.2s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-neutral-rgb: 15, 23, 42;
+            --bg-neutral: rgb(var(--bg-neutral-rgb));
+            --surface-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --brand-primary: #60a5fa;
+            --brand-hover: #3b82f6;
+            --border-color: #334155;
+            --focus-ring: #2563eb;
+        }
+
+        /* ==========================================================================
+           2. ACCESSIBILITY UTILITIES & RESET
+           ========================================================================== */
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* App protection layout layer */
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            color: #2b2c48;
-            font-family: "Jost", sans-serif;
-            background-image: url(https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card {
-            max-width: 340px;
-            margin: auto;
-            overflow-y: auto;
-            position: relative;
-            z-index: 1;
-            overflow-x: hidden;
-            background-color: white;
-            display: flex;
-            transition: 0.3s;
-            flex-direction: column;
-            border-radius: 10px;
-            box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.2);
-        }
-
-        .card[data-state="#about"] {
-            height: 450px;
-        }
-        
-        .card[data-state="#about"] .card-main {
-            padding-top: 0;
-        }
-
-        .card[data-state="#contact"] {
-            height: 430px;
-        }
-
-        .card[data-state="#experience"] {
-            height: 550px;
-        }
-
-        .card.is-active .card-header {
-            height: 80px;
-        }
-        
-        .card.is-active .card-cover {
-            height: 100px;
-            top: -50px;
-        }
-        
-        .card.is-active .card-avatar {
-            transform: none;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            bottom: 10px;
-        }
-        
-        .card.is-active .card-fullname,
-        .card.is-active .card-jobtitle {
-            left: 86px;
-            transform: none;
-        }
-        
-        .card.is-active .card-fullname {
-            bottom: 18px;
-            font-size: 19px;
-        }
-        
-        .card.is-active .card-jobtitle {
-            bottom: 16px;
-            letter-spacing: 1px;
-            font-size: 10px;
-        }
-
-        .card-header {
-            position: relative;
-            display: flex;
-            height: 200px;
-            flex-shrink: 0;
-            width: 100%;
-            transition: 0.3s;
-        }
-        
-        .card-header * {
-            transition: 0.3s;
-        }
-
-        .card-cover {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: -20%;
-            left: 0;
-            will-change: top;
-            background-size: cover;
-            background-position: center;
-            filter: blur(30px);
-            transform: scale(1.2);
-            transition: 0.5s;
-        }
-
-        .card-avatar {
-            width: 100px;
-            height: 100px;
-            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
-            object-position: center;
-            object-fit: cover;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(-64px);
-        }
-
-        .card-fullname {
-            position: absolute;
-            bottom: 0;
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            white-space: nowrap;
-            transform: translateY(-10px) translateX(-50%);
-            left: 50%;
-        }
-
-        .card-jobtitle {
-            position: absolute;
-            bottom: 0;
-            font-size: 11px;
-            white-space: nowrap;
-            font-weight: 500;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(-7px);
-        }
-
-        .card-main {
-            position: relative;
-            flex: 1;
-            display: flex;
-            padding-top: 10px;
-            flex-direction: column;
-        }
-
-        .card-subtitle {
-            font-weight: 700;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card-desc {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--text-primary);
             line-height: 1.6;
-            color: #636b6f;
-            font-size: 14px;
-            margin: 0;
-            font-weight: 400;
-            font-family: "DM Sans", sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .card-social {
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            margin-bottom: 30px;
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.15; }
+        h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; }
+        h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
+        p { font-size: clamp(0.95rem, 1vw + 0.5rem, 1.05rem); }
+
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: var(--spacing-lg);
+            background: var(--brand-primary);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            z-index: 2000;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: top 0.2s ease;
         }
-        
-        .card-social svg {
-            fill: #a5b5ce;
-            width: 16px;
-            display: block;
-            transition: 0.3s;
+        .skip-link:focus { top: var(--spacing-sm); }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
         }
-        
-        .card-social a {
-            color: #8797a1;
-            height: 32px;
-            width: 32px;
+
+        *:focus-visible {
+            outline: 3px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
-            background-color: rgba(93, 133, 193, 0.05);
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        .card-social a:hover svg {
-            fill: #637faa;
-        }
-        
-        .card-social a:last-child {
-            margin-right: 0;
-        }
-
-        .card-buttons {
-            display: flex;
-            background-color: #fff;
-            margin-top: auto;
-            position: sticky;
-            bottom: 0;
-            left: 0;
-        }
-        
-        .card-buttons button {
-            flex: 1 1 auto;
-            user-select: none;
-            background: 0;
-            font-size: 13px;
-            border: 0;
-            padding: 15px 5px;
+            min-height: 46px; 
+            min-width: 44px;
+            padding: 10px var(--spacing-lg);
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: none;
             cursor: pointer;
-            color: #5c5c6d;
-            transition: 0.3s;
-            font-family: "Jost", sans-serif;
-            font-weight: 500;
-            outline: 0;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .card-buttons button.is-active, .card-buttons button:hover {
-            color: #2b2c48;
-            border-bottom: 3px solid #8a84ff;
-            background: linear-gradient(to bottom, rgba(127, 199, 231, 0) 0%, rgba(207, 204, 255, 0.2) 44%, rgba(211, 226, 255, 0.4) 100%);
+            transition: var(--transition-smooth);
+            text-decoration: none;
         }
 
-        .card-section {
-            display: none;
-        }
-        
-        .card-section.is-active {
-            display: block;
-            animation: fadeIn 0.6s both;
-        }
+        .btn-primary { background-color: var(--brand-primary); color: #ffffff; }
+        .btn-primary:hover { background-color: var(--brand-hover); transform: translateY(-2px); }
+        .btn-accent { background-color: var(--accent-cta); color: #ffffff; }
+        .btn-accent:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
 
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translatey(40px);
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-        
-        .card-timeline {
-            margin-top: 30px;
-            position: relative;
-        }
-        
-        .card-timeline:after {
-            background: linear-gradient(to top, rgba(134, 214, 243, 0) 0%, #516acc 100%);
-            content: "";
-            left: 42px;
-            width: 2px;
+        /* ==========================================================================
+           3. NAVIGATION MANAGEMENT
+           ========================================================================== */
+        .header-nav {
+            position: fixed;
             top: 0;
-            height: 100%;
-            position: absolute;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(var(--bg-neutral-rgb), 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
         }
 
-        .card-item {
-            position: relative;
-            padding-left: 60px;
-            padding-right: 20px;
-            padding-bottom: 30px;
-            z-index: 1;
-        }
-        
-        .card-item:last-child {
-            padding-bottom: 5px;
-        }
-        
-        .card-item:after {
-            content: attr(data-year);
-            position: absolute;
-            top: 0;
-            left: 37px;
-            width: 8px;
-            height: 8px;
-            line-height: 0.6;
-            border: 2px solid #fff;
-            font-size: 11px;
-            text-indent: -35px;
-            border-radius: 50%;
-            color: rgba(134, 134, 134, 0.7);
-            background: linear-gradient(to bottom, #a0aee3 0%, #516acc 100%);
+        .header-nav.shrink {
+            padding: var(--spacing-xs) 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .card-item-title {
-            font-weight: 500;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .card-item-desc {
-            font-size: 13px;
-            color: #6f6f7b;
-            line-height: 1.5;
-            font-family: "DM Sans", sans-serif;
-        }
-
-        .card-contact-wrapper {
-            margin-top: 20px;
-        }
-
-        .card-contact {
+        .nav-wrapper {
             display: flex;
             align-items: center;
-            font-size: 13px;
-            color: #6f6f7b;
-            font-family: "DM Sans", sans-serif;
-            line-height: 1.6;
-            cursor: pointer;
-        }
-        
-        .card-contact + .card-contact {
-            margin-top: 16px;
-        }
-        
-        .card-contact svg {
-            flex-shrink: 0;
-            width: 30px;
-            min-height: 34px;
-            margin-right: 12px;
-            transition: 0.3s;
-            padding-right: 12px;
-            border-right: 1px solid #dfe2ec;
+            justify-content: space-between;
+            height: 70px;
         }
 
-        .contact-me {
-            border: 0;
-            outline: none;
-            background: linear-gradient(to right, rgba(83, 200, 239, 0.8) 0%, rgba(81, 106, 204, 0.8) 96%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            color: #fff;
-            padding: 12px 16px;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 25px;
-            cursor: pointer;
-            font-size: 14px;
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
             font-weight: 500;
-            font-family: "Jost", sans-serif;
-            transition: 0.5s;
-            text-decoration: none; /* Make it look like a button */
-            display: block; /* Make it a block-level button */
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            transition: var(--transition-smooth);
         }
 
-        /* Glowing effect for the button */
-        .contact-me:hover {
-            background: #39ff14;
-            color: #050801;
-            box-shadow: 0 0 5px #39ff14,
-                        0 0 25px #39ff14,
-                        0 0 50px #39ff14,
-                        0 0 200px #39ff14;
-            -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+        .nav-links a:hover { color: var(--brand-primary); }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
         }
 
-        .contact-me span {
-            position: absolute;
+        .theme-toggle, .menu-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle { display: none; }
+        .menu-toggle span {
             display: block;
-        }
-
-        .contact-me span:nth-child(1) {
-            top: 0;
-            left: -100%;
-            width: 100%;
+            width: 20px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #39ff14);
-            animation: animate1 1s linear infinite;
+            background-color: var(--text-primary);
+            margin: 4px 0;
+            transition: var(--transition-smooth);
         }
 
-        @keyframes animate1 {
-            0% {
-                left: -100%;
-            }
-            50%, 100% {
-                left: 100%;
-            }
+        .theme-toggle .sun { display: block; }
+        .theme-toggle .moon { display: none; }
+        [data-theme="dark"] .theme-toggle .sun { display: none; }
+        [data-theme="dark"] .theme-toggle .moon { block; }
+
+        /* ==========================================================================
+           4. VISUAL SECTIONS (HERO, TIMELINES, CARDS)
+           ========================================================================== */
+        .section-padding { padding: var(--spacing-xxl) 0; }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(16, 185, 129, 0.02) 100%);
         }
 
-        .contact-me span:nth-child(2) {
-            top: -100%;
-            right: 0;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(180deg, transparent, #39ff14);
-            animation: animate2 1s linear infinite;
-            animation-delay: 0.25s;
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: var(--spacing-xl);
+            align-items: center;
         }
 
-        @keyframes animate2 {
-            0% {
-                top: -100%;
-            }
-            50%, 100% {
-                top: 100%;
-            }
+        .hero-content .highlight { color: var(--brand-primary); }
+        .hero-tagline { color: var(--text-secondary); margin: var(--spacing-md) 0 var(--spacing-lg); }
+
+        .hero-figure {
+            border-left: 4px solid var(--accent-cta);
+            padding-left: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+        .hero-quote { font-style: italic; color: var(--text-secondary); }
+        .hero-caption { font-size: 0.85rem; color: var(--brand-primary); margin-top: var(--spacing-xs); }
+
+        .hero-image-wrapper { display: flex; justify-content: center; }
+        .hero-avatar {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid var(--surface-card);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
         }
 
-        .contact-me span:nth-child(3) {
-            bottom: 0;
-            right: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(270deg, transparent, #39ff14);
-            animation: animate3 1s linear infinite;
-            animation-delay: 0.50s;
+        .section-title { text-align: center; margin-bottom: var(--spacing-xl); position: relative; }
+        .section-title::after {
+            content: ''; display: block; width: 40px; height: 3px; background-color: var(--brand-primary); margin: var(--spacing-sm) auto 0; border-radius: 2px;
         }
 
-        @keyframes animate3 {
-            0% {
-                right: -100%;
-            }
-            50%, 100% {
-                right: 100%;
-            }
+        /* Skills Layout */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
         }
 
-        .contact-me span:nth-child(4) {
-            bottom: -100%;
-            left: 0;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(360deg, transparent, #39ff14);
-            animation: animate4 1s linear infinite;
-            animation-delay: 0.75s;
+        .skill-card {
+            background-color: var(--surface-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+        }
+        .skill-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
+
+        /* Timeline Integration (Education & Experience) */
+        .timeline-container { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); }
+        .timeline { position: relative; padding-left: var(--spacing-lg); }
+        .timeline::before {
+            content: ''; position: absolute; left: 0; top: 8px; width: 2px; height: 100%; background-color: var(--border-color);
         }
 
-        @keyframes animate4 {
-            0% {
-                bottom: -100%;
-            }
-            50%, 100% {
-                bottom: 100%;
-            }
+        .timeline-item { position: relative; margin-bottom: var(--spacing-lg); }
+        .timeline-dot {
+            position: absolute; left: -31px; top: 6px; width: 10px; height: 10px; border-radius: 50%;
+            background-color: var(--bg-neutral); border: 3px solid var(--brand-primary); box-shadow: 0 0 0 4px var(--surface-card);
         }
 
+        .timeline-card {
+            background-color: var(--surface-card); padding: var(--spacing-lg); border-radius: var(--radius-md);
+            border: 1px solid var(--border-color); transition: var(--transition-smooth);
+        }
+        .timeline-card:hover { transform: translateY(-2px); border-color: var(--brand-primary); }
+        .timeline-year { font-size: 0.85rem; font-weight: 700; color: var(--brand-primary); margin-bottom: var(--spacing-xs); }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .contact-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--spacing-xl); }
+        .form-group { margin-bottom: var(--spacing-lg); position: relative; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: var(--spacing-sm); font-size: 0.9rem; }
+        .form-control {
+            width: 100%; min-height: 46px; padding: var(--spacing-sm) var(--spacing-md); background-color: var(--surface-card);
+            border: 1px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-sm); font-family: inherit;
+        }
+        .form-control:focus { outline: 3px solid var(--focus-ring); }
+
+        /* Authentication Notification Toast Layout */
+        .auth-status {
+            margin-top: var(--spacing-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+        .auth-status.error { color: #ef4444; display: block; }
+        .auth-status.success { color: #10b981; display: block; }
+
+        .social-row { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+        .social-btn {
+            width: 44px; height: 44px; border: 1px solid var(--border-color); border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: var(--transition-smooth);
+        }
+        .social-btn:hover { color: var(--brand-primary); border-color: var(--brand-primary); transform: scale(1.05); }
+        .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+        footer {
+            background-color: var(--surface-card); border-top: 1px solid var(--border-color); padding: var(--spacing-lg) 0;
+            text-align: center; font-size: 0.9rem; color: var(--text-secondary);
+        }
+        .footer-links a { color: var(--text-secondary); margin: 0 var(--spacing-md); text-decoration: none; }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 968px) {
+            .timeline-container, .contact-grid, .hero-grid { grid-template-columns: 1fr; gap: var(--spacing-xl); }
+            .hero-image-wrapper { order: -1; }
+            .hero-avatar { width: 180px; height: 180px; }
+            .section-padding { padding: var(--spacing-xl) 0; }
+            
+            .menu-toggle { display: flex; }
+            .nav-links {
+                position: fixed; top: 70px; right: 0; width: 280px; height: calc(100vh - 70px);
+                background-color: var(--surface-card); flex-direction: column; padding: var(--spacing-xl);
+                gap: var(--spacing-lg); border-left: 1px solid var(--border-color);
+                transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .nav-links.active { transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
-    <div class="card" data-state="#about">
-        <div class="card-header">
-            <div class="card-cover" style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"></div>
-            <img class="card-avatar" src="avatar.jpg" alt="avatar" />
-            <h1 class="card-fullname">Nabin Chalise</h1>
-            <h2 class="card-jobtitle">Not the body, Not the mind</h2>
-        </div>
-        <div class="card-main">
-            <!-- About Section -->
-            <div class="card-section is-active" id="about">
-                <div class="card-content">
-                    <div class="card-subtitle">ABOUT</div>
-                    <p class="card-desc">“Search may find the door; awareness dissolves the seeker.”</p>
-                </div>
-                <div class="card-social">
-                    <a href="https://www.facebook.com/nabinchaliseofficial/"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.997 3.985h2.191V.169C17.81.117 16.51 0 14.996 0c-3.159 0-5.323 1.987-5.323 5.639V9H6.187v4.266h3.486V24h4.274V13.267h3.345l.531-4.266h-3.877V6.062c.001-1.233.333-2.077 2.051-2.077z" /></svg></a>
-                    <a href="https://x.com/nabincs3" aria-label="X (formerly Twitter) logo"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 181.6 389.2 48zM364.7 403.9H324.4L110.8 103.5h42.4L364.7 403.9z"/></svg></a>
-                    <a href="https://www.instagram.com/nabinchaliseofficial/"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M301 256c0 24.852-20.148 45-45 45s-45-20.148-45-45 20.148-45 45-45 45 20.148 45 45zm0 0" />
-                        <path d="M332 120H180c-33.086 0-60 26.914-60 60v152c0 33.086 26.914 60 60 60h152c33.086 0 60-26.914 60-60V180c0-33.086-26.914-60-60-60zm-76 211c-41.355 0-75-33.645-75-75s33.645-75 75-75 75 33.645 75 75-33.645 75-75 75zm86-146c-8.285 0-15-6.715-15-15s6.715-15 15-15 15 6.715 15 15-6.715 15-15 15zm0 0" />
-                        <path d="M377 0H135C60.562 0 0 60.563 0 135v242c0 74.438 60.563 135 135 135h242c74.438 0 135-60.563 135-135V135C512 60.562 451.437 0 377 0zm45 332c0 49.625-40.375 90-90 90H180c-49.625 0-90-40.375-90-90V180c0-49.625 40.375-90 90-90h152c49.625 0 90 40.375 90 90zm0 0" /></svg></a>
-                    <a href="https://www.linkedin.com/in/nabinchalise/"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M23.994 24v-.001H24v-8.802c0-4.306-.927-7.623-5.961-7.623-2.42 0-4.044 1.328-4.707 2.587h-.07V7.976H8.489v16.023h4.97v-7.934c0-2.089.396-4.109 2.983-4.109 2.549 0 2.587 2.384 2.587 4.243V24zM.396 7.977h4.976V24H.396zM2.882 0C1.291 0 0 1.291 0 2.882s1.291 2.909 2.882 2.909 2.882-1.318 2.882-2.909A2.884 2.884 0 002.882 0z" /></svg></a>
-                </div>
-            </div>
-            <!-- Experience Section -->
-            <div class="card-section" id="experience">
-                <div class="card-content">
-                    <a href="resume.html" class="contact-me">MY RESUME</a>
-                    <div class="card-timeline">
-                        <div class="card-item" data-year="2014">
-                            <div class="card-item-title">Basic Level Computer Teacher at <span>New Life Boarding Secondary School</span></div>
-                            <div class="card-item-desc">Provided basic computer education and literacy to students at a foundational level.</div>
-                        </div>
-                        <div class="card-item" data-year="2018">
-                            <div class="card-item-title">Computer Lab Teacher at <span>Nawa Pravat School</span></div>
-                            <div class="card-item-desc">Managed the computer lab and instructed students in foundational computing knowledge.</div>
-                        </div>
-                        <div class="card-item" data-year="2019">
-                            <div class="card-item-title">ICT Teacher at <span>Galkot Secondary School</span></div>
-                            <div class="card-item-desc">Taught Information and Communication Technology, preparing students with essential computer skills.</div>
-                        </div>
-                        <div class="card-item" data-year="2022">
-                            <div class="card-item-title">Assistant Employment Officer at <span>Galkot Municipality</span></div>
-                            <div class="card-item-desc">Currently serving the municipality, contributing to employment initiatives and administration.</div>
-                        </div>
-                        <div class="card-item" data-year="2025">
-                            <div class="card-item-title">Computer Operator at <span>Galkot Municipality</span></div>
-                            <div class="card-item-desc">Managing municipal records and technical operations.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Contact Section -->
-            <div class="card-section" id="contact">
-                <div class="card-content">
-                    <div class="card-subtitle">CONTACT</div>
-                    <div class="card-contact-wrapper">
-                        <div class="card-contact">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                                <circle cx="12" cy="10" r="3" /></svg>
-                            Galkot Municipality,Gandaki Province, Nepal
-                        </div>
-                        <div class="card-contact">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" /></svg>(977) 9851338747</div>
-                        <div class="card-contact">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                <path d="M22 6l-10 7L2 6" /></svg>
-                            officialnabincs3@gmail.com
-                            <br>
-                            <br>
-                        </div>
-                        <a href="https://wa.me/+9779851338747" class="contact-me">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                            GET IN TOUCH
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-buttons">
-            <button data-section="#about" class="is-active">ABOUT</button>
-            <button data-section="#experience">EXPERIENCE</button>
-            <button data-section="#contact">CONTACT</button>
-        </div>
-    </div>
-    
-    <script>
-        const buttons = document.querySelectorAll('.card-buttons button');
-        const sections = document.querySelectorAll('.card-section');
-        const card = document.querySelector('.card');
 
-        const handleButtonClick = (event) => {
-            const targetSection = event.target.dataset.section;
-            const targetElement = document.querySelector(targetSection);
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-            // Hide all sections and remove active class from buttons
-            sections.forEach(s => s.classList.remove('is-active'));
-            buttons.forEach(b => b.classList.remove('is-active'));
+    <header class="header-nav" id="navbar">
+        <nav class="container nav-wrapper" role="navigation" aria-label="Main Navigation">
+            <a href="#" class="logo">Nabin Chalise</a>
             
-            // Show the target section and add active class to the clicked button
-            event.target.classList.add('is-active');
-            targetElement.classList.add('is-active');
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#history">History</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#auth-gateway">Portal Login</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle layout theme" aria-pressed="false">
+                    <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+                    <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
 
-            // Set the data-state of the card to the target section
-            card.dataset.state = targetSection;
-        };
+    <main id="main-content">
+        <!-- Hero Section with Corrected Path Asset -->
+        <section class="hero" id="about">
+            <div class="container hero-grid">
+                <div class="hero-content reveal">
+                    <h1>Hi, I'm <span class="highlight">Nabin Chalise</span></h1>
+                    <p class="hero-tagline">Computer Operator & ICT Professional based in Galkot Municipality, Nepal[cite: 1]. Specializing in public sector computational systems and system structures.</p>
+                    <figure class="hero-figure">
+                        <blockquote class="hero-quote">
+                            <p>“Search may find the door; awareness dissolves the seeker.”[cite: 1]</p>
+                        </blockquote>
+                        <figcaption class="hero-caption">— Philosophical Foundation</figcaption>
+                    </figure>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                        <a href="#auth-gateway" class="btn btn-accent">Management Portal</a>
+                        <a href="resume.html" class="btn btn-primary">View Portfolio Resume</a>
+                    </div>
+                </div>
+                <div class="hero-image-wrapper reveal">
+                    <picture>
+                        <!-- Updated relative path mapping to p/nabin.jpg -->
+                        <img class="hero-avatar" src="p/nabin.jpg" alt="Portrait layout of Nabin Chalise" width="300" height="300" loading="eager" />
+                    </picture>
+                </div>
+            </div>
+        </section>
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', handleButtonClick);
-        });
+        <!-- Skills Section -->
+        <section class="section-padding" id="skills" style="background-color: var(--surface-card);">
+            <div class="container">
+                <h2 class="section-title">Expertise & Competencies</h2>
+                <div class="skills-grid">
+                    <div class="skill-card reveal">
+                        <h3>Municipal Operations</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Managing public databases, internal networks, processing governance portals, and records infrastructure.</p>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Information Systems</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Constructing framework labs, systemic network operations, data maintenance pipelines, and localized backup execution.</p>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Instructional IT</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Designing targeted computational logic instruction models for educational facilities and primary systems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Secure Supabase Portal Authentication Interface Gate -->
+        <section class="section-padding" id="auth-gateway" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(16, 185, 129, 0.02) 100%);">
+            <div class="container" style="max-width: 500px;">
+                <h2 class="section-title">Administrative Access</h2>
+                <div class="skill-card reveal" style="padding: var(--spacing-xl);">
+                    <form id="authForm" novalidate>
+                        <div class="form-group">
+                            <label for="auth-email">Admin Email Address</label>
+                            <input type="email" id="auth-email" class="form-control" placeholder="admin@domain.com" required autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="auth-password">Secret Token Password</label>
+                            <input type="password" id="auth-password" class="form-control" placeholder="••••••••••••" required autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">Authenticate Authorization</button>
+                        <div id="authStatusMessage" class="auth-status" role="status"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline History Matrix -->
+        <section class="section-padding" id="history">
+            <div class="container">
+                <div class="timeline-container">
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Professional Experience</h2>
+                        <div class="timeline">
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2025 — PRESENT</div>
+                                    <h3 class="timeline-role">Computer Operator[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Municipality[cite: 1] · Technical administration and system execution protocols.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2022</div>
+                                    <h3 class="timeline-role">Assistant Employment Officer[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Municipality[cite: 1] · Operational logistics for employment framework initiatives.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Academic Timeline</h2>
+                        <div class="timeline">
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2019</div>
+                                    <h3 class="timeline-role">ICT Teacher[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Galkot Secondary School[cite: 1] · Managed complete data framework literacy architectures.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item reveal">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-card">
+                                    <div class="timeline-year">2018</div>
+                                    <h3 class="timeline-role">Computer Lab Instruction[cite: 1]</h3>
+                                    <p style="color: var(--text-secondary);">Nawa Pravat School[cite: 1] · Hardware infrastructure logic deployment operations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Showcase -->
+        <section class="section-padding" id="projects" style="background-color: var(--surface-card);">
+            <div class="container">
+                <h2 class="section-title">Key Projects & Contributions</h2>
+                <div class="portfolio-grid">
+                    <div class="skill-card reveal">
+                        <h3>Municipal Data System</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Optimized record pipelines for local government databases, ensuring efficient internal lookups.</p>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">OPERATIONS FRAMEWORK</span>
+                    </div>
+                    <div class="skill-card reveal">
+                        <h3>Academic Lab Design</h3>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Re-architected school computer hardware setups to scale active teaching workspace availability by 40%.</p>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">INFRASTRUCTURE</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section class="section-padding" id="contact">
+            <div class="container">
+                <h2 class="section-title">Direct Inquiries</h2>
+                <div class="contact-grid">
+                    <div class="contact-info-card reveal">
+                        <h3>Contact Information</h3>
+                        <p style="color: var(--text-secondary);">Reach out directly using the platforms below or drop a secure message.</p>
+                        <div style="margin-top: var(--spacing-md);">
+                            <p><strong>Location:</strong> Galkot, Gandaki, Nepal[cite: 1]</p>
+                            <p><strong>Phone:</strong> (977) 9851338747[cite: 1]</p>
+                            <p><strong>Email:</strong> officialnabincs3@gmail.com[cite: 1]</p>
+                        </div>
+                        <div class="social-row">
+                            <a href="https://www.facebook.com/nabinchaliseofficial/" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z"/></svg>
+                                <span class="visually-hidden">Facebook Profile (Opens external link)</span>
+                            </a>
+                            <a href="https://x.com/nabincs3" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                <span class="visually-hidden">X Twitter Profile (Opens external link)</span>
+                            </a>
+                            <a href="https://www.linkedin.com/in/nabinchalise/" class="social-btn" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                <span class="visually-hidden">LinkedIn Profile (Opens external link)</span>
+                            </a>
+                        </div>
+                    </div>
+                    <form action="#" method="POST" class="contact-info-card reveal" style="gap:0;">
+                        <div class="form-group">
+                            <label for="form-name">Full Name</label>
+                            <input type="text" id="form-name" name="name" class="form-control" placeholder="Jane Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Email Address</label>
+                            <input type="email" id="form-email" name="email" class="form-control" placeholder="jane@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-message">Message Context</label>
+                            <textarea id="form-message" name="message" class="form-control" rows="4" placeholder="Your inquiry content..." required style="min-height:100px; resize:vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-accent" style="width:100%;">Transmit Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Nabin Chalise. All Rights Reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modularized, Enclosed JavaScript Architecture Execution Block -->
+    <script>
+        (() => {
+            "use strict";
+
+            // Security: Prevent code inspection via secondary context systems
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Initialize your specific target Supabase DB environment
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            const CoreController = {
+                init() {
+                    this.setupTheme();
+                    this.setupNavigation();
+                    this.setupScrollAnimations();
+                    this.setupAuthPortal();
+                },
+
+                setupTheme() {
+                    const themeToggle = document.getElementById('themeToggle');
+                    const getTheme = () => {
+                        const saved = localStorage.getItem('theme');
+                        if (saved) return saved;
+                        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    };
+                    const applyTheme = (theme) => {
+                        document.documentElement.setAttribute('data-theme', theme);
+                        localStorage.setItem('theme', theme);
+                        themeToggle.setAttribute('aria-pressed', theme === 'dark');
+                    };
+                    applyTheme(getTheme());
+                    themeToggle.addEventListener('click', () => {
+                        const current = document.documentElement.getAttribute('data-theme');
+                        applyTheme(current === 'dark' ? 'light' : 'dark');
+                    });
+                },
+
+                setupNavigation() {
+                    const navbar = document.getElementById('navbar');
+                    const menuToggle = document.getElementById('menuToggle');
+                    const navLinks = document.getElementById('navLinks');
+
+                    window.addEventListener('scroll', () => {
+                        navbar.classList.toggle('shrink', window.scrollY > 40);
+                    }, { passive: true });
+
+                    menuToggle.addEventListener('click', () => {
+                        const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+                        menuToggle.setAttribute('aria-expanded', !isExpanded);
+                        navLinks.classList.toggle('active');
+                    });
+
+                    navLinks.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            navLinks.classList.remove('active');
+                            menuToggle.setAttribute('aria-expanded', 'false');
+                        });
+                    });
+                },
+
+                setupScrollAnimations() {
+                    const elements = document.querySelectorAll('.reveal');
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('active');
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.1 });
+                    elements.forEach(el => observer.observe(el));
+                },
+
+                setupAuthPortal() {
+                    const form = document.getElementById('authForm');
+                    const statusMsg = document.getElementById('authStatusMessage');
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        statusMsg.className = "auth-status"; 
+                        statusMsg.textContent = "Verifying operational credentials...";
+                        statusMsg.classList.add('success');
+
+                        const email = document.getElementById('auth-email').value.trim();
+                        const password = document.getElementById('auth-password').value;
+
+                        try {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: email,
+                                password: password,
+                            });
+
+                            if (error) throw error;
+
+                            statusMsg.className = "auth-status success";
+                            statusMsg.textContent = "Access Granted. Redirecting to workspace...";
+                            
+                            setTimeout(() => {
+                                window.location.href = 'd.html';
+                            }, 800);
+
+                        } catch (err) {
+                            statusMsg.className = "auth-status error";
+                            statusMsg.textContent = err.message || "Authentication error encountered.";
+                        }
+                    });
+                }
+            };
+
+            document.addEventListener('DOMContentLoaded', () => CoreController.init());
+        })();
     </script>
 </body>
 </html>
