@@ -8,32 +8,52 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- BASE VARIABLES (60-30-10 Rule & A11y Compliant) --- */
         :root {
-            --bg-dark: #0f172a;
+            --bg-dark: #0f172a; /* 60% Neutral Background */
             --bg-card: rgba(30, 41, 59, 0.7);
             --border-color: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
-            /* Category Accents */
+            /* 30% Primary Brand & Accents */
             --cls-personal: #38bdf8;
             --cls-professional: #34d399;
             --cls-galkot: #fbbf24;
             --cls-rotaract: #f43f5e;
             --cls-links: #a78bfa;
             
+            /* 10% CTA / Interactive Accent */
+            --cta-logout: #ef4444;
+            --cta-logout-hover: #dc2626;
+            
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- LIGHT MODE FALLBACK (System Aware Support) --- */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-dark: #f8fafc;
+                --bg-card: rgba(255, 255, 255, 0.8);
+                --border-color: rgba(0, 0, 0, 0.08);
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+            }
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -43,12 +63,12 @@
             line-height: 1.6;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
             background-attachment: fixed;
         }
 
-        /* --- NAVIGATION BAR --- */
+        /* --- SMART STICKY NAVIGATION BAR --- */
         .navbar {
             position: fixed;
             top: 0;
@@ -59,10 +79,18 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: var(--transition-smooth);
+        }
+
+        /* Shrink effect on scroll */
+        .navbar.scrolled {
+            padding: 0.75rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .nav-logo {
@@ -80,10 +108,17 @@
             color: var(--cls-personal);
         }
 
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1rem;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
@@ -101,30 +136,65 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
+        /* --- LOGOUT BUTTON STYLING --- */
+        .btn-logout {
+            background: var(--cta-logout);
+            color: #ffffff !important;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            min-height: 44px; /* Mobile Touch Target Size */
+        }
+
+        .btn-logout:hover {
+            background: var(--cta-logout-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Hamburger Menu Icon */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            background: none;
+            border: none;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
         /* --- HERO SECTION --- */
         .hero {
-            padding: 8rem 2rem 4rem;
+            padding: 12rem 2rem 6rem;
             max-width: 1200px;
             margin: 0 auto;
             text-align: center;
-            animation: fadeIn 1s ease-out;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
+            letter-spacing: -1.5px;
+            margin-bottom: 1.5rem;
             background: linear-gradient(to right, #fff, var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 2rem;
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
         }
 
         /* --- DASHBOARD GRID --- */
@@ -137,7 +207,7 @@
             gap: 2rem;
         }
 
-        /* --- CARD STYLING (Glassmorphism) --- */
+        /* --- CARD STYLING & INTERSECTION OBSERVER BASE --- */
         .dash-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -153,6 +223,15 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
+            
+            /* Scroll Reveal State */
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .dash-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .dash-card::before {
@@ -165,14 +244,13 @@
             transition: var(--transition-smooth);
         }
 
-        /* Card Theme Colors */
         .card-personal::before { background: var(--cls-personal); }
         .card-professional::before { background: var(--cls-professional); }
         .card-galkot::before { background: var(--cls-galkot); }
         .card-rotaract::before { background: var(--cls-rotaract); }
 
         .dash-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) scale(1.02);
             border-color: rgba(255, 255, 255, 0.15);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
@@ -189,7 +267,6 @@
             transition: var(--transition-smooth);
         }
 
-        /* Icon Background Fades */
         .card-personal .card-icon-wrapper { background: rgba(56, 189, 248, 0.1); color: var(--cls-personal); }
         .card-professional .card-icon-wrapper { background: rgba(52, 211, 153, 0.1); color: var(--cls-professional); }
         .card-galkot .card-icon-wrapper { background: rgba(251, 191, 36, 0.1); color: var(--cls-galkot); }
@@ -212,7 +289,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Action Buttons */
         .card-btn {
             width: 100%;
             padding: 0.8rem 1.5rem;
@@ -229,6 +305,7 @@
             gap: 0.5rem;
             transition: var(--transition-smooth);
             cursor: pointer;
+            min-height: 44px;
         }
 
         .card-personal .card-btn:hover { background: var(--cls-personal); color: #000; border-color: var(--cls-personal); }
@@ -236,7 +313,7 @@
         .card-galkot .card-btn:hover { background: var(--cls-galkot); color: #000; border-color: var(--cls-galkot); }
         .card-rotaract .card-btn:hover { background: var(--cls-rotaract); color: #fff; border-color: var(--cls-rotaract); }
 
-        /* --- USEFUL LINKS SECTION WITH CASCADE ANIMATION --- */
+        /* --- USEFUL LINKS SECTION --- */
         .links-section {
             max-width: 1200px;
             margin: 0 auto;
@@ -252,15 +329,8 @@
             padding-bottom: 0.75rem;
         }
 
-        .links-header i {
-            color: var(--cls-links);
-            font-size: 1.5rem;
-        }
-
-        .links-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+        .links-header i { color: var(--cls-links); font-size: 1.5rem; }
+        .links-header h2 { font-size: 1.5rem; font-weight: 600; }
 
         .links-grid {
             display: grid;
@@ -283,27 +353,13 @@
             transition: var(--transition-smooth);
             position: relative;
             overflow: hidden;
+            min-height: 44px;
         }
 
-        .link-item span {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+        .link-item span { display: flex; align-items: center; gap: 0.75rem; }
+        .link-item i.link-icon { color: var(--text-muted); transition: var(--transition-smooth); }
+        .link-item i.arrow-icon { transform: translateX(-5px); opacity: 0; color: var(--cls-links); transition: var(--transition-smooth); }
 
-        .link-item i.link-icon {
-            color: var(--text-muted);
-            transition: var(--transition-smooth);
-        }
-
-        .link-item i.arrow-icon {
-            transform: translateX(-5px);
-            opacity: 0;
-            color: var(--cls-links);
-            transition: var(--transition-smooth);
-        }
-
-        /* Dynamic Sliding Fill Hover Animation */
         .link-item::after {
             content: '';
             position: absolute;
@@ -314,23 +370,10 @@
             z-index: -1;
         }
 
-        .link-item:hover {
-            border-color: rgba(167, 139, 250, 0.4);
-            transform: translateX(4px);
-        }
-
-        .link-item:hover::after {
-            transform: translateX(0);
-        }
-
-        .link-item:hover i.link-icon {
-            color: var(--cls-links);
-        }
-
-        .link-item:hover i.arrow-icon {
-            transform: translateX(0);
-            opacity: 1;
-        }
+        .link-item:hover { border-color: rgba(167, 139, 250, 0.4); transform: translateX(4px); }
+        .link-item:hover::after { transform: translateX(0); }
+        .link-item:hover i.link-icon { color: var(--cls-links); }
+        .link-item:hover i.arrow-icon { transform: translateX(0); opacity: 1; }
 
         /* --- FOOTER --- */
         footer {
@@ -341,45 +384,77 @@
             font-size: 0.85rem;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- RESPONSIVE DESIGN --- */
+        /* --- RESPONSIVE DESIGN (Mobile First / Off-Canvas Menu) --- */
         @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
+            .menu-toggle {
+                display: block;
             }
+
+            .nav-container {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 260px;
+                background: #0b111e;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 6rem 2rem 2rem;
+                gap: 2.5rem;
+                transition: var(--transition-smooth);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+                border-left: 1px solid var(--border-color);
+            }
+
+            .nav-container.active {
+                right: 0;
+            }
+
             .nav-links {
-                display: none; /* Can be expanded into a mobile hamburger menu if required */
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                gap: 1.5rem;
             }
-            .hero {
-                padding: 7rem 1rem 3rem;
+
+            .nav-links a {
+                width: 100%;
+                font-size: 1.1rem;
             }
-            .hero h1 {
-                font-size: 2.25rem;
+
+            .btn-logout {
+                width: 100%;
+                justify-content: center;
             }
-            .dashboard-grid, .links-section {
-                padding: 0 1rem 3rem;
-            }
+
+            .hero h1 { font-size: 2.5rem; }
+            .dashboard-grid, .links-section { padding: 0 1rem 3rem; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
+    <nav class="navbar" id="navbar" aria-label="Main Navigation">
         <a href="#" class="nav-logo">
-            <i class="fa-solid fa-layer-group"></i> CentralHub
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i> CentralHub
         </a>
-        <ul class="nav-links">
-            <li><a href="#" class="active">Dashboard</a></li>
-            <li><a href="#personal">Personal</a></li>
-            <li><a href="#professional">Professional</a></li>
-            <li><a href="#galkot">Galkot</a></li>
-            <li><a href="#rotaract">Rotaract</a></li>
-        </ul>
+        
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="nav-container" id="nav-container">
+            <ul class="nav-links">
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="#personal">Personal</a></li>
+                <li><a href="#professional">Professional</a></li>
+                <li><a href="#galkot">Galkot</a></li>
+                <li><a href="#rotaract">Rotaract</a></li>
+            </ul>
+            <a href="index.html" class="btn-logout" id="logout-btn">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
+            </a>
+        </div>
     </nav>
 
     <header class="hero">
@@ -391,53 +466,53 @@
         
         <section class="dash-card card-personal" id="personal">
             <div class="card-icon-wrapper">
-                <i class="fa-solid fa-user"></i>
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
             </div>
             <div>
                 <h2>Personal Space</h2>
                 <p>Manage routines, dynamic journals, lifestyle trackers, and individualized historical records.</p>
             </div>
             <a href="index.html" class="card-btn">
-                Launch Workspace <i class="fa-solid fa-arrow-right-long"></i>
+                Launch Workspace <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
             </a>
         </section>
 
         <section class="dash-card card-professional" id="professional">
             <div class="card-icon-wrapper">
-                <i class="fa-solid fa-briefcase"></i>
+                <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
             </div>
             <div>
                 <h2>Professional Development</h2>
                 <p>Keep track of your resume updates, continuous skill paths, projects, and career milestones.</p>
             </div>
             <a href="p" class="card-btn">
-                Open Portfolio <i class="fa-solid fa-arrow-right-long"></i>
+                Open Portfolio <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
             </a>
         </section>
 
         <section class="dash-card card-galkot" id="galkot">
             <div class="card-icon-wrapper">
-                <i class="fa-solid fa-building-flag"></i>
+                <i class="fa-solid fa-building-flag" aria-hidden="true"></i>
             </div>
             <div>
                 <h2>Galkot Municipality</h2>
                 <p>Access municipal strategies, community documentation, and local development operations.</p>
             </div>
             <a href="g" class="card-btn">
-                View Portal <i class="fa-solid fa-arrow-right-long"></i>
+                View Portal <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
             </a>
         </section>
 
         <section class="dash-card card-rotaract" id="rotaract">
             <div class="card-icon-wrapper">
-                <i class="fa-solid fa-wheelchair-move"></i>
+                <i class="fa-solid fa-wheelchair-move" aria-hidden="true"></i>
             </div>
             <div>
                 <h2>Rotaract Club</h2>
                 <p>Coordinate volunteer programs, meeting agendas, social events, and fellowship planning.</p>
             </div>
             <a href="r" class="card-btn">
-                Explore Initiatives <i class="fa-solid fa-arrow-right-long"></i>
+                Explore Initiatives <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
             </a>
         </section>
 
@@ -445,26 +520,26 @@
 
     <section class="links-section">
         <div class="links-header">
-            <i class="fa-solid fa-link"></i>
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
             <h2>Useful Resources</h2>
         </div>
         
         <div class="links-grid">
             <a href="https://github.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-brands fa-github link-icon"></i> GitHub Profile</span>
-                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                <span><i class="fa-brands fa-github link-icon" aria-hidden="true"></i> GitHub Profile</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
             <a href="https://linkedin.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-brands fa-linkedin-in link-icon"></i> LinkedIn Network</span>
-                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                <span><i class="fa-brands fa-linkedin-in link-icon" aria-hidden="true"></i> LinkedIn Network</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
             <a href="https://notion.so" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-solid fa-note-sticky link-icon"></i> Notion Workspace</span>
-                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                <span><i class="fa-solid fa-note-sticky link-icon" aria-hidden="true"></i> Notion Workspace</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
             <a href="https://gmail.com" target="_blank" rel="noopener" class="link-item">
-                <span><i class="fa-solid fa-envelope link-icon"></i> Mail Client</span>
-                <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                <span><i class="fa-solid fa-envelope link-icon" aria-hidden="true"></i> Mail Client</span>
+                <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
         </div>
     </section>
@@ -473,5 +548,62 @@
         <p>&copy; 2026 Management Dashboard. Built for optimization and speed.</p>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Smart Sticky Header Logic
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // 2. Mobile Hamburger Off-Canvas Menu Toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const navContainer = document.getElementById('nav-container');
+            
+            menuToggle.addEventListener('click', () => {
+                navContainer.classList.toggle('active');
+                // Change icon between Bars and Xmark smoothly
+                const icon = menuToggle.querySelector('i');
+                if(navContainer.classList.contains('active')) {
+                    icon.className = 'fa-solid fa-xmark';
+                } else {
+                    icon.className = 'fa-solid fa-bars';
+                }
+            });
+
+            // Close mobile menu when clicking a navigation link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navContainer.classList.remove('active');
+                    menuToggle.querySelector('i').className = 'fa-solid fa-bars';
+                });
+            });
+
+            // 3. Scroll Triggered Reveals using Intersection Observer API
+            const cards = document.querySelectorAll('.dash-card');
+            const cardObserverOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const cardObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target); // Trigger animation once
+                    }
+                });
+            }, cardObserverOptions);
+
+            cards.forEach(card => {
+                cardObserver.observe(card);
+            });
+        });
+    </script>
 </body>
 </html>
