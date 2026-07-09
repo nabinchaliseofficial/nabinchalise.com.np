@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Development & Achievements</title>
+    <meta name="description" content="Professional portfolio showcasing certifications, key achievements, career milestones, and resume.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-professional: #34d399; /* Emerald green theme */
+            --accent-glow: rgba(52, 211, 153, 0.15);
+            
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(52, 211, 153, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 10% 70%, rgba(15, 23, 42, 1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* --- NAVIGATION BAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-brand i {
+            color: var(--accent-professional);
+        }
+
+        .back-dash {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-dash:hover {
+            color: var(--text-main);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 9rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        /* --- RESUME ACTION BUTTON --- */
+        .resume-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: transparent;
+            color: var(--accent-professional);
+            border: 2px solid var(--accent-professional);
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.05);
+        }
+
+        .resume-btn:hover {
+            background: var(--accent-professional);
+            color: #0f172a;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-3px);
+        }
+
+        /* --- PORTFOLIO WRAPPER --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 4rem 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title i {
+            color: var(--accent-professional);
+        }
+
+        /* --- GRID LAYOUTS --- */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* --- GLASS CARDS --- */
+        .display-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .display-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(52, 211, 153, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .tag {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--accent-professional);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .display-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .issuer {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Card Link/Action */
+        .view-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            margin-top: auto;
+        }
+
+        .view-link i {
+            transition: var(--transition-smooth);
+        }
+
+        .display-card:hover .view-link {
+            color: var(--accent-professional);
+        }
+
+        .display-card:hover .view-link i {
+            transform: translateX(4px);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 7rem 1rem 3rem;
+            }
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+            .container {
+                padding: 0 1rem 3rem;
+            }
+            .section-title {
+                font-size: 1.5rem;
+                margin: 3rem 0 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <i class="fa-solid fa-briefcase"></i> ProDevelopment
+        </a>
+        <a href="index.html" class="back-dash">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </nav>
+
+    <header class="hero">
+        <h1>Professional Track</h1>
+        <p>A comprehensive log of academic certifications, technical skill verifications, and career achievements.</p>
+        
+        <a href="resume.html" class="resume-btn">
+            <i class="fa-solid fa-file-pdf"></i> View Full Resume / CV
+        </a>
+    </header>
+
+    <main class="container">
+
+        <section id="certificates">
+            <h2 class="section-title"><i class="fa-solid fa-certificate"></i> Verified Certifications</h2>
+            <div class="portfolio-grid">
+                
+                <article class="display-card">
+                    <div>
+                        <div class="card-meta">
+                            <span class="tag">Technical</span>
+                            <span>ID: AWS-8492</span>
+                        </div>
+                        <h3>AWS Certified Solutions Architect</h3>
+                        <div class="issuer"><i class="fa-solid fa-award"></i> Amazon Web Services</div>
+                        <p class="card-desc">Validation of cloud architecture expertise, including designing distributed, fault-tolerant, and scalable systems.</p>
+                    </div>
+                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+                <article class="display-card">
+                    <div>
+                        <div class="card-meta">
+                            <span class="tag">Management</span>
+                            <span>ID: PM-49301</span>
+                        </div>
+                        <h3>Project Management Professional (PMP)</h3>
+                        <div class="issuer"><i class="fa-solid fa-award"></i> Project Management Institute</div>
+                        <p class="card-desc">Advanced methodology training focusing on Agile frameworks, team leadership, and resource optimization lifecycle metrics.</p>
+                    </div>
+                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+                <article class="display-card">
+                    <div>
+                        <div class="card-meta">
+                            <span class="tag">Development</span>
+                            <span>ID: FullStack-99</span>
+                        </div>
+                        <h3>Advanced Full-Stack Engineering</h3>
+                        <div class="issuer"><i class="fa-solid fa-award"></i> Tech Academy Elite</div>
+                        <p class="card-desc">Immersive specialization training covering modern secure database interactions, high-performance UI optimization, and DevOps systems.</p>
+                    </div>
+                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+            </div>
+        </section>
+
+        <section id="achievements">
+            <h2 class="section-title"><i class="fa-solid fa-trophy"></i> Key Achievements</h2>
+            <div class="portfolio-grid">
+                
+                <article class="display-card">
+                    <div>
+                        <div class="card-meta">
+                            <span class="tag">Innovation</span>
+                            <span>2025</span>
+                        </div>
+                        <h3>1st Place - National Smart Cities Hackathon</h3>
+                        <div class="issuer"><i class="fa-solid fa-building-columns"></i> GovTech Frameworks</div>
+                        <p class="card-desc">Led a 4-person engineering team to design a decentralized citizen reporting system tailored for local municipal jurisdictions.</p>
+                    </div>
+                    <a href="#" class="view-link">View Project Case <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+                <article class="display-card">
+                    <div>
+                        <div class="card-meta">
+                            <span class="tag">Leadership</span>
+                            <span>2024</span>
+                        </div>
+                        <h3>Outstanding Regional Leader Award</h3>
+                        <div class="issuer"><i class="fa-solid fa-hands-holding-circle"></i> Rotaract District Council</div>
+                        <p class="card-desc">Recognized for structural project management achievements and coordinating cross-district community resource allocation pipelines.</p>
+                    </div>
+                    <a href="#" class="view-link">Read Profile Feature <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Professional Portfolio. All verification hashes verified securely.</p>
+    </footer>
+
+</body>
+</html>

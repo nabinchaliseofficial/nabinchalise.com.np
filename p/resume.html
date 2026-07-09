@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nabin Chalise - Resume</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        } 
+        
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+           display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            background-color: #2563eb; /* Blue preloader background */
+        }
+
+        #preloader.fade-out {
+            opacity: 0;
+        }
+
+        /* Spinner animation */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffffff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation { 
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fade-in animation for content sections */
+        .content-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .content-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-8">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+        
+        <!-- Header Section with Cover Photo -->
+        <header class="relative w-full h-80 rounded-t-2xl content-section flex items-center justify-center text-center">
+            <!-- Cover Photo Background (Placeholder) -->
+            <!-- IMPORTANT: Replace the URL below with your actual cover photo URL if you have one. -->
+            <img src="https://images.unsplash.com/photo-1689876673591-215e6f1b8a31?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cover Photo" class="absolute inset-0 w-full h-full object-cover">
+            
+            
+            <!-- Profile Content -->
+            <div class="relative z-10 p-8 text-white">
+                <!-- Profile Picture -->
+                <div class="w-32 h-32 mx-auto mb-4 bg-white rounded-full overflow-hidden flex items-center justify-center p-1">
+                    <img src="nabin.jpg" alt="Nabin Chalise" class="w-full h-full object-cover rounded-full">
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2">Nabin Chalise</h1>
+                <p class="text-xl sm:text-2xl font-light">Computer Operator | Computer Instructor | Rotaract President</p>
+            </div>
+        </header>
+
+        <div class="p-8 sm:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Contact, Profile & Skills Column -->
+            <aside class="md:col-span-1 space-y-8">
+
+                <!-- Contact Information -->
+                <section class="content-section" style="transition-delay: 0.1s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Contact</h2>
+                    <ul class="text-sm space-y-2">
+                        <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779851338747" class="text-blue-600 hover:underline">+977-9851338747</a></li>
+                        <li><strong class="font-medium">Email:</strong> <a href="mailto:officialnabincs3@gmail.com" class="text-blue-600 hover:underline">officialnabincs3@gmail.com</a></li>
+                    </ul>
+                </section>
+                
+                <!-- Profile Details -->
+                <section class="content-section" style="transition-delay: 0.2s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Profile</h2>
+                    <ul class="text-sm space-y-2">
+                        <li><strong class="font-medium">Address:</strong> Galkot Municipality-3, Baglung (Permanent)</li>
+                        <li><strong class="font-medium">Sex:</strong> Male</li>
+                        <li><strong class="font-medium">DOB:</strong> 26 Aug, 1995</li>
+                        <li><strong class="font-medium">Language:</strong> English, Nepali & Hindi</li>
+                        <li><strong class="font-medium">Marital Status:</strong> Married</li>
+                        <li><strong class="font-medium">Religion:</strong> Hindu</li>
+                        <li><strong class="font-medium">Citizenship:</strong> Nepali</li>
+                    </ul>
+                </section>
+                
+                <!-- Hobbies -->
+                <section class="content-section" style="transition-delay: 0.3s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Hobbies</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Photography</span>
+                        <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Table Tennis</span>
+                        <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Typing</span>
+                        <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Blogging</span>
+                        <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Designing</span>
+                    </div>
+                </section>
+
+                <!-- Skills -->
+                <section class="content-section" style="transition-delay: 0.4s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Skills</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Fast Learner</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Problem Solving</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Email/Internet</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Computing</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Office Package</span>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Main Content Column -->
+            <main class="md:col-span-2 space-y-8">
+                
+                <!-- Work Experience -->
+                <section class="content-section" style="transition-delay: 0.5s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Work Experience</h2>
+                    <div class="space-y-6">
+                        <!-- Job 1 -->
+                        <div>
+                            <h3 class="text-lg font-bold">Computer Operator</h3>
+                            <p class="text-sm font-semibold text-gray-600">Galkot Municipality, Harichaur, Baglung | 16-07-2025 to Till Date</p>
+                        </div>
+
+                        <!-- Job 2 -->
+                        <div>
+                            <h3 class="text-lg font-bold">Assistant Employment Officer</h3>
+                            <p class="text-sm font-semibold text-gray-600">Galkot Municipality, Harichaur, Baglung | 18-09-2022 to 15-07-2025</p>
+                        </div>
+                        <!-- Job 3 -->
+                        <div>
+                            <h3 class="text-lg font-bold">ICT Teacher</h3>
+                            <p class="text-sm font-semibold text-gray-600">Galkot Secondary School, Galkot Municipality-3, Baglung | 16-04-2019 to 17-09-2022 A.D.</p>
+                        </div>
+                        <!-- Job 4 -->
+                        <div>
+                            <h3 class="text-lg font-bold">Computer Lab Teacher</h3>
+                            <p class="text-sm font-semibold text-gray-600">Nawa Pravat School, Galkot Municipality-3, Baglung | 15-04-2018 to 15-04-2019 A.D.</p>
+                        </div>
+                         <!-- Job 5 -->
+                         <div>
+                            <h3 class="text-lg font-bold">Basic Level Computer Teacher</h3>
+                            <p class="text-sm font-semibold text-gray-600">New Life Boarding Secondary School, Galkot Municipality-6, Baglung | 21-04-2014 to 13-04-2018 A.D.</p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- Rotaract Journey -->
+                <section class="content-section" style="transition-delay: 0.7s;">
+                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Rotaract Journey</h2>
+                    <div class="space-y-2">
+                        <div>
+                            <h3 class="text-lg font-bold">RAC Galkot Baglung</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+                                <li>2020-21: Charter Member, Foundation Committee</li>
+                                <li>2021-22: IT Officer, Club Administration Committee</li>
+                                <li>2022-23: International Service Chair, International Committee</li>
+                                <li>2023-24: Joint Secretary, Community Service Committee</li>
+                                <li>2024-25: Secretary, Club Administration Committee</li>
+                                <li>2025-26: President Elect, Membership Development Committee</li>
+                                <li>2026-27: President, Club Administration Committee</li>
+                            </ul>
+                            <h3 class="text-lg font-bold mt-4">Other Positions</h3>
+                            <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+                                <li>2025-26: Zone XVI, Zonal Social Media Officer</li>
+                                <li>2025-26: District 3292, Nepal-Bhutan, District Training Team Member</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+        <!-- Footer (optional) -->
+        <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.8s;">
+         <p class="text-sm">© 2026 <a href="https://nabinchalise.com.np/" class="text-blue-500 hover:underline">Nabin Chalise</a>. All rights reserved.</p>
+
+        </footer>
+
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const body = document.body;
+
+            // Fade out the preloader
+            preloader.classList.add('fade-out');
+
+            // Show the main content after a slight delay
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                body.style.opacity = '1';
+                
+                // Animate the content sections
+                const contentSections = document.querySelectorAll('.content-section');
+                contentSections.forEach(section => {
+                    section.classList.add('show');
+                });
+            }, 600); // Wait for the fade-out transition to complete
+        });
+    </script>
+</body>
+</html>
