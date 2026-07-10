@@ -1,685 +1,713 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nabin Chalise | Portfolio</title>
-    
-    <meta name="description" content="Official portfolio of Nabin Chalise - Computer Operator and ICT Professional specializing in municipal technical operations and education Regel frameworks.">
-    <meta name="theme-color" content="#0f172a">
-    
-    <meta property="og:title" content="Nabin Chalise | Portfolio">
-    <meta property="og:description" content="Computer Operator and ICT Professional specializing in municipal technical operations and education.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://nabinchalise.com.np">
-    <meta property="og:image" content="https://nabinchalise.com.np/og-image.jpg">
-   
-    <link rel="icon" type="image/x-icon" href="p/nabin.jpg">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotaract Club of Galkot Baglung - Member Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Nabin Chalise",
-      "jobTitle": "Computer Operator",
-      "worksFor": {
-        "@type": "GovernmentOrganization",
-        "name": "Galkot Municipality"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Galkot, Gandaki Province",
-        "addressCountry": "Nepal"
-      },
-      "url": "https://nabinchalise.com.np"
-    }
-    </script>
-
     <style>
-        /* ==========================================================================
-           1. DESIGN SYSTEM VARIABLES & TOKENS
-           ========================================================================== */
-        :root {
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 48px;
-            --spacing-xxl: 96px;
-
-            --bg-neutral-rgb: 248, 250, 252;
-            --bg-neutral: rgb(var(--bg-neutral-rgb));
-            --surface-card: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --brand-primary: #3b82f6;
-            --brand-hover: #1d4ed8;
-            --accent-cta: #10b981;
-            --accent-hover: #059669;
-            --border-color: #e2e8f0;
-            --focus-ring: #60a5fa;
-            
-            --radius-md: 12px;
-            --radius-sm: 6px;
-            --transition-smooth: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, background-color 0.2s ease;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        [data-theme="dark"] {
-            --bg-neutral-rgb: 15, 23, 42;
-            --bg-neutral: rgb(var(--bg-neutral-rgb));
-            --surface-card: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --brand-primary: #60a5fa;
-            --brand-hover: #3b82f6;
-            --border-color: #334155;
-            --focus-ring: #2563eb;
+        .member-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
         }
 
-        /* ==========================================================================
-           2. ACCESSIBILITY UTILITIES & RESET
-           ========================================================================== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background-color: #e11d48;
+            color: white;
+            box-shadow: 0 4px 8px -2px rgba(225, 29, 72, 0.2);
+        }
+
+        .filter-btn:not(.active) {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .filter-btn:not(.active):hover {
+            background-color: #e2e8f0;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .edit-overlay {
+            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        .login-overlay {
+            backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .login-box {
+            animation: scaleIn 0.2s ease;
+        }
+
+        @keyframes scaleIn {
+            from { opacity:0; transform:scale(0.96); }
+            to { opacity:1; transform:scale(1); }
+        }
+
+        .password-toggle {
+            cursor: pointer;
             user-select: none;
         }
 
-        html {
-            scroll-behavior: smooth;
+        .toast {
+            animation: slideUp 0.25s ease;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-neutral);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(12px); }
+            to { opacity:1; transform:translateY(0); }
         }
 
-        h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.15; }
-        h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 600; }
-        h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
-        p { font-size: clamp(0.95rem, 1vw + 0.5rem, 1.05rem); }
-
-        .skip-link {
-            position: absolute;
-            top: -100px;
-            left: var(--spacing-lg);
-            background: var(--brand-primary);
-            color: white;
-            padding: var(--spacing-md) var(--spacing-lg);
-            z-index: 2000;
-            text-decoration: none;
-            border-radius: var(--radius-sm);
-            transition: top 0.2s ease;
-        }
-        .skip-link:focus { top: var(--spacing-sm); }
-
-        .visually-hidden {
-            position: absolute !important;
-            width: 1px !important;
-            height: 1px !important;
-            padding: 0 !important;
-            margin: -1px !important;
-            overflow: hidden !important;
-            clip: rect(0, 0, 0, 0) !important;
-            white-space: nowrap !important;
-            border: 0 !important;
-        }
-
-        *:focus-visible {
-            outline: 3px solid var(--focus-ring);
-            outline-offset: 2px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-lg);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 46px; 
-            min-width: 44px;
-            padding: 10px var(--spacing-lg);
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            text-decoration: none;
-        }
-
-        .btn-primary { background-color: var(--brand-primary); color: #ffffff; }
-        .btn-primary:hover { background-color: var(--brand-hover); transform: translateY(-2px); }
-        .btn-accent { background-color: var(--accent-cta); color: #ffffff; }
-        .btn-accent:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
-        
-        .btn-outline { 
-            background-color: transparent; 
-            color: var(--text-primary); 
-            border: 2px solid var(--border-color); 
-            border-radius: 30px; 
-            font-size: 0.9rem;
-        }
-        .btn-outline:hover { 
-            border-color: var(--brand-primary); 
-            color: var(--brand-primary); 
-            transform: translateY(-2px); 
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        /* ==========================================================================
-           3. NAVIGATION MANAGEMENT
-           ========================================================================== */
-        .header-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: rgba(var(--bg-neutral-rgb), 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            transition: var(--transition-smooth);
-        }
-
-        .header-nav.shrink {
-            padding: var(--spacing-xs) 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 70px;
-        }
-
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--brand-primary);
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            list-style: none;
-            gap: 32px;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-        }
-
-        .nav-links a:hover { color: var(--brand-primary); }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .theme-toggle, .menu-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            width: 44px;
-            height: 44px;
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #e11d48;
             border-radius: 50%;
-            cursor: pointer;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
 
-        .menu-toggle { display: none; }
-        .menu-toggle span {
-            display: block;
-            width: 20px;
-            height: 2px;
-            background-color: var(--text-primary);
-            margin: 4px 0;
-            transition: var(--transition-smooth);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .theme-toggle .sun { display: block; }
-        .theme-toggle .moon { display: none; }
-        [data-theme="dark"] .theme-toggle .sun { display: none; }
-        [data-theme="dark"] .theme-toggle .moon { display: block; }
-
-        /* ==========================================================================
-           4. VISUAL SECTIONS (HERO, CARDS)
-           ========================================================================== */
-        .section-padding { padding: var(--spacing-xxl) 0; }
-
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding-top: 80px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(16, 185, 129, 0.02) 100%);
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: var(--spacing-xl);
-            align-items: center;
-        }
-
-        .hero-content .highlight { color: var(--brand-primary); }
-        .hero-tagline { color: var(--text-secondary); margin: var(--spacing-md) 0 var(--spacing-lg); }
-
-        .hero-figure {
-            border-left: 4px solid var(--accent-cta);
-            padding-left: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-        }
-        .hero-quote { font-style: italic; color: var(--text-secondary); }
-        .hero-caption { font-size: 0.85rem; color: var(--brand-primary); margin-top: var(--spacing-xs); }
-
-        .hero-image-wrapper { display: flex; justify-content: center; }
-        
-        .hero-avatar {
-            width: 300px;
-            height: 300px;
-            aspect-ratio: 1 / 1;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: center 20%;
-            border: 6px solid var(--surface-card);
-            box-shadow: 0 0 0 4px var(--brand-primary), 0 20px 40px rgba(0,0,0,0.15);
-            transition: var(--transition-smooth);
-        }
-        .hero-avatar:hover {
-            transform: scale(1.03) rotate(2deg);
-            box-shadow: 0 0 0 6px var(--accent-cta), 0 25px 50px rgba(0,0,0,0.2);
-        }
-
-        .section-title { text-align: center; margin-bottom: var(--spacing-xl); position: relative; }
-        .section-title::after {
-            content: '';
-            display: block; width: 40px; height: 3px; background-color: var(--brand-primary); margin: var(--spacing-sm) auto 0; border-radius: 2px;
-        }
-
-        .auth-card {
-            background-color: var(--surface-card);
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .form-group { margin-bottom: var(--spacing-lg); position: relative; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: var(--spacing-sm); font-size: 0.9rem; }
-        .form-control {
-            width: 100%;
-            min-height: 46px; padding: var(--spacing-sm) var(--spacing-md); background-color: var(--surface-card);
-            border: 1px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-sm); font-family: inherit;
-        }
-        .form-control:focus { outline: 3px solid var(--focus-ring); }
-
-        .auth-status {
-            margin-top: var(--spacing-sm);
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: none;
-        }
-        .auth-status.error { color: #ef4444; display: block; }
-        .auth-status.success { color: #10b981; display: block; }
-
-        .social-row { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
-        .social-btn {
-            width: 44px;
-            height: 44px; border: 1px solid var(--border-color); border-radius: 50%;
-            display: inline-flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: var(--transition-smooth);
-        }
-        .social-btn:hover { color: var(--brand-primary); border-color: var(--brand-primary); transform: scale(1.05); }
-        .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
-
-        .contact-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--spacing-xl); }
-
-        footer {
-            background-color: var(--surface-card);
-            border-top: 1px solid var(--border-color); padding: var(--spacing-lg) 0;
-            text-align: center; font-size: 0.9rem; color: var(--text-secondary);
-        }
-        .footer-links a { color: var(--text-secondary); margin: 0 var(--spacing-md); text-decoration: none; }
-
-        .reveal { opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        @media (max-width: 968px) {
-            .hero-grid, .contact-grid { grid-template-columns: 1fr; gap: var(--spacing-xl); }
-            .hero-image-wrapper { order: -1; }
-            .hero-avatar { width: 220px; height: 220px; }
-            .section-padding { padding: var(--spacing-xl) 0; }
-            
-            .menu-toggle { display: flex; }
-            .nav-links {
-                position: fixed;
-                top: 70px; right: 0; width: 280px; height: calc(100vh - 70px);
-                background-color: var(--surface-card); flex-direction: column; padding: var(--spacing-xl);
-                gap: var(--spacing-lg); border-left: 1px solid var(--border-color);
-                transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            .nav-links.active { transform: translateX(0); }
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-rose-500 selection:text-white">
 
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 cursor-pointer group" id="homeBtn">
+                <div class="w-11 h-11 bg-rose-50 rounded-xl flex items-center justify-center overflow-hidden border border-rose-100 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                    <img src="rotaract logo.jpg" alt="RAC Logo" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120'">
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight group-hover:text-rose-600 transition-colors">RAC Galkot Baglung</h1>
+                    <p class="text-[11px] font-bold text-rose-600 tracking-widest uppercase">Rotaract Club Directory</p>
+                </div>
+            </div>
 
-    <header class="header-nav" id="navbar">
-        <nav class="container nav-wrapper" role="navigation" aria-label="Main Navigation">
-            <a href="#" class="logo">Nabin Chalise</a>
-            
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#about">About</a></li>
-                <li><a href="resume.html">Resume</a></li>
-                <li><a href="#auth-gateway">Portal Login</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-         
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle layout theme" aria-pressed="false">
-                    <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"></path></svg>
-                    <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <div class="w-full sm:w-96 relative">
+                <input type="text" id="searchInput" placeholder="Search members by name, role, address, profession..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-100/80 border border-transparent rounded-xl focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all duration-200 text-sm outline-none shadow-inner"
+                    aria-label="Search members">
+                <div class="absolute left-3.5 top-3 text-slate-400 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button id="authBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap">
+                    <span id="authLabel">Login</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                 </button>
-                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <main id="main-content">
-        <section class="hero" id="about">
-            <div class="container hero-grid">
-              <div class="hero-content reveal">
-                    <h1>Hi, I'm <span class="highlight">Nabin Chalise</span></h1>
-                    <p class="hero-tagline">Computer Operator & ICT Professional based in Galkot Municipality, Nepal. Specializing in public sector computational systems and system structures.</p>
-                    <figure class="hero-figure">
-                        <blockquote class="hero-quote">
-                            <p>“Search may find the door; awareness dissolves the seeker.”</p>
-                        </blockquote>
-                        <figcaption class="hero-caption">— Philosophical Foundation</figcaption>
-                    </figure>
-                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
-                        <a href="#auth-gateway" class="btn btn-accent">Management Portal</a>
-                        <a href="resume.html" class="btn btn-primary">View Full Resume</a>
-                    </div>
-                    
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                        <a href="https://nabinchalise.com.np/p/" class="btn btn-outline">ProDevelopment</a>
-                        <a href="https://nabinchalise.com.np/g/" class="btn btn-outline">Galkot Municipality</a>
-                        <a href="https://nabinchalise.com.np/r/" class="btn btn-outline">ROTARACT</a>
-                    </div>
-                </div>
-                <div class="hero-image-wrapper reveal">
-                    <picture>
-                        <img class="hero-avatar" src="p/nabin.jpg" alt="Beautiful round portrait layout of Nabin Chalise" width="300" height="300" loading="eager" />
-                    </picture>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding" id="auth-gateway" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(16, 185, 129, 0.02) 100%);">
-            <div class="container">
-                <h2 class="section-title">Administrative Access</h2>
-                <div class="auth-card reveal">
-                    <form id="authForm" novalidate>
-                        <div class="form-group">
-                            <label for="auth-email">Admin Email Address</label>
-                            <input type="email" id="auth-email" class="form-control" placeholder="admin@domain.com" required autocomplete="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="auth-password">Secret Token Password</label>
-                            <input type="password" id="auth-password" class="form-control" placeholder="••••••••••••" required autocomplete="current-password">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">Authenticate Authorization</button>
-                        <div id="authStatusMessage" class="auth-status" role="status"></div>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding" id="contact">
-            <div class="container">
-                <h2 class="section-title">Direct Inquiries</h2>
-                <div class="contact-grid">
-                    <div class="contact-info-card reveal">
-                        <h3>Contact Information</h3>
-                        <p style="color: var(--text-secondary);">Reach out directly using the platforms below or drop a secure message.</p>
-                        <div style="margin-top: var(--spacing-md);">
-                            <p><strong>Location:</strong> Galkot, Gandaki, Nepal</p>
-                            <p><strong>Phone:</strong> (977) 9851338747</p>
-                            <p><strong>Email:</strong> officialnabincs3@gmail.com</p>
-                        </div>
-                        <div class="social-row">
-                            <a href="https://www.facebook.com/nabinchaliseofficial/" class="social-btn" target="_blank" rel="noopener noreferrer">
-                                <svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z"/></svg>
-                                <span class="visually-hidden">Facebook Profile (Opens external link)</span>
-                            </a>
-                            <a href="https://x.com/nabincs3" class="social-btn" target="_blank" rel="noopener noreferrer">
-                                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                                <span class="visually-hidden">X Twitter Profile (Opens external link)</span>
-                            </a>
-                            <a href="https://www.linkedin.com/in/nabinchalise/" class="social-btn" target="_blank" rel="noopener noreferrer">
-                                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                                <span class="visually-hidden">LinkedIn Profile (Opens external link)</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <form id="contactForm" method="POST" class="contact-info-card reveal" style="gap:0;" novalidate>
-                        <div class="form-group">
-                            <label for="form-name">Full Name</label>
-                            <input type="text" id="form-name" name="name" class="form-control" placeholder="Jane Doe" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="form-email">Email Address</label>
-                            <input type="email" id="form-email" name="email" class="form-control" placeholder="jane@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="form-message">Message Context</label>
-                            <textarea id="form-message" name="message" class="form-control" rows="4" placeholder="Your inquiry content..." required style="min-height:100px; resize:vertical;"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-accent" style="width:100%;">Transmit Message</button>
-                        <div id="contactStatusMessage" class="auth-status" role="status"></div>
-                    </form>
-                </div>
-           </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Nabin Chalise. All Rights Reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
             </div>
         </div>
-    </footer>
+    </header>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 border-b border-indigo-950/20">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.12),transparent_45%)]"></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Fellowship Through Service
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                    Our Global Family Network
+                </h2>
+                <p class="text-sm text-slate-400 mt-1 max-w-xl">
+                    Connecting young leaders, professionals, and change-makers across Galkot Municipality, Baglung.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-4 w-full md:w-auto">
+                <div class="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl backdrop-blur-sm flex-1 min-w-[120px]">
+                    <div class="text-xl sm:text-2xl font-black text-rose-400" id="stat-total-members">0</div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Active Fellows</div>
+                </div>
+                <div class="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl backdrop-blur-sm flex-1 min-w-[120px]">
+                    <div class="text-xl sm:text-2xl font-black text-indigo-400" id="stat-board-members">0</div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Board Officials</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <aside class="lg:col-span-1 flex flex-col gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-base">🎉</span> Birthday Calendars
+                        </span>
+                        <span class="text-[10px] bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Next 5</span>
+                    </h3>
+                    <div id="nearest-birthdays" class="space-y-3 max-h-[380px] overflow-y-auto custom-scrollbar pr-1">
+                        <div class="flex justify-center py-8">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                        <span class="text-base">🩸</span> Blood Groups Matrix
+                    </h3>
+                    <div id="blood-group-counts" class="grid grid-cols-2 gap-2.5">
+                        <div class="col-span-2 text-center py-4 text-slate-400 text-sm">Loading...</div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="lg:col-span-3 flex flex-col gap-6">
+                <nav class="flex flex-wrap gap-2 pb-2 border-b border-slate-200/60" aria-label="Directory Filters">
+                    <button data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all">All Members</button>
+                    <button data-filter="executive" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Board Officials</button>
+                    <button data-filter="teacher" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Educators</button>
+                    <button data-filter="business" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Entrepreneurs</button>
+                    <button data-filter="student" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Students</button>
+                </nav>
+
+                <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <div class="col-span-full flex justify-center py-16">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 edit-overlay" onclick="if(event.target===this)closeEdit()">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-200" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">✎ Edit Member</h3>
+                <button onclick="closeEdit()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="editForm" class="space-y-4 text-sm">
+                <input type="hidden" id="editId">
+                <div><label class="font-bold text-slate-700 block mb-1">Name</label><input id="editName" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Address</label><input id="editAddress" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Phone</label><input id="editPhone" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Email</label><input id="editEmail" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Blood Group</label><input id="editBlood" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Designation</label><input id="editDesignation" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Profession</label><input id="editProfession" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">DOB (MM/DD/YYYY)</label><input id="editDob" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div><label class="font-bold text-slate-700 block mb-1">Rotary ID</label><input id="editRotary" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-rose-500/30 outline-none" /></div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="saveEdit()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition-all">💾 Save Changes</button>
+                    <button type="button" onclick="closeEdit()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl transition-all">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 login-overlay" onclick="if(event.target===this)closeLogin()">
+        <div class="login-box bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-extrabold text-slate-900">🔐 Login</h3>
+                <button onclick="closeLogin()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="loginForm" class="space-y-4" onsubmit="return false;">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1 text-sm">Email</label>
+                    <input id="loginEmail" type="email" placeholder="your@email.com" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500/30 outline-none text-sm" required />
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1 text-sm">Password</label>
+                    <div class="relative">
+                        <input id="loginPassword" type="password" placeholder="••••••••" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500/30 outline-none text-sm pr-12" required />
+                        <span id="pwToggle" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm font-bold">👁️</span>
+                    </div>
+                </div>
+                <button id="loginSubmit" type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl transition-all text-sm">Sign In</button>
+                <p class="text-center text-xs text-slate-400 mt-2">Use your Supabase credentials.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-xl hidden toast z-50 whitespace-nowrap"></div>
 
     <script>
-        (() => {
-            "use strict";
+        // ===== SUPABASE CONFIG =====
+        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
-            document.addEventListener('contextmenu', (e) => e.preventDefault());
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ===== STATE =====
+        let currentUser = null;
+        let membersData = [];
+        let currentFilter = 'all';
+        let currentQuery = '';
 
-            const CoreController = {
-                init() {
-                    this.setupTheme();
-                    this.setupNavigation();
-                    this.setupScrollAnimations();
-                    this.setupAuthPortal();
-                    this.setupContactForm();
-                },
+        // ===== DOM REFS =====
+        const resultsContainer = document.getElementById('results-container');
+        const searchInput = document.getElementById('searchInput');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const authBtn = document.getElementById('authBtn');
+        const authLabel = document.getElementById('authLabel');
+        const statTotal = document.getElementById('stat-total-members');
+        const statBoard = document.getElementById('stat-board-members');
+        const nearestBirthdays = document.getElementById('nearest-birthdays');
+        const bloodCountsContainer = document.getElementById('blood-group-counts');
+        const editModal = document.getElementById('editModal');
+        const loginModal = document.getElementById('loginModal');
+        const toastEl = document.getElementById('toast');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginSubmit = document.getElementById('loginSubmit');
+        const pwToggle = document.getElementById('pwToggle');
+        let toastTimer = null;
 
-                setupTheme() {
-                    const themeToggle = document.getElementById('themeToggle');
-                    const getTheme = () => {
-                        const saved = localStorage.getItem('theme');
-                        if (saved) return saved;
-                        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                    };
-                    const applyTheme = (theme) => {
-                        document.documentElement.setAttribute('data-theme', theme);
-                        localStorage.setItem('theme', theme);
-                        themeToggle.setAttribute('aria-pressed', theme === 'dark');
-                    };
-                    applyTheme(getTheme());
-                    themeToggle.addEventListener('click', () => {
-                        const current = document.documentElement.getAttribute('data-theme');
-                        applyTheme(current === 'dark' ? 'light' : 'dark');
-                    });
-                },
+        const fallbackProfileImageUrl = "rotaract logo.jpg";
 
-                setupNavigation() {
-                    const navbar = document.getElementById('navbar');
-                    const menuToggle = document.getElementById('menuToggle');
-                    const navLinks = document.getElementById('navLinks');
+        // ===== HELPERS =====
+        function showToast(msg, duration = 2800) {
+            toastEl.textContent = msg;
+            toastEl.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.add('hidden'), duration);
+        }
 
-                    window.addEventListener('scroll', () => {
-                        navbar.classList.toggle('shrink', window.scrollY > 40);
-                    }, { passive: true });
-                    menuToggle.addEventListener('click', () => {
-                        const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-                        menuToggle.setAttribute('aria-expanded', !isExpanded);
-                        navLinks.classList.toggle('active');
-                    });
+        function formatName(raw) {
+            let clean = raw.replace(/^Rtr\.?\s+/i, '').trim();
+            return `Rtr. ${clean}`;
+        }
 
-                    navLinks.querySelectorAll('a').forEach(link => {
-                        link.addEventListener('click', () => {
-                            navLinks.classList.remove('active');
-                            menuToggle.setAttribute('aria-expanded', 'false');
-                        });
-                    });
-                },
+        function getPhoto(name) {
+            let raw = name.replace(/^Rtr\.?\s+/i, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            return raw + '.jpg';
+        }
 
-                setupScrollAnimations() {
-                    const elements = document.querySelectorAll('.reveal');
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                entry.target.classList.add('active');
-                                observer.unobserve(entry.target);
-                            }
-                        });
-                    }, { threshold: 0.1 });
-                    elements.forEach(el => observer.observe(el));
-                },
+        function getToday() {
+            const d = new Date(); d.setHours(0,0,0,0); return d;
+        }
 
-                setupAuthPortal() {
-                    const form = document.getElementById('authForm');
-                    const statusMsg = document.getElementById('authStatusMessage');
+        // ===== FETCH MEMBERS FROM SUPABASE =====
+        async function loadMembers() {
+            try {
+                const { data, error } = await supabase
+                    .from('members')
+                    .select('*')
+                    .order('name');
 
-                    form.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        statusMsg.className = "auth-status"; 
-                        statusMsg.textContent = "Verifying operational credentials...";
-                        statusMsg.classList.add('success');
-
-                        const email = document.getElementById('auth-email').value.trim();
-                        const password = document.getElementById('auth-password').value;
-
-                        try {
-                            const { data, error } = await supabase.auth.signInWithPassword({
-                                email: email,
-                                password: password,
-                            });
-
-                            if (error) throw error;
-
-                            statusMsg.className = "auth-status success";
-                            statusMsg.textContent = "Access Granted. Redirecting to workspace...";
-                            
-                            setTimeout(() => {
-                                window.location.href = 'admin.html';
-                            }, 800);
-                        } catch (err) {
-                            statusMsg.className = "auth-status error";
-                            statusMsg.textContent = err.message || "Authentication error encountered.";
-                        }
-                    });
-                },
-
-                setupContactForm() {
-                    const contactForm = document.getElementById('contactForm');
-                    const contactStatus = document.getElementById('contactStatusMessage');
-
-                    if (!contactForm) return;
-
-                    contactForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        
-                        contactStatus.className = "auth-status";
-                        contactStatus.textContent = "Transmitting message to database...";
-                        contactStatus.classList.add('success');
-
-                        const name = document.getElementById('form-name').value.trim();
-                        const email = document.getElementById('form-email').value.trim();
-                        const message = document.getElementById('form-message').value.trim();
-
-                        if (!name || !email || !message) {
-                            contactStatus.className = "auth-status error";
-                            contactStatus.textContent = "Please fill out all required form fields.";
-                            return;
-                        }
-
-                        try {
-                            const { data, error } = await supabase
-                                .from('inquiries')
-                                .insert([
-                                    { name: name, email: email, message: message }
-                                ]);
-
-                            if (error) throw error;
-
-                            contactStatus.className = "auth-status success";
-                            contactStatus.textContent = "Transmission successful! Message logged.";
-                            
-                            contactForm.reset();
-                        } catch (err) {
-                            contactStatus.className = "auth-status error";
-                            contactStatus.textContent = err.message || "Failed to deliver inquiry metrics.";
-                        }
-                    });
+                if (error) {
+                    console.error('Supabase load error:', error);
+                    showToast('⚠️ Failed to load members.');
+                    return;
                 }
-            };
 
-            document.addEventListener('DOMContentLoaded', () => CoreController.init());
-        })();
+                if (data && data.length > 0) {
+                    membersData = data.map(m => ({
+                        ...m,
+                        name: formatName(m.name)
+                    }));
+                } else {
+                    // If no data in Supabase, use fallback hardcoded data
+                    console.log('No data in Supabase, using fallback data');
+                    membersData = getFallbackData();
+                }
+
+                renderAll();
+            } catch (err) {
+                console.error('Error loading members:', err);
+                showToast('⚠️ Error loading data. Using local data.');
+                membersData = getFallbackData();
+                renderAll();
+            }
+        }
+
+        // ===== FALLBACK DATA (if Supabase is empty) =====
+        function getFallbackData() {
+            const rawMembers = [
+                { id: 29, name: 'Nabin Subedi', address: 'Galkot Municipality -04,Chamuwa Baglung', rotary_id: '11716194', phone: '9857631742', blood_group: 'B+', gender: 'Male', email: 'nsubedi162@gmail.com', dob: '10/6/1997', designation: 'IPP/Mentor', profession: 'Teacher' },
+                { id: 43, name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotary_id: '12098183', phone: '9847705363', blood_group: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Rotaract Vice President', profession: 'Co- operative' },
+                { id: 20, name: 'Nabin Chalise', address: 'Galkot Municipality-3, Baglung', rotary_id: '11722218', phone: '9851338747', blood_group: 'O+', gender: 'Male', email: 'pilotprosoft@gmail.com', dob: '8/26/1995', designation: 'President', profession: 'ICT Teacher' },
+                { id: 40, name: 'Tika Ram Gautam', address: 'Galkot-09, Baglung', rotary_id: '11722743', phone: '9847797869', blood_group: 'B+', gender: 'Male', email: 'gautamarjun933@gmail.com', dob: '10/14/1993', designation: 'President Elect', profession: 'Teacher' },
+                { id: 17, name: 'Manish Gurung', address: 'Galkot Municipality 1 Dudilabhati Baglung', rotary_id: '12031057', phone: '9843824191', blood_group: 'B+', gender: 'Male', email: 'manishgurung209@gmail.com', dob: '2/20/2003', designation: 'Club Member', profession: 'Employee' },
+                { id: 16, name: 'Madan Sharma', address: 'Galkot municipality', rotary_id: '11855833', phone: '9860191219', blood_group: 'B+', gender: 'Male', email: 'madanbsharma98@gmail.com', dob: '3/2/2002', designation: 'Secretary', profession: 'Teacher' },
+                { id: 26, name: 'Radha Gautam', address: 'Galkot municipality-03 Hatiya Baglung', rotary_id: '12047154', phone: '9846705657', blood_group: 'AB+', gender: 'Female', email: 'rg2508305@gmail.com', dob: '3/4/2003', designation: 'Club Member', profession: '' },
+                { id: 4, name: 'Bibek Kharel', address: 'Galkot 09 baglung', rotary_id: '12098226', phone: '9844334609', blood_group: 'O+', gender: 'Male', email: 'Bibekkharel97@gmail.com', dob: '6/17/1997', designation: 'Club Member', profession: 'Teacher' },
+                { id: 9, name: 'Ganesh Sapkota', address: 'Galkot -9, Baglung', rotary_id: '11964599', phone: '9867743075', blood_group: 'B+', gender: 'Male', email: 'ganesh1sapkota2@gmail.com', dob: '10/24/2001', designation: 'Club Member', profession: 'Student' },
+                { id: 12, name: 'Kamal Kharel', address: 'Galkot ,9', rotary_id: '11723334', phone: '9860718751', blood_group: 'B+', gender: 'Male', email: 'kharelkamal8751@gmail.com', dob: '3/27/1996', designation: 'Past President/Advisor', profession: 'Furniture Business' },
+                { id: 44, name: 'Manish Kandel', address: 'Galkot Municipality-08, kandebash, Baglung', rotary_id: '1111111', phone: '9865437798', blood_group: 'B+', gender: 'Male', email: 'manishkandel73@gmail.com', dob: '6/11/1997', designation: 'Treasurer', profession: 'Business / Entrepreneur' },
+                { id: 15, name: 'Lokendra Gaire', address: 'Galkot-4, Thana', rotary_id: '11723018', phone: '9869065252', blood_group: 'O+', gender: 'Male', email: 'lokendragaire9@gmail.com', dob: '5/22/2001', designation: 'Sergeant At Arms', profession: 'Computer operator' },
+                { id: 7, name: 'Bipin Chalise', address: 'Galkot municipality -08', rotary_id: '12098496', phone: '9745985562', blood_group: 'O+', gender: 'Male', email: 'bipansharma0123@gmail.com', dob: '10/22/2001', designation: 'Rotaract Membership Chair', profession: 'Teacher' },
+                { id: 13, name: 'Laxmi Pun', address: 'Ga na pa 8', rotary_id: '11855933', phone: '9844090869', blood_group: 'O+', gender: 'Female', email: 'Punlaxmi216@gmail.com', dob: '12/24/1998', designation: 'PP/Rotaract Learning Facilitator', profession: '' },
+                { id: 3, name: 'Anil Shrestha', address: 'galkot municipality -03', rotary_id: '11361814', phone: '9841888908', blood_group: 'B+', gender: 'Male', email: 'theanilshrestha@gmail.com', dob: '1/7/1990', designation: 'PP/ISD/Advisor', profession: '' },
+                { id: 10, name: 'Ishor Gautam', address: 'Galkot municipality 9 Baglung', rotary_id: '11453673', phone: '9860260680', blood_group: 'A+', gender: 'Male', email: 'ishworgautam2073@gmail.com', dob: '1/14/1993', designation: 'Past President/Advisor', profession: 'Lecturer' },
+                { id: 22, name: 'Neetu Khadka', address: 'Baglung Municipality-01', rotary_id: '', phone: '9867945381', blood_group: 'O+', gender: 'Female', email: 'Khadkaneetu123@gmail.com', dob: '5/16/1989', designation: 'Chartered President', profession: 'Nurse' },
+                { id: 1, name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotary_id: '1111111111', phone: '9867694789', blood_group: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
+                { id: 2, name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotary_id: '11723715', phone: '9846850809', blood_group: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/1998', designation: 'Club Member', profession: 'Teacher' },
+                { id: 5, name: 'Bidur Kharel', address: 'Ga.Na.Pa 9 Darbara', rotary_id: '', phone: '9845548677', blood_group: 'AB+', gender: 'Male', email: 'Kharelbidur23@gmail.com', dob: '5/23/1995', designation: 'Club Member', profession: '' },
+                { id: 6, name: 'Binita Galami', address: 'Galkot na.pa.-3,hatiya', rotary_id: '', phone: '', blood_group: 'O+', gender: 'Female', email: 'Newlooksprintigshop@gmail.com', dob: '9/11/1996', designation: 'Club Member', profession: '' },
+                { id: 8, name: 'Deepak Khattri', address: 'Galkot Municipality -04', rotary_id: '11726103', phone: '9849664430', blood_group: 'O+', gender: 'Male', email: 'Khattridep2048@gmail.com', dob: '5/5/1991', designation: 'Club Member', profession: 'Teacher' },
+                { id: 11, name: 'Jit Bahadur B.K.', address: 'Tarakhola RM. -2, Argal Baglung', rotary_id: '12239441', phone: '9857649995', blood_group: 'O+', gender: 'Male', email: 'jeevananuragi8@gmail.com', dob: '9/27/1982', designation: 'Club Member', profession: 'IT Business' },
+                { id: 14, name: 'Lila Adhikari (Mamata)', address: 'Galkot-3, baglung', rotary_id: '', phone: '', blood_group: 'O-', gender: 'Female', email: 'adhikarimamata223@gmail.com', dob: '8/21/2000', designation: 'Club Member', profession: 'Student' },
+                { id: 18, name: 'Manjeela Shrestha', address: 'Galkot municipality-03', rotary_id: '11723077', phone: '9840808640', blood_group: 'B+', gender: 'Female', email: 'catchmeifucan2046@gmail.com', dob: '2/11/1997', designation: 'Rotaract Foundation Chair', profession: 'House wife' },
+                { id: 19, name: 'Manoj Karki', address: 'Galkot-2, Baglung', rotary_id: '', phone: '9749724157', blood_group: 'A+', gender: 'Male', email: '', dob: '7/14/1995', designation: 'Medical Officer', profession: 'Medical doctor' },
+                { id: 21, name: 'Nabin Sharma', address: 'Galkot -1 Dudilabhati Jhanktisthan', rotary_id: '12119325', phone: '9846829984', blood_group: 'O+', gender: 'Male', email: 'dnabingautam79@gmail.com', dob: '12/23/2000', designation: 'Club Member', profession: 'Business' },
+                { id: 23, name: 'Niraj Shrestha', address: 'Galkot -03,Baglung', rotary_id: '', phone: '9847770262', blood_group: 'O+', gender: 'Male', email: 'nirajshrestha666@gmail.com', dob: '2/4/1994', designation: 'Club Member', profession: 'Banker' },
+                { id: 24, name: 'Pratap Sen', address: 'Galkot- 05, baglung', rotary_id: '', phone: '', blood_group: 'B+', gender: 'Male', email: 'Pratapsen2011@gmail.com', dob: '2/22/1992', designation: 'Club Member', profession: 'Self employed' },
+                { id: 25, name: 'Pratikshya Darjee', address: 'Galkot Municipality-09, Baglung', rotary_id: '11111', phone: '9867687014', blood_group: 'N/A', gender: 'Female', email: 'pratikshyapariyar@gmail.com', dob: '2/4/2006', designation: 'Club Member', profession: 'Student - Business' },
+                { id: 45, name: 'Prasu Ram Regmi', address: 'Sainamaina-11, Rupendehi', rotary_id: '111111111', phone: '9867233476', blood_group: 'O+', gender: 'Male', email: 'Parshuregmi3472@gmail.com', dob: '8/29/1994', designation: 'Club Member', profession: 'Teaching / Education' },
+                { id: 27, name: 'Raju Sahani', address: 'Dhalepipal, Dhalepipal ward 4', rotary_id: '12119302', phone: '9860414802', blood_group: 'A+', gender: 'Male', email: 'erjsahani@gmail.com', dob: '5/31/1991', designation: 'IT Officer', profession: 'IT engineer' },
+                { id: 30, name: 'Sagar Chalise', address: 'Galkot-8, Baglung', rotary_id: '12131866', phone: '9745985560', blood_group: 'AB+', gender: 'Male', email: 'chalisesagar120@gmail.com', dob: '8/6/2001', designation: 'Joint Secretary', profession: 'Accountant' },
+                { id: 46, name: 'Santosh Bohora Chettri', address: 'Galkot Municipality-03, Baglung', rotary_id: '111111', phone: '9869720402', blood_group: 'O+', gender: 'Male', email: 'bohorasantosh789@gmail.com', dob: '2/11/2005', designation: 'Club Member', profession: 'Teaching / Education' },
+                { id: 31, name: 'Samjhana Thapa', address: 'Galkot municipality 07 malma', rotary_id: '', phone: '', blood_group: 'B+', gender: 'Female', email: 'Ssthapa392@gmail.com', dob: '5/22/2001', designation: 'Club Member', profession: 'Teaching' },
+                { id: 32, name: 'Sanju Neupane', address: 'Galkot Municipality-3, BAglung', rotary_id: '11855899', phone: '9863271796', blood_group: 'B+', gender: 'Female', email: 'neupanesanju87@gmail.com', dob: '11/19/1997', designation: 'Club Member', profession: 'Banker' },
+                { id: 33, name: 'Shishir Sunar', address: 'Galkot Municipality- 4', rotary_id: '', phone: '', blood_group: 'A+', gender: 'Male', email: 'shishirju2005@gmail.com', dob: '6/27/2005', designation: 'Club Member', profession: 'Student' },
+                { id: 34, name: 'Shyam Subedi', address: 'Galkot 04 Baglung Nepal', rotary_id: '', phone: '', blood_group: 'O+', gender: 'Male', email: 'imperialshyam6939@gmail.com', dob: '8/17/2000', designation: 'Club Member', profession: 'Employer' },
+                { id: 35, name: 'Sima Sunar', address: 'Galkot municipality 3, Hatiya', rotary_id: '', phone: '', blood_group: 'B+', gender: 'Female', email: 'simasunar456@gmail.com', dob: '5/21/1999', designation: 'Club Member', profession: 'Job' },
+                { id: 36, name: 'Smriti Budhathoki', address: 'Galkot municipality-8, Kandebas', rotary_id: '', phone: '9749396716', blood_group: 'AB+', gender: 'Female', email: 'msmriti285@gmail.com', dob: '8/25/1995', designation: 'Rotaract Service Projects Chair', profession: 'Student' },
+                { id: 47, name: 'Sunil Gautam', address: 'Galkot Municipality-06, Baglung', rotary_id: '111111111', phone: '9867770257', blood_group: 'B+', gender: 'Male', email: 'sunilgautam70257@gmail.com', dob: '11/17/1997', designation: 'Club Member', profession: 'Teaching / Education' },
+                { id: 37, name: 'Sunil Bohora', address: 'Galkot Municipality-3, Baglung', rotary_id: '11723041', phone: '9847658392', blood_group: 'O+', gender: 'Male', email: 'gajalsansar1989@gmail.com', dob: '3/27/1989', designation: 'Club Member', profession: 'Teaching' },
+                { id: 38, name: 'Sunil Chhetri', address: 'Galkot 3 bagling', rotary_id: '11963844', phone: '9857638138', blood_group: 'O+', gender: 'Male', email: 'skc844251@gmail.com', dob: '1/13/1999', designation: 'Club Member', profession: 'Business/ Entrepreneur' },
+                { id: 39, name: 'Sunil Khatiwal', address: 'Baglung 03 guthi', rotary_id: '', phone: '9857664347', blood_group: 'B+', gender: 'Male', email: 'Sunilkhatiwal6@gmail.com', dob: '7/10/1987', designation: 'Club Member', profession: 'Shopkeeper' },
+                { id: 41, name: 'Tul Bahadur B.K.', address: 'Galkot-11, Righa', rotary_id: '', phone: '', blood_group: 'B+', gender: 'Male', email: 'tulbahadurbk130@gmail.com', dob: '5/11/1995', designation: 'Club Member', profession: 'Workshop' },
+                { id: 42, name: 'Umesh Sharma Subedi', address: 'Galkot-4, Baglung', rotary_id: '', phone: '', blood_group: 'B+', gender: 'Male', email: '', dob: '9/9/2001', designation: 'Club Member', profession: 'Teacher' },
+                { id: 48, name: 'Melina Kharel', address: 'Galkot Municipality-9, Banskhola', rotary_id: '11111111', phone: '9765504483', blood_group: 'AB+', gender: 'Female', email: 'kharelmelina5@gmail.com', dob: '2/4/2007', designation: 'Young Leaders Contact', profession: 'Student (Business)' },
+                { id: 49, name: 'Balaram Adhikari', address: 'Galkot, Baglung', rotary_id: '11111111', phone: '9856066664', blood_group: 'B+', gender: 'Male', email: 'balaramadko26@gmail.com', dob: '9/9/1990', designation: 'Club Member', profession: 'NGO / INGO / Social Work' }
+            ];
+
+            return rawMembers.map(m => ({
+                ...m,
+                name: formatName(m.name)
+            }));
+        }
+
+        // ===== RENDER FUNCTIONS =====
+        function renderAll() {
+            renderStats();
+            renderBirthdays();
+            renderBloodGroups();
+            renderMembers(currentQuery, currentFilter);
+        }
+
+        function renderStats() {
+            statTotal.textContent = membersData.length;
+            const board = membersData.filter(m => !m.designation?.toLowerCase().includes('club member')).length;
+            statBoard.textContent = board;
+        }
+
+        function renderBirthdays() {
+            const today = getToday();
+            const bdays = membersData
+                .map(m => {
+                    if (!m.dob) return null;
+                    const parts = m.dob.split('/');
+                    if (parts.length !== 3) return null;
+                    const month = parseInt(parts[0]) - 1;
+                    const day = parseInt(parts[1]);
+                    let next = new Date(today.getFullYear(), month, day);
+                    if (next < today) next.setFullYear(today.getFullYear() + 1);
+                    const diff = Math.ceil((next - today) / (1000 * 60 * 60 * 24));
+                    return { ...m, next, diff, isToday: today.getMonth() === month && today.getDate() === day };
+                })
+                .filter(Boolean)
+                .sort((a, b) => a.diff - b.diff)
+                .slice(0, 5);
+
+            nearestBirthdays.innerHTML = bdays.length ? '' : '<p class="text-xs text-slate-400 text-center py-4">No upcoming birthdays.</p>';
+            bdays.forEach(m => {
+                const div = document.createElement('div');
+                const isToday = m.isToday;
+                div.className = `p-3 rounded-xl flex items-center justify-between border transition ${isToday ? 'bg-rose-50 border-rose-200 animate-pulse' : 'bg-slate-50/60 border-slate-100'}`;
+                const plain = m.name.replace(/^Rtr\.?\s+/i, '').trim();
+                const msg = isToday ? 'Today! 🎂' : `in ${m.diff} days`;
+                const dateStr = m.next.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const whatsapp = m.phone ? `https://wa.me/977${m.phone}?text=${encodeURIComponent(`Happy Birthday, Rtr. ${plain}! Wishing you a wonderful year ahead. 🎉`)}` : '#';
+                div.innerHTML = `
+                    <div class="flex items-center min-w-0 flex-1">
+                        <div class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0">
+                            <img src="${getPhoto(m.name)}" class="w-full h-full object-cover" onerror="this.src='${fallbackProfileImageUrl}'">
+                        </div>
+                        <div class="ml-2.5 min-w-0">
+                            <div class="font-bold text-xs truncate">${m.name}</div>
+                            <div class="text-[10px] text-slate-400 truncate">${m.designation || ''}</div>
+                            <div class="text-[10px] font-bold ${isToday ? 'text-rose-600' : 'text-indigo-600'}">${msg} — ${dateStr}</div>
+                        </div>
+                    </div>
+                    ${m.phone ? `<a href="${whatsapp}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm whitespace-nowrap">Wish 🍰</a>` : `<span class="text-[9px] text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">N/A</span>`}
+                `;
+                nearestBirthdays.appendChild(div);
+            });
+        }
+
+        function renderBloodGroups() {
+            const counts = {};
+            membersData.forEach(m => {
+                const bg = (m.blood_group || '').toUpperCase().trim();
+                if (bg && bg !== 'N/A' && bg !== 'UNKNOWN') counts[bg] = (counts[bg] || 0) + 1;
+            });
+            const order = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
+            const sorted = Object.entries(counts).sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+            bloodCountsContainer.innerHTML = sorted.length ? '' : '<div class="col-span-2 text-xs text-slate-400 text-center">No data</div>';
+            sorted.forEach(([group, count]) => {
+                const el = document.createElement('div');
+                el.className = 'p-2 bg-rose-50/60 border border-rose-100/70 rounded-xl text-center shadow-xs hover:scale-[1.02] transition';
+                el.innerHTML = `<div class="font-black text-rose-600 text-sm">${count}</div><div class="text-[9px] font-extrabold text-rose-400 tracking-wider">${group}</div>`;
+                bloodCountsContainer.appendChild(el);
+            });
+        }
+
+        function renderMembers(query, filter) {
+            const q = query.toLowerCase().trim();
+            let filtered = membersData.filter(m => {
+                const match = Object.values(m).some(v => String(v).toLowerCase().includes(q));
+                if (!match) return false;
+                const des = (m.designation || '').toLowerCase();
+                const prof = (m.profession || '').toLowerCase();
+                if (filter === 'all') return true;
+                if (filter === 'executive') return !des.includes('club member');
+                if (filter === 'teacher') return prof.includes('teacher') || prof.includes('teaching') || prof.includes('lecturer');
+                if (filter === 'student') return prof.includes('student');
+                if (filter === 'business') return prof.includes('business') || prof.includes('entrepreneur') || prof.includes('shopkeeper');
+                return true;
+            });
+
+            resultsContainer.innerHTML = filtered.length ? '' : `
+                <div class="col-span-full text-center text-slate-400 py-16 bg-white rounded-2xl border border-slate-100">
+                    <svg class="w-10 h-10 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p class="text-sm font-medium">No members match your search.</p>
+                </div>`;
+
+            filtered.forEach(m => {
+                const card = document.createElement('article');
+                const isExec = !(m.designation || '').toLowerCase().includes('club member');
+                const colorBar = isExec ? 'bg-gradient-to-r from-rose-500 to-indigo-600' : 'bg-slate-100';
+                card.className = 'member-card bg-white rounded-2xl p-5 border border-slate-100 flex flex-col items-center text-center shadow-sm relative overflow-hidden';
+                card.innerHTML = `
+                    <div class="absolute top-0 inset-x-0 h-1.5 ${colorBar}"></div>
+                    <div class="w-16 h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl overflow-hidden mb-3 shadow-inner mt-2">
+                        <img src="${getPhoto(m.name)}" class="w-full h-full object-cover" onerror="this.src='${fallbackProfileImageUrl}'">
+                    </div>
+                    <h4 class="font-bold text-sm tracking-tight">${m.name}</h4>
+                    <p class="text-[11px] text-indigo-600 font-bold bg-indigo-50/70 px-2.5 py-0.5 rounded-full mt-1.5">${m.designation || 'Member'}</p>
+                    <div class="mt-3 w-full text-left space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
+                        <div><span class="text-slate-400 font-medium w-16 inline-block">Prof:</span> ${m.profession || 'N/A'}</div>
+                        <div><span class="text-slate-400 font-medium w-16 inline-block">Address:</span> ${m.address || ''}</div>
+                        <div><span class="text-slate-400 font-medium w-16 inline-block">Email:</span> <span class="truncate inline-block max-w-[140px] align-bottom">${m.email || 'N/A'}</span></div>
+                        <div><span class="text-slate-400 font-medium w-16 inline-block">Phone:</span> ${m.phone || 'N/A'}</div>
+                    </div>
+                    <div class="flex justify-between items-center w-full mt-3 pt-2 border-t border-slate-50">
+                        <span class="text-[9px] uppercase font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">${m.gender || '—'}</span>
+                        <span class="text-[10px] font-black px-2.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100/40">${m.blood_group || 'Unknown'}</span>
+                    </div>
+                    ${currentUser ? `<button data-edit='${m.id}' class="editBtn mt-3 text-[10px] font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-4 py-1.5 rounded-full transition-all">✎ Edit</button>` : ''}
+                `;
+                resultsContainer.appendChild(card);
+            });
+
+            document.querySelectorAll('.editBtn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.dataset.edit);
+                    const member = membersData.find(m => m.id === id);
+                    if (member) openEdit(member);
+                });
+            });
+        }
+
+        // ===== EDIT MODAL =====
+        function openEdit(member) {
+            if (!currentUser) { showToast('🔒 Please login first.'); return; }
+            document.getElementById('editId').value = member.id;
+            document.getElementById('editName').value = member.name.replace(/^Rtr\.?\s+/i, '').trim();
+            document.getElementById('editAddress').value = member.address || '';
+            document.getElementById('editPhone').value = member.phone || '';
+            document.getElementById('editEmail').value = member.email || '';
+            document.getElementById('editBlood').value = member.blood_group || '';
+            document.getElementById('editDesignation').value = member.designation || '';
+            document.getElementById('editProfession').value = member.profession || '';
+            document.getElementById('editDob').value = member.dob || '';
+            document.getElementById('editRotary').value = member.rotary_id || '';
+            editModal.classList.remove('hidden');
+            editModal.classList.add('flex');
+        }
+
+        function closeEdit() {
+            editModal.classList.add('hidden');
+            editModal.classList.remove('flex');
+        }
+
+        async function saveEdit() {
+            const id = parseInt(document.getElementById('editId').value);
+            const payload = {
+                name: document.getElementById('editName').value.trim(),
+                address: document.getElementById('editAddress').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                email: document.getElementById('editEmail').value.trim(),
+                blood_group: document.getElementById('editBlood').value.trim(),
+                designation: document.getElementById('editDesignation').value.trim(),
+                profession: document.getElementById('editProfession').value.trim(),
+                dob: document.getElementById('editDob').value.trim(),
+                rotary_id: document.getElementById('editRotary').value.trim(),
+            };
+            if (!payload.name) { showToast('Name is required.'); return; }
+
+            const { error } = await supabase
+                .from('members')
+                .update(payload)
+                .eq('id', id);
+            if (error) {
+                console.error(error);
+                showToast('❌ Update failed: ' + error.message);
+                return;
+            }
+            showToast('✅ Member updated successfully!');
+            closeEdit();
+            await loadMembers();
+        }
+
+        // ===== LOGIN =====
+        function openLogin() {
+            loginModal.classList.remove('hidden');
+            loginModal.classList.add('flex');
+            loginEmail.value = '';
+            loginPassword.value = '';
+            loginEmail.focus();
+        }
+
+        function closeLogin() {
+            loginModal.classList.add('hidden');
+            loginModal.classList.remove('flex');
+        }
+
+        let pwVisible = false;
+        pwToggle.addEventListener('click', () => {
+            pwVisible = !pwVisible;
+            loginPassword.type = pwVisible ? 'text' : 'password';
+            pwToggle.textContent = pwVisible ? '🙈' : '👁️';
+        });
+
+        async function handleLogin() {
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+            if (!email || !password) {
+                showToast('Please enter email and password.');
+                return;
+            }
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                showToast('❌ Login failed: ' + error.message);
+                return;
+            }
+            currentUser = data.user;
+            authLabel.textContent = 'Logout';
+            closeLogin();
+            showToast(`👋 Welcome, ${currentUser.email}`);
+            renderAll();
+        }
+
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (!error) {
+                currentUser = null;
+                authLabel.textContent = 'Login';
+                showToast('👋 Logged out.');
+                renderAll();
+            }
+        }
+
+        function toggleAuth() {
+            if (currentUser) {
+                logout();
+            } else {
+                openLogin();
+            }
+        }
+
+        // ===== INIT =====
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                currentUser = session.user;
+                authLabel.textContent = 'Logout';
+            } else {
+                currentUser = null;
+                authLabel.textContent = 'Login';
+            }
+
+            await loadMembers();
+
+            // Event Listeners
+            authBtn.addEventListener('click', toggleAuth);
+            loginSubmit.addEventListener('click', handleLogin);
+            loginModal.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+            document.getElementById('loginForm').addEventListener('submit', (e) => e.preventDefault());
+
+            searchInput.addEventListener('input', (e) => {
+                currentQuery = e.target.value;
+                renderMembers(currentQuery, currentFilter);
+            });
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderMembers(currentQuery, currentFilter);
+                });
+            });
+
+            document.getElementById('homeBtn').addEventListener('click', () => {
+                searchInput.value = '';
+                currentQuery = '';
+                filterButtons.forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-filter="all"]').classList.add('active');
+                currentFilter = 'all';
+                renderMembers('', 'all');
+            });
+
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeEdit(); closeLogin(); } });
+        }
+
+        init();
     </script>
 </body>
 </html>
