@@ -89,7 +89,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            user-select: none; /* App protection layout layer */
+            user-select: none;
         }
 
         html {
@@ -168,7 +168,6 @@
         .btn-accent { background-color: var(--accent-cta); color: #ffffff; }
         .btn-accent:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
         
-        /* New custom navigation shortcuts stylings */
         .btn-outline { 
             background-color: transparent; 
             color: var(--text-primary); 
@@ -265,10 +264,10 @@
         .theme-toggle .sun { display: block; }
         .theme-toggle .moon { display: none; }
         [data-theme="dark"] .theme-toggle .sun { display: none; }
-        [data-theme="dark"] .theme-toggle .moon { block; }
+        [data-theme="dark"] .theme-toggle .moon { display: block; }
 
         /* ==========================================================================
-           4. VISUAL SECTIONS (HERO, TIMELINES, CARDS)
+           4. VISUAL SECTIONS (HERO, CARDS)
            ========================================================================== */
         .section-padding { padding: var(--spacing-xxl) 0; }
 
@@ -300,7 +299,6 @@
 
         .hero-image-wrapper { display: flex; justify-content: center; }
         
-        /* Fixed portrait layouts & applied a round profile architecture */
         .hero-avatar {
             width: 300px;
             height: 300px;
@@ -323,53 +321,15 @@
             display: block; width: 40px; height: 3px; background-color: var(--brand-primary); margin: var(--spacing-sm) auto 0; border-radius: 2px;
         }
 
-        /* Skills Layout */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: var(--spacing-lg);
-        }
-
-        .skill-card {
+        .auth-card {
             background-color: var(--surface-card);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-xl);
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
-            transition: var(--transition-smooth);
-        }
-        .skill-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
-
-        /* Timeline Integration (Education & Experience) */
-        .timeline-container { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); }
-        .timeline { position: relative; padding-left: var(--spacing-lg); }
-        .timeline::before {
-            content: '';
-            position: absolute; left: 0; top: 8px; width: 2px; height: 100%; background-color: var(--border-color);
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .timeline-item { position: relative; margin-bottom: var(--spacing-lg); }
-        .timeline-dot {
-            position: absolute;
-            left: -31px; top: 6px; width: 10px; height: 10px; border-radius: 50%;
-            background-color: var(--bg-neutral); border: 3px solid var(--brand-primary);
-            box-shadow: 0 0 0 4px var(--surface-card);
-        }
-
-        .timeline-card {
-            background-color: var(--surface-card);
-            padding: var(--spacing-lg); border-radius: var(--radius-md);
-            border: 1px solid var(--border-color); transition: var(--transition-smooth);
-        }
-        .timeline-card:hover { transform: translateY(-2px); border-color: var(--brand-primary); }
-        .timeline-year { font-size: 0.85rem; font-weight: 700; color: var(--brand-primary); margin-bottom: var(--spacing-xs); }
-
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--spacing-lg);
-        }
-
-        .contact-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--spacing-xl); }
         .form-group { margin-bottom: var(--spacing-lg); position: relative; }
         .form-group label { display: block; font-weight: 500; margin-bottom: var(--spacing-sm); font-size: 0.9rem; }
         .form-control {
@@ -379,7 +339,6 @@
         }
         .form-control:focus { outline: 3px solid var(--focus-ring); }
 
-        /* Authentication Notification Toast Layout */
         .auth-status {
             margin-top: var(--spacing-sm);
             font-size: 0.9rem;
@@ -398,6 +357,8 @@
         .social-btn:hover { color: var(--brand-primary); border-color: var(--brand-primary); transform: scale(1.05); }
         .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
+        .contact-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--spacing-xl); }
+
         footer {
             background-color: var(--surface-card);
             border-top: 1px solid var(--border-color); padding: var(--spacing-lg) 0;
@@ -410,7 +371,7 @@
         .reveal.active { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 968px) {
-            .timeline-container, .contact-grid, .hero-grid { grid-template-columns: 1fr; gap: var(--spacing-xl); }
+            .hero-grid, .contact-grid { grid-template-columns: 1fr; gap: var(--spacing-xl); }
             .hero-image-wrapper { order: -1; }
             .hero-avatar { width: 220px; height: 220px; }
             .section-padding { padding: var(--spacing-xl) 0; }
@@ -437,9 +398,7 @@
             
             <ul class="nav-links" id="navLinks">
                 <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#history">History</a></li>
-                <li><a href="#projects">Projects</a></li>
+                <li><a href="resume.html">Resume</a></li>
                 <li><a href="#auth-gateway">Portal Login</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -472,10 +431,9 @@
                     </figure>
                     <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
                         <a href="#auth-gateway" class="btn btn-accent">Management Portal</a>
-                        <a href="p/resume.html" class="btn btn-primary">View Portfolio Resume</a>
+                        <a href="resume.html" class="btn btn-primary">View Full Resume</a>
                     </div>
                     
-                    <!-- Beautifully placed custom shortcut portal buttons -->
                     <div style="display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--border-color); padding-top: 20px;">
                         <a href="https://nabinchalise.com.np/p/" class="btn btn-outline">ProDevelopment</a>
                         <a href="https://nabinchalise.com.np/g/" class="btn btn-outline">Galkot Municipality</a>
@@ -484,37 +442,16 @@
                 </div>
                 <div class="hero-image-wrapper reveal">
                     <picture>
-                        <!-- Rounded design updates apply here -->
                         <img class="hero-avatar" src="p/nabin.jpg" alt="Beautiful round portrait layout of Nabin Chalise" width="300" height="300" loading="eager" />
                     </picture>
                 </div>
             </div>
         </section>
 
-        <section class="section-padding" id="skills" style="background-color: var(--surface-card);">
-            <div class="container">
-                <h2 class="section-title">Expertise & Competencies</h2>
-                <div class="skills-grid">
-                    <div class="skill-card reveal">
-                        <h3>Municipal Operations</h3>
-                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Managing public databases, internal networks, processing governance portals, and records infrastructure.</p>
-                    </div>
-                    <div class="skill-card reveal">
-                        <h3>Information Systems</h3>
-                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Constructing framework labs, systemic network operations, data maintenance pipelines, and localized backup execution.</p>
-                    </div>
-                    <div class="skill-card reveal">
-                        <h3>Instructional IT</h3>
-                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">Designing targeted computational logic instruction models for educational facilities and primary systems.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="section-padding" id="auth-gateway" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(16, 185, 129, 0.02) 100%);">
-            <div class="container" style="max-width: 500px;">
+            <div class="container">
                 <h2 class="section-title">Administrative Access</h2>
-                <div class="skill-card reveal" style="padding: var(--spacing-xl);">
+                <div class="auth-card reveal">
                     <form id="authForm" novalidate>
                         <div class="form-group">
                             <label for="auth-email">Admin Email Address</label>
@@ -527,73 +464,6 @@
                         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-sm);">Authenticate Authorization</button>
                         <div id="authStatusMessage" class="auth-status" role="status"></div>
                     </form>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding" id="history">
-            <div class="container">
-                <div class="timeline-container">
-                    <div>
-                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Professional Experience</h2>
-                        <div class="timeline">
-                            <div class="timeline-item reveal">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-card">
-                                    <div class="timeline-year">2025 — PRESENT</div>
-                                    <h3 class="timeline-role">Computer Operator</h3>
-                                    <p style="color: var(--text-secondary);">Galkot Municipality · Technical administration and system execution protocols.</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item reveal">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-card">
-                                    <div class="timeline-year">2022</div>
-                                    <h3 class="timeline-role">Assistant Employment Officer</h3>
-                                    <p style="color: var(--text-secondary);">Galkot Municipality · Operational logistics for employment framework initiatives.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="section-title" style="text-align: left; margin-bottom: var(--spacing-lg);">Academic Timeline</h2>
-                        <div class="timeline">
-                            <div class="timeline-item reveal">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-card">
-                                    <div class="timeline-year">2019</div>
-                                    <h3 class="timeline-role">ICT Teacher</h3>
-                                    <p style="color: var(--text-secondary);">Galkot Secondary School · Managed complete data framework literacy architectures.</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item reveal">
-                                <div class="timeline-dot"></div>
-                                <div class="timeline-card">
-                                    <div class="timeline-year">2018</div>
-                                    <h3 class="timeline-role">Computer Lab Instruction</h3>
-                                    <p style="color: var(--text-secondary);">Nawa Pravat School · Hardware infrastructure logic deployment operations.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding" id="projects" style="background-color: var(--surface-card);">
-            <div class="container">
-                <h2 class="section-title">Key Projects & Contributions</h2>
-                <div class="portfolio-grid">
-                    <div class="skill-card reveal">
-                        <h3>Municipal Data System</h3>
-                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Optimized record pipelines for local government databases, ensuring efficient internal lookups.</p>
-                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">OPERATIONS FRAMEWORK</span>
-                    </div>
-                    <div class="skill-card reveal">
-                        <h3>Academic Lab Design</h3>
-                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md);">Re-architected school computer hardware setups to scale active teaching workspace availability by 40%.</p>
-                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--brand-primary);">INFRASTRUCTURE</span>
-                    </div>
                 </div>
             </div>
         </section>
@@ -625,7 +495,7 @@
                             </a>
                         </div>
                     </div>
-                
+                    
                     <form id="contactForm" method="POST" class="contact-info-card reveal" style="gap:0;" novalidate>
                         <div class="form-group">
                             <label for="form-name">Full Name</label>
@@ -661,10 +531,8 @@
         (() => {
             "use strict";
 
-            // Security: Prevent code inspection via secondary context systems
             document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-            // Initialize correct browser client client configurations
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);

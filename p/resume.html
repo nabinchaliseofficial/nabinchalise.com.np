@@ -70,6 +70,10 @@
             transform: translateY(0);
         }
 
+        /* Custom border color for sections */
+        .section-border {
+            border-bottom: 2px solid #2563eb;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 p-8">
@@ -79,14 +83,12 @@
         <div class="spinner"></div>
     </div>
     
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+    <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
         
         <!-- Header Section with Cover Photo -->
         <header class="relative w-full h-80 rounded-t-2xl content-section flex items-center justify-center text-center">
             <!-- Cover Photo Background (Placeholder) -->
-            <!-- IMPORTANT: Replace the URL below with your actual cover photo URL if you have one. -->
             <img src="https://images.unsplash.com/photo-1689876673591-215e6f1b8a31?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cover Photo" class="absolute inset-0 w-full h-full object-cover">
-            
             
             <!-- Profile Content -->
             <div class="relative z-10 p-8 text-white">
@@ -105,7 +107,7 @@
 
                 <!-- Contact Information -->
                 <section class="content-section" style="transition-delay: 0.1s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Contact</h2>
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Contact</h2>
                     <ul class="text-sm space-y-2">
                         <li><strong class="font-medium">Phone:</strong> <a href="tel:+9779851338747" class="text-blue-600 hover:underline">+977-9851338747</a></li>
                         <li><strong class="font-medium">Email:</strong> <a href="mailto:officialnabincs3@gmail.com" class="text-blue-600 hover:underline">officialnabincs3@gmail.com</a></li>
@@ -114,7 +116,7 @@
                 
                 <!-- Profile Details -->
                 <section class="content-section" style="transition-delay: 0.2s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Profile</h2>
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Profile</h2>
                     <ul class="text-sm space-y-2">
                         <li><strong class="font-medium">Address:</strong> Galkot Municipality-3, Baglung (Permanent)</li>
                         <li><strong class="font-medium">Sex:</strong> Male</li>
@@ -128,7 +130,7 @@
                 
                 <!-- Hobbies -->
                 <section class="content-section" style="transition-delay: 0.3s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Hobbies</h2>
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Hobbies</h2>
                     <div class="flex flex-wrap gap-2">
                         <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Photography</span>
                         <span class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Table Tennis</span>
@@ -138,14 +140,15 @@
                     </div>
                 </section>
 
-                <!-- Skills -->
+                <!-- Skills / Expertise & Competencies -->
                 <section class="content-section" style="transition-delay: 0.4s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Skills</h2>
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Expertise & Competencies</h2>
                     <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Municipal Operations</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Information Systems</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Instructional IT</span>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Fast Learner</span>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Problem Solving</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Email/Internet</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Computing</span>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Office Package</span>
                     </div>
                 </section>
@@ -154,16 +157,15 @@
             <!-- Main Content Column -->
             <main class="md:col-span-2 space-y-8">
                 
-                <!-- Work Experience -->
+                <!-- Professional Experience -->
                 <section class="content-section" style="transition-delay: 0.5s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Work Experience</h2>
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Professional Experience</h2>
                     <div class="space-y-6">
                         <!-- Job 1 -->
                         <div>
                             <h3 class="text-lg font-bold">Computer Operator</h3>
                             <p class="text-sm font-semibold text-gray-600">Galkot Municipality, Harichaur, Baglung | 16-07-2025 to Till Date</p>
                         </div>
-
                         <!-- Job 2 -->
                         <div>
                             <h3 class="text-lg font-bold">Assistant Employment Officer</h3>
@@ -187,10 +189,51 @@
                     </div>
                 </section>
 
+                <!-- Academic Timeline -->
+                <section class="content-section" style="transition-delay: 0.6s;">
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Academic Timeline</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex items-start gap-4">
+                                <span class="inline-block w-20 text-sm font-bold text-blue-600 shrink-0">2019</span>
+                                <div>
+                                    <h3 class="text-lg font-bold">ICT Teacher</h3>
+                                    <p class="text-sm text-gray-600">Galkot Secondary School · Managed complete data framework literacy architectures.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-start gap-4">
+                                <span class="inline-block w-20 text-sm font-bold text-blue-600 shrink-0">2018</span>
+                                <div>
+                                    <h3 class="text-lg font-bold">Computer Lab Instruction</h3>
+                                    <p class="text-sm text-gray-600">Nawa Pravat School · Hardware infrastructure logic deployment operations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Projects & Contributions -->
+                <section class="content-section" style="transition-delay: 0.7s;">
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Key Projects & Contributions</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-bold">Municipal Data System</h3>
+                            <p class="text-sm text-gray-600">Optimized record pipelines for local government databases, ensuring efficient internal lookups.</p>
+                            <span class="inline-block mt-1 text-xs font-bold text-blue-600">OPERATIONS FRAMEWORK</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">Academic Lab Design</h3>
+                            <p class="text-sm text-gray-600">Re-architected school computer hardware setups to scale active teaching workspace availability by 40%.</p>
+                            <span class="inline-block mt-1 text-xs font-bold text-blue-600">INFRASTRUCTURE</span>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Rotaract Journey -->
-                <section class="content-section" style="transition-delay: 0.7s;">
-                    <h2 class="text-2xl font-semibold mb-4 border-b-2 border-blue-600 pb-2">Rotaract Journey</h2>
+                <section class="content-section" style="transition-delay: 0.8s;">
+                    <h2 class="text-2xl font-semibold mb-4 pb-2 section-border">Rotaract Journey</h2>
                     <div class="space-y-2">
                         <div>
                             <h3 class="text-lg font-bold">RAC Galkot Baglung</h3>
@@ -215,10 +258,9 @@
             </main>
         </div>
 
-        <!-- Footer (optional) -->
-        <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.8s;">
+        <!-- Footer -->
+        <footer class="bg-gray-200 text-gray-600 text-center p-4 rounded-b-2xl content-section" style="transition-delay: 0.9s;">
          <p class="text-sm">© 2026 <a href="https://nabinchalise.com.np/" class="text-blue-500 hover:underline">Nabin Chalise</a>. All rights reserved.</p>
-
         </footer>
 
     </div>
