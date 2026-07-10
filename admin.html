@@ -338,24 +338,9 @@
             font-style: italic;
         }
 
-        /* --- MINUTES FEED --- */
+        /* --- MINUTES FEED (removed) - only print selector remains --- */
         .minutes-feed {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .minute-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            display: none; /* hidden as requested */
         }
 
         .print-selector-bar {
@@ -816,8 +801,7 @@
             .workspace-section {
                 padding: 0 1rem 3rem;
             }
-            .inquiries-feed,
-            .minutes-feed {
+            .inquiries-feed {
                 grid-template-columns: 1fr;
             }
         }
@@ -985,7 +969,7 @@
         <p>Monitor real-time meeting minutes, form submissions, and navigate across all workspaces seamlessly.</p>
     </header>
 
-    <!-- ===== LIVE MEETING MINUTES ===== -->
+    <!-- ===== LIVE MEETING MINUTES (only print selector remains) ===== -->
     <section class="workspace-section" id="minutes-anchor">
         <div class="panel-header">
             <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
@@ -994,6 +978,7 @@
             </div>
         </div>
 
+        <!-- print selector bar only - no minutes feed -->
         <div class="print-selector-bar">
             <label for="meetingSelect" style="font-weight:600;font-size:0.9rem;"><i class="fa-solid fa-print"></i> Select Meeting to Print:</label>
             <select id="meetingSelect">
@@ -1002,6 +987,7 @@
             <button class="action-btn btn-primary-accent" id="printSelectedBtn"><i class="fa-solid fa-file-pdf"></i> Print Selected</button>
         </div>
 
+        <!-- minutes-feed is hidden via CSS -->
         <div class="minutes-feed" id="minutes-feed">
             <div class="status-msg">Connecting to meeting minutes stream...</div>
         </div>
@@ -1474,14 +1460,11 @@
                 }
             };
 
-            // ---- LOAD MEETING MINUTES ----
+            // ---- LOAD MEETING MINUTES (only for print selector) ----
             const loadMeetingMinutes = async () => {
-                const feedContainer = document.getElementById('minutes-feed');
                 const selectDropdown = document.getElementById('meetingSelect');
-                if (!feedContainer) return;
+                if (!selectDropdown) return;
 
-                feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading live minutes...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('meeting_minutes')
@@ -1492,31 +1475,9 @@
                     allMinutesData = data || [];
 
                     if (!allMinutesData.length) {
-                        feedContainer.innerHTML = '<div class="status-msg">No meeting minutes found in database.</div>';
                         selectDropdown.innerHTML = '<option value="">-- No meetings available --</option>';
                         return;
                     }
-
-                    feedContainer.innerHTML = allMinutesData.map((row) => {
-                        const m = row.data || {};
-                        return `
-                                <article class="minute-card">
-                                    <div class="node-meta">
-                                        <span>ID: ${row.id}</span>
-                                        <span>${m.meeting_date ? new Date(m.meeting_date).toLocaleString() : 'N/A'}</span>
-                                    </div>
-                                    <div class="node-sender">${escapeHtml(m.meeting_number)}</div>
-                                    <div style="font-size:0.85rem;color:var(--text-muted);">
-                                        <strong>Venue:</strong> ${escapeHtml(m.venue)}<br>
-                                        <strong>Chair:</strong> ${escapeHtml(m.chairperson)}<br>
-                                        <strong>Present:</strong> ${m.members_present || 0} Members
-                                    </div>
-                                    <button class="action-btn" onclick="window.printSpecificMinute(${row.id})">
-                                        <i class="fa-solid fa-print"></i> Quick Print
-                                    </button>
-                                </article>
-                            `;
-                    }).join('');
 
                     selectDropdown.innerHTML = allMinutesData.map((row, idx) => {
                         const m = row.data || {};
@@ -1526,8 +1487,7 @@
                     }).join('');
 
                 } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;">Error loading minutes: ${err.message}</div>`;
+                    selectDropdown.innerHTML = `<option value="">Error loading meetings</option>`;
                 }
             };
 
@@ -1678,7 +1638,7 @@
                     }
                 });
 
-                // ---- REFRESH MINUTES ----
+                // ---- REFRESH MINUTES (just reloads selector) ----
                 document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
 
                 // ---- PRINT SELECTED MINUTE ----
