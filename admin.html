@@ -1,39 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central Hub Dashboard</title>
-    <meta name="description" content="Personal and professional dashboard tracking development, Galkot Municipality projects, and Rotaract initiatives.">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Central Hub Admin Dashboard</title>
+    <meta name="description" content="Unified admin dashboard for meeting minutes, inquiries, Galkot Municipality, and Rotaract initiatives." />
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
 
     <style>
         /* --- BASE VARIABLES (60-30-10 Rule & A11y Compliant) --- */
         :root {
-            --bg-dark: #0f172a; /* 60% Neutral Background */
+            --bg-dark: #0f172a;
             --bg-card: rgba(30, 41, 59, 0.7);
             --border-color: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
+
             /* 30% Primary Brand & Accents */
             --cls-personal: #38bdf8;
             --cls-professional: #34d399;
             --cls-galkot: #fbbf24;
             --cls-rotaract: #f43f5e;
             --cls-links: #a78bfa;
-            
+            --primary: #D70060;
+            --secondary: #015491;
+
             /* 10% CTA / Interactive Accent */
             --cta-logout: #ef4444;
             --cta-logout-hover: #dc2626;
-            
+
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -64,7 +66,7 @@
             color: var(--text-main);
             line-height: 1.6;
             overflow-x: hidden;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
             background-attachment: fixed;
@@ -88,11 +90,10 @@
             transition: var(--transition-smooth);
         }
 
-        /* Shrink effect on scroll */
         .navbar.scrolled {
             padding: 0.75rem 2rem;
             background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .nav-logo {
@@ -133,7 +134,8 @@
             border-radius: 8px;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
             background: rgba(255, 255, 255, 0.05);
         }
@@ -153,7 +155,7 @@
             gap: 0.5rem;
             transition: var(--transition-smooth);
             text-decoration: none;
-            min-height: 44px; /* Mobile Touch Target Size */
+            min-height: 44px;
         }
 
         .btn-logout:hover {
@@ -162,7 +164,6 @@
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
-        /* Hamburger Menu Icon */
         .menu-toggle {
             display: none;
             font-size: 1.5rem;
@@ -199,12 +200,11 @@
             margin: 0 auto 1.5rem;
         }
 
-        /* --- SECURE INQUIRIES WORKSPACE COMPONENT PANEL --- */
-        .inquiries-panel {
+        /* --- WORKSPACE SECTIONS (Shared) --- */
+        .workspace-section {
             max-width: 1200px;
             margin: 0 auto 3rem;
             padding: 0 2rem;
-            display: none; /* Injected dynamically based on Auth Status */
         }
 
         .panel-header {
@@ -214,6 +214,8 @@
             margin-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .panel-header h2 {
@@ -231,9 +233,11 @@
         .panel-actions {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .refresh-btn {
+        .action-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             color: var(--text-main);
@@ -246,22 +250,34 @@
             align-items: center;
             gap: 0.5rem;
             transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
         }
 
-        .refresh-btn:hover {
+        .action-btn:hover {
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Hover variation configuration specialized for the deletion tool */
         .clear-btn-accent {
             border-color: rgba(239, 68, 68, 0.25) !important;
         }
-        
+
         .clear-btn-accent:hover {
             background: rgba(239, 68, 68, 0.1) !important;
             border-color: rgba(239, 68, 68, 0.6) !important;
         }
 
+        .btn-primary-accent {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff !important;
+        }
+
+        .btn-primary-accent:hover {
+            background: #b50051;
+            border-color: #b50051;
+        }
+
+        /* --- INQUIRIES FEED --- */
         .inquiries-feed {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -306,7 +322,7 @@
 
         .node-message {
             background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255,255,255,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             padding: 1rem;
             border-radius: 10px;
             font-size: 0.95rem;
@@ -320,6 +336,56 @@
             padding: 2rem;
             color: var(--text-muted);
             font-style: italic;
+        }
+
+        /* --- MINUTES FEED --- */
+        .minutes-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .minute-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .print-selector-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .print-selector-bar select {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            min-height: 44px;
+            cursor: pointer;
+        }
+
+        .print-selector-bar select option {
+            background: #1e293b;
+            color: #fff;
         }
 
         /* --- DASHBOARD GRID --- */
@@ -348,7 +414,6 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            /* Scroll Reveal State */
             opacity: 0;
             transform: translateY(30px);
         }
@@ -368,10 +433,18 @@
             transition: var(--transition-smooth);
         }
 
-        .card-personal::before { background: var(--cls-personal); }
-        .card-professional::before { background: var(--cls-professional); }
-        .card-galkot::before { background: var(--cls-galkot); }
-        .card-rotaract::before { background: var(--cls-rotaract); }
+        .card-personal::before {
+            background: var(--cls-personal);
+        }
+        .card-professional::before {
+            background: var(--cls-professional);
+        }
+        .card-galkot::before {
+            background: var(--cls-galkot);
+        }
+        .card-rotaract::before {
+            background: var(--cls-rotaract);
+        }
 
         .dash-card:hover {
             transform: translateY(-8px) scale(1.02);
@@ -391,10 +464,22 @@
             transition: var(--transition-smooth);
         }
 
-        .card-personal .card-icon-wrapper { background: rgba(56, 189, 248, 0.1); color: var(--cls-personal); }
-        .card-professional .card-icon-wrapper { background: rgba(52, 211, 153, 0.1); color: var(--cls-professional); }
-        .card-galkot .card-icon-wrapper { background: rgba(251, 191, 36, 0.1); color: var(--cls-galkot); }
-        .card-rotaract .card-icon-wrapper { background: rgba(244, 63, 94, 0.1); color: var(--cls-rotaract); }
+        .card-personal .card-icon-wrapper {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--cls-personal);
+        }
+        .card-professional .card-icon-wrapper {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--cls-professional);
+        }
+        .card-galkot .card-icon-wrapper {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--cls-galkot);
+        }
+        .card-rotaract .card-icon-wrapper {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--cls-rotaract);
+        }
 
         .dash-card:hover .card-icon-wrapper {
             transform: scale(1.1) rotate(5deg);
@@ -432,10 +517,26 @@
             min-height: 44px;
         }
 
-        .card-personal .card-btn:hover { background: var(--cls-personal); color: #000; border-color: var(--cls-personal); }
-        .card-professional .card-btn:hover { background: var(--cls-professional); color: #000; border-color: var(--cls-professional); }
-        .card-galkot .card-btn:hover { background: var(--cls-galkot); color: #000; border-color: var(--cls-galkot); }
-        .card-rotaract .card-btn:hover { background: var(--cls-rotaract); color: #fff; border-color: var(--cls-rotaract); }
+        .card-personal .card-btn:hover {
+            background: var(--cls-personal);
+            color: #000;
+            border-color: var(--cls-personal);
+        }
+        .card-professional .card-btn:hover {
+            background: var(--cls-professional);
+            color: #000;
+            border-color: var(--cls-professional);
+        }
+        .card-galkot .card-btn:hover {
+            background: var(--cls-galkot);
+            color: #000;
+            border-color: var(--cls-galkot);
+        }
+        .card-rotaract .card-btn:hover {
+            background: var(--cls-rotaract);
+            color: #fff;
+            border-color: var(--cls-rotaract);
+        }
 
         /* --- PROJECTS SECTION --- */
         .projects-section {
@@ -453,8 +554,14 @@
             padding-bottom: 0.75rem;
         }
 
-        .projects-header i { color: var(--cls-professional); font-size: 1.5rem; }
-        .projects-header h2 { font-size: 1.5rem; font-weight: 600; }
+        .projects-header i {
+            color: var(--cls-professional);
+            font-size: 1.5rem;
+        }
+        .projects-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
 
         .projects-grid {
             display: grid;
@@ -526,10 +633,15 @@
             padding-bottom: 0.75rem;
         }
 
-        .links-header i { color: var(--cls-links); font-size: 1.5rem; }
-        .links-header h2 { font-size: 1.5rem; font-weight: 600; }
+        .links-header i {
+            color: var(--cls-links);
+            font-size: 1.5rem;
+        }
+        .links-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
 
-        /* Links Filter Tabs */
         .links-tabs-container {
             display: flex;
             gap: 0.5rem;
@@ -551,6 +663,7 @@
             font-size: 0.85rem;
             white-space: nowrap;
             transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
         }
 
         .tab-btn:hover {
@@ -589,14 +702,28 @@
             min-height: 44px;
         }
 
-        /* Tab filtering display styles */
         .link-item.hidden {
             display: none !important;
         }
 
-        .link-item span { display: flex; align-items: center; gap: 0.75rem; }
-        .link-item i.link-icon { color: var(--text-muted); font-size: 1.1rem; transition: var(--transition-smooth); width: 20px; text-align: center; }
-        .link-item i.arrow-icon { transform: translateX(-5px); opacity: 0; color: var(--cls-links); transition: var(--transition-smooth); }
+        .link-item span {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .link-item i.link-icon {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+            width: 20px;
+            text-align: center;
+        }
+        .link-item i.arrow-icon {
+            transform: translateX(-5px);
+            opacity: 0;
+            color: var(--cls-links);
+            transition: var(--transition-smooth);
+        }
 
         .link-item::after {
             content: '';
@@ -608,10 +735,20 @@
             z-index: -1;
         }
 
-        .link-item:hover { border-color: rgba(167, 139, 250, 0.4); transform: translateX(4px); }
-        .link-item:hover::after { transform: translateX(0); }
-        .link-item:hover i.link-icon { color: var(--cls-links); }
-        .link-item:hover i.arrow-icon { transform: translateX(0); opacity: 1; }
+        .link-item:hover {
+            border-color: rgba(167, 139, 250, 0.4);
+            transform: translateX(4px);
+        }
+        .link-item:hover::after {
+            transform: translateX(0);
+        }
+        .link-item:hover i.link-icon {
+            color: var(--cls-links);
+        }
+        .link-item:hover i.arrow-icon {
+            transform: translateX(0);
+            opacity: 1;
+        }
 
         /* --- FOOTER --- */
         footer {
@@ -620,6 +757,11 @@
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
             font-size: 0.85rem;
+        }
+
+        /* --- PRINT PREVIEW (Hidden by default) --- */
+        #print-preview {
+            display: none;
         }
 
         /* --- RESPONSIVE DESIGN (Mobile First / Off-Canvas Menu) --- */
@@ -640,7 +782,7 @@
                 padding: 6rem 2rem 2rem;
                 gap: 2.5rem;
                 transition: var(--transition-smooth);
-                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
                 border-left: 1px solid var(--border-color);
             }
 
@@ -665,18 +807,158 @@
                 justify-content: center;
             }
 
-            .hero h1 { font-size: 2.5rem; }
-            .dashboard-grid, .projects-section, .links-section, .inquiries-panel { padding: 0 1rem 3rem; }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .dashboard-grid,
+            .projects-section,
+            .links-section,
+            .workspace-section {
+                padding: 0 1rem 3rem;
+            }
+            .inquiries-feed,
+            .minutes-feed {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .navbar,
+            .hero,
+            .workspace-section,
+            .dashboard-grid,
+            .projects-section,
+            .links-section,
+            footer,
+            .dash-card,
+            .project-card,
+            .link-item,
+            .tab-btn,
+            .links-tabs-container {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+                padding: 30px;
+                font-family: 'Inter', Arial, sans-serif;
+            }
+            .letterhead {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 3px double #D70060;
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+                position: relative;
+            }
+            .letterhead-logo {
+                position: absolute;
+                left: 0;
+                height: 75px;
+                width: auto;
+            }
+            .letterhead-text {
+                text-align: center;
+                width: 100%;
+            }
+            .letterhead h1 {
+                color: #D70060;
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            .letterhead h2 {
+                color: #015491;
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+            .letterhead-subtext {
+                font-size: 11px;
+                color: #444;
+            }
+            #outTitle {
+                text-align: center;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #1E293B;
+            }
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .meta-table td {
+                padding: 6px 8px;
+                border: 1px solid #cbd5e1;
+                font-size: 12px;
+            }
+            .meta-title {
+                font-weight: bold;
+                background: #f8fafc;
+                width: 22%;
+            }
+            .content-section {
+                margin-bottom: 20px;
+            }
+            .content-section h4 {
+                color: #015491;
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+                font-size: 13px;
+                text-transform: uppercase;
+            }
+            .agenda-item {
+                margin-bottom: 10px;
+                font-size: 12.5px;
+            }
+            .footer-sign {
+                margin-top: 45px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+            .sign-line {
+                border-top: 1px solid #000;
+                width: 200px;
+                text-align: center;
+                padding-top: 5px;
+                font-size: 12px;
+            }
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 5px;
+            }
+            .print-table th,
+            .print-table td {
+                border: 1px solid #cbd5e1;
+                padding: 5px 10px;
+                font-size: 11.5px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f8fafc;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar" id="navbar" aria-label="Main Navigation">
         <a href="#" class="nav-logo">
-            <i class="fa-solid fa-layer-group" aria-hidden="true"></i> CentralHub
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i> CentralHub Admin
         </a>
-        
+
         <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -686,6 +968,7 @@
                 <li><a href="#" class="active">Dashboard</a></li>
                 <li><a href="#personal">Personal</a></li>
                 <li><a href="#professional">Professional</a></li>
+                <li><a href="#minutes-anchor">Live Minutes</a></li>
                 <li><a href="#projects-anchor">Projects</a></li>
                 <li><a href="#galkot">Galkot</a></li>
                 <li><a href="#rotaract">Rotaract</a></li>
@@ -696,20 +979,44 @@
         </div>
     </nav>
 
+    <!-- ===== HERO ===== -->
     <header class="hero">
-        <h1>Workspace Hub</h1>
-        <p>Seamlessly navigate through your personal milestones, career development goals, municipal administration, and community service tracks.</p>
+        <h1>Admin Control Hub</h1>
+        <p>Monitor real-time meeting minutes, form submissions, and navigate across all workspaces seamlessly.</p>
     </header>
 
-    <section class="inquiries-panel" id="inquiries-panel">
+    <!-- ===== LIVE MEETING MINUTES ===== -->
+    <section class="workspace-section" id="minutes-anchor">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh Minutes</button>
+            </div>
+        </div>
+
+        <div class="print-selector-bar">
+            <label for="meetingSelect" style="font-weight:600;font-size:0.9rem;"><i class="fa-solid fa-print"></i> Select Meeting to Print:</label>
+            <select id="meetingSelect">
+                <option value="">-- Loading latest meetings --</option>
+            </select>
+            <button class="action-btn btn-primary-accent" id="printSelectedBtn"><i class="fa-solid fa-file-pdf"></i> Print Selected</button>
+        </div>
+
+        <div class="minutes-feed" id="minutes-feed">
+            <div class="status-msg">Connecting to meeting minutes stream...</div>
+        </div>
+    </section>
+
+    <!-- ===== FORM SUBMISSIONS LOG ===== -->
+    <section class="workspace-section" id="inquiries-panel">
         <div class="panel-header">
             <h2><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Form Submissions Log</h2>
             <div class="panel-actions">
-                <button class="refresh-btn" id="refresh-inquiries-btn">
+                <button class="action-btn" id="refresh-inquiries-btn">
                     <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh Logs
                 </button>
-                <button class="refresh-btn clear-btn-accent" id="clear-inquiries-btn">
-                    <i class="fa-solid fa-trash-can" style="color: #ef4444;" aria-hidden="true"></i> Clear All Logs
+                <button class="action-btn clear-btn-accent" id="clear-inquiries-btn">
+                    <i class="fa-solid fa-trash-can" style="color:#ef4444;" aria-hidden="true"></i> Clear All Logs
                 </button>
             </div>
         </div>
@@ -718,8 +1025,9 @@
         </div>
     </section>
 
+    <!-- ===== DASHBOARD GRID ===== -->
     <main class="dashboard-grid">
-        
+
         <section class="dash-card card-personal" id="personal">
             <div class="card-icon-wrapper">
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
@@ -774,10 +1082,11 @@
 
     </main>
 
+    <!-- ===== PROJECTS SECTION ===== -->
     <section class="projects-section" id="projects-anchor">
         <div class="projects-header">
             <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
-            <h2>Key Projects & Contributions</h2>
+            <h2>Key Projects &amp; Contributions</h2>
         </div>
         <div class="projects-grid">
             <div class="project-card dash-card card-professional">
@@ -793,6 +1102,7 @@
         </div>
     </section>
 
+    <!-- ===== USEFUL LINKS ===== -->
     <section class="links-section">
         <div class="links-header">
             <i class="fa-solid fa-link" aria-hidden="true"></i>
@@ -803,7 +1113,7 @@
             <button class="tab-btn active" data-filter="all">All Resources</button>
             <button class="tab-btn" data-filter="learning">Learning</button>
             <button class="tab-btn" data-filter="typing">Typing Tools</button>
-            <button class="tab-btn" data-filter="finance">Banks & Finance</button>
+            <button class="tab-btn" data-filter="finance">Banks &amp; Finance</button>
             <button class="tab-btn" data-filter="official">Official Logs</button>
             <button class="tab-btn" data-filter="pan">PAN Portals</button>
             <button class="tab-btn" data-filter="news">News</button>
@@ -812,8 +1122,9 @@
             <button class="tab-btn" data-filter="emails">Emails</button>
             <button class="tab-btn" data-filter="share">Share Market</button>
         </div>
-        
+
         <div class="links-grid" id="links-grid">
+            <!-- Learning -->
             <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning">
                 <span><i class="fa-brands fa-laravel link-icon" aria-hidden="true"></i> Udemy</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -843,6 +1154,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Typing -->
             <a href="https://www.typerush.com/" target="_blank" rel="noopener" class="link-item" data-category="typing">
                 <span><i class="fa-solid fa-keyboard link-icon" aria-hidden="true"></i> TypeRush</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -868,6 +1180,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Finance -->
             <a href="https://esewa.com.np/#/home" target="_blank" rel="noopener" class="link-item" data-category="finance">
                 <span><i class="fa-solid fa-wallet link-icon" style="color:#60bb46;" aria-hidden="true"></i> eSewa Wallet</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -881,6 +1194,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Official -->
             <a href="https://emis.nepp.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="official">
                 <span><i class="fa-solid fa-passport link-icon" aria-hidden="true"></i> Rojgar EMIS</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -898,6 +1212,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- PAN -->
             <a href="https://officerportal.ird.gov.np:8443/main/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan">
                 <span><i class="fa-solid fa-user-tie link-icon" aria-hidden="true"></i> IRD Officer Portal</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -923,6 +1238,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- News -->
             <a href="https://www.hamropatro.com/newsStory" target="_blank" rel="noopener" class="link-item" data-category="news">
                 <span><i class="fa-solid fa-newspaper link-icon" aria-hidden="true"></i> Hamro Patro News</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -936,6 +1252,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Social -->
             <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="link-item" data-category="social">
                 <span><i class="fa-brands fa-facebook-f link-icon" aria-hidden="true"></i> Facebook</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -961,19 +1278,21 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Google -->
             <a href="https://docs.google.com/" target="_blank" rel="noopener" class="link-item" data-category="google">
-                <span><i class="fa-solid fa-file-word link-icon" style="color: #4285F4;" aria-hidden="true"></i> Google Docs</span>
+                <span><i class="fa-solid fa-file-word link-icon" style="color:#4285F4;" aria-hidden="true"></i> Google Docs</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
             <a href="https://workspace.google.com/products/slides/" target="_blank" rel="noopener" class="link-item" data-category="google">
-                <span><i class="fa-solid fa-file-powerpoint link-icon" style="color: #FBBC05;" aria-hidden="true"></i> Google Slides</span>
+                <span><i class="fa-solid fa-file-powerpoint link-icon" style="color:#FBBC05;" aria-hidden="true"></i> Google Slides</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
             <a href="https://docs.google.com/spreadsheets/u/0/" target="_blank" rel="noopener" class="link-item" data-category="google">
-                <span><i class="fa-solid fa-file-excel link-icon" style="color: #34A853;" aria-hidden="true"></i> Google Sheets</span>
+                <span><i class="fa-solid fa-file-excel link-icon" style="color:#34A853;" aria-hidden="true"></i> Google Sheets</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Emails -->
             <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener" class="link-item" data-category="emails">
                 <span><i class="fa-solid fa-envelope link-icon" aria-hidden="true"></i> Gmail Workspace</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -983,6 +1302,7 @@
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
             </a>
 
+            <!-- Share Market -->
             <a href="https://sunconnect.sunlife.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="share">
                 <span><i class="fa-solid fa-heart-pulse link-icon" aria-hidden="true"></i> SunConnect Portfolio</span>
                 <i class="fa-solid fa-chevron-right arrow-icon" aria-hidden="true"></i>
@@ -1034,107 +1354,276 @@
         </div>
     </section>
 
+    <!-- ===== FOOTER ===== -->
     <footer>
         <p>&copy; 2026 Management Dashboard. Built for optimization and speed.</p>
     </footer>
 
+    <!-- ===== PRINT PREVIEW (Hidden) ===== -->
+    <div id="print-preview">
+        <div class="letterhead">
+            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
+            <div class="letterhead-text">
+                <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+                <h2>Rotary International District 3292 Nepal-Bhutan</h2>
+                <p class="letterhead-subtext">Club ID: 8823562 | Rota Year 2026-27</p>
+            </div>
+        </div>
+
+        <h3 id="outTitle">MINUTES OF MEETING</h3>
+
+        <table class="meta-table">
+            <tr>
+                <td class="meta-title">Meeting Number</td>
+                <td id="outMeetNo" style="width:28%;"></td>
+                <td class="meta-title">Date / Time</td>
+                <td id="outDate"></td>
+            </tr>
+            <tr>
+                <td class="meta-title">Venue</td>
+                <td id="outVenue"></td>
+                <td class="meta-title">Chairperson</td>
+                <td id="outChair"></td>
+            </tr>
+            <tr>
+                <td class="meta-title">Attendance Summary</td>
+                <td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td>
+            </tr>
+        </table>
+
+        <div class="content-section" id="print-section-members">
+            <h4>Attended Members</h4>
+            <div id="outPresentMembersNames"></div>
+        </div>
+
+        <div class="content-section" id="print-section-guests" style="display:none;">
+            <h4>Special Guests / Observers</h4>
+            <div id="outGuestsNames"></div>
+        </div>
+
+        <div class="content-section">
+            <h4>Agendas &amp; Key Resolutions</h4>
+            <div id="outAgendas"></div>
+        </div>
+
+        <div class="footer-sign">
+            <div class="sign-line">
+                <p id="outChairSign">Rtr. Nabin Chalise</p>
+                <p>Meeting Chairperson</p>
+            </div>
+            <div class="sign-line">
+                <p id="outSecretarySign">Rtr. Madan Subedi</p>
+                <p>Club Secretary</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
         (() => {
             "use strict";
 
-            // Initialize correct Supabase client setup configuration
+            // ---- SUPABASE CLIENT ----
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            const SUPABASE_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            // Escape HTML strings to prevent dangerous code injection attacks (XSS)
+            let allMinutesData = [];
+
+            // ---- HELPERS ----
             const escapeHtml = (str) => {
                 if (!str) return '';
-                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             };
 
-            // Fetch inquiries from Supabase database context table
+            // ---- LOAD INQUIRIES ----
             const loadDatabaseInquiries = async () => {
                 const feedContainer = document.getElementById('inquiries-feed');
                 if (!feedContainer) return;
-
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving live metrics logs...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving live metrics logs...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('inquiries')
                         .select('*')
                         .order('created_at', { ascending: false });
-
                     if (error) throw error;
-
                     if (!data || data.length === 0) {
                         feedContainer.innerHTML = '<div class="status-msg">No entries logged in the inquiries relation table.</div>';
                         return;
                     }
-
                     feedContainer.innerHTML = data.map(item => `
-                        <article class="inquiry-node">
-                            <div class="node-meta">
-                                <span>ID: ${item.id}</span>
-                                <span>${new Date(item.created_at).toLocaleString()}</span>
-                            </div>
-                            <div class="node-sender">${escapeHtml(item.name)}</div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-email">
-                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
-                            </a>
-                            <div class="node-message">${escapeHtml(item.message)}</div>
-                        </article>
-                    `).join('');
+                            <article class="inquiry-node">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span>${new Date(item.created_at).toLocaleString()}</span>
+                                </div>
+                                <div class="node-sender">${escapeHtml(item.name)}</div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-email">
+                                    <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                                </a>
+                                <div class="node-message">${escapeHtml(item.message)}</div>
+                            </article>
+                        `).join('');
                 } catch (err) {
-                    feedContainer.innerHTML = `<div class="status-msg" style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error parsing relation rows: ${err.message}</div>`;
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error parsing relation rows: ${err.message}</div>`;
                 }
             };
 
-            // Session Verification Checklist Logic
+            // ---- LOAD MEETING MINUTES ----
+            const loadMeetingMinutes = async () => {
+                const feedContainer = document.getElementById('minutes-feed');
+                const selectDropdown = document.getElementById('meetingSelect');
+                if (!feedContainer) return;
+
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading live minutes...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('meeting_minutes')
+                        .select('*')
+                        .order('id', { ascending: false });
+                    if (error) throw error;
+
+                    allMinutesData = data || [];
+
+                    if (!allMinutesData.length) {
+                        feedContainer.innerHTML = '<div class="status-msg">No meeting minutes found in database.</div>';
+                        selectDropdown.innerHTML = '<option value="">-- No meetings available --</option>';
+                        return;
+                    }
+
+                    feedContainer.innerHTML = allMinutesData.map((row) => {
+                        const m = row.data || {};
+                        return `
+                                <article class="minute-card">
+                                    <div class="node-meta">
+                                        <span>ID: ${row.id}</span>
+                                        <span>${m.meeting_date ? new Date(m.meeting_date).toLocaleString() : 'N/A'}</span>
+                                    </div>
+                                    <div class="node-sender">${escapeHtml(m.meeting_number)}</div>
+                                    <div style="font-size:0.85rem;color:var(--text-muted);">
+                                        <strong>Venue:</strong> ${escapeHtml(m.venue)}<br>
+                                        <strong>Chair:</strong> ${escapeHtml(m.chairperson)}<br>
+                                        <strong>Present:</strong> ${m.members_present || 0} Members
+                                    </div>
+                                    <button class="action-btn" onclick="window.printSpecificMinute(${row.id})">
+                                        <i class="fa-solid fa-print"></i> Quick Print
+                                    </button>
+                                </article>
+                            `;
+                    }).join('');
+
+                    selectDropdown.innerHTML = allMinutesData.map((row, idx) => {
+                        const m = row.data || {};
+                        const titleText =
+                            `${m.meeting_number} - (${m.meeting_date ? new Date(m.meeting_date).toLocaleDateString() : 'Date N/A'})`;
+                        return `<option value="${row.id}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(titleText)}</option>`;
+                    }).join('');
+
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;">Error loading minutes: ${err.message}</div>`;
+                }
+            };
+
+            // ---- POPULATE PRINT PREVIEW ----
+            window.populatePrintPreviewFromData = (m) => {
+                const dateObj = m.meeting_date ? new Date(m.meeting_date) : new Date();
+                document.getElementById('outMeetNo').innerText = m.meeting_number || 'N/A';
+                document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium',
+                    timeStyle: 'short' });
+                document.getElementById('outVenue').innerText = m.venue || 'N/A';
+                document.getElementById('outChair').innerText = m.chairperson || 'N/A';
+                document.getElementById('outChairSign').innerText = m.chairperson || 'N/A';
+                document.getElementById('outPres').innerText = m.members_present || 0;
+                document.getElementById('outGst').innerText = m.guests_count || 0;
+
+                let memberHTML =
+                    `<table class="print-table"><thead><tr><th style="width:8%;text-align:center;">S.N.</th><th style="width:52%;">Name</th><th style="width:40%;">Designation</th></tr></thead><tbody>`;
+                (m.members || []).forEach((mem, i) => {
+                    memberHTML +=
+                        `<tr><td style="text-align:center;">${i+1}</td><td>${escapeHtml(mem.name)}</td><td>${escapeHtml(mem.role)}</td></tr>`;
+                });
+                memberHTML += `</tbody></table>`;
+                document.getElementById('outPresentMembersNames').innerHTML = (m.members && m.members.length) ? memberHTML :
+                    '<p style="font-size:12px;">No members marked present.</p>';
+
+                const guestSection = document.getElementById('print-section-guests');
+                if (m.guests && m.guests.length) {
+                    let guestHTML =
+                        `<table class="print-table"><thead><tr><th style="width:8%;text-align:center;">S.N.</th><th style="width:92%;">Guest Details</th></tr></thead><tbody>`;
+                    m.guests.forEach((g, i) => {
+                        guestHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${escapeHtml(g)}</td></tr>`;
+                    });
+                    guestHTML += `</tbody></table>`;
+                    document.getElementById('outGuestsNames').innerHTML = guestHTML;
+                    guestSection.style.display = 'block';
+                } else {
+                    guestSection.style.display = 'none';
+                }
+
+                let agendaHTML = '';
+                (m.agendas || []).forEach((a, i) => {
+                    agendaHTML += `
+                            <div class="agenda-item">
+                                <strong>Agenda ${i+1}: ${escapeHtml(a.title)}</strong>
+                                <p style="margin:3px 0 0 12px;color:#333;">${escapeHtml(a.description)}</p>
+                            </div>
+                        `;
+                });
+                document.getElementById('outAgendas').innerHTML = agendaHTML || '<p>No formal agendas recorded.</p>';
+            };
+
+            // ---- TRIGGER PRINT FOR SPECIFIC MINUTE ----
+            window.printSpecificMinute = (id) => {
+                const found = allMinutesData.find(item => item.id == id);
+                if (found && found.data) {
+                    window.populatePrintPreviewFromData(found.data);
+                    setTimeout(() => window.print(), 300);
+                } else {
+                    alert('Minute data not found for printing.');
+                }
+            };
+
+            // ---- SESSION VERIFICATION ----
             const verifySecureAuthentication = async () => {
                 const panel = document.getElementById('inquiries-panel');
-                // Get the current persistent local session context
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
-                    // User is authenticated, mount data grid to UI viewport layout
                     panel.style.display = 'block';
                     loadDatabaseInquiries();
+                    loadMeetingMinutes();
                 } else {
-                    // Denied, fallback routing safely
                     panel.style.display = 'none';
-                    window.location.href = 'index.html'; 
+                    window.location.href = 'index.html';
                 }
             };
 
+            // ---- DOM CONTENT LOADED ----
             document.addEventListener('DOMContentLoaded', () => {
-                
-                // Verify session context right out of the gate
+
                 verifySecureAuthentication();
 
-                // 1. Smart Sticky Header Logic
+                // ---- SMART STICKY HEADER ----
                 const navbar = document.getElementById('navbar');
                 window.addEventListener('scroll', () => {
-                    if (window.scrollY > 50) {
-                        navbar.classList.add('scrolled');
-                    } else {
-                        navbar.classList.remove('scrolled');
-                    }
+                    navbar.classList.toggle('scrolled', window.scrollY > 50);
                 });
 
-                // 2. Mobile Hamburger Off-Canvas Menu Toggle
+                // ---- MOBILE HAMBURGER MENU ----
                 const menuToggle = document.getElementById('menu-toggle');
                 const navContainer = document.getElementById('nav-container');
-                
                 menuToggle.addEventListener('click', () => {
                     navContainer.classList.toggle('active');
                     const icon = menuToggle.querySelector('i');
-                    if(navContainer.classList.contains('active')) {
-                        icon.className = 'fa-solid fa-xmark';
-                    } else {
-                        icon.className = 'fa-solid fa-bars';
-                    }
+                    icon.className = navContainer.classList.contains('active') ? 'fa-solid fa-xmark' :
+                        'fa-solid fa-bars';
                 });
-
                 document.querySelectorAll('.nav-links a').forEach(link => {
                     link.addEventListener('click', () => {
                         navContainer.classList.remove('active');
@@ -1142,82 +1631,81 @@
                     });
                 });
 
-                // 3. Dynamic Filtering Logic for Useful Resources Section
+                // ---- LINKS TAB FILTERING ----
                 const tabButtons = document.querySelectorAll('.tab-btn');
                 const linkItems = document.querySelectorAll('.link-item');
-
                 tabButtons.forEach(button => {
                     button.addEventListener('click', () => {
-                        // Handle Active Class Swaps
                         tabButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-
                         const filter = button.getAttribute('data-filter');
-
-                        // Toggle Visibility with scale metrics
                         linkItems.forEach(item => {
                             const category = item.getAttribute('data-category');
-                            if (filter === 'all' || category === filter) {
-                                item.classList.remove('hidden');
-                            } else {
-                                item.classList.add('hidden');
-                            }
+                            item.classList.toggle('hidden', filter !== 'all' && category !== filter);
                         });
                     });
                 });
 
-                // 4. Scroll Triggered Reveals using Intersection Observer API
-                const cards = document.querySelectorAll('.dash-card');
-                const cardObserverOptions = {
-                    threshold: 0.1,
-                    rootMargin: "0px 0px -50px 0px"
-                };
-                const cardObserver = new IntersectionObserver((entries, observer) => {
+                // ---- SCROLL REVEALS (Intersection Observer) ----
+                const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+                const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('revealed');
                             observer.unobserve(entry.target);
                         }
                     });
-                }, cardObserverOptions);
+                }, observerOptions);
+                document.querySelectorAll('.dash-card, .project-card').forEach(el => observer.observe(el));
 
-                cards.forEach(card => {
-                    cardObserver.observe(card);
-                });
-
-                // 5. Register Interactive Panel Access Control Handlers
+                // ---- REFRESH / CLEAR INQUIRIES ----
                 document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadDatabaseInquiries);
                 document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
-                    const confirmation = confirm("Are you absolutely sure you want to delete all logged inquiries? This action cannot be undone and will erase them from both this screen and your live database.");
-                    
-                    if (!confirmation) return;
-
+                    if (!confirm(
+                            "Are you absolutely sure you want to delete all logged inquiries? This action cannot be undone."
+                            )) return;
                     const feedContainer = document.getElementById('inquiries-feed');
-                    feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> dropping all table records securely...</div>';
-
+                    feedContainer.innerHTML =
+                        '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> dropping all table records securely...</div>';
                     try {
-                        // Performs a global filter delete matching all valid primary key IDs
-                        const { error } = await supabase
-                            .from('inquiries')
-                            .delete()
-                            .gt('id', 0);
-
+                        const { error } = await supabase.from('inquiries').delete().gt('id', 0);
                         if (error) throw error;
-
-                        // Force clear interface message immediately
-                        feedContainer.innerHTML = '<div class="status-msg">Database table truncated successfully. No entries remain.</div>';
+                        feedContainer.innerHTML =
+                        '<div class="status-msg">Database table truncated successfully. No entries remain.</div>';
                     } catch (err) {
-                        feedContainer.innerHTML = `<div class="status-msg" style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Operations Error: ${err.message}</div>`;
+                        feedContainer.innerHTML =
+                            `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Operations Error: ${err.message}</div>`;
                     }
                 });
 
+                // ---- REFRESH MINUTES ----
+                document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
+
+                // ---- PRINT SELECTED MINUTE ----
+                document.getElementById('printSelectedBtn')?.addEventListener('click', () => {
+                    const selectedId = document.getElementById('meetingSelect').value;
+                    if (!selectedId) { alert('Please select a meeting record first.'); return; }
+                    window.printSpecificMinute(selectedId);
+                });
+
+                // ---- REALTIME SUBSCRIPTION (meeting_minutes) ----
+                supabase.channel('public:meeting_minutes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'meeting_minutes' }, () => {
+                        loadMeetingMinutes();
+                    })
+                    .subscribe();
+
+                // ---- LOGOUT ----
                 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
                     e.preventDefault();
                     await supabase.auth.signOut();
                     window.location.href = 'index.html';
                 });
-            });
+
+            }); // end DOMContentLoaded
+
         })();
     </script>
+
 </body>
 </html>
