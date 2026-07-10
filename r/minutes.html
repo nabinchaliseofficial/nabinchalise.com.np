@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Minutes Builder | Rotaract Club of Galkot Baglung</title>
-    <!-- SEO and Meta Tags -->
-    <meta name="description" content="Official Meeting Minutes Writer Engine for Rotaract Club of Galkot Baglung, Rotary International District 3292 Nepal-Bhutan.">
-    <meta name="author" content="Rotaract Club of Galkot Baglung">
+
+    <!-- SEO & Meta -->
+    <meta name="description" content="Official Meeting Minutes Writer Engine for Rotaract Club of Galkot Baglung, Rotary International District 3292 Nepal-Bhutan." />
+    <meta name="author" content="Rotaract Club of Galkot Baglung" />
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+    </script>
+
     <style>
+        /* ===== CSS VARIABLES ===== */
         :root {
-            --primary: #D70060;       /* Rotaract Pink */
+            --primary: #D70060;
             --primary-hover: #B50051;
-            --secondary: #015491;     /* Rotary Blue */
+            --secondary: #015491;
             --secondary-hover: #003F6E;
-            --dark: #1E293B;          /* Slate 800 */
-            --text-muted: #64748B;    /* Slate 500 */
-            --light-bg: #F8FAFC;      /* Slate 50 */
-            --border: #E2E8F0;        /* Slate 200 */
-            --input-focus: #FDF2F8;   /* Light pink hue tint */
-            --success: #10B981;       /* Emerald 500 */
+            --dark: #1E293B;
+            --text-muted: #64748B;
+            --light-bg: #F8FAFC;
+            --border: #E2E8F0;
+            --success: #10B981;
             --white: #FFFFFF;
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 20px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 20px 25px -5px rgba(215, 0, 96, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* ===== RESET & BASE ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -51,7 +58,7 @@
             min-height: 100vh;
         }
 
-        /* --- NAVIGATION BAR --- */
+        /* ===== NAVIGATION ===== */
         .navbar {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -65,6 +72,8 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow-sm);
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .nav-brand {
@@ -90,6 +99,13 @@
 
         .nav-brand-text span {
             color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .home-btn {
@@ -138,16 +154,136 @@
         }
 
         @keyframes ripple-effect {
-            to { transform: scale(4); opacity: 0; }
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         @keyframes exit-bounce {
-            0% { transform: scale(1); }
-            20% { transform: scale(0.92); background-color: var(--primary); }
-            100% { transform: translateY(-15px) scale(0.8); opacity: 0; }
+            0% {
+                transform: scale(1);
+            }
+            20% {
+                transform: scale(0.92);
+                background-color: var(--primary);
+            }
+            100% {
+                transform: translateY(-15px) scale(0.8);
+                opacity: 0;
+            }
         }
 
-        /* --- HERO SECTION --- */
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .toast {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border-left: 4px solid var(--success);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: bottom right;
+        }
+
+        .toast.error {
+            border-left-color: #EF4444;
+        }
+
+        .toast.loading {
+            border-left-color: #F59E0B;
+        }
+
+        .toast-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .toast.success .toast-icon {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .toast.error .toast-icon {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .toast.loading .toast-icon {
+            background: #FEF3C7;
+            color: #92400E;
+            animation: spin 1s linear infinite;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .toast-message {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 4px;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            color: var(--dark);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== HERO ===== */
         .hero {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
@@ -162,7 +298,10 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: radial-gradient(circle at 70% 30%, rgba(217, 0, 96, 0.15) 0%, transparent 50%);
             pointer-events: none;
         }
@@ -196,14 +335,14 @@
             font-size: 1.05rem;
         }
 
-        /* --- MAIN CONTAINER --- */
+        /* ===== CONTAINER ===== */
         .container {
             max-width: 960px;
             margin: 0 auto;
             padding: 0 24px 80px 24px;
         }
 
-        /* --- FORM CARDS --- */
+        /* ===== FORM CARDS ===== */
         .form-card {
             background: var(--white);
             border: 1px solid var(--border);
@@ -245,10 +384,17 @@
             background: #eff6ff;
             color: var(--secondary);
             border-radius: var(--radius-sm);
+            flex-shrink: 0;
         }
 
-        .form-card:nth-of-type(2) .card-icon { background: #fdf2f8; color: var(--primary); }
-        .form-card:nth-of-type(3) .card-icon { background: #ecfdf5; color: var(--success); }
+        .form-card:nth-of-type(2) .card-icon {
+            background: #fdf2f8;
+            color: var(--primary);
+        }
+        .form-card:nth-of-type(3) .card-icon {
+            background: #ecfdf5;
+            color: var(--success);
+        }
 
         .form-card h2 {
             color: var(--dark);
@@ -257,7 +403,7 @@
             letter-spacing: -0.3px;
         }
 
-        /* --- INPUT FIELDS & LAYOUTS --- */
+        /* ===== INPUTS ===== */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -280,7 +426,9 @@
             color: #475569;
         }
 
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--border);
@@ -293,14 +441,16 @@
             transition: var(--transition);
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             border-color: var(--primary);
             background-color: var(--white);
             box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
         }
 
         .readonly-input {
-            background-color: #e2e8f0; 
+            background-color: #e2e8f0;
             font-weight: 700;
             color: #475569;
             cursor: not-allowed;
@@ -316,14 +466,25 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .agenda-width-title { width: 35%; }
-        .agenda-width-desc { width: 65%; resize: vertical; }
+        .agenda-width-title {
+            width: 35%;
+        }
+        .agenda-width-desc {
+            width: 65%;
+            resize: vertical;
+        }
 
-        /* --- INTERACTIVE CHECKLIST --- */
+        /* ===== CHECKLIST ===== */
         .checklist-container {
             max-height: 320px;
             overflow-y: auto;
@@ -360,6 +521,7 @@
             transform: scale(1.25);
             accent-color: var(--primary);
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .checklist-item label {
@@ -382,9 +544,11 @@
             border-radius: 12px;
             letter-spacing: 0.2px;
             text-transform: uppercase;
+            flex-shrink: 0;
+            margin-left: 8px;
         }
 
-        /* --- BUTTON STYLING --- */
+        /* ===== BUTTONS ===== */
         button {
             cursor: pointer;
             font-family: inherit;
@@ -402,6 +566,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;
         }
 
         .btn-add:hover {
@@ -428,6 +593,8 @@
             justify-content: center;
             gap: 10px;
             letter-spacing: -0.2px;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-submit:hover {
@@ -436,16 +603,46 @@
             box-shadow: 0 12px 28px rgba(215, 0, 96, 0.25);
         }
 
-        .additional-members-margin { margin-bottom: 24px; }
-        .guest-header-margin { margin-top: 32px; }
-        .guest-count-margin { margin-top: 24px; }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-        /* Hidden Layout Container elements */
-        #print-preview, .display-none {
+        .btn-submit .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-submit.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-submit.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        .additional-members-margin {
+            margin-bottom: 24px;
+        }
+        .guest-header-margin {
+            margin-top: 32px;
+        }
+        .guest-count-margin {
+            margin-top: 24px;
+        }
+
+        /* ===== HIDDEN ===== */
+        #print-preview {
             display: none;
         }
 
-        /* --- RESPONSIVE BREAKPOINTS --- */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -461,7 +658,8 @@
                 flex-direction: column;
                 gap: 8px;
             }
-            .agenda-width-title, .agenda-width-desc {
+            .agenda-width-title,
+            .agenda-width-desc {
                 width: 100%;
             }
             .checklist-item label {
@@ -469,16 +667,40 @@
                 align-items: flex-start;
                 gap: 4px;
             }
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-actions {
+                justify-content: stretch;
+            }
+            .home-btn {
+                justify-content: center;
+            }
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                max-width: 100%;
+                bottom: 16px;
+            }
         }
 
-        /* --- PRINT VIEW CONFIGURATIONS --- */
+        /* ===== PRINT ===== */
         @media print {
             body {
                 background: var(--white);
                 padding: 0;
                 color: #000000;
             }
-            .navbar, .hero, .container, .form-card, input, button, .action-buttons-group, label {
+            .navbar,
+            .hero,
+            .container,
+            .form-card,
+            input,
+            button,
+            .action-buttons-group,
+            label,
+            .toast-container {
                 display: none !important;
             }
             #print-preview {
@@ -486,8 +708,9 @@
                 position: relative;
                 min-height: 100vh;
                 font-family: 'Segoe UI', Arial, sans-serif;
+                padding: 40px 50px;
             }
-            
+
             #print-preview::before {
                 content: "";
                 position: fixed;
@@ -526,14 +749,27 @@
                 text-align: center;
                 width: 100%;
             }
-            .letterhead h1 { color: var(--primary); font-size: 24px; font-weight: bold; margin-bottom: 2px; }
-            .letterhead h2 { color: var(--secondary); font-size: 15px; display: block !important; margin-bottom: 2px; }
-            .letterhead-subtext { font-size: 12px; color: #444; }
-            
+            .letterhead h1 {
+                color: var(--primary);
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            .letterhead h2 {
+                color: var(--secondary);
+                font-size: 15px;
+                display: block !important;
+                margin-bottom: 2px;
+            }
+            .letterhead-subtext {
+                font-size: 12px;
+                color: #444;
+            }
+
             #outTitle {
-                text-align: center; 
-                text-transform: uppercase; 
-                margin-bottom: 20px; 
+                text-align: center;
+                text-transform: uppercase;
+                margin-bottom: 20px;
                 letter-spacing: 1px;
                 font-size: 18px;
                 font-weight: bold;
@@ -550,9 +786,15 @@
                 border: 1px solid #cbd5e1;
                 font-size: 13px;
             }
-            .meta-title { font-weight: bold; background: #f8fafc; width: 22%; }
-            .width-30 { width: 28%; }
-            
+            .meta-title {
+                font-weight: bold;
+                background: #f8fafc;
+                width: 22%;
+            }
+            .width-30 {
+                width: 28%;
+            }
+
             .content-section {
                 margin-bottom: 24px;
             }
@@ -583,13 +825,14 @@
                 padding-top: 6px;
                 font-size: 13px;
             }
-            
+
             .print-table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 8px;
             }
-            .print-table th, .print-table td {
+            .print-table th,
+            .print-table td {
                 border: 1px solid #cbd5e1;
                 padding: 6px 12px;
                 font-size: 12.5px;
@@ -599,37 +842,46 @@
                 background-color: #f8fafc;
                 font-weight: bold;
             }
-            .col-sn { width: 8%; text-align: center; }
-            .col-name { width: 52%; }
-            .col-role { width: 40%; }
+            .col-sn {
+                width: 8%;
+                text-align: center;
+            }
+            .col-name {
+                width: 52%;
+            }
+            .col-role {
+                width: 40%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- STICKY NAVIGATION BAR -->
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand">
             <div class="nav-logo-marker"></div>
             <div class="nav-brand-text">Rotaract<span>Galkot</span></div>
         </a>
-        <a href="index.html" class="home-btn" id="interactiveHomeBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            HOME
-        </a>
+        <div class="nav-actions">
+            <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                HOME
+            </a>
+        </div>
     </nav>
 
-    <!-- HERO SECTION -->
+    <!-- ===== HERO ===== -->
     <header class="hero">
         <div class="hero-tag">R.Y. 2026-27 Console</div>
         <h1>Minutes Writer Engine</h1>
         <p>Compile official internal records, automatically aggregate attendance sheets, generate structured configurations, and dispatch logging parameters.</p>
     </header>
 
-    <!-- MAIN CONTAINER -->
+    <!-- ===== MAIN ===== -->
     <main class="container">
-        
-        <!-- CARD 1: MEET COORDINATES -->
+
+        <!-- CARD 1: MEETING COORDINATES -->
         <div class="form-card">
             <div class="card-header-wrapper">
                 <div class="card-title-group">
@@ -639,25 +891,25 @@
                     <h2>1. Meeting Coordinates</h2>
                 </div>
             </div>
-            
+
             <div class="grid-2">
                 <div class="form-group">
                     <label for="meetNo">Meeting Number</label>
-                    <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting">
+                    <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting" />
                 </div>
                 <div class="form-group">
-                    <label for="meetDate">Date & Time</label>
-                    <input type="datetime-local" id="meetDate">
+                    <label for="meetDate">Date &amp; Time</label>
+                    <input type="datetime-local" id="meetDate" />
                 </div>
             </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label for="meetVenue">Venue Location</label>
-                    <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot">
+                    <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot" />
                 </div>
                 <div class="form-group">
                     <label for="meetChair">Meeting Chairperson</label>
-                    <input type="text" id="meetChair" value="Rtr. Nabin Chalise" placeholder="President Name">
+                    <input type="text" id="meetChair" value="Rtr. Nabin Chalise" placeholder="President Name" />
                 </div>
             </div>
         </div>
@@ -676,7 +928,7 @@
                     Add Rotaractor
                 </button>
             </div>
-            
+
             <div class="checklist-container" id="members-checklist">
                 <!-- Roster dynamically mounted -->
             </div>
@@ -695,17 +947,17 @@
                     Add Special Guest
                 </button>
             </div>
-            
+
             <div id="guests-container"></div>
 
             <div class="grid-2 guest-count-margin">
                 <div class="form-group">
                     <label>Members Present Count (Auto)</label>
-                    <input type="number" id="countPresent" value="0" readonly class="readonly-input">
+                    <input type="number" id="countPresent" value="0" readonly class="readonly-input" />
                 </div>
                 <div class="form-group">
                     <label>Guests Count (Auto)</label>
-                    <input type="number" id="countGuests" value="0" readonly class="readonly-input">
+                    <input type="number" id="countGuests" value="0" readonly class="readonly-input" />
                 </div>
             </div>
         </div>
@@ -717,38 +969,38 @@
                     <div class="card-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                     </div>
-                    <h2>4. Agendas & Resolutions Log</h2>
+                    <h2>4. Agendas &amp; Resolutions Log</h2>
                 </div>
                 <button class="btn-add" onclick="addAgendaRow()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
                     Add Agenda
                 </button>
             </div>
-            
+
             <div id="agenda-container">
                 <div class="dynamic-row agenda-group">
-                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title (e.g., Blood Donation)">
+                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title (e.g., Blood Donation)" />
                     <textarea class="agenda-desc agenda-width-desc" placeholder="Decisions / Action points resolved..." rows="1"></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- COMPILATION TRIGGER ACTION BUTTON -->
+        <!-- SUBMIT -->
         <div class="action-buttons-group">
-            <button class="btn-submit" onclick="compileSaveAndEmail()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><line x1="22" x2="11" y1="2" y2="13"/></svg>
-                Compile, Save PDF & Email Summary
+            <button class="btn-submit" id="saveBtn" onclick="compileSaveAndEmail()">
+                <span class="spinner"></span>
+                <span class="btn-text">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><line x1="22" x2="11" y1="2" y2="13"/></svg>
+                    Save to Dashboard
+                </span>
             </button>
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- PRINT PREVIEW SHEET STRUCTURE              -->
-    <!-- ========================================== -->
+    <!-- ===== PRINT PREVIEW ===== -->
     <div id="print-preview">
         <div class="letterhead">
-            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo">
-            
+            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
             <div class="letterhead-text">
                 <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
                 <h2>Rotary International District 3292 Nepal-Bhutan</h2>
@@ -789,7 +1041,7 @@
         </div>
 
         <div class="content-section">
-            <h4>Agendas & Key Resolutions</h4>
+            <h4>Agendas &amp; Key Resolutions</h4>
             <div id="outAgendas"></div>
         </div>
 
@@ -805,9 +1057,22 @@
         </div>
     </div>
 
-    <!-- BUSINESS LOGIC DRIVER LAYER -->
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== BUSINESS LOGIC ===== -->
+    <!-- ============================================================ -->
     <script>
-        // Roster Database Definition
+        // ============================================================
+        //  1.  SUPABASE CONFIGURATION (UPDATED WITH YOUR CREDENTIALS)
+        // ============================================================
+        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+        // ============================================================
+        //  2.  ROSTER DATABASE
+        // ============================================================
         const rosterData = [
             { role: "CHARTERED PRESIDENT", name: "RTR. NEETU KHADKA" },
             { role: "PRESIDENT", name: "RTR. NABIN CHALISE" },
@@ -859,7 +1124,9 @@
             { role: "CLUB MEMBER", name: "RTR. TUL BAHADUR B.K." }
         ];
 
-        // Mount Checklist DOM Items
+        // ============================================================
+        //  3.  MOUNT CHECKLIST
+        // ============================================================
         const checklistContainer = document.getElementById('members-checklist');
         rosterData.forEach((member, i) => {
             const div = document.createElement('div');
@@ -874,13 +1141,17 @@
             checklistContainer.appendChild(div);
         });
 
-        // Initialize Native Time Sync Fields
+        // ============================================================
+        //  4.  INIT DATE / TIME
+        // ============================================================
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
         document.getElementById('meetDate').value = localISOTime;
 
-        // Interactive Navigation Button Setup
+        // ============================================================
+        //  5.  NAVIGATION RIPPLE
+        // ============================================================
         document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
             e.preventDefault();
             const targetUrl = this.getAttribute('href');
@@ -888,38 +1159,38 @@
 
             const ripple = document.createElement('span');
             ripple.classList.add('ripple');
-            
             const rect = button.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
             button.appendChild(ripple);
             button.classList.add('clicked-exit');
 
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 450);
+            setTimeout(() => { window.location.href = targetUrl; }, 450);
         });
 
-        // Core Aggregate Calculation Logic Engine
+        // ============================================================
+        //  6.  ATTENDANCE COUNTS
+        // ============================================================
         function calculateAttendanceCounts() {
-            const checkedOfficialCount = document.querySelectorAll('.member-checkbox:checked').length;
-            const additionalCheckedCount = document.querySelectorAll('.add-member-checkbox:checked').length;
-            
-            document.getElementById('countPresent').value = checkedOfficialCount + additionalCheckedCount;
+            const checkedOfficial = document.querySelectorAll('.member-checkbox:checked').length;
+            const checkedAdditional = document.querySelectorAll('.add-member-checkbox:checked').length;
+            document.getElementById('countPresent').value = checkedOfficial + checkedAdditional;
             document.getElementById('countGuests').value = document.querySelectorAll('.guest-input-name').length;
         }
 
+        // ============================================================
+        //  7.  DYNAMIC ROW ADDERS
+        // ============================================================
         function addNewMemberRow() {
             const container = document.getElementById('additional-members-container');
             const row = document.createElement('div');
             row.className = 'dynamic-row';
             row.innerHTML = `
-                <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width: auto; margin-top: 14px; transform: scale(1.25); accent-color: var(--primary);">
-                <input type="text" class="add-member-name" placeholder="Rtr. Name" style="flex: 1;" oninput="calculateAttendanceCounts()">
-                <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="flex: 1;">
+                <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
+                <input type="text" class="add-member-name" placeholder="Rtr. Name" style="flex:1;" oninput="calculateAttendanceCounts()">
+                <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="flex:1;">
             `;
             container.appendChild(row);
             calculateAttendanceCounts();
@@ -930,7 +1201,7 @@
             const row = document.createElement('div');
             row.className = 'dynamic-row';
             row.innerHTML = `
-                <input type="text" class="guest-input-name" placeholder="Guest Full Name & Club/Designation Details" style="width: 100%;" oninput="calculateAttendanceCounts()">
+                <input type="text" class="guest-input-name" placeholder="Guest Full Name &amp; Club/Designation Details" style="width:100%;" oninput="calculateAttendanceCounts()">
             `;
             container.appendChild(row);
             calculateAttendanceCounts();
@@ -947,119 +1218,280 @@
             container.appendChild(row);
         }
 
-        // Processing Pipeline & Trigger Systems Execution
-        function compileSaveAndEmail() {
-            // --- STEP 1: PREPARE DATA FOR PRINT LAYOUT ---
-            document.getElementById('outMeetNo').innerText = document.getElementById('meetNo').value || 'Regular Meeting';
-            
-            const dateObj = new Date(document.getElementById('meetDate').value);
-            document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-            
-            document.getElementById('outVenue').innerText = document.getElementById('meetVenue').value || 'N/A';
-            document.getElementById('outChair').innerText = document.getElementById('meetChair').value || 'Club President';
-            document.getElementById('outChairSign').innerText = document.getElementById('meetChair').value || '_______________________';
-            
-            calculateAttendanceCounts();
-            const totalPresent = document.getElementById('countPresent').value;
-            document.getElementById('outPres').innerText = totalPresent;
-            document.getElementById('outGst').innerText = document.getElementById('countGuests').value;
+        // ============================================================
+        //  8.  TOAST SYSTEM
+        // ============================================================
+        function showToast(title, message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
 
-            // Compile Members Table for Printing
-            let memberTableHTML = `
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th class="col-sn">S.N.</th>
-                            <th class="col-name">Name</th>
-                            <th class="col-role">Designation</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            const icons = {
+                success: '✓',
+                error: '✕',
+                loading: '⟳'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || '✓'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
             `;
-            let serialCounter = 1;
+
+            container.appendChild(toast);
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    if (toast.parentElement) toast.remove();
+                }, 5000);
+            }
+
+            return toast;
+        }
+
+        function dismissAllToasts() {
+            document.getElementById('toastContainer').innerHTML = '';
+        }
+
+        // ============================================================
+        //  9.  SUPABASE CLIENT
+        // ============================================================
+        let supabaseClient = null;
+        try {
+            if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co') {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase client initialized.');
+            } else {
+                console.warn('⚠️ Supabase not configured. Data will not be persisted.');
+            }
+        } catch (_) {
+            console.warn('⚠️ Supabase client initialization failed.');
+        }
+
+        // ============================================================
+        //  10. CORE: COMPILE, SAVE & EMAIL
+        // ============================================================
+        async function compileSaveAndEmail() {
+            const btn = document.getElementById('saveBtn');
+            if (btn.classList.contains('loading')) return;
+
+            // --- 10a. Gather form data ---
+            const meetNo = document.getElementById('meetNo').value || 'Regular Meeting';
+            const meetDateRaw = document.getElementById('meetDate').value;
+            const meetDate = meetDateRaw ? new Date(meetDateRaw) : new Date();
+            const venue = document.getElementById('meetVenue').value || 'N/A';
+            const chair = document.getElementById('meetChair').value || 'N/A';
+
+            calculateAttendanceCounts();
+            const membersPresent = parseInt(document.getElementById('countPresent').value) || 0;
+            const guestsCount = parseInt(document.getElementById('countGuests').value) || 0;
+
+            // --- 10b. Collect checked members ---
+            const members = [];
             document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
-                memberTableHTML += `<tr><td style="text-align:center;">${serialCounter++}</td><td>${cb.getAttribute('data-name')}</td><td>${cb.getAttribute('data-role')}</td></tr>`;
+                members.push({ name: cb.getAttribute('data-name'), role: cb.getAttribute('data-role') });
             });
             document.querySelectorAll('.add-member-checkbox:checked').forEach(cb => {
                 const row = cb.parentElement;
                 const name = row.querySelector('.add-member-name').value.trim();
-                const role = row.querySelector('.add-member-role').value.trim();
-                if (name) {
-                    memberTableHTML += `<tr><td style="text-align:center;">${serialCounter++}</td><td>${name.toUpperCase()}</td><td>${role.toUpperCase()}</td></tr>`;
+                const role = row.querySelector('.add-member-role').value.trim() || 'CLUB MEMBER';
+                if (name) members.push({ name: name.toUpperCase(), role: role.toUpperCase() });
+            });
+
+            // --- 10c. Collect guests ---
+            const guests = [];
+            document.querySelectorAll('.guest-input-name').forEach(inp => {
+                const val = inp.value.trim();
+                if (val) guests.push(val);
+            });
+
+            // --- 10d. Collect agendas ---
+            const agendas = [];
+            document.querySelectorAll('.agenda-group').forEach(block => {
+                const title = block.querySelector('.agenda-title').value.trim();
+                const desc = block.querySelector('.agenda-desc').value.trim();
+                if (title || desc) {
+                    agendas.push({ title: title || 'General Discussion', description: desc || 'No resolution recorded.' });
                 }
             });
-            memberTableHTML += `</tbody></table>`;
-            document.getElementById('outPresentMembersNames').innerHTML = serialCounter > 1 ? memberTableHTML : "<p style='font-size:13px; color:#666;'>No members marked present.</p>";
 
-            // Compile Guests Table for Printing
-            let guestTableHTML = `
-                <table class="print-table">
-                    <thead><tr><th class="col-sn">S.N.</th><th style="width: 92%;">Guest Details</th></tr></thead>
-                    <tbody>
-            `;
-            let guestCounter = 1;
-            document.querySelectorAll('.guest-input-name').forEach(input => {
-                const val = input.value.trim();
-                if(val) { guestTableHTML += `<tr><td style="text-align:center;">${guestCounter++}</td><td>${val}</td></tr>`; }
+            // --- 10e. Build payload ---
+            const payload = {
+                meeting_number: meetNo,
+                meeting_date: meetDate.toISOString(),
+                venue: venue,
+                chairperson: chair,
+                members_present: membersPresent,
+                guests_count: guestsCount,
+                agendas: agendas,
+                members: members,
+                guests: guests,
+                created_at: new Date().toISOString()
+            };
+
+            // --- 10f. Show loading state ---
+            btn.classList.add('loading');
+            btn.disabled = true;
+            dismissAllToasts();
+            const loadingToast = showToast('Saving...', 'Uploading meeting minutes to dashboard.', 'loading');
+
+            try {
+                // --- 10g. Save to Supabase (store entire payload in 'data' column) ---
+                let savedId = null;
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('meeting_minutes')
+                        .insert([{ data: payload }])
+                        .select('id')
+                        .single();
+
+                    if (error) {
+                        // If error says column 'data' doesn't exist, provide helpful message
+                        if (error.message && error.message.includes('column "data" of relation "meeting_minutes" does not exist')) {
+                            throw new Error(
+                                'The "data" column is missing in your "meeting_minutes" table. ' +
+                                'Please add it: ALTER TABLE meeting_minutes ADD COLUMN data JSONB;'
+                            );
+                        }
+                        throw error;
+                    }
+                    savedId = data?.id;
+                } else {
+                    console.warn('Supabase client not available – data not saved to cloud.');
+                }
+
+                // --- 10h. Show success ---
+                loadingToast.remove();
+                const successMsg = savedId ?
+                    `Saved successfully! (ID: ${savedId})` :
+                    'Saved locally (Supabase not configured or skipped).';
+                showToast('✅ Dashboard Updated', successMsg, 'success');
+
+                // --- 10i. Populate print preview ---
+                populatePrintPreview(payload, meetDate);
+
+                // --- 10j. Trigger email (mailto) ---
+                triggerEmail(payload);
+
+                // --- 10k. Print PDF ---
+                setTimeout(() => window.print(), 400);
+
+            } catch (err) {
+                loadingToast.remove();
+                console.error('Supabase save error:', err);
+                showToast('❌ Save Failed', err.message || 'Could not save to dashboard. Check console.', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        //  11. POPULATE PRINT PREVIEW
+        // ============================================================
+        function populatePrintPreview(payload, dateObj) {
+            document.getElementById('outMeetNo').innerText = payload.meeting_number;
+            document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium',
+                timeStyle: 'short' });
+            document.getElementById('outVenue').innerText = payload.venue;
+            document.getElementById('outChair').innerText = payload.chairperson;
+            document.getElementById('outChairSign').innerText = payload.chairperson;
+            document.getElementById('outPres').innerText = payload.members_present;
+            document.getElementById('outGst').innerText = payload.guests_count;
+
+            // Members table
+            let memberHTML = `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th class="col-name">Name</th><th class="col-role">Designation</th></tr></thead><tbody>`;
+            payload.members.forEach((m, i) => {
+                memberHTML +=
+                    `<tr><td style="text-align:center;">${i+1}</td><td>${m.name}</td><td>${m.role}</td></tr>`;
             });
-            guestTableHTML += `</tbody></table>`;
-            const guestSectionNode = document.getElementById('print-section-guests');
-            if(guestCounter > 1) {
-                document.getElementById('outGuestsNames').innerHTML = guestTableHTML;
-                guestSectionNode.style.display = 'block';
+            memberHTML += `</tbody></table>`;
+            document.getElementById('outPresentMembersNames').innerHTML = payload.members.length ? memberHTML :
+                '<p style="font-size:13px;color:#666;">No members marked present.</p>';
+
+            // Guests
+            const guestSection = document.getElementById('print-section-guests');
+            if (payload.guests.length) {
+                let guestHTML = `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th style="width:92%;">Guest Details</th></tr></thead><tbody>`;
+                payload.guests.forEach((g, i) => {
+                    guestHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${g}</td></tr>`;
+                });
+                guestHTML += `</tbody></table>`;
+                document.getElementById('outGuestsNames').innerHTML = guestHTML;
+                guestSection.style.display = 'block';
             } else {
-                guestSectionNode.style.display = 'none';
+                guestSection.style.display = 'none';
             }
 
-            // Compile Agendas for Printing and Email Summary
-            let htmlContent = '';
-            let agendaSummary = '';
-            document.querySelectorAll('.agenda-group').forEach((block, index) => {
-                const title = block.querySelector('.agenda-title').value;
-                const desc = block.querySelector('.agenda-desc').value;
-                if(title || desc) {
-                    htmlContent += `
-                        <div class="agenda-item">
-                            <strong>Agenda ${index + 1}: ${title || 'General Floor Discussion'}</strong>
-                            <p style="margin: 4px 0 0 15px; color: #333; text-align: justify;">${desc || 'No resolutions documented.'}</p>
-                        </div>
-                    `;
-                    agendaSummary += `\n- Agenda ${index + 1}: ${title}\n  Resolution: ${desc}\n`;
-                }
+            // Agendas
+            let agendaHTML = '';
+            payload.agendas.forEach((a, i) => {
+                agendaHTML += `
+                    <div class="agenda-item">
+                        <strong>Agenda ${i+1}: ${a.title}</strong>
+                        <p style="margin:4px 0 0 15px;color:#333;text-align:justify;">${a.description}</p>
+                    </div>
+                `;
             });
-            document.getElementById('outAgendas').innerHTML = htmlContent || '<p>No formal agendas recorded.</p>';
+            document.getElementById('outAgendas').innerHTML = agendaHTML ||
+            '<p>No formal agendas recorded.</p>';
+        }
 
-            // --- STEP 2: GENERATE EMAIL DISPATCH ---
-            const meetNo = document.getElementById('meetNo').value || 'Regular Meeting';
-            const dateStr = document.getElementById('meetDate').value ? new Date(document.getElementById('meetDate').value).toLocaleString() : 'N/A';
-            const venue = document.getElementById('meetVenue').value || 'N/A';
-            const chair = document.getElementById('meetChair').value || 'N/A';
+        // ============================================================
+        //  12. TRIGGER EMAIL (mailto)
+        // ============================================================
+        function triggerEmail(payload) {
+            const recipients = 'galkot@rotaract3292.org,pilotprosoft@gmail.com,nabin.chalise@rotaract3292.org';
+            const subject = encodeURIComponent(`Meeting Minutes Log: ${payload.meeting_number} - RAC Galkot Baglung`);
 
-            const recipients = "galkot@rotaract3292.org,pilotprosoft@gmail.com,nabin.chalise@rotaract3292.org";
-            const subject = encodeURIComponent(`Meeting Minutes Log: ${meetNo} - RAC Galkot Baglung`);
-            
-            let bodyText = `Dear Admins,\n\nPlease find the summary coordinates for the logged meeting details below:\n\n`;
-            bodyText += `• Meeting: ${meetNo}\n`;
-            bodyText += `• Date/Time: ${dateStr}\n`;
-            bodyText += `• Venue: ${venue}\n`;
-            bodyText += `• Chairperson: ${chair}\n`;
-            bodyText += `• Attendance Count: ${totalPresent} Present\n\n`;
-            if(agendaSummary) { bodyText += `Recorded Business Details:${agendaSummary}\n`; }
-            bodyText += `Regards,\nRotaract Club of Galkot Baglung`;
-            
-            const mailtoUrl = `mailto:${recipients}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
-            const secureLink = document.createElement('a');
-            secureLink.href = mailtoUrl;
-            secureLink.style.display = 'none';
-            document.body.appendChild(secureLink);
-            secureLink.click();
-            document.body.removeChild(secureLink);
+            let body = `Dear Admins,\n\nPlease find the summary coordinates for the logged meeting details below:\n\n`;
+            body += `• Meeting: ${payload.meeting_number}\n`;
+            body += `• Date/Time: ${new Date(payload.meeting_date).toLocaleString()}\n`;
+            body += `• Venue: ${payload.venue}\n`;
+            body += `• Chairperson: ${payload.chairperson}\n`;
+            body += `• Attendance Count: ${payload.members_present} Present\n\n`;
 
-            // --- STEP 3: TRIGGER PRINT WINDOW FOR PDF ---
-            setTimeout(() => {
-                window.print();
-            }, 300);
+            if (payload.agendas.length) {
+                body += `Recorded Business Details:\n`;
+                payload.agendas.forEach((a, i) => {
+                    body += `\n- Agenda ${i+1}: ${a.title}\n  Resolution: ${a.description}\n`;
+                });
+                body += `\n`;
+            }
+
+            body += `Regards,\nRotaract Club of Galkot Baglung`;
+
+            const mailtoUrl = `mailto:${recipients}?subject=${subject}&body=${encodeURIComponent(body)}`;
+            const link = document.createElement('a');
+            link.href = mailtoUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ============================================================
+        //  13. EXPOSE FUNCTIONS TO GLOBAL SCOPE
+        // ============================================================
+        window.calculateAttendanceCounts = calculateAttendanceCounts;
+        window.addNewMemberRow = addNewMemberRow;
+        window.addGuestRow = addGuestRow;
+        window.addAgendaRow = addAgendaRow;
+        window.compileSaveAndEmail = compileSaveAndEmail;
+        window.showToast = showToast;
+        window.dismissAllToasts = dismissAllToasts;
+
+        // Initial count
+        calculateAttendanceCounts();
+
+        console.log('✅ Minutes Builder with Supabase logging ready.');
+        if (!supabaseClient) {
+            console.warn('⚠️ Supabase not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.');
         }
     </script>
+
 </body>
 </html>
