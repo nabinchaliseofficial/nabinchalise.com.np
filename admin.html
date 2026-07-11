@@ -1266,6 +1266,24 @@
         </div>
     </section>
 
+    <!-- ===== NEW REGISTERED MEMBERS LOG ===== -->
+    <section class="workspace-section" id="members-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-user-plus" aria-hidden="true" style="color: var(--cls-rotaract);"></i> Registered Members</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-members-btn">
+                    <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh Members
+                </button>
+                <button class="action-btn clear-btn-accent" id="clear-members-btn">
+                    <i class="fa-solid fa-trash-can" style="color:#ef4444;" aria-hidden="true"></i> Clear All Members
+                </button>
+            </div>
+        </div>
+        <div class="inquiries-feed" id="members-feed">
+            <div class="status-msg">Loading registered members...</div>
+        </div>
+    </section>
+
     <!-- ===== PROJECT MANAGEMENT ===== -->
     <section class="workspace-section" id="projects-panel">
         <div class="panel-header">
@@ -1885,6 +1903,65 @@
                 }
             };
 
+            // ---- LOAD REGISTERED MEMBERS ----
+            const loadRegisteredMembers = async () => {
+                const feedContainer = document.getElementById('members-feed');
+                if (!feedContainer) return;
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registered members...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('member_registrations')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        feedContainer.innerHTML = '<div class="status-msg">No registered members found in the database.</div>';
+                        return;
+                    }
+                    feedContainer.innerHTML = data.map(item => `
+                            <article class="inquiry-node" style="border-left-color: var(--cls-rotaract);">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span>${new Date(item.created_at).toLocaleString()}</span>
+                                </div>
+                                <div class="node-sender" style="color: var(--cls-rotaract);">
+                                    <i class="fa-solid fa-user" aria-hidden="true"></i> ${escapeHtml(item.name)}
+                                </div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-email">
+                                    <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                                </a>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                    <i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone || 'N/A')}
+                                </div>
+                                ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
+                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                    <span class="status-badge ${item.status === 'approved' ? 'status-approved' : item.status === 'rejected' ? 'status-rejected' : 'status-pending'}">${item.status || 'pending'}</span>
+                                    ${item.status !== 'approved' ? `<button class="action-btn-sm approve-btn" onclick="updateMemberStatus(${item.id}, 'approved')">Approve</button>` : ''}
+                                    ${item.status !== 'rejected' ? `<button class="action-btn-sm reject-btn" onclick="updateMemberStatus(${item.id}, 'rejected')">Reject</button>` : ''}
+                                </div>
+                            </article>
+                        `).join('');
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading members: ${err.message}</div>`;
+                }
+            };
+
+            // ---- UPDATE MEMBER STATUS ----
+            window.updateMemberStatus = async (id, status) => {
+                try {
+                    const { error } = await supabase
+                        .from('member_registrations')
+                        .update({ status: status })
+                        .eq('id', id);
+                    if (error) throw error;
+                    loadRegisteredMembers();
+                } catch (err) {
+                    alert('Error updating status: ' + err.message);
+                }
+            };
+
             // ---- LOAD MEETING MINUTES ----
             const loadMeetingMinutes = async () => {
                 const selectDropdown = document.getElementById('meetingSelect');
@@ -2415,6 +2492,7 @@
                 if (session) {
                     panel.style.display = 'block';
                     loadDatabaseInquiries();
+                    loadRegisteredMembers();
                     loadMeetingMinutes();
                     loadProjects();
                     loadProjectApplications();
@@ -2498,6 +2576,26 @@
                     }
                 });
 
+                // ---- REFRESH / CLEAR MEMBERS ----
+                document.getElementById('refresh-members-btn')?.addEventListener('click', loadRegisteredMembers);
+                document.getElementById('clear-members-btn')?.addEventListener('click', async () => {
+                    if (!confirm(
+                            "Are you absolutely sure you want to delete all registered members? This action cannot be undone."
+                            )) return;
+                    const feedContainer = document.getElementById('members-feed');
+                    feedContainer.innerHTML =
+                        '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> clearing all member records...</div>';
+                    try {
+                        const { error } = await supabase.from('member_registrations').delete().gt('id', 0);
+                        if (error) throw error;
+                        feedContainer.innerHTML =
+                            '<div class="status-msg">All member records have been cleared successfully.</div>';
+                    } catch (err) {
+                        feedContainer.innerHTML =
+                            `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    }
+                });
+
                 // ---- REFRESH MINUTES ----
                 document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
 
@@ -2560,6 +2658,12 @@
                 supabase.channel('public:project_applications')
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'project_applications' }, () => {
                         loadProjectApplications();
+                    })
+                    .subscribe();
+
+                supabase.channel('public:member_registrations')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'member_registrations' }, () => {
+                        loadRegisteredMembers();
                     })
                     .subscribe();
 
