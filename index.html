@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ----- RESET & VARIABLES (fixed) ----- */
+    /* ----- RESET & VARIABLES ----- */
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     html { scroll-behavior: smooth; }
     body {
@@ -67,7 +67,7 @@
     }
     .btn-outline:hover { border-color: var(--brand-primary); color: var(--brand-primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.15); }
 
-    /* ----- NAVIGATION (fixed) ----- */
+    /* ----- NAVIGATION ----- */
     .header-nav {
       position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
       background-color: rgba(var(--bg-neutral-rgb), 0.85);
@@ -99,7 +99,7 @@
     [data-theme="dark"] .theme-toggle .sun { display: none; }
     [data-theme="dark"] .theme-toggle .moon { display: block; }
 
-    /* ----- LIVE WIDGET (glassmorphism) fixed ----- */
+    /* ----- LIVE WIDGET (glassmorphism) ----- */
     .live-widget {
       display: flex; align-items: center; gap: 14px;
       background: rgba(255,255,255,0.08);
@@ -146,10 +146,51 @@
       .widget-time .clock { min-width: 48px; font-size: 0.75rem; }
     }
 
-    /* ----- HERO & SECTIONS (fixed) ----- */
+    /* ----- DAILY QUOTE BANNER ----- */
+    .daily-quote-banner {
+      margin-top: 80px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(16,185,129,0.06));
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 0;
+      text-align: center;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      letter-spacing: 0.2px;
+      backdrop-filter: blur(4px);
+      position: relative;
+      z-index: 5;
+    }
+    .daily-quote-banner q {
+      quotes: "“" "”" "‘" "’";
+      font-weight: 450;
+      color: var(--text-primary);
+    }
+    .daily-quote-banner .quote-meta {
+      display: inline-block;
+      margin-left: 12px;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      font-style: normal;
+      font-weight: 400;
+      background: rgba(59,130,246,0.08);
+      padding: 2px 12px;
+      border-radius: 30px;
+    }
+    .daily-quote-banner .quote-day {
+      font-weight: 500;
+      color: var(--brand-primary);
+      margin-right: 8px;
+    }
+    @media (max-width: 600px) {
+      .daily-quote-banner { font-size: 0.9rem; padding: 14px 12px; }
+      .daily-quote-banner .quote-meta { display: block; margin-left: 0; margin-top: 6px; }
+    }
+
+    /* ----- HERO & SECTIONS ----- */
     .section-padding { padding: 96px 0; }
     .hero {
-      min-height: 100vh; display: flex; align-items: center; padding-top: 80px;
+      min-height: 100vh; display: flex; align-items: center; padding-top: 20px;
       background: linear-gradient(135deg, rgba(59,130,246,0.04) 0%, rgba(16,185,129,0.02) 100%);
     }
     .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center; }
@@ -187,7 +228,7 @@
       .section-padding { padding: 48px 0; }
     }
 
-    /* ----- MODAL (POPUP) fixed ----- */
+    /* ----- MODAL ----- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
@@ -225,27 +266,18 @@
     .modal-box .auth-status { margin-top: 12px; font-size: 0.9rem; font-weight: 500; display: none; }
     .modal-box .auth-status.error { color: #ef4444; display: block; }
     .modal-box .auth-status.success { color: #10b981; display: block; }
-
-    /* extra for contact status */
     .auth-status { margin-top: 12px; font-size: 0.9rem; font-weight: 500; display: none; }
     .auth-status.error { color: #ef4444; display: block; }
     .auth-status.success { color: #10b981; display: block; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
-    /* ----- REDESIGNED CONTACT SECTION (attractive) ----- */
+    /* contact redesign */
     .contact-section {
       padding: 80px 0;
       background: linear-gradient(145deg, rgba(59,130,246,0.02) 0%, rgba(16,185,129,0.02) 100%);
     }
-    .contact-section .section-title {
-      margin-bottom: 56px;
-    }
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 48px;
-      align-items: stretch;
-    }
+    .contact-section .section-title { margin-bottom: 56px; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: stretch; }
     .contact-card {
       background: var(--surface-card);
       border-radius: 24px;
@@ -290,9 +322,7 @@
       background: rgba(var(--bg-neutral-rgb), 0.3);
       transition: 0.2s;
     }
-    .contact-detail-item:hover {
-      background: rgba(59,130,246,0.06);
-    }
+    .contact-detail-item:hover { background: rgba(59,130,246,0.06); }
     .contact-detail-item .icon {
       width: 36px;
       height: 36px;
@@ -304,9 +334,7 @@
       color: white;
       flex-shrink: 0;
     }
-    .contact-detail-item .info {
-      font-size: 0.9rem;
-    }
+    .contact-detail-item .info { font-size: 0.9rem; }
     .contact-detail-item .info strong {
       display: block;
       font-weight: 600;
@@ -341,11 +369,7 @@
       transform: translateY(-3px) scale(1.04);
       box-shadow: 0 8px 20px rgba(59,130,246,0.25);
     }
-
-    /* form card */
-    .form-card .form-group {
-      margin-bottom: 20px;
-    }
+    .form-card .form-group { margin-bottom: 20px; }
     .form-card .form-group label {
       display: block;
       font-weight: 500;
@@ -371,10 +395,7 @@
       border-color: var(--brand-primary);
       box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
     }
-    .form-card textarea.form-control {
-      min-height: 120px;
-      resize: vertical;
-    }
+    .form-card textarea.form-control { min-height: 120px; resize: vertical; }
     .form-card .btn-accent {
       width: 100%;
       border-radius: 40px;
@@ -406,13 +427,11 @@
   <header class="header-nav" id="navbar">
     <nav class="container nav-wrapper" role="navigation" aria-label="Main Navigation">
       <a href="#" class="logo">Nabin Chalise</a>
-
       <ul class="nav-links" id="navLinks">
         <li><a href="#about">About Me</a></li>
         <li><a id="portalTrigger" style="cursor:pointer;">Portal Login</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
-
       <div class="nav-controls">
         <!-- LIVE WIDGET -->
         <div class="live-widget" id="liveWidget" role="status" aria-live="polite">
@@ -429,7 +448,6 @@
           <button class="widget-toggle" id="formatToggle" aria-label="Toggle 12/24 hour format" title="Toggle 12/24h">12h</button>
           <span class="widget-weather" id="widgetWeather">☀️ 24°C</span>
         </div>
-
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"/></svg>
           <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
@@ -440,6 +458,13 @@
       </div>
     </nav>
   </header>
+
+  <!-- DAILY SPIRITUAL QUOTE BANNER (dynamic) -->
+  <div class="daily-quote-banner" id="dailyQuoteBanner">
+    <span class="quote-day" id="quoteDay">Day 1</span>
+    <q id="quoteText">The journey of a thousand miles begins with a single step.</q>
+    <span class="quote-meta" id="quoteMeta">✨ spiritual</span>
+  </div>
 
   <main id="main-content">
     <section class="hero" id="about">
@@ -463,12 +488,11 @@
       </div>
     </section>
 
-    <!-- Contact section – REDESIGNED ATTRACTIVE -->
+    <!-- Contact section -->
     <section class="contact-section" id="contact">
       <div class="container">
         <h2 class="section-title">Direct Inquiries</h2>
         <div class="contact-grid">
-          <!-- left card: info -->
           <div class="contact-card contact-info-card reveal">
             <h3>📬 Contact Information</h3>
             <p style="color:var(--text-secondary); margin-bottom: 8px;">Reach out directly using the platforms below or drop a secure message.</p>
@@ -498,8 +522,6 @@
               </a>
             </div>
           </div>
-
-          <!-- right card: form -->
           <div class="contact-card form-card reveal">
             <form id="contactForm" method="POST" novalidate>
               <div class="form-group">
@@ -523,7 +545,7 @@
     </section>
   </main>
 
-  <!-- MODAL (POPUP) for Administrative Access -->
+  <!-- MODAL (POPUP) -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-box">
       <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
@@ -544,10 +566,62 @@
       "use strict";
       document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-      // ---------- SUPABASE ----------
+      // ---------- SUPABASE CONFIGURATION ----------
       const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // ---------- DAILY QUOTE FETCHER (365 spiritual quotes) ----------
+      async function fetchDailyQuote() {
+        const quoteTextEl = document.getElementById('quoteText');
+        const quoteDayEl = document.getElementById('quoteDay');
+        const quoteMetaEl = document.getElementById('quoteMeta');
+
+        try {
+          // Calculate day of year (1-365)
+          const now = new Date();
+          const startOfYear = new Date(now.getFullYear(), 0, 0);
+          const diff = now - startOfYear;
+          const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+          // Fetch quote for today from Supabase
+          const { data, error } = await supabase
+            .from('spiritual_quotes')
+            .select('day, quote, author')
+            .eq('day', dayOfYear)
+            .maybeSingle();
+
+          if (error || !data) {
+            // Fallback quotes if database fetch fails
+            const fallbackQuotes = [
+              "The only way to do great work is to love what you do.",
+
+            ];
+            const fallback = fallbackQuotes[dayOfYear % fallbackQuotes.length];
+            quoteTextEl.textContent = fallback;
+            quoteDayEl.textContent = `Day ${dayOfYear}`;
+            quoteMetaEl.textContent = '✨ wisdom';
+            console.warn('Using fallback quote for day:', dayOfYear);
+            return;
+          }
+
+          // Display the fetched quote
+          quoteTextEl.textContent = data.quote;
+          quoteDayEl.textContent = `Day ${data.day}`;
+          quoteMetaEl.textContent = data.author ? `— ${data.author}` : '✨ spiritual';
+          console.log('Quote loaded for day', data.day);
+
+        } catch (err) {
+          // Emergency fallback
+          console.error('Error fetching quote:', err);
+          quoteTextEl.textContent = "The only way to do great work is to love what you do.";
+          quoteDayEl.textContent = `Day ${new Date().getDate()}`;
+          quoteMetaEl.textContent = '✨ wisdom';
+        }
+      }
+
+      // Execute quote fetch on page load
+      fetchDailyQuote();
 
       // ---------- LIVE WIDGET ----------
       const widgetClock = document.getElementById('widgetClock');
@@ -620,7 +694,7 @@
       const revealObs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); revealObs.unobserve(e.target); } }); }, { threshold: 0.1 });
       document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-      // ---------- MODAL (POPUP) ----------
+      // ---------- MODAL ----------
       const modal = document.getElementById('authModal');
       const portalTrigger = document.getElementById('portalTrigger');
       const modalClose = document.getElementById('modalClose');
