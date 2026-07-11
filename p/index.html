@@ -1,402 +1,684 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Development & Achievements</title>
-    <meta name="description" content="Professional portfolio showcasing certifications, key achievements, career milestones, and resume.">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional Development · Certifications</title>
+  <meta name="description" content="Professional portfolio showcasing verified certifications." />
+  <!-- Font & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ============================================================
+       BASE & RESET
+       ============================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-professional: #34d399; /* Emerald green theme */
-            --accent-glow: rgba(52, 211, 153, 0.15);
-            
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    :root {
+      --color-neutral-100: #f8fafc;
+      --color-neutral-200: #e2e8f0;
+      --color-neutral-700: #334155;
+      --color-neutral-800: #1e293b;
+      --color-neutral-900: #0f172a;
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      --color-primary: #1e4a6b;
+      --color-primary-light: #2b6b94;
+      --color-primary-dark: #0e2f45;
 
-        html {
-            scroll-behavior: smooth;
-        }
+      --color-accent: #34d399;
+      --color-accent-glow: rgba(52, 211, 153, 0.2);
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 80% 20%, rgba(52, 211, 153, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 10% 70%, rgba(15, 23, 42, 1) 0%, transparent 50%);
-            background-attachment: fixed;
-        }
+      --bg-body: var(--color-neutral-100);
+      --text-body: var(--color-neutral-900);
+      --text-muted: var(--color-neutral-700);
+      --border-light: rgba(0, 0, 0, 0.06);
 
-        /* --- NAVIGATION BAR --- */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      --card-bg: #ffffff;
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      --card-hover-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
 
-        .nav-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-card: 16px;
+      --radius-btn: 40px;
+      --transition-smooth: 0.25s cubic-bezier(0.2, 0, 0, 1);
+    }
 
-        .nav-brand i {
-            color: var(--accent-professional);
-        }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-body: #0b1424;
+        --text-body: #edf2f7;
+        --text-muted: #94a3b8;
+        --border-light: rgba(255, 255, 255, 0.06);
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        --card-hover-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+        --color-primary: #3b82f6;
+        --color-primary-light: #60a5fa;
+        --color-primary-dark: #1e3a8a;
+      }
+    }
 
-        .back-dash {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      padding-top: 72px;
+      min-height: 100vh;
+      transition: background 0.2s, color 0.2s;
+    }
 
-        .back-dash:hover {
-            color: var(--text-main);
-        }
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; margin-bottom: 0.75rem; }
+    h3 { font-size: 1.25rem; }
 
-        /* --- HERO SECTION --- */
-        .hero {
-            padding: 9rem 2rem 4rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
 
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
-            background: linear-gradient(to right, #fff, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 2rem 0 1.5rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    .section-title i {
+      color: var(--color-accent);
+    }
 
-        .hero p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 2.5rem;
-        }
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: padding 0.2s, background 0.2s;
+      min-height: 72px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .navbar {
+        background: rgba(11, 20, 36, 0.85);
+      }
+    }
+    .navbar.scrolled {
+      padding: 0.4rem 2rem;
+      background: rgba(255, 255, 255, 0.92);
+    }
+    @media (prefers-color-scheme: dark) {
+      .navbar.scrolled {
+        background: rgba(11, 20, 36, 0.95);
+      }
+    }
 
-        /* --- RESUME ACTION BUTTON --- */
-        .resume-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: transparent;
-            color: var(--accent-professional);
-            border: 2px solid var(--accent-professional);
-            padding: 0.9rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 14px;
-            text-decoration: none;
-            transition: var(--transition-smooth);
-            box-shadow: 0 0 20px rgba(52, 211, 153, 0.05);
-        }
+    .nav-brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-body);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-brand i {
+      color: var(--color-accent);
+    }
 
-        .resume-btn:hover {
-            background: var(--accent-professional);
-            color: #0f172a;
-            box-shadow: 0 0 30px var(--accent-glow);
-            transform: translateY(-3px);
-        }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text-body);
+    }
 
-        /* --- PORTFOLIO WRAPPER --- */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 5rem;
-        }
+    .home-nav-btn {
+      background: #015491;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      text-decoration: none;
+      box-shadow: 0 3px 6px rgba(1, 84, 145, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .home-nav-btn:hover {
+      background-color: #D70060;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
+    }
+    .home-nav-btn .icon {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .home-nav-btn:hover .icon {
+      transform: scale(1.15) rotate(-5deg);
+    }
 
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 4rem 0 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            letter-spacing: -0.5px;
-        }
+    /* Ripple and exit animations for home button */
+    .home-nav-btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0);
+      animation: ripple-effect 0.45s linear;
+      pointer-events: none;
+    }
+    .home-nav-btn.clicked-exit {
+      animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
 
-        .section-title i {
-            color: var(--accent-professional);
-        }
+    @keyframes ripple-effect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    @keyframes exit-bounce {
+      0% {
+        transform: scale(1);
+      }
+      20% {
+        transform: scale(0.92);
+        background-color: #D70060;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-15px) scale(0.8);
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+      }
+    }
 
-        /* --- GRID LAYOUTS --- */
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-        }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 26px;
+      height: 2.5px;
+      background: var(--text-body);
+      border-radius: 4px;
+      transition: 0.2s;
+    }
 
-        /* --- GLASS CARDS --- */
-        .display-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: var(--transition-smooth);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100vh;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      box-shadow: -8px 0 30px rgba(0,0,0,0.1);
+      padding: 2rem 1.5rem;
+      transition: right 0.3s cubic-bezier(0.2, 0, 0, 1);
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .mobile-menu.open {
+      right: 0;
+    }
+    .mobile-menu .close-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text-body);
+      cursor: pointer;
+    }
+    .mobile-menu a {
+      color: var(--text-body);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .mobile-menu .home-nav-btn {
+      justify-content: center;
+      background: #015491;
+      color: white;
+      padding: 0.7rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .mobile-menu .home-nav-btn:hover {
+      background: #D70060;
+    }
 
-        .display-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(52, 211, 153, 0.3);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .navbar { padding: 0.6rem 1.2rem; }
+    }
 
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+    /* ============================================================
+       CERTIFICATIONS GRID
+       ============================================================ */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
+    }
 
-        .tag {
-            background: rgba(52, 211, 153, 0.1);
-            color: var(--accent-professional);
-            padding: 0.25rem 0.75rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    .cert-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      padding: 1.8rem 1.5rem;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.3s ease, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(4px);
+    }
+    .cert-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--card-hover-shadow);
+      border-color: var(--color-accent);
+    }
 
-        .display-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-        }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .tag {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--color-accent);
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .cert-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.3rem;
+    }
+    .issuer {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    .verify-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.2s, color 0.2s;
+      margin-top: auto;
+    }
+    .verify-link i {
+      transition: transform 0.2s;
+    }
+    .verify-link:hover {
+      color: var(--color-accent);
+      gap: 0.8rem;
+    }
+    .verify-link:hover i {
+      transform: translateX(4px);
+    }
 
-        .issuer {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
+    /* ============================================================
+       LOADING / EMPTY STATE
+       ============================================================ */
+    .loading-spinner {
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    .loading-spinner i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
 
-        .card-desc {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--text-muted);
+    }
 
-        /* Card Link/Action */
-        .view-link {
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition-smooth);
-            margin-top: auto;
-        }
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      border-top: 1px solid var(--border-light);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 2rem;
+    }
 
-        .view-link i {
-            transition: var(--transition-smooth);
-        }
+    /* ============================================================
+       SCROLL REVEAL
+       ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        .display-card:hover .view-link {
-            color: var(--accent-professional);
-        }
-
-        .display-card:hover .view-link i {
-            transform: translateX(4px);
-        }
-
-        /* --- FOOTER --- */
-        footer {
-            text-align: center;
-            padding: 3rem 2rem;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- MOBILE RESPONSIVENESS --- */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 7rem 1rem 3rem;
-            }
-            .hero h1 {
-                font-size: 2.25rem;
-            }
-            .container {
-                padding: 0 1rem 3rem;
-            }
-            .section-title {
-                font-size: 1.5rem;
-                margin: 3rem 0 1.5rem;
-            }
-        }
-    </style>
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 480px) {
+      .cert-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="index.html" class="nav-brand">
-            <i class="fa-solid fa-briefcase"></i> ProDevelopment
+  <!-- ============================================================
+       NAVIGATION
+       ============================================================ -->
+  <nav class="navbar" id="navbar">
+    <a href="#" class="nav-brand">
+      <i class="fas fa-briefcase"></i> ProDev
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#certificates">Certifications</a></li>
+      <li>
+        <a href="index.html" class="home-nav-btn" id="interactiveHomeBtn">
+          <span class="icon">🏠</span> HOME
         </a>
-        <a href="index.html" class="back-dash">
-            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-        </a>
-    </nav>
+      </li>
+    </ul>
 
-    <header class="hero">
-        <h1>Professional Track</h1>
-        <p>A comprehensive log of academic certifications, technical skill verifications, and career achievements.</p>
-        
-        <a href="resume.html" class="resume-btn">
-            <i class="fa-solid fa-file-pdf"></i> View Full Resume / CV
-        </a>
-    </header>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
-    <main class="container">
+  <!-- mobile off-canvas -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-btn" id="closeMenuBtn" aria-label="Close menu">&times;</button>
+    <a href="#certificates">Certifications</a>
+    <a href="index.html" class="home-nav-btn" id="mobileHomeBtn">
+      <span class="icon">🏠</span> HOME
+    </a>
+  </div>
 
-        <section id="certificates">
-            <h2 class="section-title"><i class="fa-solid fa-certificate"></i> Verified Certifications</h2>
-            <div class="portfolio-grid">
-                
-                <article class="display-card">
-                    <div>
-                        <div class="card-meta">
-                            <span class="tag">Technical</span>
-                            <span>ID: AWS-8492</span>
-                        </div>
-                        <h3>AWS Certified Solutions Architect</h3>
-                        <div class="issuer"><i class="fa-solid fa-award"></i> Amazon Web Services</div>
-                        <p class="card-desc">Validation of cloud architecture expertise, including designing distributed, fault-tolerant, and scalable systems.</p>
-                    </div>
-                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
-                </article>
+  <!-- ============================================================
+       MAIN – CERTIFICATIONS FROM SUPABASE
+       ============================================================ -->
+  <main class="container" id="certificates">
+    <h2 class="section-title reveal">
+      <i class="fas fa-certificate"></i> Verified Certifications
+    </h2>
 
-                <article class="display-card">
-                    <div>
-                        <div class="card-meta">
-                            <span class="tag">Management</span>
-                            <span>ID: PM-49301</span>
-                        </div>
-                        <h3>Project Management Professional (PMP)</h3>
-                        <div class="issuer"><i class="fa-solid fa-award"></i> Project Management Institute</div>
-                        <p class="card-desc">Advanced methodology training focusing on Agile frameworks, team leadership, and resource optimization lifecycle metrics.</p>
-                    </div>
-                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
-                </article>
+    <div id="certGrid" class="cert-grid">
+      <!-- Loading state -->
+      <div class="loading-spinner" id="loadingState">
+        <i class="fas fa-spinner"></i>
+        Loading certifications...
+      </div>
+    </div>
+  </main>
 
-                <article class="display-card">
-                    <div>
-                        <div class="card-meta">
-                            <span class="tag">Development</span>
-                            <span>ID: FullStack-99</span>
-                        </div>
-                        <h3>Advanced Full-Stack Engineering</h3>
-                        <div class="issuer"><i class="fa-solid fa-award"></i> Tech Academy Elite</div>
-                        <p class="card-desc">Immersive specialization training covering modern secure database interactions, high-performance UI optimization, and DevOps systems.</p>
-                    </div>
-                    <a href="#" class="view-link">Verify Credential <i class="fa-solid fa-arrow-right"></i></a>
-                </article>
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer>
+    <p>&copy; 2026 Professional Portfolio · All verification hashes secured.</p>
+  </footer>
 
-            </div>
-        </section>
+  <!-- ============================================================
+       SUPABASE CLIENT & DATA FETCH
+       ============================================================ -->
+  <script>
+    (function() {
+      "use strict";
 
-        <section id="achievements">
-            <h2 class="section-title"><i class="fa-solid fa-trophy"></i> Key Achievements</h2>
-            <div class="portfolio-grid">
-                
-                <article class="display-card">
-                    <div>
-                        <div class="card-meta">
-                            <span class="tag">Innovation</span>
-                            <span>2025</span>
-                        </div>
-                        <h3>1st Place - National Smart Cities Hackathon</h3>
-                        <div class="issuer"><i class="fa-solid fa-building-columns"></i> GovTech Frameworks</div>
-                        <p class="card-desc">Led a 4-person engineering team to design a decentralized citizen reporting system tailored for local municipal jurisdictions.</p>
-                    </div>
-                    <a href="#" class="view-link">View Project Case <i class="fa-solid fa-arrow-right"></i></a>
-                </article>
+      // Supabase configuration
+      const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
-                <article class="display-card">
-                    <div>
-                        <div class="card-meta">
-                            <span class="tag">Leadership</span>
-                            <span>2024</span>
-                        </div>
-                        <h3>Outstanding Regional Leader Award</h3>
-                        <div class="issuer"><i class="fa-solid fa-hands-holding-circle"></i> Rotaract District Council</div>
-                        <p class="card-desc">Recognized for structural project management achievements and coordinating cross-district community resource allocation pipelines.</p>
-                    </div>
-                    <a href="#" class="view-link">Read Profile Feature <i class="fa-solid fa-arrow-right"></i></a>
-                </article>
+      // DOM refs
+      const certGrid = document.getElementById('certGrid');
+      const loadingState = document.getElementById('loadingState');
 
-            </div>
-        </section>
+      // Helper: create a certification card
+      function createCertCard(cert) {
+        const article = document.createElement('article');
+        article.className = 'cert-card reveal';
 
-    </main>
+        // Default values if fields are missing
+        const title = cert.title || 'Untitled Certification';
+        const issuer = cert.issuer || 'Unknown Issuer';
+        const description = cert.description || 'No description provided.';
+        const tag = cert.category || 'Professional';
+        const id = cert.id || 'N/A';
+        const verifyUrl = cert.verify_url || '#';
 
-    <footer>
-        <p>&copy; 2026 Professional Portfolio. All verification hashes verified securely.</p>
-    </footer>
+        article.innerHTML = `
+          <div class="card-meta">
+            <span class="tag">${tag}</span>
+            <span>ID: ${id}</span>
+          </div>
+          <h3>${title}</h3>
+          <div class="issuer"><i class="fas fa-award"></i> ${issuer}</div>
+          <p class="card-desc">${description}</p>
+          <a href="${verifyUrl}" class="verify-link">Verify Credential <i class="fas fa-arrow-right"></i></a>
+        `;
+
+        return article;
+      }
+
+      // Fetch certifications from Supabase
+      async function fetchCertifications() {
+        try {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/certifications?select=*`, {
+            method: 'GET',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          // Remove loading state
+          loadingState.remove();
+
+          if (!data || data.length === 0) {
+            certGrid.innerHTML = `<div class="empty-state">No certifications found. Add some in Supabase!</div>`;
+            return;
+          }
+
+          // Render cards
+          data.forEach(cert => {
+            const card = createCertCard(cert);
+            certGrid.appendChild(card);
+          });
+
+          // Re-run Intersection Observer for new cards
+          observeRevealElements();
+
+        } catch (error) {
+          console.error('Error fetching certifications:', error);
+          loadingState.innerHTML = `
+            <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+            Failed to load certifications. Please try again later.
+          `;
+        }
+      }
+
+      // ============================================================
+      // INTERSECTION OBSERVER for scroll reveals
+      // ============================================================
+      let observer;
+
+      function observeRevealElements() {
+        if (observer) observer.disconnect();
+
+        const revealElements = document.querySelectorAll('.reveal');
+        observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
+
+        revealElements.forEach(el => observer.observe(el));
+      }
+
+      // ============================================================
+      // NAVIGATION: sticky shrink
+      // ============================================================
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (currentScroll > 40) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+
+      // ============================================================
+      // MOBILE MENU
+      // ============================================================
+      const hamburger = document.getElementById('hamburgerBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const closeMenu = document.getElementById('closeMenuBtn');
+
+      function openMenu() {
+        mobileMenu.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenuFn() {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      hamburger.addEventListener('click', openMenu);
+      closeMenu.addEventListener('click', closeMenuFn);
+      mobileMenu.addEventListener('click', function(e) {
+        if (e.target === mobileMenu) closeMenuFn();
+      });
+
+      // ============================================================
+      // HOME BUTTON ripple effect (for all home buttons)
+      // ============================================================
+      const homeBtns = document.querySelectorAll('.home-nav-btn');
+      homeBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetUrl = this.getAttribute('href') || 'index.html';
+
+          const rect = this.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.classList.add('ripple');
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+          
+          this.appendChild(ripple);
+
+          this.classList.add('clicked-exit');
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 450);
+        });
+      });
+
+      // ============================================================
+      // INIT: fetch certifications
+      // ============================================================
+      fetchCertifications();
+
+    })();
+  </script>
 
 </body>
 </html>
