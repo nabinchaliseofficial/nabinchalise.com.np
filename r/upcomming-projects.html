@@ -22,15 +22,118 @@
             font-family: 'Inter', sans-serif;
             background: #f4f7fc;
             color: #0f172a;
-            padding: 2rem 1.5rem;
+            padding: 0;
             line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 1.5rem 2rem;
+            flex: 1;
         }
 
+        /* ---- HEADER with clubheading.jpg ---- */
+        .club-header {
+            width: 100%;
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+        .club-header img {
+            display: block;
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+            max-height: 120px;
+        }
+
+        /* ---- HOME BUTTON CONTAINER (top) ---- */
+        .home-btn-container {
+            text-align: center;
+            margin: 0.75rem 0 1.5rem 0;
+            perspective: 1000px;
+        }
+
+        .home-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #015491;
+            color: white;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 3px 6px rgba(1, 84, 145, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-btn .icon {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .home-btn:hover {
+            background-color: #D70060;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
+        }
+
+        .home-btn:hover .icon {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .home-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.45s linear;
+            pointer-events: none;
+        }
+
+        .home-btn.clicked-exit {
+            animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes exit-bounce {
+            0% {
+                transform: scale(1);
+            }
+            20% {
+                transform: scale(0.92);
+                background-color: #D70060;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-15px) scale(0.8);
+                opacity: 0;
+                box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        /* ---- PAGE HEADER ---- */
         .page-header {
             display: flex;
             align-items: center;
@@ -64,6 +167,7 @@
             border-radius: 40px;
         }
 
+        /* ---- PROJECT GRID ---- */
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -402,6 +506,24 @@
             opacity: 1;
         }
 
+        /* ---- FOOTER with footer.jpg ---- */
+        .club-footer {
+            width: 100%;
+            background: white;
+            border-top: 2px solid #e2e8f0;
+            padding: 0.5rem 0;
+            margin-top: 2.5rem;
+        }
+        .club-footer img {
+            display: block;
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+            max-height: 100px;
+        }
+
         @media (max-width: 480px) {
             .page-header h1 {
                 font-size: 1.5rem;
@@ -420,12 +542,40 @@
                 width: 100%;
                 justify-content: center;
             }
+            .club-header img {
+                max-height: 80px;
+            }
+            .club-footer img {
+                max-height: 60px;
+            }
+        }
+
+        @media print {
+            .home-btn-container,
+            .club-header,
+            .club-footer {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- ===== HEADER with clubheading.jpg ===== -->
+    <header class="club-header">
+        <img src="clubheading.jpg" alt="Club Heading" />
+    </header>
+
     <div class="container">
-        <!-- Header -->
+
+        <!-- ===== HOME BUTTON (top) ===== -->
+        <div class="home-btn-container">
+            <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+                <span class="icon">🏠</span> HOME
+            </a>
+        </div>
+
+        <!-- ===== PAGE HEADER ===== -->
         <div class="page-header">
             <h1>
                 <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
@@ -434,7 +584,7 @@
             <span class="sub"><i class="fa-regular fa-clock" aria-hidden="true"></i> live · register interest</span>
         </div>
 
-        <!-- Grid -->
+        <!-- ===== PROJECT GRID ===== -->
         <div class="project-grid" id="projectGrid">
             <div class="status-msg">
                 <span class="loader"></span> Loading projects from Supabase...
@@ -444,6 +594,11 @@
         <!-- Toast -->
         <div class="toast" id="toast"></div>
     </div>
+
+    <!-- ===== FOOTER with footer.jpg ===== -->
+    <footer class="club-footer">
+        <img src="footer.jpg" alt="Footer" />
+    </footer>
 
     <!-- ===== REGISTRATION MODAL ===== -->
     <div class="modal-overlay" id="registerModal">
@@ -486,7 +641,7 @@
         (() => {
             "use strict";
 
-            // ---- SUPABASE CONFIG (public anon) ----
+            // ---- SUPABASE CONFIG ----
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_ANON_KEY =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
@@ -528,11 +683,9 @@
             function openRegisterModal(projectId, projectName) {
                 projectIdField.value = projectId;
                 modalProjectName.textContent = projectName;
-                // reset form
                 registerForm.reset();
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
-                // focus first input
                 setTimeout(() => regName.focus(), 100);
             }
 
@@ -585,7 +738,6 @@
 
                 grid.innerHTML = html;
 
-                // ---- attach register button listeners ----
                 document.querySelectorAll('.register-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const id = btn.dataset.projectId;
@@ -615,7 +767,7 @@
                 }
             };
 
-            // ---- SUBMIT REGISTRATION - USING RPC TO BYPASS SEQUENCE PERMISSION ----
+            // ---- SUBMIT REGISTRATION ----
             registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -631,14 +783,12 @@
 
                 const projectName = modalProjectName.textContent || 'Unknown Project';
 
-                // Show loading state
                 const submitBtn = registerForm.querySelector('.btn-submit');
                 const originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
                 submitBtn.disabled = true;
 
                 try {
-                    // METHOD 1: Try insert without specifying ID (should work if RLS is properly configured)
                     const payload = {
                         project_name: projectName,
                         applicant_name: name,
@@ -648,25 +798,15 @@
                         status: 'pending'
                     };
 
-                    // Log what we're sending for debugging
-                    console.log('Sending payload:', payload);
-
                     const { data, error } = await supabase
                         .from('project_applications')
                         .insert([payload])
                         .select();
 
                     if (error) {
-                        console.error('Insert error:', error);
-                        
-                        // If the insert fails with sequence error, try using a raw RPC call as fallback
+                        // fallback: try with manual ID
                         if (error.message && error.message.includes('sequence')) {
-                            console.log('Sequence error detected, trying RPC fallback...');
-                            
-                            // Fallback: Use a raw SQL function if available
-                            // Or we can try to generate a random ID manually
                             const randomId = Math.floor(Math.random() * 1000000) + 1000000;
-                            
                             const fallbackPayload = {
                                 id: randomId,
                                 project_name: projectName,
@@ -677,25 +817,16 @@
                                 status: 'pending',
                                 created_at: new Date().toISOString()
                             };
-                            
-                            console.log('Fallback payload with ID:', fallbackPayload);
-                            
                             const { data: fallbackData, error: fallbackError } = await supabase
                                 .from('project_applications')
                                 .insert([fallbackPayload])
                                 .select();
-                                
-                            if (fallbackError) {
-                                console.error('Fallback insert error:', fallbackError);
-                                throw fallbackError;
-                            }
-                            
+                            if (fallbackError) throw fallbackError;
                             showToast('✅ Registration submitted successfully!');
                             closeModal();
                             registerForm.reset();
                             return;
                         }
-                        
                         throw error;
                     }
 
@@ -703,7 +834,6 @@
                     closeModal();
                     registerForm.reset();
                 } catch (err) {
-                    console.error('Full error:', err);
                     showToast('❌ Submission failed: ' + err.message, true);
                 } finally {
                     submitBtn.innerHTML = originalText;
@@ -724,11 +854,30 @@
             // ---- initial load ----
             fetchProjects();
 
-            // refresh when tab becomes visible
             document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    fetchProjects();
-                }
+                if (!document.hidden) fetchProjects();
+            });
+
+            // ---- HOME BUTTON INTERACTION ----
+            document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetUrl = this.getAttribute('href');
+                const button = this;
+
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                button.appendChild(ripple);
+
+                button.classList.add('clicked-exit');
+
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 450);
             });
 
         })();
