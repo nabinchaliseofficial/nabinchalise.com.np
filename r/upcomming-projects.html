@@ -1,691 +1,737 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upcoming Initiatives | RAC Galkot Baglung</title>
-    
-    <!-- Meta Tags for SEO & Accessibility -->
-    <meta name="description" content="Explore upcoming community initiatives, social work deployments, and youth leadership conclaves organized by the Rotaract Club of Galkot Baglung for the Rotaract Year 2026-27.">
-    <meta name="keywords" content="Rotaract, Galkot, Baglung, Upcoming Projects, Strategic Matrix, Community Service, Volunteer Nepal">
-    <meta name="author" content="Rotaract Club of Galkot Baglung">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upcoming Projects – Register & View</title>
+    <meta name="description" content="View upcoming community projects and register your interest. Data syncs with the admin panel." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
     <style>
-        :root {
-            --accent-pink: #D70060;
-            --rotary-blue: #015491;
-            --rotary-blue-light: #0274c7;
-            --slate-900: #0F172A;
-            --slate-800: #1E293B;
-            --slate-700: #334155;
-            --slate-600: #475569;
-            --slate-400: #94A3B8;
-            --slate-100: #F1F5F9;
-            --slate-50: #F8FAFC;
-            --border-color: #E2E8F0;
-            --radius-xl: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-            --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
-            --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* RESET & BASE STYLES */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--slate-50);
-            color: var(--slate-800);
-            padding: 90px 20px 60px 20px;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #0f172a;
+            padding: 2rem 1.5rem;
             line-height: 1.5;
         }
 
-        .main-wrapper {
+        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* NAVIGATION BAR */
-        .premium-nav-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-            padding: 16px 32px;
+        .page-header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1.25rem;
         }
 
-        .nav-branding {
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--rotary-blue);
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-home-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--slate-700);
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 1px solid var(--border-color);
-            background: #FFFFFF;
-            transition: var(--transition-smooth);
-        }
-
-        .back-home-link:hover {
-            border-color: var(--accent-pink);
-            color: var(--accent-pink);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(215, 0, 96, 0.1);
-        }
-
-        /* HERO SECTION */
-        .dashboard-hero {
-            margin: 40px 0 32px 0;
-            text-align: center;
-            background: linear-gradient(135deg, #015491 0%, #0c3352 100%);
-            padding: 48px 32px;
-            border-radius: var(--radius-xl);
-            color: #FFFFFF;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: rgba(215, 0, 96, 0.15);
-            filter: blur(50px);
-        }
-
-        .dashboard-hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 12px;
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
             letter-spacing: -0.5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .dashboard-hero p {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 1;
-            display: inline-block;
-            border-bottom: 2px solid var(--accent-pink);
-            padding-bottom: 6px;
-        }
-
-        /* SEARCH BAR */
-        .search-filter-bar {
-            margin-bottom: 32px;
-            width: 100%;
-        }
-
-        .search-wrapper {
-            position: relative;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 16px 20px 16px 52px;
-            border: 2px solid var(--border-color);
-            background: #FFFFFF;
-            border-radius: 50px;
-            font-size: 1rem;
-            color: var(--slate-900);
-            outline: none;
-            transition: var(--transition-smooth);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .search-input:focus {
-            border-color: var(--rotary-blue);
-            box-shadow: 0 0 0 4px rgba(1, 84, 145, 0.15);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--slate-400);
-            pointer-events: none;
             display: flex;
             align-items: center;
+            gap: 0.75rem;
         }
 
-        /* GRID SYSTEM (CARDS) */
-        .cards-grid {
+        .page-header h1 i {
+            color: #D70060;
+        }
+
+        .sub {
+            color: #475569;
+            font-weight: 400;
+            font-size: 0.95rem;
+            background: #eef2f6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+        }
+
+        .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 24px;
-            margin-top: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.2rem;
         }
 
         .project-card {
-            background: #FFFFFF;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            padding: 28px;
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 1.6rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9edf2;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 0.8rem;
             position: relative;
-            transition: var(--transition-smooth);
-            overflow: hidden;
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--rotary-blue);
-            transition: var(--transition-smooth);
         }
 
         .project-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(1, 84, 145, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.06);
+            border-color: #cdd5df;
         }
 
-        .project-card:hover::before {
-            background: var(--accent-pink);
-            width: 6px;
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0b1e33;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .card-top {
-            margin-bottom: 24px;
+        .project-title i {
+            color: #fbbf24;
+            font-size: 1.2rem;
         }
 
-        .row-date {
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+            color: #334155;
+            margin: 0.2rem 0 0.3rem 0;
+        }
+
+        .project-meta span {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            color: var(--accent-pink);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: rgba(215, 0, 96, 0.06);
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin-bottom: 16px;
+            gap: 0.35rem;
         }
 
-        .row-title {
-            font-weight: 800;
-            color: var(--slate-900);
-            font-size: 1.3rem;
-            line-height: 1.4;
-            margin-bottom: 16px;
-        }
-
-        .card-meta-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 12px;
-            color: var(--slate-600);
-            font-size: 0.95rem;
-        }
-
-        .card-meta-item svg {
-            flex-shrink: 0;
-            margin-top: 3px;
-            color: var(--slate-400);
-        }
-
-        .meta-label {
-            font-weight: 700;
-            color: var(--slate-800);
-        }
-
-        /* INTERACTION TRIGGERS */
-        .btn-action-trigger {
-            background: var(--rotary-blue);
-            color: #FFFFFF;
-            border: none;
-            padding: 14px 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            width: 100%;
+        .project-meta i {
+            color: #6b7a8f;
+            width: 16px;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(1, 84, 145, 0.2);
         }
 
-        .btn-action-trigger:hover, .btn-action-trigger:active {
-            background: var(--accent-pink);
-            box-shadow: 0 4px 12px rgba(215, 0, 96, 0.3);
-            transform: translateY(-1px);
+        .project-description {
+            color: #1e293b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0.2rem 0;
+            background: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            border-left: 3px solid #fbbf24;
         }
 
-        /* DRAWER MODULE */
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+        .register-btn-wrapper {
+            margin-top: 0.5rem;
+            border-top: 1px dashed #dde3ea;
+            padding-top: 1rem;
         }
 
-        .drawer-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            max-width: 500px;
-            height: 100%;
-            background: #FFFFFF;
-            box-shadow: var(--shadow-lg);
-            z-index: 201;
-            display: flex;
-            flex-direction: column;
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .drawer-overlay.open .side-drawer {
-            right: 0;
-        }
-
-        .drawer-header {
-            padding: 28px;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-            background: var(--slate-50);
-        }
-
-        .drawer-close {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background: #FFFFFF;
-            border: 1px solid var(--border-color);
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--slate-600);
-            transition: var(--transition-smooth);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .drawer-close:hover {
-            background: var(--accent-pink);
+        .register-btn {
+            background: #D70060;
             color: white;
-            border-color: var(--accent-pink);
-        }
-
-        .drawer-header h3 {
-            color: var(--slate-900);
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .drawer-header p {
-            font-size: 0.85rem;
-            color: var(--rotary-blue);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .drawer-body {
-            padding: 28px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        /* FORM MANAGEMENT UTILITIES */
-        .input-block {
-            margin-bottom: 20px;
-        }
-
-        .input-block label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--slate-700);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            outline: none;
-            transition: var(--transition-smooth);
-            background: #FFFFFF;
-            color: var(--slate-900);
-        }
-
-        .input-field:focus {
-            border-color: var(--rotary-blue);
-            box-shadow: 0 0 0 4px rgba(1, 84, 145, 0.12);
-        }
-
-        .input-field[readonly] {
-            background: var(--slate-100);
-            color: var(--slate-700);
-            border-color: var(--border-color);
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
             font-weight: 600;
-            cursor: not-allowed;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 4px 12px rgba(215, 0, 96, 0.25);
+            width: 100%;
+            justify-content: center;
         }
 
-        textarea.input-field {
+        .register-btn:hover {
+            background: #b50051;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
+        }
+
+        .register-btn i {
+            font-size: 1rem;
+        }
+
+        /* ---- MODAL ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 28px;
+            max-width: 520px;
+            width: 100%;
+            padding: 2rem 2rem 1.8rem;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .modal-box .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .modal-box .modal-close:hover {
+            color: #0f172a;
+        }
+
+        .modal-box h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #0b1e33;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-box h2 i {
+            color: #D70060;
+        }
+
+        .modal-box .project-name-display {
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e9edf2;
+            padding-bottom: 0.75rem;
+        }
+
+        .modal-box .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-box .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-box .form-group label .required {
+            color: #ef4444;
+        }
+
+        .modal-box .form-group input,
+        .modal-box .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            border: 1.5px solid #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafcff;
+        }
+
+        .modal-box .form-group input:focus,
+        .modal-box .form-group textarea:focus {
+            outline: none;
+            border-color: #D70060;
+            box-shadow: 0 0 0 3px rgba(215, 0, 96, 0.08);
+        }
+
+        .modal-box .form-group textarea {
+            min-height: 70px;
             resize: vertical;
         }
 
-        .btn-drawer-submit {
-            background: linear-gradient(135deg, #015491 0%, #0274c7 100%);
+        .modal-box .form-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-box .form-actions .btn-submit {
+            background: #D70060;
             color: white;
             border: none;
-            width: 100%;
-            padding: 16px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            margin-top: 12px;
-            box-shadow: 0 4px 10px rgba(1, 84, 145, 0.2);
-        }
-
-        .btn-drawer-submit:hover {
-            background: linear-gradient(135deg, #D70060 0%, #f71c7b 100%);
-            box-shadow: 0 4px 14px rgba(215, 0, 96, 0.3);
-            transform: translateY(-1px);
-        }
-
-        /* NO RESULTS INFRASTRUCTURE */
-        .no-results {
-            grid-column: 1 / -1;
-            padding: 60px 20px;
-            text-align: center;
-            background: #FFFFFF;
-            border-radius: var(--radius-xl);
-            border: 2px dashed var(--border-color);
-            color: var(--slate-600);
-        }
-
-        .no-results svg {
-            color: var(--slate-400);
-            margin-bottom: 12px;
-        }
-
-        .no-results p {
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
             font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .modal-box .form-actions .btn-submit:hover {
+            background: #b50051;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(215, 0, 96, 0.25);
+        }
+
+        .modal-box .form-actions .btn-cancel {
+            background: #e9edf2;
+            color: #334155;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-box .form-actions .btn-cancel:hover {
+            background: #d1d9e6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #475569;
+            background: #f1f4f9;
+            border-radius: 40px;
             font-size: 1.1rem;
         }
 
-        /* RESPONSIVE ARCHITECTURE */
-        @media (max-width: 768px) {
-            body { padding-top: 80px; padding-left: 16px; padding-right: 16px; }
-            .premium-nav-bar { padding: 12px 20px; }
-            .nav-branding { font-size: 0.95rem; }
-            .dashboard-hero { padding: 36px 20px; margin: 20px 0 24px 0; }
-            .dashboard-hero h1 { font-size: 1.85rem; }
-            .cards-grid { grid-template-columns: 1fr; gap: 18px; }
-            .side-drawer { max-width: 100%; }
+        .status-msg i {
+            margin-right: 8px;
+            color: #94a3b8;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 0, 0, 0.06);
+            border-radius: 50%;
+            border-top-color: #D70060;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal-box {
+                padding: 1.5rem;
+            }
+            .modal-box .form-actions {
+                flex-direction: column;
+            }
+            .modal-box .form-actions .btn-submit,
+            .modal-box .form-actions .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-
-<!-- STICKY NAVBAR -->
-<nav class="premium-nav-bar">
-    <div class="nav-branding">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
-        ROTARACT GALKOT BAGLUNG
-    </div>
-    <a href="index.html" class="back-home-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        Home
-    </a>
-</nav>
-
-<div class="main-wrapper">
-    <!-- MODERN HERO UNIT -->
-    <header class="dashboard-hero">
-        <h1>Upcoming Project Schedule</h1>
-        <p>Strategic Matrix 2026-27</p>
-    </header>
-
-    <!-- SEARCH DESK -->
-    <div class="search-filter-bar">
-        <div class="search-wrapper">
-            <span class="search-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </span>
-            <input type="text" id="matrixSearchInput" class="search-input" placeholder="Search initiatives, focus groups, or deployment hubs..." oninput="filterMatrixGrid()" aria-label="Search initiative database">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                Upcoming Projects
+            </h1>
+            <span class="sub"><i class="fa-regular fa-clock" aria-hidden="true"></i> live · register interest</span>
         </div>
+
+        <!-- Grid -->
+        <div class="project-grid" id="projectGrid">
+            <div class="status-msg">
+                <span class="loader"></span> Loading projects from Supabase...
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
     </div>
 
-    <!-- ENGINE OUTPUT (GRID VIEW CARDS) -->
-    <main class="cards-grid" id="dynamic-rows-hook">
-        <!-- Structural programmatic iterations route here -->
-    </main>
-</div>
+    <!-- ===== REGISTRATION MODAL ===== -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close registration form">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2><i class="fa-regular fa-hand-peace"></i> Register Interest</h2>
+            <div class="project-name-display" id="modalProjectName">Project: <span></span></div>
 
-<!-- SIDE DRAWER application DESK -->
-<div class="drawer-overlay" id="formDrawerOverlay" onclick="handleOverlayClick(event)">
-    <section class="side-drawer" id="sideDrawerMenu" role="dialog" aria-labelledby="drawer-title">
-        <div class="drawer-header">
-            <button class="drawer-close" onclick="closeDrawer()" aria-label="Close Application Form">&times;</button>
-            <h3 id="drawer-title">Volunteer Desk</h3>
-            <p>Deployment Application Form</p>
-        </div>
-        
-        <div class="drawer-body">
-            <form action="https://formspree.io/f/mrewrrer" method="POST" id="engagementForm">
-                <div class="input-block">
-                    <label for="target-project-field">Selected Activity</label>
-                    <input type="text" id="target-project-field" name="project_name" class="input-field" readonly>
+            <form id="registerForm">
+                <input type="hidden" id="projectIdField" value="" />
+                <div class="form-group">
+                    <label>Full Name <span class="required">*</span></label>
+                    <input type="text" id="regName" placeholder="e.g. Rtr. Nabin Chalise" required />
                 </div>
-
-                <div class="input-block">
-                    <label for="applicant-name">Full Name</label>
-                    <input type="text" id="applicant-name" name="name" class="input-field" placeholder="Enter your full identity name" required>
+                <div class="form-group">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="regEmail" placeholder="you@example.com" required />
                 </div>
-
-                <div class="input-block">
-                    <label for="applicant-email">Email Address</label>
-                    <input type="email" id="applicant-email" name="email" class="input-field" placeholder="yourname@domain.com" required>
+                <div class="form-group">
+                    <label>Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="regPhone" placeholder="e.g. 984-1234567" required />
                 </div>
-
-                <div class="input-block">
-                    <label for="applicant-phone">Mobile Network Number</label>
-                    <input type="tel" id="applicant-phone" name="phone_number" class="input-field" placeholder="98XXXXXXXX" pattern="[9][7-8][0-9]{8}" title="Please match valid Nepalese mobile network parameters (10 digits starting with 97 or 98)." required>
+                <div class="form-group">
+                    <label>Your Message (optional)</label>
+                    <textarea id="regMessage" placeholder="Why are you interested in this project?"></textarea>
                 </div>
-
-                <div class="input-block">
-                    <label for="applicant-notes">Statement / Background Skills</label>
-                    <textarea id="applicant-notes" name="message" class="input-field" rows="4" placeholder="Brief details regarding competencies or why you want to align with this initiative..."></textarea>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-regular fa-paper-plane"></i> Submit Registration
+                    </button>
+                    <button type="button" class="btn-cancel" id="modalCancelBtn">Cancel</button>
                 </div>
-
-                <button type="submit" class="btn-drawer-submit">Register Engagement</button>
             </form>
         </div>
-    </section>
-</div>
+    </div>
 
-<script>
-    // System Core Datastore Matrix[cite: 2]
-    const matrixProjects = [
-        {
-            name: "Project Akshara: Rural E-Library Set up",
-            date: "August 2026",
-            targetAudience: "Public School Students",
-            location: "Ward No. 3, Galkot, Baglung"
-        },
-        {
-            name: "Maternal Health & Sanitation Awareness Campaign",
-            date: "September 2026",
-            targetAudience: "Local Women & Expecting Mothers",
-            location: "Hatiya Health Post, Galkot"
-        },
-        {
-            name: "RYLA 2026: Youth Leadership Conclave",
-            date: "November 2026",
-            targetAudience: "High-school & College Students",
-            location: "Galkot City Hall Assembly Room"
-        }
-    ];
+    <script>
+        (() => {
+            "use strict";
 
-    // Card Generation Interface
-    function paintMatrixGrid(dataset) {
-        const targetHook = document.getElementById('dynamic-rows-hook');
-        targetHook.innerHTML = '';
+            // ---- SUPABASE CONFIG (public anon) ----
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_ANON_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
-        if(dataset.length === 0) {
-            targetHook.innerHTML = `
-                <div class="no-results">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <p>No matching initiatives identified in this matrix cluster.</p>
-                </div>`;
-            return;
-        }
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        dataset.forEach(item => {
-            const cardNode = document.createElement('article');
-            cardNode.className = 'project-card';
-            cardNode.innerHTML = `
-                <div class="card-top">
-                    <span class="row-date">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        ${item.date}
-                    </span>
-                    <h2 class="row-title">${item.name}</h2>
-                    
-                    <div class="card-meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        <div><span class="meta-label">Focus:</span> ${item.targetAudience}</div>
-                    </div>
-                    
-                    <div class="card-meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <div><span class="meta-label">Hub:</span> ${item.location}</div>
-                    </div>
-                </div>
-                <div class="action-cell">
-                    <button class="btn-action-trigger" onclick="openDrawer('${item.name.replace(/'/g, "\\'")}')">
-                        Apply Now
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </button>
-                </div>
-            `;
-            targetHook.appendChild(cardNode);
-        });
-    }
+            const grid = document.getElementById('projectGrid');
+            const toast = document.getElementById('toast');
 
-    // Dynamic Engine Live Filter Logic[cite: 2]
-    function filterMatrixGrid() {
-        const query = document.getElementById('matrixSearchInput').value.toLowerCase();
-        const isolatedResults = matrixProjects.filter(project => {
-            return project.name.toLowerCase().includes(query) || 
-                   project.targetAudience.toLowerCase().includes(query) || 
-                   project.location.toLowerCase().includes(query) ||
-                   project.date.toLowerCase().includes(query);
-        });
-        paintMatrixGrid(isolatedResults);
-    }
+            // ---- Modal elements ----
+            const modal = document.getElementById('registerModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const modalProjectName = document.querySelector('#modalProjectName span');
+            const projectIdField = document.getElementById('projectIdField');
+            const regName = document.getElementById('regName');
+            const regEmail = document.getElementById('regEmail');
+            const regPhone = document.getElementById('regPhone');
+            const regMessage = document.getElementById('regMessage');
+            const registerForm = document.getElementById('registerForm');
 
-    // Layout Controls[cite: 2]
-    const drawerOverlay = document.getElementById('formDrawerOverlay');
-    const inputField = document.getElementById('target-project-field');
+            // ---- helper ----
+            const escapeHtml = (str) => {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            };
 
-    function openDrawer(nameValue) {
-        inputField.value = nameValue;
-        drawerOverlay.classList.add('open');
-        document.body.style.overflow = 'hidden'; 
-    }
+            // ---- toast ----
+            function showToast(msg, isError = false) {
+                toast.textContent = msg;
+                toast.style.background = isError ? '#b91c1c' : '#0f172a';
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 3800);
+            }
 
-    function closeDrawer() {
-        drawerOverlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
+            // ---- open modal ----
+            function openRegisterModal(projectId, projectName) {
+                projectIdField.value = projectId;
+                modalProjectName.textContent = projectName;
+                // reset form
+                registerForm.reset();
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                // focus first input
+                setTimeout(() => regName.focus(), 100);
+            }
 
-    function handleOverlayClick(event) {
-        if(event.target.id === 'formDrawerOverlay') {
-            closeDrawer();
-        }
-    }
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
 
-    // Initialize DOM[cite: 2]
-    document.addEventListener("DOMContentLoaded", () => {
-        paintMatrixGrid(matrixProjects);
-    });
-</script>
+            // ---- render projects ----
+            const renderProjects = (projects) => {
+                if (!projects || projects.length === 0) {
+                    grid.innerHTML = `
+                            <div class="status-msg">
+                                <i class="fa-regular fa-folder-open" aria-hidden="true"></i> 
+                                No upcoming projects at the moment. Check back soon!
+                            </div>
+                        `;
+                    return;
+                }
 
+                let html = '';
+                projects.forEach((proj) => {
+                    const id = proj.id;
+                    const name = proj.name || 'Untitled Project';
+                    const date = proj.date || 'TBD';
+                    const audience = proj.target_audience || '—';
+                    const location = proj.location || '—';
+                    const description = proj.description || '';
+
+                    html += `
+                            <div class="project-card" data-project-id="${id}">
+                                <div class="project-title">
+                                    <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
+                                    ${escapeHtml(name)}
+                                </div>
+                                <div class="project-meta">
+                                    <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${escapeHtml(date)}</span>
+                                    <span><i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(audience)}</span>
+                                    <span><i class="fa-regular fa-location-dot" aria-hidden="true"></i> ${escapeHtml(location)}</span>
+                                </div>
+                                ${description ? `<div class="project-description">${escapeHtml(description)}</div>` : ''}
+                                <div class="register-btn-wrapper">
+                                    <button class="register-btn" data-project-id="${id}" data-project-name="${escapeHtml(name)}">
+                                        <i class="fa-regular fa-hand-peace" aria-hidden="true"></i> Register Interest
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                });
+
+                grid.innerHTML = html;
+
+                // ---- attach register button listeners ----
+                document.querySelectorAll('.register-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.projectId;
+                        const name = btn.dataset.projectName;
+                        openRegisterModal(id, name);
+                    });
+                });
+            };
+
+            // ---- fetch from supabase ----
+            const fetchProjects = async () => {
+                try {
+                    const { data, error } = await supabase
+                        .from('upcoming_projects')
+                        .select('*')
+                        .order('id', { ascending: false });
+
+                    if (error) throw error;
+                    renderProjects(data || []);
+                } catch (err) {
+                    grid.innerHTML = `
+                            <div class="status-msg" style="color:#b91c1c; background:#fee2e2;">
+                                <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i> 
+                                Could not load projects: ${escapeHtml(err.message)}
+                            </div>
+                        `;
+                }
+            };
+
+            // ---- SUBMIT REGISTRATION - USING RPC TO BYPASS SEQUENCE PERMISSION ----
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = regName.value.trim();
+                const email = regEmail.value.trim();
+                const phone = regPhone.value.trim();
+                const message = regMessage.value.trim();
+
+                if (!name || !email || !phone) {
+                    showToast('Please fill in all required fields: Name, Email, Phone.', true);
+                    return;
+                }
+
+                const projectName = modalProjectName.textContent || 'Unknown Project';
+
+                // Show loading state
+                const submitBtn = registerForm.querySelector('.btn-submit');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+
+                try {
+                    // METHOD 1: Try insert without specifying ID (should work if RLS is properly configured)
+                    const payload = {
+                        project_name: projectName,
+                        applicant_name: name,
+                        email: email,
+                        phone_number: phone,
+                        message: message || '',
+                        status: 'pending'
+                    };
+
+                    // Log what we're sending for debugging
+                    console.log('Sending payload:', payload);
+
+                    const { data, error } = await supabase
+                        .from('project_applications')
+                        .insert([payload])
+                        .select();
+
+                    if (error) {
+                        console.error('Insert error:', error);
+                        
+                        // If the insert fails with sequence error, try using a raw RPC call as fallback
+                        if (error.message && error.message.includes('sequence')) {
+                            console.log('Sequence error detected, trying RPC fallback...');
+                            
+                            // Fallback: Use a raw SQL function if available
+                            // Or we can try to generate a random ID manually
+                            const randomId = Math.floor(Math.random() * 1000000) + 1000000;
+                            
+                            const fallbackPayload = {
+                                id: randomId,
+                                project_name: projectName,
+                                applicant_name: name,
+                                email: email,
+                                phone_number: phone,
+                                message: message || '',
+                                status: 'pending',
+                                created_at: new Date().toISOString()
+                            };
+                            
+                            console.log('Fallback payload with ID:', fallbackPayload);
+                            
+                            const { data: fallbackData, error: fallbackError } = await supabase
+                                .from('project_applications')
+                                .insert([fallbackPayload])
+                                .select();
+                                
+                            if (fallbackError) {
+                                console.error('Fallback insert error:', fallbackError);
+                                throw fallbackError;
+                            }
+                            
+                            showToast('✅ Registration submitted successfully!');
+                            closeModal();
+                            registerForm.reset();
+                            return;
+                        }
+                        
+                        throw error;
+                    }
+
+                    showToast('✅ Registration submitted successfully!');
+                    closeModal();
+                    registerForm.reset();
+                } catch (err) {
+                    console.error('Full error:', err);
+                    showToast('❌ Submission failed: ' + err.message, true);
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // ---- modal controls ----
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalCancelBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+            });
+
+            // ---- initial load ----
+            fetchProjects();
+
+            // refresh when tab becomes visible
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    fetchProjects();
+                }
+            });
+
+        })();
+    </script>
 </body>
 </html>

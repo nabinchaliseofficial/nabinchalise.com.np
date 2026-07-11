@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upcoming Projects – Galkot & Rotaract</title>
+    <meta name="description" content="View upcoming community projects from Galkot Municipality and Rotaract initiatives." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #0f172a;
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1.25rem;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h1 i {
+            color: #D70060;
+        }
+
+        .sub {
+            color: #475569;
+            font-weight: 400;
+            font-size: 0.95rem;
+            background: #eef2f6;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.2rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 1.6rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9edf2;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.06);
+            border-color: #cdd5df;
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0b1e33;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-title i {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+            color: #334155;
+            margin: 0.2rem 0 0.3rem 0;
+        }
+
+        .project-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .project-meta i {
+            color: #6b7a8f;
+            width: 16px;
+            text-align: center;
+        }
+
+        .project-description {
+            color: #1e293b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0.4rem 0 0.2rem 0;
+            background: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            border-left: 3px solid #fbbf24;
+        }
+
+        .project-footer {
+            margin-top: 0.4rem;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 0.8rem;
+            color: #64748b;
+            border-top: 1px dashed #dde3ea;
+            padding-top: 0.8rem;
+        }
+
+        .badge {
+            background: #eef2ff;
+            color: #4338ca;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+        }
+
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #475569;
+            background: #f1f4f9;
+            border-radius: 40px;
+            font-size: 1.1rem;
+        }
+
+        .status-msg i {
+            margin-right: 8px;
+            color: #94a3b8;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 0, 0, 0.06);
+            border-radius: 50%;
+            border-top-color: #D70060;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                Upcoming Projects
+            </h1>
+            <span class="sub"><i class="fa-regular fa-clock" aria-hidden="true"></i> live · community</span>
+        </div>
+
+        <!-- Grid -->
+        <div class="project-grid" id="projectGrid">
+            <div class="status-msg">
+                <span class="loader"></span> Loading projects from Supabase...
+            </div>
+        </div>
+
+        <!-- footer note -->
+        <p style="margin-top: 3rem; text-align: center; font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+            <i class="fa-regular fa-building" aria-hidden="true"></i> Galkot Municipality · Rotaract Club of Galkot Baglung
+        </p>
+    </div>
+
+    <script>
+        (() => {
+            "use strict";
+
+            // ---- SUPABASE CONFIG (public anon key) ----
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_ANON_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const grid = document.getElementById('projectGrid');
+
+            // ---- helper: escape html ----
+            const escapeHtml = (str) => {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            };
+
+            // ---- render projects ----
+            const renderProjects = (projects) => {
+                if (!projects || projects.length === 0) {
+                    grid.innerHTML = `
+                            <div class="status-msg">
+                                <i class="fa-regular fa-folder-open" aria-hidden="true"></i> 
+                                No upcoming projects at the moment. Check back soon!
+                            </div>
+                        `;
+                    return;
+                }
+
+                let html = '';
+                projects.forEach((proj) => {
+                    const name = proj.name || 'Untitled Project';
+                    const date = proj.date || 'TBD';
+                    const audience = proj.target_audience || '—';
+                    const location = proj.location || '—';
+                    const description = proj.description || '';
+
+                    html += `
+                            <div class="project-card">
+                                <div class="project-title">
+                                    <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
+                                    ${escapeHtml(name)}
+                                </div>
+                                <div class="project-meta">
+                                    <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${escapeHtml(date)}</span>
+                                    <span><i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(audience)}</span>
+                                    <span><i class="fa-regular fa-location-dot" aria-hidden="true"></i> ${escapeHtml(location)}</span>
+                                </div>
+                                ${description ? `<div class="project-description">${escapeHtml(description)}</div>` : ''}
+                                <div class="project-footer">
+                                    <span class="badge"><i class="fa-regular fa-flag" aria-hidden="true"></i> upcoming</span>
+                                </div>
+                            </div>
+                        `;
+                });
+
+                grid.innerHTML = html;
+            };
+
+            // ---- fetch from supabase ----
+            const fetchProjects = async () => {
+                try {
+                    const { data, error } = await supabase
+                        .from('upcoming_projects')
+                        .select('*')
+                        .order('id', { ascending: false });
+
+                    if (error) throw error;
+
+                    renderProjects(data || []);
+                } catch (err) {
+                    grid.innerHTML = `
+                            <div class="status-msg" style="color:#b91c1c; background:#fee2e2;">
+                                <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i> 
+                                Could not load projects: ${escapeHtml(err.message)}
+                            </div>
+                        `;
+                }
+            };
+
+            // ---- auto-refresh every 60 seconds (optional) ----
+            fetchProjects();
+
+            // refresh on visibility change (user comes back to tab)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    fetchProjects();
+                }
+            });
+
+            // ---- also refresh if user clicks on page (casual) ----
+            // but we keep it clean, no extra heavy polling.
+
+        })();
+    </script>
+</body>
+</html>
