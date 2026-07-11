@@ -962,6 +962,15 @@
             background: #dc2626;
         }
 
+        .action-btn-sm.delete-btn {
+            background: #f43f5e;
+            color: #fff;
+        }
+
+        .action-btn-sm.delete-btn:hover {
+            background: #e11d48;
+        }
+
         .application-actions {
             display: flex;
             gap: 0.5rem;
@@ -1205,9 +1214,11 @@
         <div class="nav-container" id="nav-container">
             <ul class="nav-links">
                 <li><a href="#" class="active">Dashboard</a></li>
-                <li><a href="#personal">Personal</a></li>
-                <li><a href="#professional">Professional</a></li>
                 <li><a href="#minutes-anchor">Live Minutes</a></li>
+                <li><a href="#inquiries-panel">Submissions</a></li>
+                <li><a href="#members-panel">Registered Members</a></li>
+                <li><a href="#projects-panel">Upcoming Projects</a></li>
+                <li><a href="#applications-panel">Applications</a></li>
                 <li><a href="#galkot">Galkot</a></li>
                 <li><a href="#rotaract">Rotaract</a></li>
             </ul>
@@ -1844,6 +1855,59 @@
         </div>
     </div>
 
+    <!-- ===== EDIT MEMBER MODAL ===== -->
+    <div class="modal-overlay" id="editMemberModal">
+        <div class="modal-content">
+            <button class="modal-close" id="editMemberModalCloseBtn" aria-label="Close edit member modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-title">
+                <i class="fa-solid fa-user-pen" style="color: var(--cls-rotaract);"></i> Edit Member
+            </div>
+
+            <form id="editMemberForm">
+                <input type="hidden" id="editMemberId" value="">
+
+                <div class="form-group">
+                    <label for="editMemberName">Full Name *</label>
+                    <input type="text" id="editMemberName" placeholder="e.g. Rtr. Nabin Chalise" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="editMemberEmail">Email Address *</label>
+                    <input type="email" id="editMemberEmail" placeholder="e.g. member@example.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="editMemberPhone">Phone Number</label>
+                    <input type="text" id="editMemberPhone" placeholder="e.g. 984-1234567" />
+                </div>
+
+                <div class="form-group">
+                    <label for="editMemberStatus">Status</label>
+                    <select id="editMemberStatus">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editMemberMessage">Message (Optional)</label>
+                    <textarea id="editMemberMessage" placeholder="Additional notes about this member..." rows="2"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="action-btn btn-cancel-accent" id="editMemberCancelBtn">Cancel</button>
+                    <button type="submit" class="action-btn btn-save-accent">
+                        <i class="fa-solid fa-floppy-disk"></i> Update Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- ===== JAVASCRIPT ===== -->
     <script>
@@ -1860,6 +1924,7 @@
             let editingId = null;
             let allProjects = [];
             let editingProjectId = null;
+            let editingMemberId = null;
 
             // ---- HELPERS ----
             const escapeHtml = (str) => {
@@ -1910,15 +1975,24 @@
                 feedContainer.innerHTML =
                     '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registered members...</div>';
                 try {
+                    console.log("Fetching members from member_registrations table...");
                     const { data, error } = await supabase
                         .from('member_registrations')
                         .select('*')
                         .order('created_at', { ascending: false });
-                    if (error) throw error;
+                    
+                    if (error) {
+                        console.error("Supabase error:", error);
+                        throw error;
+                    }
+                    
+                    console.log("Members data:", data);
+                    
                     if (!data || data.length === 0) {
                         feedContainer.innerHTML = '<div class="status-msg">No registered members found in the database.</div>';
                         return;
                     }
+                    
                     feedContainer.innerHTML = data.map(item => `
                             <article class="inquiry-node" style="border-left-color: var(--cls-rotaract);">
                                 <div class="node-meta">
@@ -1935,32 +2009,146 @@
                                     <i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone || 'N/A')}
                                 </div>
                                 ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
-                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <div class="application-actions">
                                     <span class="status-badge ${item.status === 'approved' ? 'status-approved' : item.status === 'rejected' ? 'status-rejected' : 'status-pending'}">${item.status || 'pending'}</span>
-                                    ${item.status !== 'approved' ? `<button class="action-btn-sm approve-btn" onclick="updateMemberStatus(${item.id}, 'approved')">Approve</button>` : ''}
-                                    ${item.status !== 'rejected' ? `<button class="action-btn-sm reject-btn" onclick="updateMemberStatus(${item.id}, 'rejected')">Reject</button>` : ''}
+                                    <button class="action-btn-sm approve-btn" onclick="openEditMemberModal(${item.id})">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </button>
+                                    <button class="action-btn-sm delete-btn" onclick="deleteMember(${item.id})">Delete</button>
                                 </div>
                             </article>
                         `).join('');
                 } catch (err) {
+                    console.error("Error in loadRegisteredMembers:", err);
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading members: ${err.message}</div>`;
                 }
             };
 
-            // ---- UPDATE MEMBER STATUS ----
-            window.updateMemberStatus = async (id, status) => {
+            // ---- DELETE MEMBER ----
+            window.deleteMember = async (id) => {
+                console.log("Delete button clicked for ID:", id);
+                if (!confirm('Are you sure you want to permanently delete this member? This action cannot be undone.')) return;
+                
                 try {
                     const { error } = await supabase
                         .from('member_registrations')
-                        .update({ status: status })
+                        .delete()
                         .eq('id', id);
-                    if (error) throw error;
+                    
+                    if (error) {
+                        console.error("Supabase delete error:", error);
+                        alert('Error deleting member: ' + error.message);
+                        return;
+                    }
+                    
+                    console.log("Member deleted successfully!");
+                    alert('✅ Member deleted successfully!');
                     loadRegisteredMembers();
                 } catch (err) {
-                    alert('Error updating status: ' + err.message);
+                    console.error("Error in deleteMember:", err);
+                    alert('Error deleting member: ' + err.message);
                 }
             };
+
+            // ---- EDIT MEMBER MODAL ----
+            window.openEditMemberModal = async (id) => {
+                console.log("Edit button clicked for ID:", id);
+                try {
+                    const { data, error } = await supabase
+                        .from('member_registrations')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+                    
+                    if (error) {
+                        console.error("Supabase error:", error);
+                        alert('Error loading member data: ' + error.message);
+                        return;
+                    }
+                    
+                    if (!data) {
+                        alert('Member not found.');
+                        return;
+                    }
+                    
+                    console.log("Member data loaded:", data);
+
+                    editingMemberId = id;
+                    document.getElementById('editMemberId').value = id;
+                    document.getElementById('editMemberName').value = data.name || '';
+                    document.getElementById('editMemberEmail').value = data.email || '';
+                    document.getElementById('editMemberPhone').value = data.phone || '';
+                    document.getElementById('editMemberStatus').value = data.status || 'pending';
+                    document.getElementById('editMemberMessage').value = data.message || '';
+
+                    document.getElementById('editMemberModal').classList.add('active');
+                } catch (err) {
+                    console.error("Error in openEditMemberModal:", err);
+                    alert('Error loading member data: ' + err.message);
+                }
+            };
+
+            // ---- CLOSE EDIT MEMBER MODAL ----
+            const closeEditMemberModal = () => {
+                document.getElementById('editMemberModal').classList.remove('active');
+                editingMemberId = null;
+                document.getElementById('editMemberForm').reset();
+            };
+
+            // ---- EDIT MEMBER FORM SUBMISSION ----
+            document.getElementById('editMemberForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log("Edit form submitted");
+                
+                if (!editingMemberId) {
+                    alert('No member selected for editing.');
+                    return;
+                }
+
+                const memberData = {
+                    name: document.getElementById('editMemberName').value.trim(),
+                    email: document.getElementById('editMemberEmail').value.trim(),
+                    phone: document.getElementById('editMemberPhone').value.trim(),
+                    status: document.getElementById('editMemberStatus').value,
+                    message: document.getElementById('editMemberMessage').value.trim()
+                };
+
+                if (!memberData.name || !memberData.email) {
+                    alert('Name and Email are required fields.');
+                    return;
+                }
+
+                console.log("Updating member data:", memberData);
+
+                try {
+                    const { error } = await supabase
+                        .from('member_registrations')
+                        .update(memberData)
+                        .eq('id', editingMemberId);
+
+                    if (error) {
+                        console.error("Supabase update error:", error);
+                        alert('Error updating member: ' + error.message);
+                        return;
+                    }
+
+                    console.log("Member updated successfully!");
+                    alert('✅ Member updated successfully!');
+                    closeEditMemberModal();
+                    loadRegisteredMembers();
+                } catch (err) {
+                    console.error("Error in edit form submit:", err);
+                    alert('❌ Error updating member: ' + err.message);
+                }
+            });
+
+            // ---- MODAL CLOSE EVENTS ----
+            document.getElementById('editMemberModalCloseBtn')?.addEventListener('click', closeEditMemberModal);
+            document.getElementById('editMemberCancelBtn')?.addEventListener('click', closeEditMemberModal);
+            document.getElementById('editMemberModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('editMemberModal')) closeEditMemberModal();
+            });
 
             // ---- LOAD MEETING MINUTES ----
             const loadMeetingMinutes = async () => {
@@ -2010,7 +2198,6 @@
 
                     allProjects = data || [];
 
-                    // Update select dropdown
                     if (!allProjects.length) {
                         selectDropdown.innerHTML = '<option value="">-- No projects available --</option>';
                         feedContainer.innerHTML = '<div class="status-msg">No upcoming projects created yet. Click "Add New Project" to get started.</div>';
@@ -2021,7 +2208,6 @@
                         return `<option value="${project.id}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(project.name)}</option>`;
                     }).join('');
 
-                    // Render projects as cards
                     feedContainer.innerHTML = allProjects.map(project => `
                             <article class="inquiry-node" style="border-left-color: var(--cls-galkot);">
                                 <div class="node-meta">
@@ -2125,7 +2311,6 @@
                     description: document.getElementById('projectDescription').value.trim()
                 };
 
-                // Validate required fields
                 if (!projectData.name || !projectData.date || !projectData.target_audience || !projectData.location) {
                     alert('Please fill in all required fields marked with *.');
                     return;
@@ -2136,13 +2321,11 @@
                 try {
                     let result;
                     if (projectId) {
-                        // Update existing project
                         result = await supabase
                             .from('upcoming_projects')
                             .update(projectData)
                             .eq('id', parseInt(projectId));
                     } else {
-                        // Insert new project
                         result = await supabase
                             .from('upcoming_projects')
                             .insert([projectData]);
@@ -2580,7 +2763,7 @@
                 document.getElementById('refresh-members-btn')?.addEventListener('click', loadRegisteredMembers);
                 document.getElementById('clear-members-btn')?.addEventListener('click', async () => {
                     if (!confirm(
-                            "Are you absolutely sure you want to delete all registered members? This action cannot be undone."
+                            "Are you absolutely sure you want to delete ALL registered members? This action cannot be undone."
                             )) return;
                     const feedContainer = document.getElementById('members-feed');
                     feedContainer.innerHTML =
@@ -2589,7 +2772,7 @@
                         const { error } = await supabase.from('member_registrations').delete().gt('id', 0);
                         if (error) throw error;
                         feedContainer.innerHTML =
-                            '<div class="status-msg">All member records have been cleared successfully.</div>';
+                            '<div class="status-msg">All member records have been cleared successfully from both the page and the database.</div>';
                     } catch (err) {
                         feedContainer.innerHTML =
                             `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
