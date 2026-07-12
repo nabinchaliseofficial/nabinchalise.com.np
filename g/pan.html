@@ -104,7 +104,7 @@
         .hero {
             background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
             color: white;
-            padding: 5rem 2rem;
+            padding: 5rem 2rem 3rem 2rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -150,10 +150,98 @@
             margin-bottom: 2rem;
         }
 
+        /* Home Button Container - Now at Top */
+        .home-btn-container {
+            text-align: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .home-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #015491;
+            color: white;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 12px rgba(1, 84, 145, 0.25);
+            border: none;
+        }
+
+        .home-btn .icon {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.2rem;
+        }
+
+        .home-btn:hover {
+            background-color: #D70060;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(215, 0, 96, 0.35);
+        }
+
+        .home-btn:hover .icon {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .home-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.45s linear;
+            pointer-events: none;
+        }
+
+        .home-btn.clicked-exit {
+            animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes exit-bounce {
+            0% {
+                transform: scale(1);
+            }
+            20% {
+                transform: scale(0.92);
+                background-color: #D70060;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-15px) scale(0.8);
+                opacity: 0;
+                box-shadow: 0 0 0 rgba(0,0,0,0);
+            }
+        }
+
+        @media print {
+            .home-btn-container { display: none !important; }
+        }
+
         /* Main Section & Cards Grid */
         .main-content {
             max-width: 1200px;
-            margin: -3rem auto 4rem auto;
+            margin: -2rem auto 4rem auto;
             padding: 0 2rem;
             position: relative;
             z-index: 2;
@@ -359,23 +447,21 @@
         @media print {
             @page {
                 size: A4;
-                margin: 20mm 15mm 20mm 15mm; /* Clean official margins */
+                margin: 20mm 15mm 20mm 15mm;
             }
 
             body {
                 background-color: white !important;
                 color: black !important;
-                font-size: 13pt; /* Maximized readability size for A4 */
+                font-size: 13pt;
                 padding: 0;
                 width: 100%;
             }
             
-            /* Hide non-print structures */
-            .navbar, .hero, .card-actions, .card-footer, .main-footer {
+            .navbar, .hero, .card-actions, .card-footer, .main-footer, .home-btn-container {
                 display: none !important;
             }
 
-            /* Perfect Header Alignment from Photo */
             #print-letterhead {
                 display: block !important;
                 width: 100%;
@@ -405,7 +491,7 @@
             }
 
             .lh-center h2 {
-                color: #ef4444 !important; /* Vivid Red from Image */
+                color: #ef4444 !important;
                 font-size: 22pt;
                 font-weight: 700;
                 margin-bottom: 4px;
@@ -436,7 +522,6 @@
                 margin-top: 5px;
             }
 
-            /* Crisp double border layout line from the image */
             .lh-border {
                 margin-top: 15px;
                 border-top: 3px solid #f97316;
@@ -455,7 +540,6 @@
                 display: block !important;
             }
 
-            /* Content fully sized to fit beautifully inside the A4 sheet grid */
             .card {
                 box-shadow: none !important;
                 border: none !important;
@@ -487,9 +571,9 @@
 
             .doc-list li {
                 color: black !important;
-                font-size: 13pt !important; /* Scaled text font size */
+                font-size: 13pt !important;
                 padding-left: 1.8rem !important;
-                margin-bottom: 14px !important; /* Comfortable spacing */
+                margin-bottom: 14px !important;
                 line-height: 1.5;
             }
 
@@ -505,7 +589,6 @@
                 font-weight: bold !important;
             }
             
-            /* Logic to print only the selected card on a beautiful single page */
             .print-single-card .card {
                 display: none !important;
             }
@@ -533,6 +616,10 @@
             .card-body {
                 padding: 1.5rem;
             }
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -542,7 +629,6 @@
     <div id="print-letterhead">
         <div class="lh-container">
             <div class="lh-left">
-                <!-- Government Logo File Referenced Here -->
                 <img src="goverment-logo.jpg" alt="नेपाल सरकार लोगो">
             </div>
             <div class="lh-center">
@@ -585,6 +671,13 @@
             <p>विभिन्न प्रकृतिका व्यवसाय तथा संस्थाहरू दर्ता प्रक्रियाका लागि आवश्यक पर्ने कागजातहरूको आधिकारिक विवरण।</p>
         </div>
     </header>
+
+    <!-- HOME BUTTON - Now placed prominently at the top -->
+    <div class="home-btn-container">
+        <a href="https://nabinchalise.com.np/" class="home-btn" id="interactiveHomeBtn">
+            <span class="icon">🏠</span> HOME
+        </a>
+    </div>
 
     <!-- Main Content Grid -->
     <main class="main-content">
@@ -733,32 +826,48 @@
 
     <script>
         function printCard(cardId) {
-            // Update dynamic Date and Time instantly on the official layout
             const now = new Date();
-            
-            // Format Date to YYYY-MM-DD
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             document.getElementById('print-date').innerText = `${year}-${month}-${day}`;
             
-            // Format Time to HH:MM
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             document.getElementById('print-time').innerText = `${hours}:${minutes}`;
 
-            // Adjust document flow classes specifically for beautiful print targeting
             document.body.classList.add('print-single-card');
             const card = document.getElementById(cardId);
             card.classList.add('active-print');
             
-            // Fire off print dialog
             window.print();
             
-            // Reset state seamlessly back for continuous web viewing
             document.body.classList.remove('print-single-card');
             card.classList.remove('active-print');
         }
+
+        // Home Button Interactive Script
+        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.getAttribute('href');
+            const button = this;
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            
+            button.appendChild(ripple);
+            button.classList.add('clicked-exit');
+
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 450);
+        });
     </script>
 </body>
 </html>
