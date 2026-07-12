@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Nabin Chalise · Portfolio</title>
+  <meta name="description" content="Nabin Chalise – Computer Operator & ICT Professional. Galkot, Nepal.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ----- reset + base ----- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.25s, color 0.25s;
+      -webkit-font-smoothing: antialiased;
+    }
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --brand: #3b82f6;
+      --brand-hover: #1d4ed8;
+      --accent: #10b981;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 30px rgba(0,0,0,0.06);
+      --sp: 8px;
+      --max-w: 1200px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    /* ----- helpers ----- */
+    .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 48px; padding: 10px 28px;
+      font-weight: 600; border-radius: 60px; border: none;
+      cursor: pointer; transition: 0.2s; text-decoration: none; gap: 8px;
+      font-size: 0.95rem;
+    }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-hover); transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(59,130,246,0.3); }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(16,185,129,0.3); }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-2px); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* ----- skip link ----- */
+    .skip-link { position: absolute; top: -200px; left: 16px; background: var(--brand); color: #fff; padding: 12px 24px; border-radius: var(--radius-sm); z-index: 3000; }
+    .skip-link:focus { top: 12px; }
+
+    /* ----- nav ----- */
+    .header-nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      background: rgba(var(--bg-rgb, 248,250,252), 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: 0.2s;
+    }
+    [data-theme="dark"] .header-nav { --bg-rgb: 15,23,42; }
+    .nav-wrapper {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 72px; gap: 12px;
+    }
+    .logo { font-weight: 700; font-size: 1.2rem; color: var(--brand); text-decoration: none; white-space: nowrap; }
+    .nav-links {
+      display: flex; align-items: center; list-style: none; gap: 28px;
+    }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: 0.2s; cursor: pointer; }
+    .nav-links a:hover { color: var(--brand); }
+    .nav-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); width: 44px; height: 44px;
+      border-radius: 50%; cursor: pointer; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle .sun { display: block; }
+    .theme-toggle .moon { display: none; }
+    [data-theme="dark"] .theme-toggle .sun { display: none; }
+    [data-theme="dark"] .theme-toggle .moon { display: block; }
+    .menu-toggle {
+      background: none; border: 1px solid var(--border); width: 44px; height: 44px;
+      border-radius: 50%; cursor: pointer; display: none;
+      flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    }
+    .menu-toggle span { display: block; width: 20px; height: 2px; background: var(--text); transition: 0.2s; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+
+    /* ----- live widget (compact) ----- */
+    .live-widget {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.06); backdrop-filter: blur(4px);
+      border: 1px solid var(--border); border-radius: 60px;
+      padding: 4px 14px 4px 12px;
+      font-size: 0.8rem; color: var(--text); white-space: nowrap;
+    }
+    .widget-icon { display: flex; align-items: center; gap: 4px; opacity: 0.6; font-size: 0.65rem; }
+    .widget-icon svg { width: 14px; height: 14px; fill: currentColor; }
+    .widget-clock { font-weight: 600; font-variant-numeric: tabular-nums; min-width: 64px; display: inline-block; }
+    .widget-sec { opacity: 0.5; font-size: 0.6rem; min-width: 20px; }
+    .widget-greeting { font-size: 0.65rem; background: rgba(59,130,246,0.1); padding: 0 10px; border-radius: 40px; color: var(--brand); }
+    .widget-toggle { background: none; border: none; color: var(--text-secondary); font-size: 0.6rem; cursor: pointer; opacity: 0.5; padding: 0 2px; }
+    .widget-toggle:hover { opacity: 1; }
+    @media (max-width: 820px) {
+      .live-widget { padding: 2px 8px; gap: 4px; font-size: 0.7rem; }
+      .widget-clock { min-width: 52px; }
+      .widget-greeting { display: none; }
+    }
+    @media (max-width: 640px) {
+      .nav-wrapper { min-height: 64px; flex-wrap: wrap; }
+      .nav-links {
+        position: fixed; top: 64px; right: 0; width: 260px; height: calc(100vh - 64px);
+        background: var(--surface); flex-direction: column; padding: 32px; gap: 20px;
+        border-left: 1px solid var(--border);
+        transform: translateX(100%); transition: 0.3s cubic-bezier(0.22,1,0.36,1);
+        box-shadow: -8px 0 30px rgba(0,0,0,0.08);
+      }
+      .nav-links.active { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .live-widget { font-size: 0.65rem; padding: 2px 6px; }
+      .widget-clock { min-width: 44px; font-size: 0.7rem; }
+    }
+
+    /* ----- daily quote banner ----- */
+    .daily-quote-banner {
+      margin-top: 72px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(16,185,129,0.04));
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      text-align: center;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      backdrop-filter: blur(4px);
+    }
+    .daily-quote-banner q { quotes: "“" "”" "‘" "’"; color: var(--text); font-weight: 450; }
+    .daily-quote-banner .meta {
+      display: inline-block; margin-left: 10px; font-size: 0.75rem;
+      opacity: 0.6; background: rgba(59,130,246,0.06); padding: 2px 14px; border-radius: 40px;
+    }
+    .daily-quote-banner .day { font-weight: 600; color: var(--brand); margin-right: 6px; }
+    @media (max-width: 600px) {
+      .daily-quote-banner { font-size: 0.85rem; padding: 12px 16px; }
+      .daily-quote-banner .meta { display: block; margin-left: 0; margin-top: 4px; }
+    }
+
+    /* ----- hero ----- */
+    .hero {
+      min-height: 92vh; display: flex; align-items: center;
+      padding: 40px 0 60px;
+      background: linear-gradient(145deg, rgba(59,130,246,0.03), rgba(16,185,129,0.02));
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center; }
+    .hero-content .highlight { color: var(--brand); }
+    .hero-tagline { color: var(--text-secondary); margin: 12px 0 20px; font-size: 1.1rem; }
+    .hero-figure { border-left: 4px solid var(--accent); padding-left: 18px; margin-bottom: 24px; }
+    .hero-quote { font-style: italic; color: var(--text-secondary); font-size: 1.05rem; }
+    .hero-caption { font-size: 0.8rem; color: var(--brand); margin-top: 4px; }
+    .hero-avatar {
+      width: 100%; max-width: 300px; aspect-ratio: 1/1;
+      border-radius: 50%; object-fit: cover; object-position: center 20%;
+      border: 4px solid var(--surface);
+      box-shadow: 0 0 0 3px var(--brand), 0 20px 40px rgba(0,0,0,0.12);
+      transition: 0.3s;
+      display: block;
+    }
+    .hero-avatar:hover { transform: scale(1.02) rotate(1deg); box-shadow: 0 0 0 5px var(--accent), 0 24px 48px rgba(0,0,0,0.16); }
+    .hero-image-wrapper { display: flex; justify-content: center; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+    .social-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .social-btn {
+      width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--text-secondary); transition: 0.2s; background: transparent;
+    }
+    .social-btn:hover { color: var(--brand); border-color: var(--brand); transform: scale(1.06); background: rgba(59,130,246,0.04); }
+    @media (max-width: 968px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+      .hero-image-wrapper { order: -1; }
+      .hero-avatar { max-width: 220px; margin: 0 auto; }
+      .hero-figure { border-left: none; padding-left: 0; }
+      .hero-actions { justify-content: center; }
+      .social-row { justify-content: center; }
+    }
+
+    /* ----- contact section (redesigned) ----- */
+    .contact-section {
+      padding: 72px 0;
+      background: linear-gradient(145deg, rgba(59,130,246,0.02), rgba(16,185,129,0.02));
+    }
+    .section-title { text-align: center; margin-bottom: 48px; }
+    .section-title::after { content: ''; display: block; width: 40px; height: 3px; background: var(--brand); margin: 8px auto 0; border-radius: 4px; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: stretch; }
+    .contact-card {
+      background: var(--surface); border-radius: 24px; padding: 32px 28px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      transition: 0.25s;
+    }
+    .contact-card:hover { transform: translateY(-4px); border-color: var(--brand); box-shadow: 0 16px 48px rgba(0,0,0,0.06); }
+    .contact-info-card h3 { font-size: 1.4rem; margin-bottom: 8px; color: var(--brand); display: flex; align-items: center; gap: 8px; }
+    .contact-detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 16px;
+    }
+    .contact-detail-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 12px; border-radius: 12px; background: rgba(var(--bg-rgb,248,250,252),0.4);
+    }
+    .contact-detail-item .icon {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--brand); color: #fff; flex-shrink: 0; font-size: 0.9rem;
+    }
+    .contact-detail-item .info { font-size: 0.85rem; }
+    .contact-detail-item .info strong { display: block; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.5; }
+    .form-card .form-group { margin-bottom: 18px; }
+    .form-card .form-group label { display: block; font-weight: 500; margin-bottom: 4px; font-size: 0.85rem; opacity: 0.8; }
+    .form-card .form-control {
+      width: 100%; min-height: 48px; padding: 10px 16px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
+      color: var(--text); font-family: inherit; font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    .form-card .form-control:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
+    .form-card textarea.form-control { min-height: 110px; resize: vertical; }
+    .form-card .btn-accent { width: 100%; border-radius: 60px; padding: 14px; font-size: 1rem; }
+    .auth-status { margin-top: 12px; font-size: 0.9rem; font-weight: 500; display: none; }
+    .auth-status.error { color: #ef4444; display: block; }
+    .auth-status.success { color: #10b981; display: block; }
+    @media (max-width: 820px) {
+      .contact-grid { grid-template-columns: 1fr; gap: 28px; }
+      .contact-detail-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .contact-card { padding: 20px 16px; }
+    }
+
+    /* ----- modal ----- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--surface); border-radius: 24px; border: 1px solid var(--border);
+      max-width: 460px; width: 100%; padding: 36px 28px 28px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.3); position: relative;
+      animation: modalFade 0.25s ease-out;
+    }
+    @keyframes modalFade { from { opacity: 0; transform: scale(0.96) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-close {
+      position: absolute; top: 12px; right: 18px;
+      background: none; border: none; font-size: 1.8rem; line-height: 1;
+      cursor: pointer; color: var(--text-secondary); transition: 0.2s;
+    }
+    .modal-close:hover { color: var(--text); transform: rotate(90deg); }
+    .modal-title { text-align: center; margin-bottom: 24px; }
+    .modal-title h2 { font-size: 1.5rem; }
+    .modal-title h2::after { content: ''; display: block; width: 40px; height: 3px; background: var(--brand); margin: 8px auto 0; border-radius: 4px; }
+    .modal-box .form-group { margin-bottom: 18px; }
+    .modal-box .form-control { width: 100%; min-height: 46px; padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; }
+    .modal-box .form-control:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .modal-box .btn-primary { width: 100%; margin-top: 4px; }
+
+    /* ----- footer ----- */
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 20px 0; text-align: center; font-size: 0.85rem; color: var(--text-secondary); }
+
+    /* ----- utilities for spacing (8px grid) ----- */
+    .mt-1 { margin-top: 8px; }
+    .mt-2 { margin-top: 16px; }
+    .mt-3 { margin-top: 24px; }
+    .mb-1 { margin-bottom: 8px; }
+    .mb-2 { margin-bottom: 16px; }
+    .gap-1 { gap: 8px; }
+    .gap-2 { gap: 16px; }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- header -->
+  <header class="header-nav" id="navbar">
+    <nav class="container nav-wrapper" role="navigation" aria-label="Main navigation">
+      <a href="#" class="logo">Nabin Chalise</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a id="portalTrigger" style="cursor:pointer;">Portal</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-controls">
+        <!-- live widget -->
+        <div class="live-widget" id="liveWidget" role="status" aria-live="polite">
+          <span class="widget-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+            <span id="widgetDate" style="font-size:0.6rem;">Jul 12</span>
+          </span>
+          <span class="widget-clock" id="widgetClock">10:30:45</span>
+          <span class="widget-sec" id="widgetSec">45</span>
+          <span class="widget-greeting" id="widgetGreeting">🌅 Good Morning</span>
+          <button class="widget-toggle" id="formatToggle" aria-label="Toggle 12/24h">12h</button>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"/></svg>
+          <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+        </button>
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- daily quote banner (dynamic) -->
+  <div class="daily-quote-banner" id="dailyQuoteBanner">
+    <span class="day" id="quoteDay">Day 1</span>
+    <q id="quoteText">The journey of a thousand miles begins with a single step.</q>
+    <span class="meta" id="quoteMeta">✨ wisdom</span>
+  </div>
+
+  <main id="main-content">
+    <!-- hero -->
+    <section class="hero" id="about">
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <h1>Hi, I'm <span class="highlight">Nabin Chalise</span></h1>
+          <p class="hero-tagline">Computer Operator &amp; ICT Professional · Galkot, Nepal</p>
+          <figure class="hero-figure">
+            <blockquote class="hero-quote"><p>“Search may find the door; awareness dissolves the seeker.”</p></blockquote>
+            <figcaption class="hero-caption">— philosophical foundation</figcaption>
+          </figure>
+          <div class="hero-actions">
+            <a href="https://nabinchalise.com.np/p/" class="btn btn-outline" target="_blank">ProDev</a>
+            <a href="https://nabinchalise.com.np/g/" class="btn btn-outline" target="_blank">Galkot</a>
+            <a href="https://nabinchalise.com.np/r/" class="btn btn-outline" target="_blank">ROTARACT</a>
+          </div>
+          <div class="social-row">
+            <a href="https://www.facebook.com/nabinchaliseofficial/" class="social-btn" target="_blank" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z"/></svg>
+            </a>
+            <a href="https://x.com/nabincs3" class="social-btn" target="_blank" aria-label="X">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/nabinchalise/" class="social-btn" target="_blank" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="hero-image-wrapper reveal">
+          <img class="hero-avatar" src="https://nabinchalise.com.np/p/nabin.jpg" alt="Nabin Chalise portrait" width="300" height="300" loading="lazy" decoding="async" />
+        </div>
+      </div>
+    </section>
+
+    <!-- contact section -->
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <h2 class="section-title">Direct Inquiries</h2>
+        <div class="contact-grid">
+          <div class="contact-card contact-info-card reveal">
+            <h3>📬 Contact</h3>
+            <p style="color:var(--text-secondary); margin-bottom: 8px;">Reach out via the channels below.</p>
+            <div class="contact-detail-grid">
+              <div class="contact-detail-item"><span class="icon">📍</span><span class="info"><strong>Location</strong> Galkot, Gandaki, Nepal</span></div>
+              <div class="contact-detail-item"><span class="icon">📞</span><span class="info"><strong>Phone</strong> (977) 9851338747</span></div>
+              <div class="contact-detail-item" style="grid-column: span 2;"><span class="icon">✉️</span><span class="info"><strong>Email</strong> officialnabincs3@gmail.com</span></div>
+            </div>
+            <div class="social-row">
+              <a href="https://www.facebook.com/nabinchaliseofficial/" class="social-btn" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z"/></svg></a>
+              <a href="https://x.com/nabincs3" class="social-btn" target="_blank" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+              <a href="https://www.linkedin.com/in/nabinchalise/" class="social-btn" target="_blank" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+            </div>
+          </div>
+          <div class="contact-card form-card reveal">
+            <form id="contactForm" method="POST" novalidate>
+              <div class="form-group"><label for="form-name">Full Name</label><input type="text" id="form-name" name="name" class="form-control" placeholder="Jane Doe" required></div>
+              <div class="form-group"><label for="form-email">Email</label><input type="email" id="form-email" name="email" class="form-control" placeholder="jane@example.com" required></div>
+              <div class="form-group"><label for="form-message">Message</label><textarea id="form-message" name="message" class="form-control" rows="3" placeholder="Your inquiry..." required></textarea></div>
+              <button type="submit" class="btn btn-accent">Send Message</button>
+              <div id="contactStatusMessage" class="auth-status" role="status"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+      <div class="modal-title"><h2>Admin Portal</h2></div>
+      <form id="authForm" novalidate>
+        <div class="form-group"><label for="auth-email">Email</label><input type="email" id="auth-email" class="form-control" placeholder="admin@domain.com" required autocomplete="username"></div>
+        <div class="form-group"><label for="auth-password">Password</label><input type="password" id="auth-password" class="form-control" placeholder="••••••••" required autocomplete="current-password"></div>
+        <button type="submit" class="btn btn-primary">Authenticate</button>
+        <div id="authStatusMessage" class="auth-status" role="status"></div>
+      </form>
+    </div>
+  </div>
+
+  <footer><div class="container"><p>&copy; 2026 Nabin Chalise · All rights reserved.</p></div></footer>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ----- SUPABASE CONFIG (PUBLISHABLE) -----
+      const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+      // Initialize Supabase client
+      let supabase;
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('✅ Supabase client initialized');
+      } catch (e) {
+        console.error('❌ Supabase init error:', e);
+        // fallback: create a dummy client for demo
+        supabase = {
+          auth: { signInWithPassword: () => Promise.reject(new Error('Supabase not loaded')) },
+          from: () => ({ insert: () => Promise.reject(new Error('Supabase not loaded')) })
+        };
+      }
+
+      // ----- THEME -----
+      const themeToggle = document.getElementById('themeToggle');
+      const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const applyTheme = (t) => {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('theme', t);
+        themeToggle.setAttribute('aria-pressed', t === 'dark');
+      };
+      applyTheme(getTheme());
+      themeToggle.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        applyTheme(cur === 'dark' ? 'light' : 'dark');
+      });
+
+      // ----- NAV -----
+      const menuToggle = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', () => {
+        const exp = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', !exp);
+        navLinks.classList.toggle('active');
+      });
+      navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      }));
+
+      // ----- NAVBAR SHRINK -----
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => navbar.classList.toggle('shrink', window.scrollY > 40), { passive: true });
+
+      // ----- REVEAL OBSERVER -----
+      const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); revealObs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+      // ----- LIVE CLOCK -----
+      const clockEl = document.getElementById('widgetClock');
+      const secEl = document.getElementById('widgetSec');
+      const dateEl = document.getElementById('widgetDate');
+      const greetEl = document.getElementById('widgetGreeting');
+      const formatToggle = document.getElementById('formatToggle');
+      let use24h = false;
+
+      function getGreeting(h) {
+        if (h < 6) return '🌙 Night';
+        if (h < 12) return '🌅 Morning';
+        if (h < 17) return '☀️ Afternoon';
+        if (h < 21) return '🌇 Evening';
+        return '🌙 Night';
+      }
+
+      function updateClock() {
+        const now = new Date();
+        let h = now.getHours();
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        let display, suffix = '';
+        if (use24h) {
+          display = String(h).padStart(2, '0') + ':' + m;
+        } else {
+          const h12 = h % 12 || 12;
+          display = String(h12).padStart(2, '0') + ':' + m;
+          suffix = h >= 12 ? ' PM' : ' AM';
+        }
+        clockEl.textContent = display + suffix;
+        secEl.textContent = s;
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        dateEl.textContent = days[now.getDay()] + ' ' + months[now.getMonth()] + ' ' + now.getDate();
+        greetEl.textContent = getGreeting(now.getHours());
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+      formatToggle.addEventListener('click', () => {
+        use24h = !use24h;
+        formatToggle.textContent = use24h ? '24h' : '12h';
+        updateClock();
+      });
+
+      // ----- DAILY QUOTE (from Supabase) -----
+      async function fetchDailyQuote() {
+        const qText = document.getElementById('quoteText');
+        const qDay = document.getElementById('quoteDay');
+        const qMeta = document.getElementById('quoteMeta');
+        const fallbacks = [
+          "The only way to do great work is to love what you do.",
+          "In the middle of difficulty lies opportunity.",
+          "Life is what happens when you're busy making other plans.",
+          "The journey of a thousand miles begins with a single step.",
+          "What we think, we become.",
+          "The mind is everything. What you think you become.",
+          "Happiness is not something ready made. It comes from your own actions."
+        ];
+        try {
+          const now = new Date();
+          const start = new Date(now.getFullYear(), 0, 0);
+          const diff = now - start;
+          const dayOfYear = Math.floor(diff / (1000*60*60*24)) + 1;
+
+          const { data, error } = await supabase
+            .from('spiritual_quotes')
+            .select('day, quote, author')
+            .eq('day', dayOfYear)
+            .maybeSingle();
+
+          if (error || !data) {
+            throw new Error('No quote found for today');
+          }
+          qText.textContent = data.quote;
+          qDay.textContent = 'Day ' + data.day;
+          qMeta.textContent = data.author ? '— ' + data.author : '✨ spiritual';
+          console.log('✅ Quote loaded from Supabase');
+        } catch (err) {
+          console.warn('⚠️ Quote fetch failed, using fallback:', err.message);
+          const now = new Date();
+          const start = new Date(now.getFullYear(), 0, 0);
+          const diff = now - start;
+          const day = Math.floor(diff / (1000*60*60*24));
+          const idx = day % fallbacks.length;
+          qText.textContent = fallbacks[idx];
+          qDay.textContent = 'Day ' + (day + 1);
+          qMeta.textContent = '✨ inspiration';
+        }
+      }
+      fetchDailyQuote();
+
+      // ----- MODAL (SUPABASE AUTH) with SECURE REDIRECT -----
+      const modal = document.getElementById('authModal');
+      const trigger = document.getElementById('portalTrigger');
+      const closeBtn = document.getElementById('modalClose');
+      const authForm = document.getElementById('authForm');
+      const authStatus = document.getElementById('authStatusMessage');
+
+      function openModal() { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+      function closeModal() { modal.classList.remove('active'); document.body.style.overflow = ''; }
+      trigger.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+      // Helper: secure redirect with session persistence
+      function secureRedirectToAdmin() {
+        // Store auth state in sessionStorage for the admin page to verify
+        sessionStorage.setItem('auth_timestamp', Date.now().toString());
+        sessionStorage.setItem('auth_verified', 'true');
+        // Redirect to admin.html
+        window.location.href = 'admin.html';
+      }
+
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+
+        authStatus.className = 'auth-status success';
+        authStatus.textContent = '⏳ Authenticating...';
+
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+          if (error) {
+            // Check for specific error types
+            if (error.message.includes('Invalid login credentials')) {
+              throw new Error('Invalid email or password. Please try again.');
+            }
+            throw new Error(error.message);
+          }
+
+          // Authentication successful
+          authStatus.className = 'auth-status success';
+          authStatus.textContent = '✅ Authentication successful! Redirecting...';
+
+          // Secure redirect after a short delay
+          setTimeout(() => {
+            secureRedirectToAdmin();
+          }, 800);
+
+        } catch (err) {
+          console.error('Auth error:', err);
+          authStatus.className = 'auth-status error';
+          authStatus.textContent = '❌ ' + (err.message || 'Authentication failed. Please check your credentials.');
+        }
+      });
+
+      // ----- CONTACT FORM (SUPABASE INSERT) -----
+      const contactForm = document.getElementById('contactForm');
+      const contactStatus = document.getElementById('contactStatusMessage');
+
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('form-name').value.trim();
+        const email = document.getElementById('form-email').value.trim();
+        const message = document.getElementById('form-message').value.trim();
+
+        if (!name || !email || !message) {
+          contactStatus.className = 'auth-status error';
+          contactStatus.textContent = '⚠️ All fields are required.';
+          return;
+        }
+
+        contactStatus.className = 'auth-status success';
+        contactStatus.textContent = '⏳ Sending...';
+
+        try {
+          const { data, error } = await supabase
+            .from('inquiries')
+            .insert([{ name, email, message }]);
+
+          if (error) throw new Error(error.message);
+
+          contactStatus.className = 'auth-status success';
+          contactStatus.textContent = '✅ Message sent successfully!';
+          contactForm.reset();
+        } catch (err) {
+          console.error('Contact insert error:', err);
+          contactStatus.className = 'auth-status error';
+          contactStatus.textContent = '❌ ' + (err.message || 'Failed to send message. Please try again.');
+        }
+      });
+
+      // ----- SECURITY: Prevent right-click on sensitive elements -----
+      document.querySelectorAll('.modal-box, .form-card').forEach(el => {
+        el.addEventListener('contextmenu', (e) => e.preventDefault());
+      });
+
+    })();
+  </script>
+</body>
+</html>

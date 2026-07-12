@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     /* ============================================================
-       BASE & RESET
+       BASE & RESET · 8px/16px spacing grid
        ============================================================ */
     * {
       margin: 0;
@@ -47,6 +47,13 @@
       --radius-card: 16px;
       --radius-btn: 40px;
       --transition-smooth: 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+      /* spacing grid: 8px base, 16px rhythm */
+      --space-1: 0.5rem;   /* 8px */
+      --space-2: 1rem;     /* 16px */
+      --space-3: 1.5rem;   /* 24px */
+      --space-4: 2rem;     /* 32px */
+      --space-5: 3rem;     /* 48px */
     }
 
     @media (prefers-color-scheme: dark) {
@@ -69,7 +76,7 @@
       background: var(--bg-body);
       color: var(--text-body);
       line-height: 1.6;
-      padding-top: 72px;
+      padding-top: 72px; /* navbar height */
       min-height: 100vh;
       transition: background 0.2s, color 0.2s;
     }
@@ -86,14 +93,14 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 1.5rem;
+      padding: 0 var(--space-3); /* 24px side padding */
     }
 
     .section-title {
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      margin: 2rem 0 1.5rem;
+      margin: var(--space-4) 0 var(--space-3);
       font-size: 1.75rem;
       font-weight: 700;
     }
@@ -102,7 +109,7 @@
     }
 
     /* ============================================================
-       NAVIGATION
+       NAVIGATION · sticky + blur
        ============================================================ */
     .navbar {
       position: fixed;
@@ -114,7 +121,7 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border-light);
-      padding: 0.75rem 2rem;
+      padding: var(--space-1) var(--space-3);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -127,7 +134,7 @@
       }
     }
     .navbar.scrolled {
-      padding: 0.4rem 2rem;
+      padding: 0.4rem var(--space-3);
       background: rgba(255, 255, 255, 0.92);
     }
     @media (prefers-color-scheme: dark) {
@@ -143,7 +150,7 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--space-1);
     }
     .nav-brand i {
       color: var(--color-accent);
@@ -152,7 +159,7 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: var(--space-4);
       list-style: none;
     }
     .nav-links a {
@@ -170,13 +177,13 @@
       background: #015491;
       color: white;
       border: none;
-      padding: 0.5rem 1.2rem;
+      padding: var(--space-1) var(--space-3);
       border-radius: 6px;
       font-weight: 600;
       font-size: 0.9rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--space-1);
       cursor: pointer;
       transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
       text-decoration: none;
@@ -197,7 +204,7 @@
       transform: scale(1.15) rotate(-5deg);
     }
 
-    /* Ripple and exit animations for home button */
+    /* ripple + exit */
     .home-nav-btn .ripple {
       position: absolute;
       border-radius: 50%;
@@ -211,27 +218,13 @@
     }
 
     @keyframes ripple-effect {
-      to {
-        transform: scale(4);
-        opacity: 0;
-      }
+      to { transform: scale(4); opacity: 0; }
     }
     @keyframes exit-bounce {
-      0% {
-        transform: scale(1);
-      }
-      20% {
-        transform: scale(0.92);
-        background-color: #D70060;
-      }
-      50% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-15px) scale(0.8);
-        opacity: 0;
-        box-shadow: 0 0 0 rgba(0,0,0,0);
-      }
+      0% { transform: scale(1); }
+      20% { transform: scale(0.92); background-color: #D70060; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-15px) scale(0.8); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
     }
 
     .hamburger {
@@ -260,12 +253,12 @@
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       box-shadow: -8px 0 30px rgba(0,0,0,0.1);
-      padding: 2rem 1.5rem;
+      padding: var(--space-4) var(--space-3);
       transition: right 0.3s cubic-bezier(0.2, 0, 0, 1);
       z-index: 1100;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: var(--space-3);
     }
     .mobile-menu.open {
       right: 0;
@@ -283,14 +276,14 @@
       text-decoration: none;
       font-weight: 500;
       font-size: 1.1rem;
-      padding: 0.5rem 0;
+      padding: var(--space-1) 0;
       border-bottom: 1px solid var(--border-light);
     }
     .mobile-menu .home-nav-btn {
       justify-content: center;
       background: #015491;
       color: white;
-      padding: 0.7rem;
+      padding: var(--space-1);
       border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
@@ -299,27 +292,21 @@
       background: #D70060;
     }
 
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .navbar { padding: 0.6rem 1.2rem; }
-    }
-
     /* ============================================================
-       CERTIFICATIONS GRID
+       CERTIFICATIONS GRID · responsive breakpoints
        ============================================================ */
     .cert-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 2rem 0 3rem;
+      grid-template-columns: 1fr; /* mobile-first: 1 column */
+      gap: var(--space-4);
+      margin: var(--space-3) 0 var(--space-5);
     }
 
     .cert-card {
       background: var(--card-bg);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-card);
-      padding: 1.8rem 1.5rem;
+      padding: var(--space-3);
       box-shadow: var(--card-shadow);
       transition: transform 0.25s ease, box-shadow 0.3s ease, border-color 0.2s;
       display: flex;
@@ -338,7 +325,7 @@
       align-items: center;
       font-size: 0.875rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
+      margin-bottom: var(--space-2);
     }
     .tag {
       background: rgba(52, 211, 153, 0.12);
@@ -365,7 +352,7 @@
     .card-desc {
       color: var(--text-muted);
       font-size: 0.875rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--space-3);
       flex: 1;
     }
     .verify-link {
@@ -391,27 +378,73 @@
     }
 
     /* ============================================================
-       LOADING / EMPTY STATE
+       BREAKPOINTS · 768px (tablet), 1024px (laptop), 1440px+
+       ============================================================ */
+    @media (min-width: 768px) {
+      .cert-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+      }
+      .container {
+        padding: 0 var(--space-4);
+      }
+      .navbar {
+        padding: var(--space-1) var(--space-4);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .cert-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-5);
+      }
+      .container {
+        padding: 0 var(--space-5);
+      }
+      .navbar {
+        padding: var(--space-1) var(--space-5);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      .cert-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-5);
+      }
+      .container {
+        max-width: 1400px;
+        padding: 0 var(--space-5);
+      }
+    }
+
+    /* mobile nav toggle */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .navbar { padding: 0.6rem var(--space-3); }
+    }
+
+    /* ============================================================
+       LOADING / EMPTY
        ============================================================ */
     .loading-spinner {
       text-align: center;
-      padding: 3rem 0;
+      padding: var(--space-5) 0;
       color: var(--text-muted);
       font-size: 1.1rem;
     }
     .loading-spinner i {
       font-size: 2rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: var(--space-1);
       display: block;
       animation: spin 1s linear infinite;
     }
     @keyframes spin {
       100% { transform: rotate(360deg); }
     }
-
     .empty-state {
       text-align: center;
-      padding: 3rem 0;
+      padding: var(--space-5) 0;
       color: var(--text-muted);
     }
 
@@ -420,11 +453,11 @@
        ============================================================ */
     footer {
       text-align: center;
-      padding: 2.5rem 1.5rem;
+      padding: var(--space-4) var(--space-3);
       border-top: 1px solid var(--border-light);
       color: var(--text-muted);
       font-size: 0.875rem;
-      margin-top: 2rem;
+      margin-top: var(--space-4);
     }
 
     /* ============================================================
@@ -439,13 +472,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
-    @media (max-width: 480px) {
-      .cert-grid { grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
@@ -459,7 +485,7 @@
     </a>
 
     <ul class="nav-links">
-      <li><a href="resume.html">Resume</a></li>
+      <li><a href="p/resume.html">Resume</a></li>
       <li>
         <a href="https://nabinchalise.com.np/" class="home-nav-btn" id="interactiveHomeBtn">
           <span class="icon">🏠</span> HOME
@@ -482,7 +508,7 @@
   </div>
 
   <!-- ============================================================
-       MAIN – CERTIFICATIONS FROM SUPABASE
+       MAIN – CERTIFICATIONS
        ============================================================ -->
   <main class="container" id="certificates">
     <h2 class="section-title reveal">
@@ -512,20 +538,16 @@
     (function() {
       "use strict";
 
-      // Supabase configuration
       const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
-      // DOM refs
       const certGrid = document.getElementById('certGrid');
       const loadingState = document.getElementById('loadingState');
 
-      // Helper: create a certification card
       function createCertCard(cert) {
         const article = document.createElement('article');
         article.className = 'cert-card reveal';
 
-        // Default values if fields are missing
         const title = cert.title || 'Untitled Certification';
         const issuer = cert.issuer || 'Unknown Issuer';
         const description = cert.description || 'No description provided.';
@@ -543,11 +565,9 @@
           <p class="card-desc">${description}</p>
           <a href="${verifyUrl}" class="verify-link">Verify Credential <i class="fas fa-arrow-right"></i></a>
         `;
-
         return article;
       }
 
-      // Fetch certifications from Supabase
       async function fetchCertifications() {
         try {
           const response = await fetch(`${SUPABASE_URL}/rest/v1/certifications?select=*`, {
@@ -559,13 +579,9 @@
             }
           });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
           const data = await response.json();
-
-          // Remove loading state
           loadingState.remove();
 
           if (!data || data.length === 0) {
@@ -573,13 +589,11 @@
             return;
           }
 
-          // Render cards
           data.forEach(cert => {
             const card = createCertCard(cert);
             certGrid.appendChild(card);
           });
 
-          // Re-run Intersection Observer for new cards
           observeRevealElements();
 
         } catch (error) {
@@ -592,13 +606,11 @@
       }
 
       // ============================================================
-      // INTERSECTION OBSERVER for scroll reveals
+      // INTERSECTION OBSERVER
       // ============================================================
       let observer;
-
       function observeRevealElements() {
         if (observer) observer.disconnect();
-
         const revealElements = document.querySelectorAll('.reveal');
         observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
@@ -607,7 +619,6 @@
             }
           });
         }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
-
         revealElements.forEach(el => observer.observe(el));
       }
 
@@ -617,11 +628,7 @@
       const navbar = document.getElementById('navbar');
       window.addEventListener('scroll', function() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        if (currentScroll > 40) {
-          navbar.classList.add('scrolled');
-        } else {
-          navbar.classList.remove('scrolled');
-        }
+        navbar.classList.toggle('scrolled', currentScroll > 40);
       });
 
       // ============================================================
@@ -647,10 +654,9 @@
       });
 
       // ============================================================
-      // HOME BUTTON ripple effect (for all home buttons)
+      // HOME BUTTON ripple (all .home-nav-btn)
       // ============================================================
-      const homeBtns = document.querySelectorAll('.home-nav-btn');
-      homeBtns.forEach(btn => {
+      document.querySelectorAll('.home-nav-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
           const targetUrl = this.getAttribute('href') || 'index.html';
@@ -662,7 +668,6 @@
           ripple.style.width = ripple.style.height = size + 'px';
           ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
           ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-          
           this.appendChild(ripple);
 
           this.classList.add('clicked-exit');
@@ -673,7 +678,7 @@
       });
 
       // ============================================================
-      // INIT: fetch certifications
+      // INIT
       // ============================================================
       fetchCertifications();
 
