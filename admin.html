@@ -1017,6 +1017,114 @@
             flex-wrap: wrap;
         }
 
+        /* ===== MEETING MODE TOGGLE STYLES ===== */
+        .meeting-mode-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 16px 6px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        .meeting-mode-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .meeting-mode-label i {
+            color: var(--cls-galkot);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #22c55e;
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        .toggle-switch input:disabled + .toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .mode-status-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
+        }
+        .mode-status-text.on {
+            color: #22c55e;
+        }
+        .mode-status-text.off {
+            color: #ef4444;
+        }
+        .mode-status-text.loading {
+            color: #f59e0b;
+        }
+        .mode-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .mode-badge.on {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+        .mode-badge.off {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        .mode-badge.loading {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+        .mode-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1099,6 +1207,34 @@
             }
             .search-box-inline {
                 flex: 1;
+            }
+            .meeting-mode-container {
+                padding: 6px 12px;
+                gap: 8px;
+            }
+            .meeting-mode-label {
+                font-size: 0.75rem;
+            }
+            .toggle-switch {
+                width: 38px;
+                height: 20px;
+            }
+            .toggle-slider:before {
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+            }
+            .toggle-switch input:checked + .toggle-slider:before {
+                transform: translateX(18px);
+            }
+            .mode-status-text {
+                font-size: 0.7rem;
+                min-width: 28px;
+            }
+            .mode-badge {
+                font-size: 0.65rem;
+                padding: 1px 8px;
             }
         }
 
@@ -1310,6 +1446,20 @@
         <div class="panel-header">
             <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
             <div class="panel-actions">
+                <!-- ===== MEETING MODE TOGGLE (ADDED HERE) ===== -->
+                <div class="meeting-mode-container" id="meetingModeContainer">
+                    <span class="meeting-mode-label">
+                        <i class="fa-solid fa-toggle-on"></i> Meeting Mode
+                    </span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="meetingModeToggle" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="mode-status-text off" id="meetingModeStatus">OFF</span>
+                    <span class="mode-badge off" id="meetingModeBadge">Disabled</span>
+                    <div class="mode-error" id="meetingModeError"></div>
+                </div>
+                <!-- ===== END MEETING MODE TOGGLE ===== -->
                 <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh Minutes</button>
             </div>
         </div>
@@ -1625,6 +1775,82 @@
             setInterval(updateClock, 1000);
 
             // ============================================================
+            // ===== MEETING MODE TOGGLE FUNCTIONS =====
+            // ============================================================
+            const toggleEl = document.getElementById('meetingModeToggle');
+            const statusText = document.getElementById('meetingModeStatus');
+            const badge = document.getElementById('meetingModeBadge');
+            const errorDiv = document.getElementById('meetingModeError');
+
+            function updateMeetingModeUI(enabled) {
+                toggleEl.checked = enabled;
+                statusText.textContent = enabled ? 'ON' : 'OFF';
+                statusText.className = `mode-status-text ${enabled ? 'on' : 'off'}`;
+                badge.textContent = enabled ? 'Enabled' : 'Disabled';
+                badge.className = `mode-badge ${enabled ? 'on' : 'off'}`;
+            }
+
+            function showModeError(message) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+
+            async function loadMeetingModeStatus() {
+                try {
+                    toggleEl.disabled = true;
+                    statusText.textContent = '...';
+                    badge.textContent = 'Loading';
+                    badge.className = 'mode-badge loading';
+
+                    const { data, error } = await supabase
+                        .rpc('admin_get_meeting_mode_status')
+                        .single();
+
+                    if (error) throw error;
+
+                    if (data) {
+                        updateMeetingModeUI(data.setting_value);
+                    }
+                } catch (error) {
+                    console.error('Error loading meeting mode:', error);
+                    showModeError('Failed to load meeting mode status');
+                    updateMeetingModeUI(false);
+                } finally {
+                    toggleEl.disabled = false;
+                }
+            }
+
+            async function toggleMeetingMode(enabled) {
+                try {
+                    toggleEl.disabled = true;
+
+                    const { error } = await supabase
+                        .rpc('admin_update_meeting_mode', { enabled });
+
+                    if (error) throw error;
+
+                    updateMeetingModeUI(enabled);
+                    showModeError(`Meeting mode ${enabled ? 'enabled' : 'disabled'} successfully`);
+
+                } catch (error) {
+                    console.error('Error toggling meeting mode:', error);
+                    showModeError('Failed to update meeting mode');
+                    updateMeetingModeUI(!enabled);
+                } finally {
+                    toggleEl.disabled = false;
+                }
+            }
+
+            // ---- Meeting Mode Event Listeners ----
+            toggleEl.addEventListener('change', function() {
+                const enabled = this.checked;
+                toggleMeetingMode(enabled);
+            });
+
+            // ============================================================
             // ===== DAILY QUOTE =====
             // ============================================================
             function getDayOfYear() {
@@ -1675,7 +1901,6 @@
             // ===== MEMBERS MANAGEMENT =====
             // ============================================================
 
-            // Load members from Supabase 'members' table
             const loadMembers = async (searchTerm = '') => {
                 const feedContainer = document.getElementById('members-feed');
                 if (!feedContainer) return;
@@ -1689,7 +1914,7 @@
                     if (error) throw error;
                     allMembersData = data || [];
                     if (!allMembersData.length) {
-                        feedContainer.innerHTML = '<div class="status-msg">No members found in the database. Click "Add Member" to get started.</div>';
+                        feedContainer.innerHTML = 'No members found in the database. Click "Add Member" to get started.';
                         return;
                     }
                     feedContainer.innerHTML = allMembersData.map(item => `
@@ -1716,7 +1941,6 @@
                 }
             };
 
-            // Delete member
             window.deleteMember = async (id) => {
                 if (!confirm('Are you sure you want to permanently delete this member? This action cannot be undone.'))
                     return;
@@ -1728,7 +1952,6 @@
                 } catch (err) { alert('Error deleting member: ' + err.message); }
             };
 
-            // Edit member - open modal with data
             window.editMember = async (id) => {
                 try {
                     const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
@@ -1751,7 +1974,6 @@
                 } catch (err) { alert('Error loading member data: ' + err.message); }
             };
 
-            // Open add member modal
             const openAddMemberModal = () => {
                 editingMemberId = null;
                 document.getElementById('memberForm').reset();
@@ -1766,7 +1988,6 @@
                 editingMemberId = null;
             };
 
-            // Submit member form
             document.getElementById('memberForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const memberData = {
@@ -1799,7 +2020,6 @@
                 } catch (err) { alert('❌ Error saving member: ' + err.message); }
             });
 
-            // Member modal event listeners
             document.getElementById('memberModalCloseBtn')?.addEventListener('click', closeMemberModal);
             document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeMemberModal);
             document.getElementById('memberModal')?.addEventListener('click', (e) => {
@@ -1807,7 +2027,6 @@
             });
             document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
 
-            // Search members
             document.getElementById('memberSearchBtn')?.addEventListener('click', () => {
                 const searchTerm = document.getElementById('memberSearchInput').value.trim();
                 loadMembers(searchTerm);
@@ -1819,7 +2038,6 @@
                 }
             });
 
-            // Refresh members
             document.getElementById('refresh-members-btn')?.addEventListener('click', () => {
                 loadMembers(document.getElementById('memberSearchInput').value);
             });
@@ -1836,7 +2054,7 @@
                     const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
                     if (error) throw error;
                     if (!data || data.length === 0) {
-                        feedContainer.innerHTML = '<div class="status-msg">No entries logged in the inquiries relation table.</div>';
+                        feedContainer.innerHTML = 'No entries logged in the inquiries relation table.';
                         return;
                     }
                     feedContainer.innerHTML = data.map(item => `
@@ -1856,7 +2074,6 @@
                 }
             };
 
-            // Delete inquiry
             window.deleteInquiry = async (id) => {
                 if (!confirm('Are you sure you want to delete this inquiry?')) return;
                 try {
@@ -1905,7 +2122,7 @@
                     if (!allProjects.length) {
                         selectDropdown.innerHTML = '<option value="">-- No projects available --</option>';
                         feedContainer.innerHTML =
-                            '<div class="status-msg">No upcoming projects created yet. Click "Add New Project" to get started.</div>';
+                            'No upcoming projects created yet. Click "Add New Project" to get started.';
                         return;
                     }
                     selectDropdown.innerHTML = allProjects.map((project, idx) =>
@@ -2012,7 +2229,7 @@
                     const { data, error } = await supabase.from('project_applications').select('*').order('created_at', { ascending: false });
                     if (error) throw error;
                     if (!data || data.length === 0) {
-                        feedContainer.innerHTML = '<div class="status-msg">No applications submitted yet for upcoming projects.</div>';
+                        feedContainer.innerHTML = 'No applications submitted yet for upcoming projects.';
                         return;
                     }
                     feedContainer.innerHTML = data.map(item => `
@@ -2230,7 +2447,7 @@
                 if (found) {
                     alert(
                         `📋 Project Details:\n\nName: ${found.name}\nDate: ${found.date}\nAudience: ${found.target_audience}\nLocation: ${found.location}\n${found.description ? '\nDescription: ' + found.description : ''}`
-                        );
+                    );
                 } else alert('Project not found.');
             });
 
@@ -2244,7 +2461,7 @@
                 try {
                     const { error } = await supabase.from('inquiries').delete().neq('id', 0);
                     if (error) throw error;
-                    feedContainer.innerHTML = '<div class="status-msg">✅ All inquiries have been cleared successfully.</div>';
+                    feedContainer.innerHTML = '✅ All inquiries have been cleared successfully.';
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
@@ -2258,7 +2475,7 @@
                 try {
                     const { error } = await supabase.from('upcoming_projects').delete().neq('id', 0);
                     if (error) throw error;
-                    feedContainer.innerHTML = '<div class="status-msg">✅ All projects have been cleared successfully.</div>';
+                    feedContainer.innerHTML = '✅ All projects have been cleared successfully.';
                     document.getElementById('projectSelect').innerHTML = '<option value="">-- No projects available --</option>';
                     allProjects = [];
                 } catch (err) {
@@ -2275,7 +2492,7 @@
                 try {
                     const { error } = await supabase.from('project_applications').delete().neq('id', 0);
                     if (error) throw error;
-                    feedContainer.innerHTML = '<div class="status-msg">✅ All applications have been cleared successfully.</div>';
+                    feedContainer.innerHTML = '✅ All applications have been cleared successfully.';
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
@@ -2286,7 +2503,6 @@
             // ===== REALTIME SUBSCRIPTIONS =====
             // ============================================================
             const setupRealtimeSubscriptions = () => {
-                // Members channel
                 supabase.channel('members-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2300,7 +2516,6 @@
                         console.log('📡 Members subscription status:', status);
                     });
 
-                // Inquiries channel
                 supabase.channel('inquiries-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2314,7 +2529,6 @@
                         console.log('📡 Inquiries subscription status:', status);
                     });
 
-                // Meeting minutes channel
                 supabase.channel('minutes-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2328,7 +2542,6 @@
                         console.log('📡 Minutes subscription status:', status);
                     });
 
-                // Projects channel
                 supabase.channel('projects-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2342,7 +2555,6 @@
                         console.log('📡 Projects subscription status:', status);
                     });
 
-                // Applications channel
                 supabase.channel('applications-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2366,16 +2578,15 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
                         panel.style.display = 'block';
-                        // Load all data
                         await Promise.all([
                             loadMembers(),
                             loadDatabaseInquiries(),
                             loadMeetingMinutes(),
                             loadProjects(),
                             loadProjectApplications(),
-                            loadDailyQuote()
+                            loadDailyQuote(),
+                            loadMeetingModeStatus()
                         ]);
-                        // Setup realtime after initial load
                         setupRealtimeSubscriptions();
                     } else {
                         panel.style.display = 'none';
