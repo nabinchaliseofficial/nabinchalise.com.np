@@ -1,507 +1,1225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rotaract Club of Galkot Baglung - Member Directory</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Rotaract · Member Dashboard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f0f4fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .member-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .member-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
-        }
-
-        .filter-btn {
-            transition: all 0.2s ease;
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1rem 1rem;
+            flex: 1;
+            width: 100%;
         }
 
-        /* Custom scrollbar for widgets */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Ripple Animation effect fallback for interactivity */
-        .ripple-btn {
-            position: relative;
+        /* ===== HEADER - Fully Responsive ===== */
+        .club-header {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .club-header img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        /* Responsive header image sizes */
+        .club-header img {
+            max-height: 220px;
+        }
+
+        @media (max-width: 1024px) {
+            .club-header img {
+                max-height: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .club-header {
+                border-radius: 14px;
+                margin-bottom: 1rem;
+            }
+            .club-header img {
+                max-height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .club-header {
+                border-radius: 10px;
+                margin-bottom: 0.8rem;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+            .club-header img {
+                max-height: 100px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .club-header img {
+                max-height: 70px;
+            }
+        }
+
+        .club-header-placeholder {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .club-header-placeholder h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .club-header-placeholder p {
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .club-header-placeholder {
+                padding: 1.5rem 1rem;
+                min-height: 80px;
+            }
+            .club-header-placeholder h2 {
+                font-size: 1.5rem;
+            }
+            .club-header-placeholder p {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .club-header-placeholder {
+                padding: 1rem 0.8rem;
+                min-height: 60px;
+            }
+            .club-header-placeholder h2 {
+                font-size: 1.2rem;
+            }
+            .club-header-placeholder p {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* ===== MAIN HEADER ===== */
+        .main-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .main-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .main-header h1 i {
+            color: #2563eb;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 40px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            border: 1px solid #dce2eb;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+            transition: 0.15s;
+        }
+
+        .search-box:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            min-width: 150px;
+            background: transparent;
+        }
+
+        .search-box button {
+            background: #1e293b;
+            border: none;
+            color: white;
+            padding: 0.45rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+
+        .search-box button:hover {
+            background: #0f172a;
+        }
+
+        .refresh-btn {
+            background: #1e293b;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: 0.15s;
+            border: 1px solid #334155;
+            white-space: nowrap;
+        }
+
+        .refresh-btn:hover {
+            background: #0f172a;
+            transform: scale(1.02);
+        }
+
+        .refresh-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ===== STATS ===== */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid #e9edf2;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+
+        .stat-card i {
+            font-size: 1.3rem;
+            color: #2563eb;
+            width: 28px;
+            text-align: center;
+        }
+
+        .stat-card .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-card .stat-number {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .blood-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 0.6rem;
+            margin-left: 0.1rem;
+        }
+
+        .blood-pill {
+            background: #f1f5f9;
+            padding: 0.05rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+
+        .blood-pill span {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* ===== BIRTHDAY BANNER ===== */
+        .birthday-banner {
+            background: linear-gradient(135deg, #fef9c3, #fde047);
+            border-radius: 16px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #facc15;
+            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.1);
+            gap: 0.5rem;
+        }
+
+        .birthday-banner .title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #78350f;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .birthday-banner .title i {
+            font-size: 1.2rem;
+            color: #b45309;
+        }
+
+        .birthday-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.8rem;
+            align-items: center;
+        }
+
+        .birthday-chip {
+            background: white;
+            padding: 0.15rem 0.8rem 0.15rem 0.6rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid #fbbf24;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        .birthday-chip i {
+            color: #dc2626;
+            font-size: 0.8rem;
+        }
+
+        .no-birthday {
+            color: #92400e;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.1rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* ===== PROFILE GRID ===== */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+            padding: 1.2rem 1.2rem 1.3rem;
+            border: 1px solid #e9edf2;
+            transition: 0.15s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-card:hover {
+            border-color: #c8d3e0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-top {
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+            margin-bottom: 0.7rem;
+        }
+
+        .profile-photo {
+            width: 64px;
+            height: 64px;
+            border-radius: 40px;
+            object-fit: cover;
+            background: #dbeafe;
+            flex-shrink: 0;
+            border: 3px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #2563eb;
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .name-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .name-title h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .name-title .position {
+            font-size: 0.75rem;
+            color: #2563eb;
+            font-weight: 600;
+            background: #eef4ff;
+            display: inline-block;
+            padding: 0.05rem 0.7rem;
+            border-radius: 40px;
+            margin-top: 0.1rem;
+        }
+
+        .birthday-tag {
+            margin-top: 0.2rem;
+            display: inline-block;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.05rem 0.7rem;
+            border-radius: 40px;
+            border: 1px solid #fecaca;
+        }
+
+        .birthday-tag i {
+            margin-right: 3px;
+        }
+
+        .card-details {
+            margin-top: 0.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #1e293b;
+            padding: 0.05rem 0;
+        }
+
+        .detail-item i {
+            width: 1rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .detail-item .label {
+            color: #64748b;
+            font-weight: 450;
+            min-width: 55px;
+            font-size: 0.75rem;
+        }
+
+        .detail-item .value {
+            font-weight: 500;
+            color: #0f172a;
+            font-size: 0.85rem;
+        }
+
+        .card-footer {
+            margin-top: 0.8rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid #edf2f7;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .card-footer span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .card-footer i {
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+
+        .loading-grid {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 0;
+            color: #64748b;
+        }
+
+        .loading-grid i {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem 0;
+            color: #b91c1c;
+            background: #fef2f2;
+            border-radius: 18px;
+        }
+
+        .fa-spinner {
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .position-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.05rem 0.6rem;
+            border-radius: 40px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-president { background: #fef3c7; color: #92400e; }
+        .badge-secretary { background: #dbeafe; color: #1e40af; }
+        .badge-treasurer { background: #d1fae5; color: #065f46; }
+        .badge-executive { background: #fce4ec; color: #9a1f3c; }
+        .badge-member { background: #f1f5f9; color: #475569; }
+
+        /* ===== FOOTER - Fully Responsive ===== */
+        .club-footer {
+            margin-top: 2.5rem;
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .club-footer img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        /* Responsive footer image sizes */
+        .club-footer img {
+            max-height: 140px;
+        }
+
+        @media (max-width: 1024px) {
+            .club-footer img {
+                max-height: 120px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .club-footer {
+                border-radius: 14px;
+                margin-top: 1.8rem;
+            }
+            .club-footer img {
+                max-height: 90px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .club-footer {
+                border-radius: 10px;
+                margin-top: 1.5rem;
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            }
+            .club-footer img {
+                max-height: 60px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .club-footer img {
+                max-height: 45px;
+            }
+        }
+
+        .club-footer-placeholder {
+            padding: 1.2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .club-footer-placeholder i {
+            color: #2563eb;
+            margin: 0 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .club-footer-placeholder {
+                padding: 0.8rem;
+                min-height: 60px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .club-footer-placeholder {
+                padding: 0.6rem;
+                min-height: 50px;
+                font-size: 0.65rem;
+                gap: 0.1rem;
+            }
+        }
+
+        /* ===== BIRTHDAY POPUP ===== */
+        .birthday-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .birthday-popup-overlay.active {
+            display: flex;
+        }
+
+        .birthday-popup {
+            background: linear-gradient(135deg, #fef9c3, #fde047);
+            border-radius: 30px;
+            padding: 2.5rem 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid #fbbf24;
+            position: relative;
+        }
+
+        .birthday-popup .confetti {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .birthday-popup h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #78350f;
+            margin: 0.5rem 0;
+        }
+
+        .birthday-popup .name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #92400e;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.3rem 1.5rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .birthday-popup .message {
+            font-size: 1.1rem;
+            color: #78350f;
+            margin: 0.8rem 0;
+            font-weight: 500;
+        }
+
+        .birthday-popup .close-btn {
+            margin-top: 1rem;
+            background: #78350f;
+            border: none;
+            color: white;
+            padding: 0.7rem 2.5rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .birthday-popup .close-btn:hover {
+            background: #5a280b;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container { padding: 0 0.8rem 0.8rem; }
+            .main-header { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+            .main-header h1 { font-size: 1.5rem; }
+            .header-controls { flex-wrap: wrap; }
+            .search-box { flex: 1; }
+            .search-box input { min-width: 100px; width: 100%; }
+            .search-box button { padding: 0.4rem 1rem; font-size: 0.85rem; }
+            .refresh-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
+            .profile-grid { grid-template-columns: 1fr; }
+            .stats-row { gap: 0.5rem; }
+            .stat-card { padding: 0.5rem 0.8rem; min-width: 80px; }
+            .stat-card i { font-size: 1rem; width: 22px; }
+            .stat-card .stat-number { font-size: 1rem; }
+            .birthday-banner { padding: 0.6rem 1rem; flex-direction: column; align-items: flex-start; }
+            .birthday-banner .title { font-size: 0.85rem; }
+            .birthday-popup { padding: 1.8rem 1.2rem; }
+            .birthday-popup h2 { font-size: 1.8rem; }
+            .birthday-popup .name { font-size: 1.4rem; }
+            .profile-photo { width: 54px; height: 54px; font-size: 1.2rem; }
+            .name-title h3 { font-size: 0.95rem; }
+        }
+
+        @media (max-width: 480px) {
+            .main-header h1 { font-size: 1.2rem; }
+            .search-box input { min-width: 80px; font-size: 0.85rem; }
+            .search-box button { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
+            .refresh-btn { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
+            .stat-card { min-width: 60px; padding: 0.4rem 0.6rem; }
+            .stat-card .stat-number { font-size: 0.9rem; }
+            .stat-card .stat-label { font-size: 0.6rem; }
+            .birthday-chip { font-size: 0.75rem; padding: 0.1rem 0.6rem; }
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-rose-500 selection:text-white">
+<body>
 
-    <!-- Header Section -->
-    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            
-            <!-- Branding Branding -->
-            <div class="flex items-center gap-3.5 cursor-pointer group" id="homeBtn">
-                <div class="w-11 h-11 bg-rose-50 rounded-xl flex items-center justify-center overflow-hidden border border-rose-100 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                    <img src="rotaract logo.jpg" alt="RAC Logo" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120'">
-                </div>
-                <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight group-hover:text-rose-600 transition-colors">RAC Galkot Baglung</h1>
-                    <p class="text-[11px] font-bold text-rose-600 tracking-widest uppercase">Rotaract Club Directory</p>
-                </div>
-            </div>
+    <!-- ===== HEADER ===== -->
+    <div class="club-header">
+        <img src="clubheading.jpg" alt="Club Header" 
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'club-header-placeholder\'><h2>🏛️ Rotaract Club</h2><p>Member Directory · 2026</p></div>'" />
+    </div>
 
-            <!-- Central Live Search Wrapper -->
-            <div class="w-full sm:w-96 relative">
-                <input type="text" id="searchInput" placeholder="Search members by name, role, address, profession..." 
-                    class="w-full pl-10 pr-4 py-2.5 bg-slate-100/80 border border-transparent rounded-xl focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 transition-all duration-200 text-sm outline-none shadow-inner"
-                    aria-label="Search members">
-                <div class="absolute left-3.5 top-3 text-slate-400 pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-            </div>
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
 
-            <!-- Functional Navigation Actions -->
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="ripple-btn inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-sm hover:shadow transition-all duration-200" id="interactiveHomeBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1px 1px 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span>HOME</span>
-                </a>
+        <!-- Main Header -->
+        <div class="main-header">
+            <h1><i class="fas fa-users"></i> Members</h1>
+            <div class="header-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by name..." />
+                    <button id="searchBtn"><i class="fas fa-search"></i> Find</button>
+                </div>
+                <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
         </div>
-    </header>
 
-    <!-- Modern Hero Presentation Showcase Section -->
-    <section class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 border-b border-indigo-950/20">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.12),transparent_45%)]"></div>
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-            <div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-3">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Fellowship Through Service
-                </span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                    Our Global Family Network
-                </h2>
-                <p class="text-sm text-slate-400 mt-1 max-w-xl">
-                    Connecting young leaders, professionals, and change-makers across Galkot Municipality, Baglung. Explore directory connections, blood matrix listings, and updates.
-                </p>
-            </div>
-            <div class="flex flex-wrap gap-4 w-full md:w-auto">
-                <div class="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl backdrop-blur-sm flex-1 min-w-[120px]">
-                    <div class="text-xl sm:text-2xl font-black text-rose-400" id="stat-total-members">0</div>
-                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Active Fellows</div>
-                </div>
-                <div class="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl backdrop-blur-sm flex-1 min-w-[120px]">
-                    <div class="text-xl sm:text-2xl font-black text-indigo-400" id="stat-board-members">0</div>
-                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Board Officials</div>
+        <!-- Stats -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><i class="fas fa-users"></i><div class="stat-info"><span class="stat-number" id="totalMembers">0</span><span class="stat-label">Total</span></div></div>
+            <div class="stat-card"><i class="fas fa-mars"></i><div class="stat-info"><span class="stat-number" id="maleCount">0</span><span class="stat-label">Male</span></div></div>
+            <div class="stat-card"><i class="fas fa-venus"></i><div class="stat-info"><span class="stat-number" id="femaleCount">0</span><span class="stat-label">Female</span></div></div>
+            <div class="stat-card" style="flex:2;">
+                <i class="fas fa-tint"></i>
+                <div class="stat-info">
+                    <span class="stat-label">Blood Groups</span>
+                    <div class="blood-stats" id="bloodStats"></div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Main Dynamic Application Workspace Layout Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            <!-- Left Side Control Column (Stats, Upcoming Birthdays Widgets Panel) -->
-            <aside class="lg:col-span-1 flex flex-col gap-6">
-                
-                <!-- Dynamic Birthday Module Dashboard Widget -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center justify-between">
-                        <span class="flex items-center gap-2">
-                            <span class="text-base">🎉</span> Birthday Calendars
-                        </span>
-                        <span class="text-[10px] bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Next 5</span>
-                    </h3>
-                    <div id="nearest-birthdays" class="space-y-3 max-h-[380px] overflow-y-auto custom-scrollbar pr-1">
-                        <!-- Content populated dynamically via app script engine -->
-                    </div>
-                </div>
-
-                <!-- Blood Donation Matrix Status Tracker Summary Layout Card -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
-                        <span class="text-base">🩸</span> Blood Groups Matrix
-                    </h3>
-                    <div id="blood-group-counts" class="grid grid-cols-2 gap-2.5">
-                        <!-- Grid elements loaded via DOM framework handler execution -->
-                    </div>
-                </div>
-
-            </aside>
-
-            <!-- Right Main Directory Interactive Grid Filter Interface Component space -->
-            <section class="lg:col-span-3 flex flex-col gap-6">
-                
-                <!-- Quick Navigation Filter Pill Tabs Navigation Bar Layout wrapper -->
-                <nav class="flex flex-wrap gap-2 pb-2 border-b border-slate-200/60" aria-label="Directory Filters">
-                    <button data-filter="all" class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition-all bg-rose-600 text-white shadow-sm shadow-rose-600/10 hover:bg-rose-700">
-                        All Members
-                    </button>
-                    <button data-filter="executive" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-200/70 text-slate-700 hover:bg-slate-300/80">
-                        Board Officials
-                    </button>
-                    <button data-filter="teacher" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-200/70 text-slate-700 hover:bg-slate-300/80">
-                        Educators
-                    </button>
-                    <button data-filter="business" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-200/70 text-slate-700 hover:bg-slate-300/80">
-                        Entrepreneurs
-                    </button>
-                    <button data-filter="student" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-200/70 text-slate-700 hover:bg-slate-300/80">
-                        Students
-                    </button>
-                </nav>
-
-                <!-- Live Query Results Main Profiles Render Target Grid Container Area -->
-                <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                    <!-- Cards structural grid node points injected downstream automatically -->
-                </div>
-
-            </section>
-
+        <!-- Birthday Banner -->
+        <div id="birthdayBanner" class="birthday-banner">
+            <div class="title"><i class="fas fa-birthday-cake"></i> 🎂 Upcoming Birthdays (next 10 days)</div>
+            <div id="birthdayChips" class="birthday-chips">
+                <span class="no-birthday">loading ...</span>
+            </div>
         </div>
-    </main>
 
-    <!-- Global App Engine Scripts Framework Controller -->
+        <!-- Profile Grid -->
+        <div id="profileGrid" class="profile-grid">
+            <div class="loading-grid"><i class="fas fa-spinner fa-spin"></i><div>Loading members...</div></div>
+        </div>
+
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="club-footer">
+        <img src="footer.jpg" alt="Club Footer" 
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'club-footer-placeholder\'><i class=\'fas fa-heart\'></i> Rotaract Club · All Rights Reserved <i class=\'fas fa-heart\'></i><span style=\'font-size:0.7rem;opacity:0.6;\'>Powered by Supabase</span></div>'" />
+    </div>
+
+    <!-- ===== BIRTHDAY POPUP ===== -->
+    <div id="birthdayPopup" class="birthday-popup-overlay">
+        <div class="birthday-popup">
+            <div class="confetti">🎉🎂🎉</div>
+            <h2>Happy Birthday!!!</h2>
+            <div class="name" id="popupName">Rtr. Member</div>
+            <div class="message">🎊 Wishing you a wonderful day! 🎊</div>
+            <button class="close-btn" onclick="closePopup()"><i class="fas fa-heart"></i> Thank You!</button>
+        </div>
+    </div>
+
     <script>
-        const fallbackProfileImageUrl = "rotaract logo.jpg";
+        (function() {
+            // ===== SUPABASE CONFIG =====
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            const TABLE_NAME = "members";
+            const ENDPOINT = `${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*`;
 
-        const rawMembers = [
-            { id: 29, name: 'Rtr Nabin Subedi', address: 'Galkot Municipality -04,Chamuwa Baglung', rotaryId: '11716194', phone: '9857631742', bloodGroup: 'B+', gender: 'Male', email: 'nsubedi162@gmail.com', dob: '10/6/1997', designation: 'IPP/Mentor', profession: 'Teacher' },
-            { id: 43, name: 'Vikash Subedi', address: 'Galkot 4 bagling', rotaryId: '12098183', phone: '9847705363', bloodGroup: 'O+', gender: 'Male', email: 'bikashsubedi109@gmail.com', dob: '2/14/1992', designation: 'Rotaract Vice President', profession: 'Co- operative' },
-            { id: 20, name: 'Nabin Chalise', address: 'Galkot Municipality-3, Baglung', rotaryId: '11722218', phone: '9851338747', bloodGroup: 'O+', gender: 'Male', email: 'pilotprosoft@gmail.com', dob: '8/26/1995', designation: 'President', profession: 'ICT Teacher' },
-            { id: 40, name: 'Tika Ram Gautam', address: 'Galkot-09, Baglung', rotaryId: '11722743', phone: '9847797869', bloodGroup: 'B+', gender: 'Male', email: 'gautamarjun933@gmail.com', dob: '10/14/1993', designation: 'President Elect', profession: 'Teacher' },
-            { id: 17, name: 'Manish Gurung', address: 'Galkot Municipality 1 Dudilabhati Baglung', rotaryId: '12031057', phone: '9843824191', bloodGroup: 'B+', gender: 'Male', email: 'manishgurung209@gmail.com', dob: '2/20/2003', designation: 'Club Member', profession: 'Employee in Saplyapatri Multipurpose Co-operative Ltd.' },
-            { id: 16, name: 'Madan Sharma', address: 'Galkot municipality', rotaryId: '11855833', phone: '9860191219', bloodGroup: 'B+', gender: 'Male', email: 'madanbsharma98@gmail.com', dob: '3/2/2002', designation: 'Secretary', profession: 'Teacher' },
-            { id: 26, name: 'Radha Gautam', address: 'Galkot municipality-03 Hatiya Baglung', rotaryId: '12047154', phone: '9846705657', bloodGroup: 'AB+', gender: 'Female', email: 'rg2508305@gmail.com', dob: '3/4/2003', designation: 'Club Member', profession: '' },
-            { id: 4, name: 'Bibek Kharel', address: 'Galkot 09 baglung', rotaryId: '12098226', phone: '9844334609', bloodGroup: 'O+', gender: 'Male', email: 'Bibekkharel97@gmail.com', dob: '6/17/1997', designation: 'Club Member', profession: 'Teacher' },
-            { id: 9, name: 'Ganesh Sapkota', address: 'Galkot -9, Baglung', rotaryId: '11964599', phone: '9867743075', bloodGroup: 'B+', gender: 'Male', email: 'ganesh1sapkota2@gmail.com', dob: '10/24/2001', designation: 'Club Member', profession: 'Student' },
-            { id: 12, name: 'Kamal Kharel', address: 'Galkot ,9', rotaryId: '11723334', phone: '9860718751', bloodGroup: 'B+', gender: 'Male', email: 'kharelkamal8751@gmail.com', dob: '3/27/1996', designation: 'Past President/Advisor', profession: 'Furniture Business' },
-            { id: 44, name: 'Rtr. Manish Kandel', address: 'Galkot Municipality-08, kandebash, Baglung', rotaryId: '1111111', phone: '9865437798', bloodGroup: 'B+', gender: 'Male', email: 'manishkandel73@gmail.com', dob: '6/11/1997', designation: 'Treasurer', profession: 'Business / Entrepreneur' },
-            { id: 15, name: 'Lokendra Gaire', address: 'Galkot-4, Thana', rotaryId: '11723018', phone: '9869065252', bloodGroup: 'O+', gender: 'Male', email: 'lokendragaire9@gmail.com', dob: '5/22/2001', designation: 'Sergeant At Arms', profession: 'Computer operator at galkot municipality' },
-            { id: 7, name: 'Bipin Chalise', address: 'Galkot municipality -08', rotaryId: '12098496', phone: '9745985562', bloodGroup: 'O+', gender: 'Male', email: 'bipansharma0123@gmail.com', dob: '10/22/2001', designation: 'Rotaract Membership Chair', profession: 'Teacher' },
-            { id: 13, name: 'Laxmi Pun', address: 'Ga na pa 8', rotaryId: '11855933', phone: '9844090869', bloodGroup: 'O+', gender: 'Female', email: 'Punlaxmi216@gmail.com', dob: '12/24/1998', designation: 'PP/Rotaract Learning Facilitator', profession: '' },
-            { id: 3, name: 'Anil Shrestha', address: 'galkot municipality -03', rotaryId: '11361814', phone: '9841888908', bloodGroup: 'B+', gender: 'Male', email: 'theanilshrestha@gmail.com', dob: '1/7/1990', designation: 'PP/ISD/Advisor', profession: '' },
-            { id: 10, name: 'Ishor Gautam', address: 'Galkot municipality 9 Baglung', rotaryId: '11453673', phone: '9860260680', bloodGroup: 'A+', gender: 'Male', email: 'ishworgautam2073@gmail.com', dob: '1/14/1993', designation: 'Past President/Advisor', profession: 'Lecturer' },
-            { id: 22, name: 'Neetu Khadka', address: 'Baglung Municipality-01', rotaryId: '', phone: '9867945381', bloodGroup: 'O+', gender: 'Female', email: 'Khadkaneetu123@gmail.com', dob: '5/16/1989', designation: 'Chartered President', profession: 'Nurse' },
-            { id: 1, name: 'Amrit Subedi', address: 'Galkot Municipality, ward no.-4, Baglung', rotaryId: '1111111111', phone: '9867694789', bloodGroup: 'A+', gender: 'Male', email: 'Subediamrit789@gmail.com', dob: '12/27/1997', designation: 'Club Member', profession: 'Government service' },
-            { id: 2, name: 'Anil Gandarba', address: 'Galkot -3 hatiya', rotaryId: '11723715', phone: '9846850809', bloodGroup: 'O+', gender: 'Male', email: 'gandarva.anil014@gmail.com', dob: '3/31/1998', designation: 'Club Member', profession: 'Teacher' },
-            { id: 5, name: 'Bidur Kharel', address: 'Ga.Na.Pa 9 Darbara', rotaryId: '', phone: '9845548677', bloodGroup: 'AB+', gender: 'Male', email: 'Kharelbidur23@gmail.com', dob: '5/23/1995', designation: 'Club Member', profession: '' },
-            { id: 6, name: 'Binita Galami', address: 'Galkot na.pa.-3,hatiya', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Female', email: 'Newlooksprintigshop@gmail.com', dob: '9/11/1996', designation: 'Club Member', profession: '' },
-            { id: 8, name: 'Deepak Khattri', address: 'Galkot Municipality -04', rotaryId: '11726103', phone: '9849664430', bloodGroup: 'O+', gender: 'Male', email: 'Khattridep2048@gmail.com', dob: '5/5/1991', designation: 'Club Member', profession: 'Teacher' },
-            { id: 11, name: 'Jit Bahadur B.K.', address: 'Tarakhola RM. -2, Argal Baglung', rotaryId: '12239441', phone: '9857649995', bloodGroup: 'O+', gender: 'Male', email: 'jeevananuragi8@gmail.com', dob: '9/27/1982', designation: 'Club Member', profession: 'IT Business' },
-            { id: 14, name: 'Lila Adhikari (Mamata)', address: 'Galkot-3, baglung', rotaryId: '', phone: '', bloodGroup: 'O-', gender: 'Female', email: 'adhikarimamata223@gmail.com', dob: '8/21/2000', designation: 'Club Member', profession: 'Student' },
-            { id: 18, name: 'Manjeela Shrestha', address: 'Galkot municipality-03', rotaryId: '11723077', phone: '9840808640', bloodGroup: 'B+', gender: 'Female', email: 'catchmeifucan2046@gmail.com', dob: '2/11/1997', designation: 'Rotaract Foundation Chair', profession: 'House wife' },
-            { id: 19, name: 'Manoj Karki', address: 'Galkot-2, Baglung', rotaryId: '', phone: '9749724157', bloodGroup: 'A+', gender: 'Male', email: '', dob: '7/14/1995', designation: 'Medical Officer', profession: 'Medical doctor' },
-            { id: 21, name: 'Nabin Sharma', address: 'Galkot -1 Dudilabhati Jhanktisthan', rotaryId: '12119325', phone: '9846829984', bloodGroup: 'O+', gender: 'Male', email: 'dnabingautam79@gmail.com', dob: '12/23/2000', designation: 'Club Member', profession: 'Business' },
-            { id: 23, name: 'Niraj Shrestha', address: 'Galkot -03,Baglung', rotaryId: '', phone: '9847770262', bloodGroup: 'O+', gender: 'Male', email: 'nirajshrestha666@gmail.com', dob: '2/4/1994', designation: 'Club Member', profession: 'Banker' },
-            { id: 24, name: 'Pratap Sen', address: 'Galkot- 05, baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'Pratapsen2011@gmail.com', dob: '2/22/1992', designation: 'Club Member', profession: 'Self employed' },
-            { id: 25, name: 'Pratikshya Darjee', address: 'Galkot Municipality-09, Baglung', rotaryId: '11111', phone: '9867687014', bloodGroup: 'N/A', gender: 'Female', email: 'pratikshyapariyar@gmail.com', dob: '2/4/2006', designation: 'Club Member', profession: 'Student - Business' },
-            { id: 45, name: 'Rtr. Prasu Ram Regmi', address: 'Sainamaina-11, Rupendehi', rotaryId: '111111111', phone: '9867233476', bloodGroup: 'O+', gender: 'Male', email: 'Parshuregmi3472@gmail.com', dob: '8/29/1994', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 27, name: 'Raju Sahani', address: 'Dhalepipal, Dhalepipal ward 4', rotaryId: '12119302', phone: '9860414802', bloodGroup: 'A+', gender: 'Male', email: 'erjsahani@gmail.com', dob: '5/31/1991', designation: 'IT Officer', profession: 'IT engineer' },
-            { id: 30, name: 'Sagar Chalise', address: 'Galkot-8, Baglung', rotaryId: '12131866', phone: '9745985560', bloodGroup: 'AB+', gender: 'Male', email: 'chalisesagar120@gmail.com', dob: '8/6/2001', designation: 'Joint Secretary', profession: 'Accountant' },
-            { id: 46, name: 'Rtr. Santosh Bohora Chettri', address: 'Galkot Municipality-03, Baglung', rotaryId: '111111', phone: '9869720402', bloodGroup: 'O+', gender: 'Male', email: 'bohorasantosh789@gmail.com', dob: '2/11/2005', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 31, name: 'Samjhana Thapa', address: 'Galkot municipality 07 malma', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'Ssthapa392@gmail.com', dob: '5/22/2001', designation: 'Club Member', profession: 'Teaching' },
-            { id: 32, name: 'Sanju Neupane', address: 'Galkot Municipality-3, BAglung', rotaryId: '11855899', phone: '9863271796', bloodGroup: 'B+', gender: 'Female', email: 'neupanesanju87@gmail.com', dob: '11/19/1997', designation: 'Club Member', profession: 'Banker' },
-            { id: 33, name: 'Shishir Sunar', address: 'Galkot Municipality- 4', rotaryId: '', phone: '', bloodGroup: 'A+', gender: 'Male', email: 'shishirju2005@gmail.com', dob: '6/27/2005', designation: 'Club Member', profession: 'Student' },
-            { id: 34, name: 'Shyam Subedi', address: 'Galkot 04 Baglung Nepal', rotaryId: '', phone: '', bloodGroup: 'O+', gender: 'Male', email: 'imperialshyam6939@gmail.com', dob: '8/17/2000', designation: 'Club Member', profession: 'Employer' },
-            { id: 35, name: 'Sima Sunar', address: 'Galkot municipality 3, Hatiya', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Female', email: 'simasunar456@gmail.com', dob: '5/21/1999', designation: 'Club Member', profession: 'Job' },
-            { id: 36, name: 'Smriti Budhathoki', address: 'Galkot municipality-8, Kandebas', rotaryId: '', phone: '9749396716', bloodGroup: 'AB+', gender: 'Female', email: 'msmriti285@gmail.com', dob: '8/25/1995', designation: 'Rotaract Service Projects Chair', profession: 'Student' },
-            { id: 47, name: 'Rtr. Sunil Gautam', address: 'Galkot Municipality-06, Baglung', rotaryId: '111111111', phone: '9867770257', bloodGroup: 'B+', gender: 'Male', email: 'sunilgautam70257@gmail.com', dob: '11/17/1997', designation: 'Club Member', profession: 'Teaching / Education' },
-            { id: 37, name: 'Sunil Bohora', address: 'Galkot Municipality-3, Baglung', rotaryId: '11723041', phone: '9847658392', bloodGroup: 'O+', gender: 'Male', email: 'gajalsansar1989@gmail.com', dob: '3/27/1989', designation: 'Club Member', profession: 'Teaching' },
-            { id: 38, name: 'Sunil Chhetri', address: 'Galkot 3 bagling', rotaryId: '11963844', phone: '9857638138', bloodGroup: 'O+', gender: 'Male', email: 'skc844251@gmail.com', dob: '1/13/1999', designation: 'Club Member', profession: 'Business/ Enterpreneur' },
-            { id: 39, name: 'Sunil Khatiwal', address: 'Baglung 03 guthi', rotaryId: '', phone: '9857664347', bloodGroup: 'B+', gender: 'Male', email: 'Sunilkhatiwal6@gmail.com', dob: '7/10/1987', designation: 'Club Member', profession: 'Shopkeeper' },
-            { id: 41, name: 'Tul Bahadur B.K.', address: 'Galkot-11, Righa', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: 'tulbahadurbk130@gmail.com', dob: '5/11/1995', designation: 'Club Member', profession: 'Workshop' },
-            { id: 42, name: 'Umesh Sharma Subedi', address: 'Galkot-4, Baglung', rotaryId: '', phone: '', bloodGroup: 'B+', gender: 'Male', email: '', dob: '9/9/2001', designation: 'Club Member', profession: 'Teacher' },
-            { id: 48, name: 'Melina Kharel', address: 'Galkot Municipality-9, Banskhola', rotaryId: '11111111', phone: '9765504483', bloodGroup: 'AB+', gender: 'Female', email: 'kharelmelina5@gmail.com', dob: '2/4/2007', designation: 'Young Leaders Contact', profession: 'Student (Business)' },
-            { id: 49, name: 'Balaram Adhikari', address: 'Galkot, Baglung', rotaryId: '11111111', phone: '9856066664', bloodGroup: 'B+', gender: 'Male', email: 'balaramadko26@gmail.com', dob: '9/9/1990', designation: 'Club Member', profession: 'NGO / INGO / Social Work' }
-        ];
-
-        // Format and clean names consistently so every entry is styled as "Rtr. [Clean Name]"
-        const members = rawMembers.map(member => {
-            let cleanName = member.name.replace(/^Rtr\.?\s+/i, '').trim();
-            
-            // Generate clean photo file name (e.g., "Nabin Chalise" -> "nabinchalise.jpg")
-            let rawPhotoName = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
-            let photoFileName = `${rawPhotoName}.jpg`;
-
-            return {
-                ...member,
-                name: `Rtr. ${cleanName}`,
-                photo: photoFileName
-            };
-        });
-
-        // Compute layout dashboard metrics insights dynamically
-        const calculateStats = () => {
-            document.getElementById('stat-total-members').innerText = members.length;
-            const executiveCount = members.filter(m => !m.designation.toLowerCase().includes('club member')).length;
-            document.getElementById('stat-board-members').innerText = executiveCount;
-        };
-
-        // Main primary framework rendering layout task definition
-        const renderMembers = (query = '', filter = 'all') => {
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = '';
-            const cleanQuery = query.toLowerCase().trim();
-
-            const filteredMembers = members.filter(member => {
-                const matchesQuery = Object.values(member).some(value =>
-                    String(value).toLowerCase().includes(cleanQuery)
-                );
-                
-                const designation = member.designation.toLowerCase();
-                const profession = member.profession.toLowerCase();
-
-                let matchesFilter = false;
-                if (filter === 'all') matchesFilter = true;
-                else if (filter === 'executive') {
-                    matchesFilter = !designation.includes('club member');
-                } else if (filter === 'teacher') {
-                    matchesFilter = profession.includes('teacher') || profession.includes('teaching') || profession.includes('lecturer');
-                } else if (filter === 'student') {
-                    matchesFilter = profession.includes('student');
-                } else if (filter === 'business') {
-                    matchesFilter = profession.includes('business') || profession.includes('entrepreneur') || profession.includes('shopkeeper');
-                }
-
-                return matchesQuery && matchesFilter;
-            });
-
-            if (filteredMembers.length > 0) {
-                filteredMembers.forEach(member => {
-                    const memberCard = document.createElement('article');
-                    memberCard.className = 'member-card bg-white rounded-2xl p-5 border border-slate-100 flex flex-col items-center text-center shadow-sm relative overflow-hidden';
-                    
-                    // Top header background micro decoration bar
-                    const isExec = !member.designation.toLowerCase().includes('club member');
-                    const colorBar = isExec ? 'bg-gradient-to-r from-rose-500 to-indigo-600' : 'bg-slate-100';
-
-                    memberCard.innerHTML = `
-                        <div class="absolute top-0 inset-x-0 h-1.5 ${colorBar}"></div>
-                        <div class="w-16 h-16 bg-slate-50 border-2 border-slate-100 rounded-2xl flex items-center justify-center overflow-hidden mb-3.5 shadow-inner mt-2">
-                            <img src="${member.photo}" alt="${member.name}" class="w-full h-full object-cover" onerror="this.src='${fallbackProfileImageUrl}'">
-                        </div>
-                        <h4 class="font-bold text-slate-900 text-sm tracking-tight line-clamp-1">${member.name}</h4>
-                        <p class="text-[11px] text-indigo-600 font-bold bg-indigo-50/70 px-2.5 py-0.5 rounded-full mt-1.5">${member.designation}</p>
-                        
-                        <div class="mt-4 text-left w-full space-y-2 border-t border-slate-100 pt-4 flex-grow text-xs text-slate-600">
-                            <div class="flex items-start gap-1"><span class="text-slate-400 font-medium w-16 shrink-0">Profession:</span> <span class="text-slate-800 font-medium line-clamp-1">${member.profession || 'N/A'}</span></div>
-                            <div class="flex items-start gap-1"><span class="text-slate-400 font-medium w-16 shrink-0">Address:</span> <span class="text-slate-800 line-clamp-1">${member.address}</span></div>
-                            <div class="flex items-start gap-1"><span class="text-slate-400 font-medium w-16 shrink-0">Email:</span> <span class="text-slate-800 truncate block w-full" title="${member.email || 'N/A'}">${member.email || 'N/A'}</span></div>
-                            <div class="flex items-start gap-1"><span class="text-slate-400 font-medium w-16 shrink-0">Phone:</span> <span class="text-slate-800 font-mono font-medium">${member.phone || 'N/A'}</span></div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center mt-4 w-full border-t border-slate-50 pt-3">
-                            <span class="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">${member.gender || 'Male'}</span>
-                            <span class="text-[10px] font-black px-2.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100/40">${member.bloodGroup || 'Unknown'}</span>
-                        </div>
-                    `;
-                    resultsContainer.appendChild(memberCard);
-                });
-            } else {
-                resultsContainer.innerHTML = `
-                    <div class="text-center text-slate-400 py-16 col-span-full bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center p-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-sm font-medium text-slate-500">No directory matching filters or query details found.</p>
-                    </div>`;
-            }
-        };
-
-        // Processes upcoming calendar birthdays and setups interactive WhatsApp template messages
-        const renderBirthdays = () => {
-            const nearestBirthdaysContainer = document.getElementById('nearest-birthdays');
-            nearestBirthdaysContainer.innerHTML = '';
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            const birthdays = members.map(member => {
-                if (!member.dob) return null;
-                
-                const parts = member.dob.split('/');
-                if (parts.length !== 3) return null;
-                
-                const birthMonth = parseInt(parts[0], 10) - 1;
-                const birthDay = parseInt(parts[1], 10);
-                
-                let nextBirthday = new Date(today.getFullYear(), birthMonth, birthDay);
-                
-                if (nextBirthday < today) {
-                    nextBirthday.setFullYear(today.getFullYear() + 1);
-                }
-
-                const diffTime = nextBirthday - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const isToday = today.getMonth() === birthMonth && today.getDate() === birthDay;
-
-                return { ...member, nextBirthday, diffDays, isToday };
-            }).filter(Boolean).sort((a, b) => a.diffDays - b.diffDays);
-
-            const upcomingBirthdays = birthdays.slice(0, 5);
-
-            if (upcomingBirthdays.length > 0) {
-                upcomingBirthdays.forEach(member => {
-                    const birthdayElement = document.createElement('div');
-                    
-                    const isToday = member.isToday;
-                    birthdayElement.className = `p-3 rounded-xl flex items-center justify-between gap-2 border transition-all duration-200 ${
-                        isToday 
-                        ? 'bg-gradient-to-r from-rose-50 to-orange-50/60 border-rose-200 shadow-sm shadow-rose-500/5 animate-pulse' 
-                        : 'bg-slate-50/60 hover:bg-slate-50 border-slate-100'
-                    }`;
-                    
-                    const formattedDate = member.nextBirthday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    const statusMessage = isToday ? 'Today! 🎂' : `in ${member.diffDays} days`;
-
-                    const plainName = member.name.replace(/^Rtr\.?\s+/i, '').trim();
-
-                    const messageText = 
-                        `Happy Birthday, Rtr. ${plainName}!\n\n` +
-                        `Wishing you a very Happy Birthday and a wonderful year ahead filled with success, good health, happiness, and countless achievements.\n\n` +
-                        `Thank you for your dedicated service and valuable contributions as our ${member.designation}. Your commitment and enthusiasm continue to inspire our club.\n\n` +
-                        `May your special day be filled with joy, laughter, and unforgettable memories. Have an amazing celebration!`;
-
-                    const whatsappUrl = member.phone ? `https://wa.me/977${member.phone}?text=${encodeURIComponent(messageText)}` : '#';
-
-                    birthdayElement.innerHTML = `
-                        <div class="flex items-center min-w-0 flex-grow">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200 shadow-sm">
-                                <img src="${member.photo}" alt="" class="w-full h-full object-cover" onerror="this.src='${fallbackProfileImageUrl}'">
-                            </div>
-                            <div class="ml-2.5 min-w-0">
-                                <h4 class="font-bold text-slate-900 text-xs truncate">${member.name}</h4>
-                                <p class="text-[10px] font-semibold text-slate-400 truncate">${member.designation}</p>
-                                <p class="text-[10px] font-bold ${isToday ? 'text-rose-600 animate-bounce mt-0.5' : 'text-indigo-600'}">${statusMessage} — ${formattedDate}</p>
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0">
-                            ${member.phone ? `
-                            <a href="${whatsappUrl}" target="_blank" class="inline-flex items-center justify-center px-2.5 py-1.5 text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors rounded-lg shadow-sm whitespace-nowrap">
-                                Wish 🍰
-                            </a>` : `
-                            <span class="inline-flex items-center justify-center px-2 py-1.5 text-[9px] font-bold text-slate-400 bg-slate-100 rounded-md cursor-not-allowed">N/A</span>
-                            `}
-                        </div>
-                    `;
-                    nearestBirthdaysContainer.appendChild(birthdayElement);
-                });
-            } else {
-                nearestBirthdaysContainer.innerHTML = '<p class="text-center text-xs text-slate-400 py-6">No upcoming birthdays.</p>';
-            }
-        };
-
-        // Redraws blood index aggregation metrics counters with modern badges
-        const renderBloodGroupCounts = () => {
-            const bloodCountsContainer = document.getElementById('blood-group-counts');
-            bloodCountsContainer.innerHTML = '';
-            
-            const bloodGroups = members.reduce((counts, member) => {
-                if(member.bloodGroup && member.bloodGroup !== 'N/A' && member.bloodGroup !== 'Unknown') {
-                    let group = member.bloodGroup.toUpperCase().trim();
-                    if (group) counts[group] = (counts[group] || 0) + 1;
-                }
-                return counts;
-            }, {});
-
-            const order = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
-            const sortedBloodGroups = Object.entries(bloodGroups).sort(([a], [b]) => {
-                return (order.indexOf(a) !== -1 ? order.indexOf(a) : 99) - (order.indexOf(b) !== -1 ? order.indexOf(b) : 99);
-            });
-
-            sortedBloodGroups.forEach(([group, count]) => {
-                const bloodGroupElement = document.createElement('div');
-                bloodGroupElement.className = 'p-2 bg-gradient-to-br from-rose-50/60 to-rose-50 border border-rose-100/70 rounded-xl text-center shadow-xs hover:scale-[1.02] transition-transform';
-                bloodGroupElement.innerHTML = `
-                    <div class="font-black text-rose-600 text-sm">${count}</div>
-                    <div class="text-[9px] font-extrabold text-rose-400 tracking-wider">${group}</div>
-                `;
-                bloodCountsContainer.appendChild(bloodGroupElement);
-            });
-        };
-
-        // Application Lifecycles Event Bindings System
-        document.addEventListener('DOMContentLoaded', () => {
+            // DOM refs
+            const grid = document.getElementById('profileGrid');
+            const birthdayChips = document.getElementById('birthdayChips');
+            const totalMembers = document.getElementById('totalMembers');
+            const maleCount = document.getElementById('maleCount');
+            const femaleCount = document.getElementById('femaleCount');
+            const bloodStats = document.getElementById('bloodStats');
+            const refreshBtn = document.getElementById('refreshBtn');
             const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const homeBtn = document.getElementById('homeBtn');
-            const interactiveHomeBtn = document.getElementById('interactiveHomeBtn');
-            
-            // Initialization steps execution
-            calculateStats();
-            renderMembers();
-            renderBirthdays();
-            renderBloodGroupCounts();
-            
-            // Realtime Search Input Action Lifecycle
-            searchInput.addEventListener('input', (event) => {
-                const query = event.target.value;
-                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-                renderMembers(query, activeFilter);
+            const searchBtn = document.getElementById('searchBtn');
+            const popup = document.getElementById('birthdayPopup');
+            const popupName = document.getElementById('popupName');
+
+            let allMembers = [];
+            let popupTimeout = null;
+            let popupShownForToday = false;
+
+            // ===== HELPERS =====
+            function formatDate(dateStr) {
+                if (!dateStr) return null;
+                try {
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return null;
+                    return d;
+                } catch (_) { return null; }
+            }
+
+            function isBirthdayInRange(dateStr, days = 10) {
+                const d = formatDate(dateStr);
+                if (!d) return false;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dMonth = d.getMonth(),
+                    dDay = d.getDate();
+                for (let i = 0; i <= days; i++) {
+                    const check = new Date(today);
+                    check.setDate(check.getDate() + i);
+                    if (check.getMonth() === dMonth && check.getDate() === dDay) return true;
+                }
+                return false;
+            }
+
+            function isBirthdayToday(dateStr) {
+                const d = formatDate(dateStr);
+                if (!d) return false;
+                const today = new Date();
+                return d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+            }
+
+            function getPhotoSrc(member) {
+                if (member.photo && member.photo.trim() !== '') return member.photo.trim();
+                const name = member.name || member.full_name || '';
+                if (!name) return null;
+                const slug = name.toLowerCase().replace(/\s+/g, '');
+                return `images/${slug}.jpg`;
+            }
+
+            function getInitials(name) {
+                if (!name) return '?';
+                const parts = name.split(' ').filter(p => p.length > 0);
+                if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+                if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+                return name.substring(0, 2).toUpperCase();
+            }
+
+            function getPositionBadge(position) {
+                const p = (position || '').toLowerCase().trim();
+                if (p.includes('president')) return 'badge-president';
+                if (p.includes('secretary')) return 'badge-secretary';
+                if (p.includes('treasurer') || p.includes('treasure')) return 'badge-treasurer';
+                if (p.includes('executive') || p.includes('exec')) return 'badge-executive';
+                return 'badge-member';
+            }
+
+            function getFullNameWithPrefix(member) {
+                const name = member.name || member.full_name || '—';
+                if (name === '—') return '—';
+                if (name.startsWith('Rtr.') || name.startsWith('Rtr ')) return name;
+                return `Rtr. ${name}`;
+            }
+
+            // ===== SHOW BIRTHDAY POPUP =====
+            function showBirthdayPopup(name) {
+                if (popupShownForToday) return;
+                popupName.textContent = name;
+                popup.classList.add('active');
+                popupShownForToday = true;
+
+                // Auto-close after 15 seconds
+                if (popupTimeout) clearTimeout(popupTimeout);
+                popupTimeout = setTimeout(() => {
+                    closePopup();
+                }, 15000);
+            }
+
+            window.closePopup = function() {
+                popup.classList.remove('active');
+                if (popupTimeout) {
+                    clearTimeout(popupTimeout);
+                    popupTimeout = null;
+                }
+            };
+
+            // Close popup on background click
+            popup.addEventListener('click', function(e) {
+                if (e.target === this) closePopup();
             });
-            
-            // Filter Buttons Event Handler Mapping 
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    filterButtons.forEach(btn => {
-                        btn.classList.remove('active', 'bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-600/10');
-                        btn.classList.add('bg-slate-200/70', 'text-slate-700');
+
+            // ===== RENDER =====
+            function renderProfiles(members) {
+                grid.innerHTML = '';
+                if (!members || members.length === 0) {
+                    grid.innerHTML = `<div class="loading-grid" style="padding:2rem;">📭 No members found</div>`;
+                    return;
+                }
+
+                // Check for today's birthday and show popup
+                const todayBirthdays = members.filter(m => isBirthdayToday(m.birthday));
+                if (todayBirthdays.length > 0 && !popupShownForToday) {
+                    const firstBirthday = todayBirthdays[0];
+                    const name = getFullNameWithPrefix(firstBirthday);
+                    showBirthdayPopup(name);
+                }
+
+                members.forEach(member => {
+                    const card = document.createElement('div');
+                    card.className = 'profile-card';
+
+                    const displayName = getFullNameWithPrefix(member);
+                    const email = member.email || '—';
+                    const phone = member.phone || member.phone_number || '—';
+                    const address = member.address || '—';
+                    const profession = member.profession || member.occupation || '—';
+                    const gender = member.gender || '—';
+                    const blood = member.blood_group || member.blood || '—';
+                    const position = member.position || member.role || '—';
+                    const birthdayRaw = member.birthday || null;
+                    const isBirthday = birthdayRaw ? isBirthdayToday(birthdayRaw) : false;
+                    const photoSrc = getPhotoSrc(member);
+
+                    // top
+                    const topDiv = document.createElement('div');
+                    topDiv.className = 'card-top';
+
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'profile-photo';
+                    if (photoSrc) {
+                        const img = document.createElement('img');
+                        img.src = photoSrc;
+                        img.alt = displayName;
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            const parent = this.parentNode;
+                            parent.textContent = getInitials(displayName);
+                            parent.style.background = '#dbeafe';
+                            parent.style.color = '#2563eb';
+                            parent.style.display = 'flex';
+                            parent.style.alignItems = 'center';
+                            parent.style.justifyContent = 'center';
+                        };
+                        photoDiv.appendChild(img);
+                    } else {
+                        photoDiv.textContent = getInitials(displayName);
+                        photoDiv.style.background = '#dbeafe';
+                        photoDiv.style.color = '#2563eb';
+                    }
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'name-title';
+                    const h3 = document.createElement('h3');
+                    h3.textContent = displayName;
+                    nameDiv.appendChild(h3);
+
+                    if (position && position !== '—') {
+                        const posSpan = document.createElement('span');
+                        posSpan.className = `position ${getPositionBadge(position)}`;
+                        posSpan.textContent = position;
+                        nameDiv.appendChild(posSpan);
+                    }
+
+                    if (isBirthday) {
+                        const tag = document.createElement('div');
+                        tag.className = 'birthday-tag';
+                        tag.innerHTML = '<i class="fas fa-birthday-cake"></i> 🎂 Today!';
+                        nameDiv.appendChild(tag);
+                    }
+
+                    topDiv.appendChild(photoDiv);
+                    topDiv.appendChild(nameDiv);
+                    card.appendChild(topDiv);
+
+                    // details
+                    const details = document.createElement('div');
+                    details.className = 'card-details';
+                    const fields = [
+                        { icon: 'fa-envelope', label: 'Email', value: email },
+                        { icon: 'fa-phone', label: 'Phone', value: phone },
+                        { icon: 'fa-location-dot', label: 'Address', value: address },
+                        { icon: 'fa-briefcase', label: 'Profession', value: profession },
+                        { icon: 'fa-venus-mars', label: 'Gender', value: gender },
+                        { icon: 'fa-droplet', label: 'Blood', value: blood },
+                        { icon: 'fa-calendar', label: 'Birthday', value: birthdayRaw ? new Date(birthdayRaw)
+                                .toLocaleDateString() : '—' },
+                    ];
+                    fields.forEach(f => {
+                        if (f.value && f.value !== '—') {
+                            const div = document.createElement('div');
+                            div.className = 'detail-item';
+                            div.innerHTML =
+                                `<i class="fas ${f.icon}"></i><span class="label">${f.label}</span><span class="value">${f.value}</span>`;
+                            details.appendChild(div);
+                        }
                     });
-                    
-                    button.classList.remove('bg-slate-200/70', 'text-slate-700');
-                    button.classList.add('active', 'bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-600/10');
-                    
-                    const filter = button.dataset.filter;
-                    const query = searchInput.value;
-                    renderMembers(query, filter);
+                    card.appendChild(details);
+
+                    // footer
+                    const footer = document.createElement('div');
+                    footer.className = 'card-footer';
+                    if (member.id) {
+                        const idSpan = document.createElement('span');
+                        idSpan.innerHTML = `<i class="fas fa-hashtag"></i> ${member.id}`;
+                        footer.appendChild(idSpan);
+                    }
+                    if (member.created_at) {
+                        const created = new Date(member.created_at);
+                        if (!isNaN(created.getTime())) {
+                            const dateSpan = document.createElement('span');
+                            dateSpan.innerHTML = `<i class="fas fa-clock"></i> ${created.toLocaleDateString()}`;
+                            footer.appendChild(dateSpan);
+                        }
+                    }
+                    if (footer.children.length > 0) card.appendChild(footer);
+                    grid.appendChild(card);
                 });
+            }
+
+            // ===== STATS =====
+            function updateStats(members) {
+                const total = members.length;
+                totalMembers.textContent = total;
+                const males = members.filter(m => (m.gender || '').toLowerCase() === 'male').length;
+                const females = members.filter(m => (m.gender || '').toLowerCase() === 'female').length;
+                maleCount.textContent = males;
+                femaleCount.textContent = females;
+
+                const bloodMap = {};
+                members.forEach(m => {
+                    const bg = m.blood_group || m.blood || 'Unknown';
+                    bloodMap[bg] = (bloodMap[bg] || 0) + 1;
+                });
+                bloodStats.innerHTML = Object.entries(bloodMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([group, count]) => `<span class="blood-pill">${group} <span>${count}</span></span>`)
+                    .join('');
+            }
+
+            // ===== BIRTHDAY BANNER =====
+            function updateBirthdayBanner(members) {
+                const upcoming = members.filter(m => isBirthdayInRange(m.birthday, 10));
+                if (upcoming.length > 0) {
+                    birthdayChips.innerHTML = upcoming.map(m => {
+                        const name = getFullNameWithPrefix(m);
+                        const bday = m.birthday ? new Date(m.birthday).toLocaleDateString() : '';
+                        return `<span class="birthday-chip"><i class="fas fa-birthday-cake"></i> ${name} ${bday ? '📅 '+bday : ''}</span>`;
+                    }).join('');
+                } else {
+                    birthdayChips.innerHTML = `<span class="no-birthday">✨ No birthdays in next 10 days</span>`;
+                }
+            }
+
+            // ===== SORT & FILTER =====
+            function sortMembers(members) {
+                const priority = { 'president': 1, 'secretary': 2, 'treasurer': 3, 'treasure': 3, 'executive': 4,
+                    'exec': 4 };
+                return [...members].sort((a, b) => {
+                    const pa = (a.position || '').toLowerCase();
+                    const pb = (b.position || '').toLowerCase();
+                    const rankA = priority[pa] || 99;
+                    const rankB = priority[pb] || 99;
+                    if (rankA !== rankB) return rankA - rankB;
+                    return (a.name || '').localeCompare(b.name || '');
+                });
+            }
+
+            function filterMembers(searchTerm) {
+                if (!searchTerm) return allMembers;
+                const term = searchTerm.toLowerCase().trim();
+                return allMembers.filter(m => {
+                    const name = (m.name || m.full_name || '').toLowerCase();
+                    return name.includes(term);
+                });
+            }
+
+            function applyFiltersAndRender(searchTerm = '') {
+                const filtered = filterMembers(searchTerm);
+                const sorted = sortMembers(filtered);
+                renderProfiles(sorted);
+                updateStats(sorted);
+                updateBirthdayBanner(sorted);
+            }
+
+            // ===== FETCH =====
+            async function fetchMembers() {
+                grid.innerHTML =
+                    `<div class="loading-grid"><i class="fas fa-spinner fa-spin"></i><div>Loading members...</div></div>`;
+                birthdayChips.innerHTML = `<span class="no-birthday">⏳ loading ...</span>`;
+
+                try {
+                    const response = await fetch(ENDPOINT, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`HTTP ${response.status} — ${errText}`);
+                    }
+
+                    const data = await response.json();
+                    if (!Array.isArray(data)) throw new Error('Unexpected response format');
+                    allMembers = data;
+                    applyFiltersAndRender(searchInput.value);
+                } catch (err) {
+                    console.error('Supabase error:', err);
+                    grid.innerHTML =
+                        `<div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Failed to load: ${err.message}</div>`;
+                    birthdayChips.innerHTML = `<span class="no-birthday" style="color:#b91c1c;">⚠️ error</span>`;
+                }
+            }
+
+            // ===== INIT =====
+            fetchMembers();
+
+            refreshBtn.addEventListener('click', async () => {
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
+                popupShownForToday = false; // reset so popup can show again on refresh
+                await fetchMembers();
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                refreshBtn.disabled = false;
             });
 
-            // Home Branding reset functionality interface click trigger
-            homeBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                filterButtons.forEach(btn => {
-                    btn.classList.remove('active', 'bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-600/10');
-                    btn.classList.add('bg-slate-200/70', 'text-slate-700');
-                });
-                
-                const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-                allBtn.classList.remove('bg-slate-200/70', 'text-slate-700');
-                allBtn.classList.add('active', 'bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-600/10');
-                
-                renderMembers('', 'all');
+            searchBtn.addEventListener('click', () => {
+                applyFiltersAndRender(searchInput.value);
             });
 
-            // Smooth exit routing helper injection mechanism
-            interactiveHomeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetUrl = this.getAttribute('href');
-                this.classList.add('opacity-75', 'scale-95');
-                setTimeout(() => {
-                    window.location.href = targetUrl;
-                }, 150);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') applyFiltersAndRender(searchInput.value);
             });
-        });
+
+        })();
     </script>
 </body>
 </html>
