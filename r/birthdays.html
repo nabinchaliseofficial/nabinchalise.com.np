@@ -861,6 +861,7 @@
     <script>
         (function() {
             // ===== SUPABASE CONFIG =====
+            // FIXED: Using the correct publishable key
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const TABLE_NAME = "members";
@@ -900,6 +901,7 @@
                 today.setHours(0, 0, 0, 0);
                 const dMonth = d.getMonth(),
                     dDay = d.getDate();
+                // Check for birthdays in the next 'days' days
                 for (let i = 0; i <= days; i++) {
                     const check = new Date(today);
                     check.setDate(check.getDate() + i);
@@ -917,6 +919,7 @@
 
             function getPhotoSrc(member) {
                 if (member.photo && member.photo.trim() !== '') return member.photo.trim();
+                if (member.photo_url && member.photo_url.trim() !== '') return member.photo_url.trim();
                 const name = member.name || member.full_name || '';
                 if (!name) return null;
                 const slug = name.toLowerCase().replace(/\s+/g, '');
@@ -933,8 +936,8 @@
 
             function getPositionBadge(position) {
                 const p = (position || '').toLowerCase().trim();
-                if (p.includes('president')) return 'badge-president';
-                if (p.includes('secretary')) return 'badge-secretary';
+                if (p.includes('president') || p.includes('president elect') || p.includes('past president') || p.includes('chartered president')) return 'badge-president';
+                if (p.includes('secretary') || p.includes('joint secretary')) return 'badge-secretary';
                 if (p.includes('treasurer') || p.includes('treasure')) return 'badge-treasurer';
                 if (p.includes('executive') || p.includes('exec')) return 'badge-executive';
                 return 'badge-member';
@@ -943,7 +946,10 @@
             function getFullNameWithPrefix(member) {
                 const name = member.name || member.full_name || '—';
                 if (name === '—') return '—';
-                if (name.startsWith('Rtr.') || name.startsWith('Rtr ')) return name;
+                // Check if name already has prefix
+                if (name.startsWith('Rtr.') || name.startsWith('Rtr ') || name.startsWith('Rtr')) return name;
+                // Don't add prefix for names that already have title
+                if (name.includes('Dr.') || name.includes('Mr.') || name.includes('Ms.') || name.includes('Mrs.')) return name;
                 return `Rtr. ${name}`;
             }
 
@@ -983,7 +989,7 @@
                 }
 
                 // Check for today's birthday and show popup
-                const todayBirthdays = members.filter(m => isBirthdayToday(m.birthday));
+                const todayBirthdays = members.filter(m => isBirthdayToday(m.birthday || m.dob));
                 if (todayBirthdays.length > 0 && !popupShownForToday) {
                     const firstBirthday = todayBirthdays[0];
                     const name = getFullNameWithPrefix(firstBirthday);
@@ -1002,7 +1008,7 @@
                     const gender = member.gender || '—';
                     const blood = member.blood_group || member.blood || '—';
                     const position = member.position || member.role || '—';
-                    const birthdayRaw = member.birthday || null;
+                    const birthdayRaw = member.birthday || member.dob || null;
                     const isBirthday = birthdayRaw ? isBirthdayToday(birthdayRaw) : false;
                     const photoSrc = getPhotoSrc(member);
 
@@ -1124,12 +1130,13 @@
 
             // ===== BIRTHDAY BANNER =====
             function updateBirthdayBanner(members) {
-                const upcoming = members.filter(m => isBirthdayInRange(m.birthday, 10));
+                const upcoming = members.filter(m => isBirthdayInRange(m.birthday || m.dob, 10));
                 if (upcoming.length > 0) {
                     birthdayChips.innerHTML = upcoming.map(m => {
                         const name = getFullNameWithPrefix(m);
-                        const bday = m.birthday ? new Date(m.birthday).toLocaleDateString() : '';
-                        return `<span class="birthday-chip"><i class="fas fa-birthday-cake"></i> ${name} ${bday ? '📅 '+bday : ''}</span>`;
+                        const bday = m.birthday || m.dob;
+                        const dateStr = bday ? new Date(bday).toLocaleDateString() : '';
+                        return `<span class="birthday-chip"><i class="fas fa-birthday-cake"></i> ${name} ${dateStr ? '📅 '+dateStr : ''}</span>`;
                     }).join('');
                 } else {
                     birthdayChips.innerHTML = `<span class="no-birthday">✨ No birthdays in next 10 days</span>`;
@@ -1138,13 +1145,30 @@
 
             // ===== SORT & FILTER =====
             function sortMembers(members) {
-                const priority = { 'president': 1, 'secretary': 2, 'treasurer': 3, 'treasure': 3, 'executive': 4,
-                    'exec': 4 };
+                const priority = { 
+                    'president': 1, 
+                    'president elect': 1,
+                    'chartered president': 1,
+                    'past president': 2,
+                    'secretary': 3,
+                    'joint secretary': 3,
+                    'treasurer': 4,
+                    'treasure': 4,
+                    'vice president': 5,
+                    'executive': 6,
+                    'exec': 6
+                };
                 return [...members].sort((a, b) => {
-                    const pa = (a.position || '').toLowerCase();
-                    const pb = (b.position || '').toLowerCase();
-                    const rankA = priority[pa] || 99;
-                    const rankB = priority[pb] || 99;
+                    const pa = (a.position || '').toLowerCase().trim();
+                    const pb = (b.position || '').toLowerCase().trim();
+                    
+                    // Find matching priority
+                    let rankA = 99, rankB = 99;
+                    for (const [key, value] of Object.entries(priority)) {
+                        if (pa.includes(key)) rankA = Math.min(rankA, value);
+                        if (pb.includes(key)) rankB = Math.min(rankB, value);
+                    }
+                    
                     if (rankA !== rankB) return rankA - rankB;
                     return (a.name || '').localeCompare(b.name || '');
                 });
