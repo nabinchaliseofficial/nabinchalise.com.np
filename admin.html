@@ -154,7 +154,7 @@
 
         /* HERO with centered clock */
         .hero {
-            padding: 8rem 2rem 4rem;
+            padding: 8rem 2rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
             text-align: center;
@@ -211,6 +211,100 @@
             }
             .hero-clock .date {
                 font-size: 0.85rem;
+            }
+        }
+
+        /* --- DAILY QUOTE BANNER --- */
+        .daily-quote-banner {
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            padding: 0 2rem;
+        }
+        .daily-quote-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.06));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            backdrop-filter: blur(4px);
+            transition: var(--transition-smooth);
+        }
+        .daily-quote-card:hover {
+            border-color: rgba(167, 139, 250, 0.3);
+        }
+        .daily-quote-card .day-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .daily-quote-card .day-badge i {
+            font-size: 0.8rem;
+        }
+        .daily-quote-card .quote-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-main);
+            flex: 1;
+            text-align: center;
+            min-width: 200px;
+        }
+        .daily-quote-card .quote-text i {
+            color: var(--cls-links);
+            opacity: 0.5;
+            font-size: 0.9rem;
+            margin: 0 0.3rem;
+        }
+        .daily-quote-card .quote-author {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .daily-quote-card .quote-author i {
+            color: var(--cls-galkot);
+            margin-right: 0.3rem;
+        }
+        .daily-quote-card .quote-status {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .daily-quote-card .quote-status.found {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        .daily-quote-card .quote-status.not-found {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+        .daily-quote-card .quote-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        @media (max-width: 768px) {
+            .daily-quote-card {
+                padding: 1rem 1.2rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            .daily-quote-card .quote-text {
+                font-size: 1rem;
+            }
+            .daily-quote-card .day-badge {
+                font-size: 0.75rem;
+                padding: 0.2rem 1rem;
             }
         }
 
@@ -1175,6 +1269,24 @@
         </div>
     </header>
 
+    <!-- ===== DAILY QUOTE BANNER ===== -->
+    <section class="daily-quote-banner">
+        <div class="daily-quote-card" id="dailyQuoteCard">
+            <div class="day-badge" id="quoteDayBadge">
+                <i class="fa-solid fa-calendar-day"></i> Day <span id="quoteDayNumber">--</span>
+            </div>
+            <div class="quote-text">
+                <i class="fa-solid fa-quote-left"></i>
+                <span id="quoteText">Loading daily wisdom...</span>
+                <i class="fa-solid fa-quote-right"></i>
+            </div>
+            <div class="quote-author" id="quoteAuthor">
+                <i class="fa-solid fa-pen-fancy"></i> <span id="quoteAuthorName">—</span>
+            </div>
+            <span class="quote-status" id="quoteStatus">⏳ Loading</span>
+        </div>
+    </section>
+
     <!-- ===== MEMBERS MANAGEMENT SECTION ===== -->
     <section class="workspace-section" id="members-panel">
         <div class="panel-header">
@@ -1511,6 +1623,53 @@
             }
             updateClock();
             setInterval(updateClock, 1000);
+
+            // ============================================================
+            // ===== DAILY QUOTE =====
+            // ============================================================
+            function getDayOfYear() {
+                const now = new Date();
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+            }
+
+            async function loadDailyQuote() {
+                const day = getDayOfYear();
+                document.getElementById('quoteDayNumber').textContent = day;
+
+                const quoteText = document.getElementById('quoteText');
+                const quoteAuthor = document.getElementById('quoteAuthorName');
+                const quoteStatus = document.getElementById('quoteStatus');
+
+                try {
+                    const { data, error } = await supabase
+                        .from('spiritual_quotes')
+                        .select('*')
+                        .eq('day', day)
+                        .maybeSingle();
+
+                    if (error) throw error;
+
+                    if (data) {
+                        quoteText.textContent = data.quote;
+                        quoteAuthor.textContent = data.author || 'Unknown';
+                        quoteStatus.textContent = '✅ Today\'s Quote';
+                        quoteStatus.className = 'quote-status found';
+                    } else {
+                        quoteText.textContent = 'No quote for today yet. Add one in the database.';
+                        quoteAuthor.textContent = '—';
+                        quoteStatus.textContent = '⚠️ No quote found';
+                        quoteStatus.className = 'quote-status not-found';
+                    }
+                } catch (err) {
+                    console.error('Error loading daily quote:', err);
+                    quoteText.textContent = 'Error loading quote. Please check connection.';
+                    quoteAuthor.textContent = '—';
+                    quoteStatus.textContent = '❌ Connection error';
+                    quoteStatus.className = 'quote-status error';
+                }
+            }
 
             // ============================================================
             // ===== MEMBERS MANAGEMENT =====
@@ -2213,7 +2372,8 @@
                             loadDatabaseInquiries(),
                             loadMeetingMinutes(),
                             loadProjects(),
-                            loadProjectApplications()
+                            loadProjectApplications(),
+                            loadDailyQuote()
                         ]);
                         // Setup realtime after initial load
                         setupRealtimeSubscriptions();
