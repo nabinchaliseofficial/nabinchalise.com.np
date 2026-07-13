@@ -241,20 +241,74 @@
             box-shadow: inset 0 0 8px rgba(219,26,92,0.02);
         }
 
-        .jay-rotaract {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
+        /* --- MODIFIED: "Join Rotaract!" call-to-action block with integrated code from JOIN ROTARACT.html --- */
+        .jay-rotaract-wrapper {
             margin-top: 30px;
-            display: inline-flex;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: #fff5f7;
-            border-radius: 20px;
         }
 
-        /* Floating Modern Dynamic Interactive Button Design Component Layouts */
+        .jay-rotaract {
+            display: inline-block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #f9f3e7;
+            background: linear-gradient(145deg, #0b1a2e 0%, #1a2f44 100%);
+            padding: 0.8rem 2.2rem;
+            border-radius: 4rem 2rem 4rem 2rem;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 215, 0, 0.15);
+            text-decoration: none;
+            transition: box-shadow 0.3s, transform 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            position: relative;
+            overflow: hidden;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .jay-rotaract:hover {
+            box-shadow: 0 28px 56px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(255, 215, 0, 0.25);
+            transform: scale(1.02);
+        }
+
+        .jay-rotaract .cta-text-inner {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .jay-rotaract .cursor-cta {
+            display: inline-block;
+            width: 0.08em;
+            height: 1.05em;
+            background-color: #f9d77e;
+            margin-left: 0.04em;
+            vertical-align: text-bottom;
+            border-radius: 2px;
+            box-shadow: 0 0 12px #f9d77e88;
+            transition: opacity 0.1s, width 0.2s, margin 0.2s;
+            opacity: 1;
+        }
+
+        .jay-rotaract .cursor-cta.hidden-cursor {
+            opacity: 0;
+            width: 0;
+            margin: 0;
+        }
+
+        /* responsive */
+        @media (max-width: 480px) {
+            .jay-rotaract {
+                font-size: 1.4rem;
+                padding: 0.6rem 1.2rem;
+                min-width: 160px;
+            }
+        }
+
+        /* Floating Modern Dynamic Interactive Button Component Layouts */
         .home-btn-container {
             position: fixed;
             bottom: 30px;
@@ -820,9 +874,15 @@
 
                 <p>We envision ourselves as seeds of hope, leadership, and collaboration, committed to changing lives locally and globally, regardless of our numbers. Through fellowship, service, and professional development, we strive to inspire others and build a better world.</p>
                 
-                    <a href="membership.html" class="jay-rotaract">
-                        Join Rotaract! 🤝
-                    </a>            </div>
+                <!-- *********************** MODIFIED: INTEGRATED JOIN ROTARACT CODE *********************** -->
+                <div class="jay-rotaract-wrapper">
+                    <a href="membership.html" class="jay-rotaract" id="ctaButton" role="button" aria-label="Join Rotaract">
+                        <span class="cta-text-inner" id="ctaDisplay">Join Rotaract! 🤝</span>
+                        <span class="cursor-cta" aria-hidden="true" id="cursorCta">|</span>
+                    </a>
+                </div>
+                <!-- *********************** END MODIFIED *********************** -->
+            </div>
         </section>
     </main>
 </div>
@@ -869,7 +929,7 @@
             dateElement.innerText = today.toLocaleDateString("en-US", options);
         }
 
-        // Optimized Material Design Component Ripple System
+        // Optimized Material Design Component Ripple System (for HOME button)
         const homeBtn = document.getElementById('interactiveHomeBtn');
         if (homeBtn) {
             homeBtn.addEventListener('click', function(e) {
@@ -894,6 +954,208 @@
                 }, 400);
             });
         }
+
+        // *************************************************************
+        // INTEGRATED TYPEWRITER + ZOOM ANIMATION FOR "Join Rotaract!" CTA
+        // (from JOIN ROTARACT.html, adapted to the .jay-rotaract element)
+        // *************************************************************
+        (function() {
+            'use strict';
+
+            // ---------- ✦ CUSTOMIZATION VARIABLES (editable) ----------
+            const CONFIG = {
+                textContent: 'Join Rotaract! 🤝',      // main text
+                zoomDuration: 500,                     // ms per zoom cycle (in+out)
+                zoomScale: 1.18,                      // scale factor (1.0 → 1.18 → 1.0)
+                zoomRepetitions: 5,                   // number of zoom pulses
+                typingSpeed: 70,                      // ms per character (typing)
+                backspaceSpeed: 40,                   // ms per character (backspace)
+                pauseAfterTyping: 2000,               // ms pause after full text
+                typewriterRepetitions: 3,             // number of type/backspace cycles
+                cursorBlinkSpeed: 480,                // ms cursor blink interval
+            };
+
+            // DOM refs inside .jay-rotaract
+            const ctaWrapper = document.getElementById('ctaButton');
+            const displayEl = document.getElementById('ctaDisplay');
+            const cursorEl = document.getElementById('cursorCta');
+
+            if (!ctaWrapper || !displayEl || !cursorEl) return;
+
+            // ---------- state ----------
+            let currentCycle = 0;
+            let typeTimer = null;
+            let backspaceTimer = null;
+            let pauseTimer = null;
+            let cursorInterval = null;
+            let currentText = '';
+            let targetText = CONFIG.textContent;
+            let charIndex = 0;
+
+            // ---------- helpers ----------
+            function clearAllTimers() {
+                if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
+                if (backspaceTimer) { clearTimeout(backspaceTimer); backspaceTimer = null; }
+                if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+                if (cursorInterval) { clearInterval(cursorInterval); cursorInterval = null; }
+            }
+
+            function startCursorBlink() {
+                if (cursorInterval) clearInterval(cursorInterval);
+                cursorEl.style.opacity = '1';
+                cursorInterval = setInterval(() => {
+                    cursorEl.style.opacity = (cursorEl.style.opacity === '0' ? '1' : '0');
+                }, CONFIG.cursorBlinkSpeed);
+            }
+
+            function stopCursorAndHide() {
+                if (cursorInterval) {
+                    clearInterval(cursorInterval);
+                    cursorInterval = null;
+                }
+                cursorEl.classList.add('hidden-cursor');
+                cursorEl.style.opacity = '0';
+            }
+
+            function renderText() {
+                displayEl.textContent = currentText;
+                // cursor is a separate element, no need to re-append
+            }
+
+            // ---------- typewriter: type one character ----------
+            function typeChar() {
+                if (charIndex < targetText.length) {
+                    currentText += targetText.charAt(charIndex);
+                    charIndex++;
+                    renderText();
+                    typeTimer = setTimeout(typeChar, CONFIG.typingSpeed);
+                } else {
+                    // full text typed → pause then backspace
+                    startCursorBlink();
+                    pauseTimer = setTimeout(startBackspace, CONFIG.pauseAfterTyping);
+                }
+            }
+
+            // ---------- backspace: delete one character ----------
+            function backspaceChar() {
+                if (currentText.length > 0) {
+                    currentText = currentText.slice(0, -1);
+                    charIndex = currentText.length;
+                    renderText();
+                    backspaceTimer = setTimeout(backspaceChar, CONFIG.backspaceSpeed);
+                } else {
+                    // fully deleted → increment cycle
+                    currentCycle++;
+                    if (currentCycle < CONFIG.typewriterRepetitions) {
+                        charIndex = 0;
+                        currentText = '';
+                        renderText();
+                        startCursorBlink();
+                        typeTimer = setTimeout(typeChar, CONFIG.typingSpeed);
+                    } else {
+                        // all cycles done → show final text, remove cursor
+                        currentText = targetText;
+                        charIndex = targetText.length;
+                        renderText();
+                        stopCursorAndHide();
+                        displayEl.textContent = currentText;
+                        clearAllTimers();
+                    }
+                }
+            }
+
+            function startBackspace() {
+                pauseTimer = null;
+                if (currentText.length > 0) {
+                    if (cursorInterval) {
+                        clearInterval(cursorInterval);
+                        cursorInterval = null;
+                    }
+                    cursorEl.style.opacity = '1';
+                    backspaceTimer = setTimeout(backspaceChar, CONFIG.backspaceSpeed);
+                } else {
+                    currentCycle++;
+                    if (currentCycle < CONFIG.typewriterRepetitions) {
+                        charIndex = 0;
+                        currentText = '';
+                        renderText();
+                        startCursorBlink();
+                        typeTimer = setTimeout(typeChar, CONFIG.typingSpeed);
+                    } else {
+                        currentText = targetText;
+                        charIndex = targetText.length;
+                        renderText();
+                        stopCursorAndHide();
+                        displayEl.textContent = currentText;
+                        clearAllTimers();
+                    }
+                }
+            }
+
+            // ---------- ZOOM animation (CSS based) ----------
+            function runZoomSequence() {
+                let count = 0;
+                const totalZoom = CONFIG.zoomRepetitions;
+                const scale = CONFIG.zoomScale;
+                const duration = CONFIG.zoomDuration;
+
+                displayEl.style.transition = `transform ${duration/2}ms ease-in-out`;
+
+                function doZoom() {
+                    if (count >= totalZoom) {
+                        displayEl.style.transition = 'none';
+                        displayEl.style.transform = 'scale(1)';
+                        // start typewriter
+                        startTypewriter();
+                        return;
+                    }
+
+                    displayEl.style.transform = `scale(${scale})`;
+                    setTimeout(() => {
+                        displayEl.style.transform = 'scale(1)';
+                        setTimeout(() => {
+                            count++;
+                            doZoom();
+                        }, duration/2);
+                    }, duration/2);
+                }
+
+                displayEl.style.transform = 'scale(1)';
+                doZoom();
+            }
+
+            // ---------- start typewriter (after zoom) ----------
+            function startTypewriter() {
+                currentCycle = 0;
+                charIndex = 0;
+                currentText = '';
+                targetText = CONFIG.textContent;
+
+                cursorEl.classList.remove('hidden-cursor');
+                cursorEl.style.opacity = '1';
+                displayEl.textContent = '';
+                startCursorBlink();
+
+                typeTimer = setTimeout(typeChar, CONFIG.typingSpeed);
+            }
+
+            // ---------- initialise ----------
+            function init() {
+                currentText = '';
+                displayEl.textContent = '';
+                displayEl.style.transform = 'scale(1)';
+                displayEl.style.transition = `transform ${CONFIG.zoomDuration/2}ms ease-in-out`;
+                runZoomSequence();
+            }
+
+            window.addEventListener('beforeunload', function() {
+                clearAllTimers();
+                if (cursorInterval) clearInterval(cursorInterval);
+            });
+
+            init();
+        })();
+
     });
 </script>
 

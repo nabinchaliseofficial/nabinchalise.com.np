@@ -1382,6 +1382,7 @@
             <ul class="nav-links">
                 <li><a href="#" class="active">Dashboard</a></li>
                 <li><a href="#members-panel">Members</a></li>
+                <li><a href="#registrations-panel">Registrations</a></li>
                 <li><a href="#minutes-anchor">Live Minutes</a></li>
                 <li><a href="#inquiries-panel">Submissions</a></li>
                 <li><a href="#projects-panel">Upcoming Projects</a></li>
@@ -1423,10 +1424,23 @@
         </div>
     </section>
 
+    <!-- ===== NEW MEMBER REGISTRATIONS ===== -->
+    <section class="workspace-section" id="registrations-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-user-plus" aria-hidden="true" style="color: var(--cls-rotaract);"></i> New Member Requests</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-registrations-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+        </div>
+        <div class="inquiries-feed" id="registrations-feed">
+            <div class="status-msg">Loading registration requests...</div>
+        </div>
+    </section>
+
     <!-- ===== MEMBERS MANAGEMENT SECTION ===== -->
     <section class="workspace-section" id="members-panel">
         <div class="panel-header">
-            <h2><i class="fa-solid fa-user-plus" aria-hidden="true" style="color: var(--cls-rotaract);"></i> Members Management</h2>
+            <h2><i class="fa-solid fa-user-check" aria-hidden="true" style="color: var(--cls-professional);"></i> Active Members</h2>
             <div class="panel-actions">
                 <div class="search-box-inline">
                     <input type="text" id="memberSearchInput" placeholder="Search by name..." />
@@ -1755,6 +1769,7 @@
             let editingProjectId = null;
             let editingMemberId = null;
             let allMembersData = [];
+            let registrationsData = [];
 
             const escapeHtml = (str) => {
                 if (!str) return '';
@@ -1896,6 +1911,107 @@
                     quoteStatus.className = 'quote-status error';
                 }
             }
+
+            // ============================================================
+            // ===== MEMBER REGISTRATIONS (from membership.html) =====
+            // ============================================================
+            const loadRegistrations = async () => {
+                const feedContainer = document.getElementById('registrations-feed');
+                if (!feedContainer) return;
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registrations...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('member_registrations')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    registrationsData = data || [];
+                    if (!registrationsData.length) {
+                        feedContainer.innerHTML = 'No pending registrations.';
+                        return;
+                    }
+                    feedContainer.innerHTML = registrationsData.map(item => `
+                        <article class="inquiry-node" style="border-left-color: #fbbf24;">
+                            <div class="node-meta"><span>ID: ${item.id}</span><span>${new Date(item.created_at).toLocaleString()}</span></div>
+                            <div class="node-sender">${escapeHtml(item.name)}</div>
+                            <a href="mailto:${escapeHtml(item.email)}" class="node-email"><i class="fa-solid fa-envelope"></i> ${escapeHtml(item.email)}</a>
+                            ${item.phone ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-phone"></i> ${escapeHtml(item.phone)}</div>` : ''}
+                            ${item.position ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.position)}</div>` : ''}
+                            ${item.address ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.address)}</div>` : ''}
+                            ${item.profession ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.profession)}</div>` : ''}
+                            ${item.gender ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-venus-mars"></i> ${escapeHtml(item.gender)}</div>` : ''}
+                            ${item.blood_group ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-droplet"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
+                            ${item.birthday ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-calendar"></i> ${new Date(item.birthday).toLocaleDateString()}</div>` : ''}
+                            <div class="application-actions">
+                                <button class="action-btn-sm approve-btn" onclick="window.acceptMember(${item.id})"><i class="fa-solid fa-check"></i> Accept Member</button>
+                                <button class="action-btn-sm delete-btn" onclick="window.rejectRegistration(${item.id})"><i class="fa-solid fa-trash"></i> Reject</button>
+                            </div>
+                        </article>
+                    `).join('');
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;">Error: ${err.message}</div>`;
+                }
+            };
+
+            // Accept member: insert into members table, then delete from registrations
+            window.acceptMember = async (id) => {
+                if (!confirm('Accept this member and move to active members list?')) return;
+                try {
+                    // Find the registration record
+                    const reg = registrationsData.find(r => r.id === id);
+                    if (!reg) throw new Error('Registration record not found');
+
+                    // Build member object (map fields)
+                    const memberData = {
+                        name: reg.name,
+                        email: reg.email,
+                        phone: reg.phone || '',
+                        gender: reg.gender || '',
+                        blood_group: reg.blood_group || '',
+                        position: reg.position || '',
+                        address: reg.address || '',
+                        profession: reg.profession || '',
+                        birthday: reg.birthday || null
+                    };
+
+                    // Insert into members table
+                    const { error: insertError } = await supabase
+                        .from('members')
+                        .insert([memberData]);
+                    if (insertError) throw insertError;
+
+                    // Delete from registrations
+                    const { error: deleteError } = await supabase
+                        .from('member_registrations')
+                        .delete()
+                        .eq('id', id);
+                    if (deleteError) throw deleteError;
+
+                    alert('✅ Member accepted and added to active members list!');
+                    // Refresh both panels
+                    loadRegistrations();
+                    loadMembers(document.getElementById('memberSearchInput').value);
+                } catch (err) {
+                    alert('❌ Error accepting member: ' + err.message);
+                }
+            };
+
+            // Reject / delete registration
+            window.rejectRegistration = async (id) => {
+                if (!confirm('Reject this registration? This will delete it permanently.')) return;
+                try {
+                    const { error } = await supabase
+                        .from('member_registrations')
+                        .delete()
+                        .eq('id', id);
+                    if (error) throw error;
+                    alert('✅ Registration rejected and removed.');
+                    loadRegistrations();
+                } catch (err) {
+                    alert('❌ Error rejecting registration: ' + err.message);
+                }
+            };
 
             // ============================================================
             // ===== MEMBERS MANAGEMENT =====
@@ -2516,6 +2632,19 @@
                         console.log('📡 Members subscription status:', status);
                     });
 
+                supabase.channel('registrations-changes')
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'member_registrations'
+                    }, () => {
+                        console.log('🔄 Registrations table changed, refreshing...');
+                        loadRegistrations();
+                    })
+                    .subscribe((status) => {
+                        console.log('📡 Registrations subscription status:', status);
+                    });
+
                 supabase.channel('inquiries-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2579,6 +2708,7 @@
                     if (session) {
                         panel.style.display = 'block';
                         await Promise.all([
+                            loadRegistrations(),
                             loadMembers(),
                             loadDatabaseInquiries(),
                             loadMeetingMinutes(),
@@ -2648,6 +2778,7 @@
                 }, observerOptions);
                 document.querySelectorAll('.dash-card').forEach(el => observer.observe(el));
 
+                document.getElementById('refresh-registrations-btn')?.addEventListener('click', loadRegistrations);
                 document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadDatabaseInquiries);
                 document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
                 document.getElementById('refresh-projects-btn')?.addEventListener('click', loadProjects);
