@@ -233,16 +233,183 @@
       transition: 0.2s;
     }
     .read-more-btn:hover { color: var(--brand-hover); text-decoration: underline; }
+
+    /* ===== HOME BUTTON STYLES ===== */
+    .home-btn-container {
+      display: inline-flex;
+      align-items: center;
+      perspective: 1000px;
+    }
+    .home-btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #015491;
+      color: white;
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 3px 6px rgba(1, 84, 145, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: none;
+      font-family: inherit;
+      min-height: 36px;
+    }
+    .home-btn .icon {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .home-btn:hover {
+      background-color: #D70060;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
+    }
+    .home-btn:hover .icon {
+      transform: scale(1.15) rotate(-5deg);
+    }
+    .home-btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0);
+      animation: ripple-effect 0.45s linear;
+      pointer-events: none;
+    }
+    .home-btn.clicked-exit {
+      animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes ripple-effect {
+      to { transform: scale(4); opacity: 0; }
+    }
+    @keyframes exit-bounce {
+      0% { transform: scale(1); }
+      20% { transform: scale(0.92); background-color: #D70060; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-15px) scale(0.8); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    }
+
+    /* ===== LOGIN MODAL ===== */
+    .login-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-modal-overlay.active {
+      display: flex;
+    }
+    .login-modal {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 32px 28px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      animation: modalSlideUp 0.3s ease;
+    }
+    @keyframes modalSlideUp {
+      from { transform: translateY(30px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .login-modal .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: 0.2s;
+    }
+    .login-modal .modal-close:hover { color: var(--text); transform: rotate(90deg); }
+    .login-modal h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .login-modal .sub {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .login-modal .form-group { margin-bottom: 14px; }
+    .login-modal .form-control {
+      width: 100%; min-height: 44px; padding: 10px 14px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+      color: var(--text); font-family: inherit; font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    .login-modal .form-control:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .login-modal .btn { width: 100%; margin-top: 4px; }
+    .login-modal .auth-status { margin-top: 12px; font-size: 0.85rem; font-weight: 500; display: none; }
+    .login-modal .auth-status.error { color: #ef4444; display: block; }
+    .login-modal .auth-status.success { color: #10b981; display: block; }
+
+    /* Login Button in Nav */
+    .login-nav-btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 6px 18px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      min-height: 36px;
+    }
+    .login-nav-btn:hover {
+      background: var(--brand-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+    }
+    .login-nav-btn.logged-in {
+      background: var(--accent);
+    }
+    .login-nav-btn.logged-in:hover {
+      background: #059669;
+    }
+
+    @media print {
+      .home-btn-container, .login-nav-btn { display: none !important; }
+    }
+
+    @media (max-width: 640px) {
+      .login-modal { padding: 24px 18px; }
+      .nav-wrapper .home-btn { padding: 4px 12px; font-size: 0.75rem; min-height: 30px; }
+      .nav-wrapper .home-btn .icon { font-size: 0.9rem; }
+    }
   </style>
 </head>
 <body>
   <header class="header-nav" id="navbar">
     <nav class="container nav-wrapper" role="navigation" aria-label="Main navigation">
-      <a href="#" class="logo">Nabin Chalise · Blog</a>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <!-- HOME BUTTON (integrated in nav) -->
+        <div class="home-btn-container">
+          <a href="index.html" class="home-btn" id="interactiveHomeBtn">
+            <span class="icon">🏠</span> HOME
+          </a>
+        </div>
+        <a href="#" class="logo">Nabin Chalise · Blog</a>
+      </div>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#blog">Blog</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="#blog">Latest Blog</a></li>
         <li><a href="dashboard.html" id="dashboardLink" style="display:none;">📊 Dashboard</a></li>
+        <li><button class="login-nav-btn" id="loginNavBtn">🔐 Login</button></li>
       </ul>
       <div style="display:flex; align-items:center; gap:10px;">
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -256,6 +423,25 @@
     </nav>
   </header>
 
+  <!-- ===== LOGIN MODAL (Popup) ===== -->
+  <div class="login-modal-overlay" id="loginModal">
+    <div class="login-modal">
+      <button class="modal-close" id="modalCloseBtn" aria-label="Close login">✕</button>
+      <h2>🔐 Admin Login</h2>
+      <p class="sub">Enter your credentials to access the dashboard.</p>
+      <form id="authForm" novalidate>
+        <div class="form-group">
+          <input type="email" id="auth-email" class="form-control" placeholder="Email" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <input type="password" id="auth-password" class="form-control" placeholder="Password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Authenticate</button>
+        <div id="authStatusMessage" class="auth-status" role="status"></div>
+      </form>
+    </div>
+  </div>
+
   <div class="daily-quote-banner" id="dailyQuoteBanner">
     <span id="quoteDay" style="font-weight:600;color:var(--brand);margin-right:6px;">Day 1</span>
     <q id="quoteText">The journey of a thousand miles begins with a single step.</q>
@@ -264,7 +450,6 @@
 
   <main class="container blog-layout" id="blog">
     <div class="main-blog">
-      <!-- Back to Blog button (hidden by default, shown in single post mode) -->
       <div id="backToBlogWrapper" style="display:none; margin-bottom:16px;">
         <a href="#" id="backToBlogLink" class="btn btn-outline" style="min-height:38px; padding:4px 20px;">← Back to Blog</a>
       </div>
@@ -296,20 +481,6 @@
             <a href="https://nabinchalise.com.np/r/" class="btn btn-outline" style="padding:4px 14px;min-height:32px;font-size:0.75rem;">ROTARACT</a>
           </div>
         </div>
-      </div>
-
-      <div class="side-card login-box" id="loginPanel">
-        <h3>🔐 Admin Login</h3>
-        <form id="authForm" novalidate>
-          <div class="form-group">
-            <input type="email" id="auth-email" class="form-control" placeholder="Email" required autocomplete="username">
-          </div>
-          <div class="form-group">
-            <input type="password" id="auth-password" class="form-control" placeholder="Password" required autocomplete="current-password">
-          </div>
-          <button type="submit" class="btn btn-primary">Authenticate</button>
-          <div id="authStatusMessage" class="auth-status" role="status"></div>
-        </form>
       </div>
     </aside>
   </main>
@@ -402,18 +573,60 @@
       function checkAuthForDashboard() {
         const verified = sessionStorage.getItem('auth_verified') === 'true';
         const dashboardLink = document.getElementById('dashboardLink');
+        const loginNavBtn = document.getElementById('loginNavBtn');
         if (verified) {
           dashboardLink.style.display = 'inline';
+          loginNavBtn.textContent = '✅ Dashboard';
+          loginNavBtn.classList.add('logged-in');
+          loginNavBtn.onclick = () => { window.location.href = 'dashboard.html'; };
         } else {
           dashboardLink.style.display = 'none';
+          loginNavBtn.textContent = '🔐 Login';
+          loginNavBtn.classList.remove('logged-in');
+          loginNavBtn.onclick = openLoginModal;
         }
         return verified;
       }
+
+      // ===== LOGIN MODAL =====
+      const loginModal = document.getElementById('loginModal');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+      const loginNavBtn = document.getElementById('loginNavBtn');
+
+      function openLoginModal(e) {
+        if (e) e.preventDefault();
+        loginModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // clear previous status
+        const status = document.getElementById('authStatusMessage');
+        status.className = 'auth-status';
+        status.textContent = '';
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-email').focus();
+      }
+
+      function closeLoginModal() {
+        loginModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // Close modal events
+      modalCloseBtn.addEventListener('click', closeLoginModal);
+      loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) closeLoginModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && loginModal.classList.contains('active')) closeLoginModal();
+      });
+
+      // Login button in nav - handled by checkAuthForDashboard
+      // Initially set
       checkAuthForDashboard();
 
       // ===== STATE =====
       let allPosts = [];
-      let currentSlug = null; // null = blog list, else single post slug
+      let currentSlug = null;
 
       // ===== RENDER FUNCTIONS =====
       function escapeHtml(text) {
@@ -428,7 +641,7 @@
         const empty = document.getElementById('emptyState');
         const backWrapper = document.getElementById('backToBlogWrapper');
 
-        backWrapper.style.display = 'none'; // hide back button in list view
+        backWrapper.style.display = 'none';
         if (!posts || posts.length === 0) {
           empty.style.display = 'block';
           container.innerHTML = '';
@@ -456,7 +669,6 @@
           `;
         }).join('');
 
-        // attach click events to post links
         document.querySelectorAll('.post-link').forEach(el => {
           el.addEventListener('click', (e) => {
             e.preventDefault();
@@ -465,7 +677,6 @@
           });
         });
 
-        // re-trigger reveal
         document.querySelectorAll('.blog-card.reveal').forEach(el => obs.observe(el));
       }
 
@@ -490,7 +701,6 @@
             </div>
           </article>
         `;
-        // scroll to top of blog
         document.querySelector('.main-blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
@@ -503,7 +713,6 @@
         }
         currentSlug = slug;
         renderSinglePost(post);
-        // Update URL hash
         if (history.pushState) {
           history.pushState(null, null, '#' + slug);
         }
@@ -521,7 +730,6 @@
       async function fetchBlogPosts() {
         const loadingState = document.getElementById('loadingState');
         const blogContent = document.getElementById('blogContent');
-        const postsContainer = document.getElementById('postsContainer');
 
         try {
           loadingState.style.display = 'block';
@@ -538,7 +746,6 @@
           loadingState.style.display = 'none';
           blogContent.style.display = 'block';
 
-          // check hash for single post
           const hash = window.location.hash.replace('#', '');
           if (hash) {
             const post = allPosts.find(p => p.slug === hash);
@@ -563,7 +770,7 @@
         showBlogList();
       });
 
-      // ===== AUTH LOGIN =====
+      // ===== AUTH LOGIN (via Modal) =====
       const authForm = document.getElementById('authForm');
       const authStatus = document.getElementById('authStatusMessage');
 
@@ -583,16 +790,19 @@
           sessionStorage.setItem('auth_verified', 'true');
 
           authStatus.className = 'auth-status success';
-          authStatus.textContent = '✅ Authenticated!';
+          authStatus.textContent = '✅ Authenticated! Redirecting...';
 
           document.getElementById('auth-email').value = '';
           document.getElementById('auth-password').value = '';
 
-          document.getElementById('dashboardLink').style.display = 'inline';
+          // Update UI
+          checkAuthForDashboard();
 
+          // Close modal after a moment
           setTimeout(() => {
+            closeLoginModal();
             window.location.href = 'dashboard.html';
-          }, 1000);
+          }, 800);
 
         } catch (err) {
           authStatus.className = 'auth-status error';
@@ -609,6 +819,28 @@
         } else {
           showBlogList();
         }
+      });
+
+      // ===== HOME BUTTON with Click Animation =====
+      document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetUrl = this.getAttribute('href');
+        const button = this;
+
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+        ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+        button.appendChild(ripple);
+
+        button.classList.add('clicked-exit');
+
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 450);
       });
 
       // ===== INIT =====

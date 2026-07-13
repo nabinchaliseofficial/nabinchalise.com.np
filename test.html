@@ -1,1 +1,718 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Nabin Chalise · Blog</title>
+  <meta name="description" content="Personal blog of Nabin Chalise – Computer Operator & ICT Professional.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%233b82f6'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.25s, color 0.25s;
+      -webkit-font-smoothing: antialiased;
+    }
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --brand: #3b82f6;
+      --brand-hover: #1d4ed8;
+      --accent: #10b981;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 30px rgba(0,0,0,0.06);
+      --sp: 8px;
+      --max-w: 1200px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; padding: 8px 24px;
+      font-weight: 600; border-radius: 60px; border: none;
+      cursor: pointer; transition: 0.2s; text-decoration: none; gap: 8px;
+      font-size: 0.9rem;
+    }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-hover); transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(59,130,246,0.3); }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(16,185,129,0.3); }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-2px); }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+      margin-top: 80px;
+      padding-bottom: 60px;
+    }
+    .main-blog { min-width: 0; }
+    .side-panel {
+      position: sticky;
+      top: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .blog-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      transition: 0.3s ease;
+    }
+    .blog-card:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(59,130,246,0.08); }
+    .blog-meta { display: flex; gap: 16px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; flex-wrap: wrap; }
+    .blog-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+    .blog-title a { color: var(--text); text-decoration: none; }
+    .blog-title a:hover { color: var(--brand); }
+    .blog-excerpt { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px; }
+    .blog-content-full { 
+      color: var(--text); 
+      margin: 12px 0 16px;
+      line-height: 1.8;
+      font-size: 0.98rem;
+    }
+    .blog-content-full p { margin-bottom: 12px; }
+    .blog-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .blog-tags span { background: rgba(59,130,246,0.08); padding: 2px 12px; border-radius: 40px; font-size: 0.7rem; color: var(--brand); }
+    .blog-status {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    .blog-status.draft { background: #fef3c7; color: #92400e; }
+    .blog-status.published { background: #d1fae5; color: #065f46; }
+
+    .side-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+    }
+    .side-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .side-card .bio { font-size: 0.9rem; color: var(--text-secondary); }
+    .side-card .bio strong { color: var(--text); }
+
+    .header-nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      background: rgba(var(--bg-rgb, 248,250,252), 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: 0.2s;
+    }
+    [data-theme="dark"] .header-nav { --bg-rgb: 15,23,42; }
+    .nav-wrapper {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 68px; gap: 12px;
+    }
+    .logo { font-weight: 700; font-size: 1.2rem; color: var(--brand); text-decoration: none; }
+    .nav-links { display: flex; align-items: center; list-style: none; gap: 24px; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: 0.2s; cursor: pointer; }
+    .nav-links a:hover { color: var(--brand); }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle .sun { display: block; }
+    .theme-toggle .moon { display: none; }
+    [data-theme="dark"] .theme-toggle .sun { display: none; }
+    [data-theme="dark"] .theme-toggle .moon { display: block; }
+    .menu-toggle {
+      background: none; border: 1px solid var(--border); width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer; display: none;
+      flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    }
+    .menu-toggle span { display: block; width: 18px; height: 2px; background: var(--text); transition: 0.2s; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+
+    /* home button style inline with header */
+    .home-nav-btn {
+      background: #015491;
+      color: #fff;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .home-nav-btn:hover {
+      background: #D70060;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(215, 0, 96, 0.3);
+    }
+
+    @media (max-width: 900px) {
+      .blog-layout { grid-template-columns: 1fr; }
+      .side-panel { position: static; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .menu-toggle { display: flex; }
+      .nav-links.active { display: flex; flex-direction: column; position: fixed; top: 68px; right: 0; width: 220px; background: var(--surface); padding: 24px; border-left: 1px solid var(--border); gap: 16px; box-shadow: var(--shadow); }
+    }
+
+    .daily-quote-banner {
+      margin-top: 68px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(16,185,129,0.03));
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      text-align: center;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    .daily-quote-banner q { quotes: "“" "”" "‘" "’"; color: var(--text); }
+    .daily-quote-banner .meta { margin-left: 10px; font-size: 0.75rem; opacity: 0.6; }
+
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 16px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary); }
+
+    .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--brand);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
+    .empty-state .icon { font-size: 4rem; margin-bottom: 15px; }
+    .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+
+    .single-post-back { margin-bottom: 20px; display: inline-block; }
+    .single-post .blog-title { font-size: 2rem; }
+    .single-post .blog-content-full { font-size: 1.05rem; }
+    .read-more-btn { 
+      background: none; border: none; color: var(--brand); font-weight: 600; 
+      cursor: pointer; padding: 4px 0; font-size: 0.9rem; 
+      transition: 0.2s;
+    }
+    .read-more-btn:hover { color: var(--brand-hover); text-decoration: underline; }
+
+    /* TTS button */
+    .tts-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 6px 18px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      color: var(--text);
+    }
+    .tts-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .tts-btn.playing { background: var(--accent); color: #fff; border-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="header-nav" id="navbar">
+    <nav class="container nav-wrapper" role="navigation" aria-label="Main navigation">
+      <a href="#" class="logo">Nabin Chalise · Blog</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#blog" id="blogNavLink">Latest Blog</a></li>
+        <li><a href="#about">About</a></li>
+        <!-- HOME BUTTON in header (replaces old "About" placement) -->
+        <li><a href="index.html" class="home-nav-btn" id="headerHomeBtn"><span>🏠</span> Home</a></li>
+        <li><a href="dashboard.html" id="dashboardLink" style="display:none;">📊 Dashboard</a></li>
+      </ul>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="sun" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 2.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm4 4.707a1 1 0 011 1v1a1 1 0 11-2 0V10a1 1 0 011-1zm-2.293 4a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-2.293a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm2.293-4a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"/></svg>
+          <svg class="moon" fill="currentColor" viewBox="0 0 20 20" width="20" height="20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+        </button>
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="daily-quote-banner" id="dailyQuoteBanner">
+    <span id="quoteDay" style="font-weight:600;color:var(--brand);margin-right:6px;">Day 1</span>
+    <q id="quoteText">The journey of a thousand miles begins with a single step.</q>
+    <span class="meta" id="quoteMeta">✨ wisdom</span>
+  </div>
+
+  <main class="container blog-layout" id="blog">
+    <div class="main-blog">
+      <!-- Back to Blog button (hidden by default) -->
+      <div id="backToBlogWrapper" style="display:none; margin-bottom:16px;">
+        <a href="#" id="backToBlogLink" class="btn btn-outline" style="min-height:38px; padding:4px 20px;">← Back to Blog</a>
+      </div>
+
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+        <p>Loading posts...</p>
+      </div>
+      <div id="blogContent" style="display:none;">
+        <div id="postsContainer"></div>
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="icon">📝</div>
+          <h3>No posts yet</h3>
+          <p>Check back soon for new content!</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side-panel">
+      <div class="side-card">
+        <h3>👤 About Nabin</h3>
+        <div class="bio">
+          <p><strong>Nabin Chalise</strong> · Computer Operator &amp; ICT Professional</p>
+          <p style="margin-top:6px;">📍 Galkot, Gandaki, Nepal</p>
+          <p style="margin-top:8px;">Passionate about technology, philosophy, and community building.</p>
+          <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
+            <a href="https://nabinchalise.com.np/p/" class="btn btn-outline" style="padding:4px 14px;min-height:32px;font-size:0.75rem;">ProDev</a>
+            <a href="https://nabinchalise.com.np/g/" class="btn btn-outline" style="padding:4px 14px;min-height:32px;font-size:0.75rem;">Galkot</a>
+            <a href="https://nabinchalise.com.np/r/" class="btn btn-outline" style="padding:4px 14px;min-height:32px;font-size:0.75rem;">ROTARACT</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login panel removed per request. Admin login will be triggered via popup (see script) -->
+      <div class="side-card" id="loginTriggerCard" style="cursor:pointer;">
+        <h3>🔐 Admin</h3>
+        <p style="font-size:0.85rem; color:var(--text-secondary);">Click to login (popup)</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer><div class="container"><p>&copy; 2026 Nabin Chalise · All rights reserved.</p></div></footer>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+      let supabase;
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('✅ Supabase connected');
+      } catch (e) {
+        console.error('❌ Supabase init failed:', e);
+      }
+
+      // ===== THEME =====
+      const themeToggle = document.getElementById('themeToggle');
+      const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const applyTheme = (t) => {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('theme', t);
+      };
+      applyTheme(getTheme());
+      themeToggle.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        applyTheme(cur === 'dark' ? 'light' : 'dark');
+      });
+
+      // ===== NAV =====
+      const menuToggle = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', () => {
+        const exp = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', !exp);
+        navLinks.classList.toggle('active');
+      });
+
+      // ===== REVEAL =====
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+      // ===== DAILY QUOTE =====
+      async function fetchQuote() {
+        const qText = document.getElementById('quoteText');
+        const qDay = document.getElementById('quoteDay');
+        const qMeta = document.getElementById('quoteMeta');
+        const fallbacks = [
+          "The only way to do great work is to love what you do.",
+          "In the middle of difficulty lies opportunity.",
+          "Life is what happens when you're busy making other plans.",
+          "The journey of a thousand miles begins with a single step.",
+          "What we think, we become."
+        ];
+        try {
+          const now = new Date();
+          const start = new Date(now.getFullYear(), 0, 0);
+          const diff = now - start;
+          const dayOfYear = Math.floor(diff / (1000*60*60*24)) + 1;
+          const { data, error } = await supabase
+            .from('spiritual_quotes')
+            .select('day, quote, author')
+            .eq('day', dayOfYear)
+            .maybeSingle();
+          if (error || !data) throw new Error('no quote');
+          qText.textContent = data.quote;
+          qDay.textContent = 'Day ' + data.day;
+          qMeta.textContent = data.author ? '— ' + data.author : '✨ spiritual';
+        } catch (err) {
+          const now = new Date();
+          const start = new Date(now.getFullYear(), 0, 0);
+          const diff = now - start;
+          const day = Math.floor(diff / (1000*60*60*24));
+          const idx = day % fallbacks.length;
+          qText.textContent = fallbacks[idx];
+          qDay.textContent = 'Day ' + (day + 1);
+          qMeta.textContent = '✨ inspiration';
+        }
+      }
+      fetchQuote();
+
+      // ===== CHECK AUTH FOR DASHBOARD LINK =====
+      function checkAuthForDashboard() {
+        const verified = sessionStorage.getItem('auth_verified') === 'true';
+        const dashboardLink = document.getElementById('dashboardLink');
+        if (verified) {
+          dashboardLink.style.display = 'inline';
+        } else {
+          dashboardLink.style.display = 'none';
+        }
+        return verified;
+      }
+      checkAuthForDashboard();
+
+      // ===== STATE =====
+      let allPosts = [];
+      let currentSlug = null;
+
+      // ===== TTS =====
+      let ttsUtterance = null;
+      let ttsPlaying = false;
+
+      function toggleTTS(text) {
+        if (!window.speechSynthesis) {
+          alert('Text-to-speech not supported in this browser.');
+          return;
+        }
+        if (ttsPlaying) {
+          window.speechSynthesis.cancel();
+          ttsPlaying = false;
+          document.querySelectorAll('.tts-btn').forEach(b => b.classList.remove('playing'));
+          return;
+        }
+        // clean text
+        const clean = text.replace(/<[^>]*>/g, '').trim();
+        if (!clean) return;
+        const utterance = new SpeechSynthesisUtterance(clean);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.95;
+        utterance.pitch = 1;
+        utterance.onend = () => {
+          ttsPlaying = false;
+          document.querySelectorAll('.tts-btn').forEach(b => b.classList.remove('playing'));
+        };
+        utterance.onerror = () => {
+          ttsPlaying = false;
+          document.querySelectorAll('.tts-btn').forEach(b => b.classList.remove('playing'));
+        };
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+        ttsPlaying = true;
+        document.querySelectorAll('.tts-btn').forEach(b => b.classList.add('playing'));
+        ttsUtterance = utterance;
+      }
+
+      // ===== RENDER FUNCTIONS =====
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function renderPostList(posts) {
+        const container = document.getElementById('postsContainer');
+        const empty = document.getElementById('emptyState');
+        const backWrapper = document.getElementById('backToBlogWrapper');
+
+        backWrapper.style.display = 'none';
+        if (!posts || posts.length === 0) {
+          empty.style.display = 'block';
+          container.innerHTML = '';
+          return;
+        }
+        empty.style.display = 'none';
+
+        container.innerHTML = posts.map(post => {
+          const excerpt = post.excerpt || (post.content || '').substring(0, 160) + '...';
+          const hasMore = (post.content || '').length > 160;
+          return `
+            <article class="blog-card reveal" data-slug="${escapeHtml(post.slug || '')}">
+              <div class="blog-meta">
+                <span>📅 ${post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}</span>
+                <span>⏱ ${Math.ceil((post.content || '').length / 1000)} min read</span>
+                <span class="blog-status ${post.status || 'draft'}">${post.status || 'draft'}</span>
+              </div>
+              <h2 class="blog-title"><a href="#" class="post-link" data-slug="${escapeHtml(post.slug || '')}">${escapeHtml(post.title || 'Untitled')}</a></h2>
+              <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
+              ${hasMore ? `<button class="read-more-btn post-link" data-slug="${escapeHtml(post.slug || '')}">Read more →</button>` : ''}
+              <div class="blog-tags">
+                ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('') : '<span>uncategorized</span>'}
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        document.querySelectorAll('.post-link').forEach(el => {
+          el.addEventListener('click', (e) => {
+            e.preventDefault();
+            const slug = el.dataset.slug;
+            if (slug) showSinglePost(slug);
+          });
+        });
+
+        document.querySelectorAll('.blog-card.reveal').forEach(el => obs.observe(el));
+      }
+
+      function renderSinglePost(post) {
+        const container = document.getElementById('postsContainer');
+        const empty = document.getElementById('emptyState');
+        const backWrapper = document.getElementById('backToBlogWrapper');
+        backWrapper.style.display = 'block';
+        empty.style.display = 'none';
+
+        const contentHtml = post.content || '';
+        container.innerHTML = `
+          <article class="blog-card single-post reveal active">
+            <div class="blog-meta">
+              <span>📅 ${post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}</span>
+              <span>⏱ ${Math.ceil((post.content || '').length / 1000)} min read</span>
+              <span class="blog-status ${post.status || 'draft'}">${post.status || 'draft'}</span>
+              <button class="tts-btn" id="ttsSingleBtn">🔊 Read aloud</button>
+            </div>
+            <h1 class="blog-title">${escapeHtml(post.title || 'Untitled')}</h1>
+            <div class="blog-content-full">${contentHtml}</div>
+            <div class="blog-tags">
+              ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('') : '<span>uncategorized</span>'}
+            </div>
+          </article>
+        `;
+        // attach TTS
+        const ttsBtn = document.getElementById('ttsSingleBtn');
+        if (ttsBtn) {
+          ttsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const contentDiv = document.querySelector('.blog-content-full');
+            if (contentDiv) {
+              toggleTTS(contentDiv.innerText);
+            }
+          });
+        }
+        document.querySelector('.main-blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // ===== NAVIGATION =====
+      function showSinglePost(slug) {
+        const post = allPosts.find(p => p.slug === slug);
+        if (!post) {
+          showBlogList();
+          return;
+        }
+        currentSlug = slug;
+        renderSinglePost(post);
+        if (history.pushState) {
+          history.pushState(null, null, '#' + slug);
+        }
+      }
+
+      function showBlogList() {
+        currentSlug = null;
+        renderPostList(allPosts);
+        if (history.pushState) {
+          history.pushState(null, null, ' ');
+        }
+        // cancel TTS if playing
+        if (ttsPlaying) {
+          window.speechSynthesis.cancel();
+          ttsPlaying = false;
+          document.querySelectorAll('.tts-btn').forEach(b => b.classList.remove('playing'));
+        }
+      }
+
+      // ===== FETCH POSTS =====
+      async function fetchBlogPosts() {
+        const loadingState = document.getElementById('loadingState');
+        const blogContent = document.getElementById('blogContent');
+
+        try {
+          loadingState.style.display = 'block';
+          blogContent.style.display = 'none';
+
+          const { data, error } = await supabase
+            .from('blogs')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+
+          allPosts = data || [];
+          loadingState.style.display = 'none';
+          blogContent.style.display = 'block';
+
+          const hash = window.location.hash.replace('#', '');
+          if (hash) {
+            const post = allPosts.find(p => p.slug === hash);
+            if (post) {
+              showSinglePost(hash);
+              return;
+            }
+          }
+          showBlogList();
+
+        } catch (err) {
+          console.error('Fetch error:', err);
+          loadingState.style.display = 'none';
+          blogContent.style.display = 'block';
+          document.getElementById('postsContainer').innerHTML = `<p style="color:#ef4444;text-align:center;">Failed to load posts: ${err.message}</p>`;
+        }
+      }
+
+      // ===== BACK TO BLOG =====
+      document.getElementById('backToBlogLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        showBlogList();
+      });
+
+      // ===== LOGIN POPUP (instead of inline) =====
+      const loginTrigger = document.getElementById('loginTriggerCard');
+      loginTrigger.addEventListener('click', () => {
+        // open popup with login form
+        const width = 400, height = 350;
+        const left = (window.innerWidth - width) / 2;
+        const top = (window.innerHeight - height) / 2;
+        const popup = window.open('', 'LoginPopup', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`);
+        if (!popup) {
+          alert('Popup blocked. Please allow popups for this site.');
+          return;
+        }
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html><head><title>Admin Login</title>
+          <style>
+            body { font-family: Inter, sans-serif; background: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin:0; }
+            .box { background: white; padding: 28px; border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.1); width: 320px; }
+            h3 { margin-top: 0; }
+            input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 0.9rem; }
+            button { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; }
+            .msg { margin-top: 12px; font-size: 0.85rem; color: #ef4444; }
+          </style>
+          </head><body>
+          <div class="box">
+            <h3>🔐 Admin Login</h3>
+            <form id="popupLoginForm">
+              <input type="email" id="popupEmail" placeholder="Email" required autocomplete="username">
+              <input type="password" id="popupPassword" placeholder="Password" required autocomplete="current-password">
+              <button type="submit">Authenticate</button>
+              <div id="popupMsg" class="msg"></div>
+            </form>
+          </div>
+          <script>
+            document.getElementById('popupLoginForm').addEventListener('submit', async (e) => {
+              e.preventDefault();
+              const email = document.getElementById('popupEmail').value.trim();
+              const password = document.getElementById('popupPassword').value;
+              const msg = document.getElementById('popupMsg');
+              msg.textContent = '⏳ Authenticating...';
+              msg.style.color = '#3b82f6';
+              try {
+                const { data, error } = await window.parent.supabase.auth.signInWithPassword({ email, password });
+                if (error) throw new Error(error.message);
+                sessionStorage.setItem('auth_timestamp', Date.now().toString());
+                sessionStorage.setItem('auth_verified', 'true');
+                msg.textContent = '✅ Authenticated! Redirecting...';
+                msg.style.color = '#10b981';
+                setTimeout(() => {
+                  window.close();
+                  window.parent.location.reload();
+                }, 800);
+              } catch (err) {
+                msg.textContent = '❌ ' + (err.message || 'Invalid credentials.');
+                msg.style.color = '#ef4444';
+              }
+            });
+          <\/script>
+          </body></html>
+        `);
+        popup.document.close();
+      });
+
+      // ===== HANDLE HASH CHANGE =====
+      window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+          const post = allPosts.find(p => p.slug === hash);
+          if (post) showSinglePost(hash);
+        } else {
+          showBlogList();
+        }
+      });
+
+      // ===== INIT =====
+      fetchBlogPosts();
+
+      // rename "Blog" nav link to "Latest Blog"
+      const blogNav = document.getElementById('blogNavLink');
+      if (blogNav) blogNav.textContent = 'Latest Blog';
+
+    })();
+  </script>
+</body>
+</html>
