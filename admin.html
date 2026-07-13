@@ -1490,7 +1490,7 @@
         </div>
     </section>
 
-    <!-- ===== FORM SUBMISSIONS LOG ===== -->
+    <!-- ===== FORM SUBMISSIONS LOG (UPDATED FOR project_applications) ===== -->
     <section class="workspace-section" id="inquiries-panel">
         <div class="panel-header">
             <h2><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Form Submissions Log</h2>
@@ -2159,45 +2159,137 @@
             });
 
             // ============================================================
-            // ===== LOAD INQUIRIES WITH DELETE =====
+            // ===== LOAD FORM SUBMISSIONS (Only show pending) =====
             // ============================================================
-            const loadDatabaseInquiries = async () => {
+            const loadFormSubmissions = async () => {
                 const feedContainer = document.getElementById('inquiries-feed');
                 if (!feedContainer) return;
                 feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving live metrics logs...</div>';
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving form submissions...</div>';
                 try {
-                    const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
+                    // Only fetch pending submissions (status = 'pending' or null)
+                    const { data, error } = await supabase
+                        .from('project_applications')
+                        .select('*')
+                        .or('status.eq.pending,status.is.null')
+                        .order('created_at', { ascending: false });
+
                     if (error) throw error;
+
                     if (!data || data.length === 0) {
-                        feedContainer.innerHTML = 'No entries logged in the inquiries relation table.';
+                        feedContainer.innerHTML = '✅ No pending submissions. All caught up!';
                         return;
                     }
+
                     feedContainer.innerHTML = data.map(item => `
-                        <article class="inquiry-node">
-                            <div class="node-meta"><span>ID: ${item.id}</span><span>${new Date(item.created_at).toLocaleString()}</span></div>
-                            <div class="node-sender">${escapeHtml(item.name)}</div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-email"><i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}</a>
-                            <div class="node-message">${escapeHtml(item.message)}</div>
-                            <div class="application-actions">
-                                <button class="action-btn-sm delete-btn" onclick="window.deleteInquiry(${item.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <article class="inquiry-node" style="border-left-color: var(--cls-professional);">
+                            <div class="node-meta">
+                                <span>ID: ${item.id}</span>
+                                <span>${new Date(item.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="node-sender" style="color: var(--cls-professional);">
+                                <i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(item.applicant_name)}
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                <i class="fa-regular fa-folder-open" aria-hidden="true"></i> 
+                                <strong>Project:</strong> ${escapeHtml(item.project_name)}
+                            </div>
+                            <a href="mailto:${escapeHtml(item.email)}" class="node-email">
+                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                            </a>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                <i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone_number || 'N/A')}
+                            </div>
+                            ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
+                                <span class="status-badge status-pending">PENDING</span>
+                                <button class="action-btn-sm approve-btn" onclick="window.approveSubmission(${item.id})">
+                                    <i class="fa-regular fa-check"></i> Approve
+                                </button>
+                                <button class="action-btn-sm reject-btn" onclick="window.rejectSubmission(${item.id})">
+                                    <i class="fa-regular fa-times"></i> Reject
+                                </button>
+                                <button class="action-btn-sm delete-btn" onclick="window.deleteSubmission(${item.id})">
+                                    <i class="fa-regular fa-trash"></i> Delete
+                                </button>
                             </div>
                         </article>
                     `).join('');
                 } catch (err) {
                     feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error parsing relation rows: ${err.message}</div>`;
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading submissions: ${err.message}</div>`;
                 }
             };
 
-            window.deleteInquiry = async (id) => {
-                if (!confirm('Are you sure you want to delete this inquiry?')) return;
+            // ============================================================
+            // ===== SUBMISSION FUNCTIONS (EXPOSED GLOBALLY) =====
+            // ============================================================
+            
+            // Approve submission - Update status to 'approved' and remove from view
+            window.approveSubmission = async (id) => {
+                if (!confirm('✅ Approve this submission?')) return;
                 try {
-                    const { error } = await supabase.from('inquiries').delete().eq('id', id);
+                    const { error } = await supabase
+                        .from('project_applications')
+                        .update({ 
+                            status: 'approved', 
+                            updated_at: new Date().toISOString() 
+                        })
+                        .eq('id', id);
+
                     if (error) throw error;
-                    alert('✅ Inquiry deleted successfully!');
-                    loadDatabaseInquiries();
-                } catch (err) { alert('Error deleting inquiry: ' + err.message); }
+                    
+                    alert('✅ Submission Approved!');
+                    
+                    // Refresh the list (will remove it since we only show pending)
+                    loadFormSubmissions();
+                } catch (err) {
+                    alert('❌ Error approving: ' + err.message);
+                    console.error('Approve error:', err);
+                }
+            };
+
+            // Reject submission - Update status to 'rejected' and remove from view
+            window.rejectSubmission = async (id) => {
+                if (!confirm('❌ Reject this submission?')) return;
+                try {
+                    const { error } = await supabase
+                        .from('project_applications')
+                        .update({ 
+                            status: 'rejected', 
+                            updated_at: new Date().toISOString() 
+                        })
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    
+                    alert('❌ Submission Rejected!');
+                    
+                    // Refresh the list (will remove it since we only show pending)
+                    loadFormSubmissions();
+                } catch (err) {
+                    alert('❌ Error rejecting: ' + err.message);
+                    console.error('Reject error:', err);
+                }
+            };
+
+            // Delete submission - Permanently remove from database
+            window.deleteSubmission = async (id) => {
+                if (!confirm('⚠️ Are you sure you want to DELETE this submission permanently?')) return;
+                try {
+                    const { error } = await supabase
+                        .from('project_applications')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+                    
+                    alert('🗑️ Submission deleted permanently!');
+                    loadFormSubmissions();
+                } catch (err) {
+                    alert('❌ Error deleting: ' + err.message);
+                    console.error('Delete error:', err);
+                }
             };
 
             // ============================================================
@@ -2571,13 +2663,20 @@
             // ===== CLEAR LOGS FUNCTIONS =====
             // ============================================================
             document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
-                if (!confirm("Are you absolutely sure you want to delete all logged inquiries?")) return;
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL pending submissions? This will remove them permanently from the database."))
+                    return;
                 const feedContainer = document.getElementById('inquiries-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Clearing all inquiries...</div>';
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all pending submissions...</div>';
                 try {
-                    const { error } = await supabase.from('inquiries').delete().neq('id', 0);
+                    // Delete only pending submissions
+                    const { error } = await supabase
+                        .from('project_applications')
+                        .delete()
+                        .or('status.eq.pending,status.is.null');
+                    
                     if (error) throw error;
-                    feedContainer.innerHTML = '✅ All inquiries have been cleared successfully.';
+                    feedContainer.innerHTML = '✅ All pending submissions have been deleted permanently.';
+                    loadFormSubmissions();
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
@@ -2645,17 +2744,18 @@
                         console.log('📡 Registrations subscription status:', status);
                     });
 
-                supabase.channel('inquiries-changes')
+                supabase.channel('submissions-changes')
                     .on('postgres_changes', {
                         event: '*',
                         schema: 'public',
-                        table: 'inquiries'
+                        table: 'project_applications'
                     }, () => {
-                        console.log('🔄 Inquiries table changed, refreshing...');
-                        loadDatabaseInquiries();
+                        console.log('🔄 Project applications table changed, refreshing submissions...');
+                        loadFormSubmissions();
+                        loadProjectApplications();
                     })
                     .subscribe((status) => {
-                        console.log('📡 Inquiries subscription status:', status);
+                        console.log('📡 Submissions subscription status:', status);
                     });
 
                 supabase.channel('minutes-changes')
@@ -2683,19 +2783,6 @@
                     .subscribe((status) => {
                         console.log('📡 Projects subscription status:', status);
                     });
-
-                supabase.channel('applications-changes')
-                    .on('postgres_changes', {
-                        event: '*',
-                        schema: 'public',
-                        table: 'project_applications'
-                    }, () => {
-                        console.log('🔄 Applications changed, refreshing...');
-                        loadProjectApplications();
-                    })
-                    .subscribe((status) => {
-                        console.log('📡 Applications subscription status:', status);
-                    });
             };
 
             // ============================================================
@@ -2710,7 +2797,7 @@
                         await Promise.all([
                             loadRegistrations(),
                             loadMembers(),
-                            loadDatabaseInquiries(),
+                            loadFormSubmissions(),
                             loadMeetingMinutes(),
                             loadProjects(),
                             loadProjectApplications(),
@@ -2779,7 +2866,7 @@
                 document.querySelectorAll('.dash-card').forEach(el => observer.observe(el));
 
                 document.getElementById('refresh-registrations-btn')?.addEventListener('click', loadRegistrations);
-                document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadDatabaseInquiries);
+                document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadFormSubmissions);
                 document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
                 document.getElementById('refresh-projects-btn')?.addEventListener('click', loadProjects);
                 document.getElementById('refresh-applications-btn')?.addEventListener('click', loadProjectApplications);
@@ -2797,6 +2884,6 @@
                 });
             });
         })();
-    </script>
+    </script>   
 </body>
 </html>
