@@ -119,6 +119,7 @@
     }
     .blog-status.draft { background: #fef3c7; color: #92400e; }
     .blog-status.published { background: #d1fae5; color: #065f46; }
+    .blog-status.archived { background: #ede9fe; color: #5b21b6; }
 
     .side-card {
       background: var(--surface);
@@ -383,6 +384,40 @@
       background: #059669;
     }
 
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 6px 18px;
+      border-radius: 60px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .filter-tab:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    .filter-tab.active {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+    .filter-tab .count {
+      opacity: 0.6;
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+
     @media print {
       .home-btn-container, .login-nav-btn { display: none !important; }
     }
@@ -398,7 +433,6 @@
   <header class="header-nav" id="navbar">
     <nav class="container nav-wrapper" role="navigation" aria-label="Main navigation">
       <div style="display:flex; align-items:center; gap:10px;">
-        <!-- HOME BUTTON (integrated in nav) -->
         <div class="home-btn-container">
           <a href="index.html" class="home-btn" id="interactiveHomeBtn">
             <span class="icon">🏠</span> HOME
@@ -423,7 +457,6 @@
     </nav>
   </header>
 
-  <!-- ===== LOGIN MODAL (Popup) ===== -->
   <div class="login-modal-overlay" id="loginModal">
     <div class="login-modal">
       <button class="modal-close" id="modalCloseBtn" aria-label="Close login">✕</button>
@@ -459,6 +492,11 @@
         <p>Loading posts...</p>
       </div>
       <div id="blogContent" style="display:none;">
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="published">📖 Published <span class="count" id="countPublished">(0)</span></button>
+          <button class="filter-tab" data-filter="archived">📦 Archived <span class="count" id="countArchived">(0)</span></button>
+        </div>
         <div id="postsContainer"></div>
         <div id="emptyState" class="empty-state" style="display:none;">
           <div class="icon">📝</div>
@@ -597,7 +635,6 @@
         if (e) e.preventDefault();
         loginModal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        // clear previous status
         const status = document.getElementById('authStatusMessage');
         status.className = 'auth-status';
         status.textContent = '';
@@ -611,7 +648,6 @@
         document.body.style.overflow = '';
       }
 
-      // Close modal events
       modalCloseBtn.addEventListener('click', closeLoginModal);
       loginModal.addEventListener('click', (e) => {
         if (e.target === loginModal) closeLoginModal();
@@ -620,13 +656,12 @@
         if (e.key === 'Escape' && loginModal.classList.contains('active')) closeLoginModal();
       });
 
-      // Login button in nav - handled by checkAuthForDashboard
-      // Initially set
       checkAuthForDashboard();
 
       // ===== STATE =====
       let allPosts = [];
       let currentSlug = null;
+      let currentFilter = 'published'; // Default to published
 
       // ===== RENDER FUNCTIONS =====
       function escapeHtml(text) {
@@ -634,6 +669,25 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+      }
+
+      // Only return published or archived posts (NO DRAFTS)
+      function getFilteredPosts(filter) {
+        // First filter out drafts completely
+        const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
+        if (filter === 'all') {
+          // 'All' means all non-draft posts (published + archived)
+          return nonDraftPosts;
+        }
+        return nonDraftPosts.filter(p => p.status === filter);
+      }
+
+      function updateFilterCounts() {
+        const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
+        const published = nonDraftPosts.filter(p => p.status === 'published').length;
+        const archived = nonDraftPosts.filter(p => p.status === 'archived').length;
+        document.getElementById('countPublished').textContent = `(${published})`;
+        document.getElementById('countArchived').textContent = `(${archived})`;
       }
 
       function renderPostList(posts) {
@@ -706,12 +760,13 @@
 
       // ===== NAVIGATION =====
       function showSinglePost(slug) {
-        const post = allPosts.find(p => p.slug === slug);
+        const post = allPosts.find(p => p.slug === slug && p.status !== 'draft');
         if (!post) {
           showBlogList();
           return;
         }
         currentSlug = slug;
+        document.getElementById('filterTabs').style.display = 'none';
         renderSinglePost(post);
         if (history.pushState) {
           history.pushState(null, null, '#' + slug);
@@ -720,7 +775,9 @@
 
       function showBlogList() {
         currentSlug = null;
-        renderPostList(allPosts);
+        document.getElementById('filterTabs').style.display = 'flex';
+        const filtered = getFilteredPosts(currentFilter);
+        renderPostList(filtered);
         if (history.pushState) {
           history.pushState(null, null, ' ');
         }
@@ -743,12 +800,13 @@
           if (error) throw error;
 
           allPosts = data || [];
+          updateFilterCounts();
           loadingState.style.display = 'none';
           blogContent.style.display = 'block';
 
           const hash = window.location.hash.replace('#', '');
           if (hash) {
-            const post = allPosts.find(p => p.slug === hash);
+            const post = allPosts.find(p => p.slug === hash && p.status !== 'draft');
             if (post) {
               showSinglePost(hash);
               return;
@@ -763,6 +821,19 @@
           document.getElementById('postsContainer').innerHTML = `<p style="color:#ef4444;text-align:center;">Failed to load posts: ${err.message}</p>`;
         }
       }
+
+      // ===== FILTER TABS =====
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          currentFilter = this.dataset.filter;
+          if (!currentSlug) {
+            const filtered = getFilteredPosts(currentFilter);
+            renderPostList(filtered);
+          }
+        });
+      });
 
       // ===== BACK TO BLOG =====
       document.getElementById('backToBlogLink').addEventListener('click', (e) => {
@@ -795,10 +866,8 @@
           document.getElementById('auth-email').value = '';
           document.getElementById('auth-password').value = '';
 
-          // Update UI
           checkAuthForDashboard();
 
-          // Close modal after a moment
           setTimeout(() => {
             closeLoginModal();
             window.location.href = 'dashboard.html';
@@ -814,7 +883,7 @@
       window.addEventListener('hashchange', () => {
         const hash = window.location.hash.replace('#', '');
         if (hash) {
-          const post = allPosts.find(p => p.slug === hash);
+          const post = allPosts.find(p => p.slug === hash && p.status !== 'draft');
           if (post) showSinglePost(hash);
         } else {
           showBlogList();
