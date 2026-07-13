@@ -1460,7 +1460,7 @@
         <div class="panel-header">
             <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
             <div class="panel-actions">
-                <!-- ===== MEETING MODE TOGGLE (ADDED HERE) ===== -->
+                <!-- ===== MEETING MODE TOGGLE ===== -->
                 <div class="meeting-mode-container" id="meetingModeContainer">
                     <span class="meeting-mode-label">
                         <i class="fa-solid fa-toggle-on"></i> Meeting Mode
@@ -1473,7 +1473,6 @@
                     <span class="mode-badge off" id="meetingModeBadge">Disabled</span>
                     <div class="mode-error" id="meetingModeError"></div>
                 </div>
-                <!-- ===== END MEETING MODE TOGGLE ===== -->
                 <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh Minutes</button>
             </div>
         </div>
@@ -1490,7 +1489,7 @@
         </div>
     </section>
 
-    <!-- ===== FORM SUBMISSIONS LOG (UPDATED FOR project_applications) ===== -->
+    <!-- ===== FORM SUBMISSIONS LOG ===== -->
     <section class="workspace-section" id="inquiries-panel">
         <div class="panel-header">
             <h2><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Form Submissions Log</h2>
@@ -1752,7 +1751,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ===== COMPLETE JAVASCRIPT ===== -->
     <script>
         (() => {
             "use strict";
@@ -1859,7 +1858,6 @@
                 }
             }
 
-            // ---- Meeting Mode Event Listeners ----
             toggleEl.addEventListener('change', function() {
                 const enabled = this.checked;
                 toggleMeetingMode(enabled);
@@ -1913,7 +1911,7 @@
             }
 
             // ============================================================
-            // ===== MEMBER REGISTRATIONS (from membership.html) =====
+            // ===== MEMBER REGISTRATIONS =====
             // ============================================================
             const loadRegistrations = async () => {
                 const feedContainer = document.getElementById('registrations-feed');
@@ -1954,15 +1952,12 @@
                 }
             };
 
-            // Accept member: insert into members table, then delete from registrations
             window.acceptMember = async (id) => {
                 if (!confirm('Accept this member and move to active members list?')) return;
                 try {
-                    // Find the registration record
                     const reg = registrationsData.find(r => r.id === id);
                     if (!reg) throw new Error('Registration record not found');
 
-                    // Build member object (map fields)
                     const memberData = {
                         name: reg.name,
                         email: reg.email,
@@ -1975,13 +1970,11 @@
                         birthday: reg.birthday || null
                     };
 
-                    // Insert into members table
                     const { error: insertError } = await supabase
                         .from('members')
                         .insert([memberData]);
                     if (insertError) throw insertError;
 
-                    // Delete from registrations
                     const { error: deleteError } = await supabase
                         .from('member_registrations')
                         .delete()
@@ -1989,7 +1982,6 @@
                     if (deleteError) throw deleteError;
 
                     alert('✅ Member accepted and added to active members list!');
-                    // Refresh both panels
                     loadRegistrations();
                     loadMembers(document.getElementById('memberSearchInput').value);
                 } catch (err) {
@@ -1997,7 +1989,6 @@
                 }
             };
 
-            // Reject / delete registration
             window.rejectRegistration = async (id) => {
                 if (!confirm('Reject this registration? This will delete it permanently.')) return;
                 try {
@@ -2016,7 +2007,6 @@
             // ============================================================
             // ===== MEMBERS MANAGEMENT =====
             // ============================================================
-
             const loadMembers = async (searchTerm = '') => {
                 const feedContainer = document.getElementById('members-feed');
                 if (!feedContainer) return;
@@ -2167,7 +2157,6 @@
                 feedContainer.innerHTML =
                     '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving form submissions...</div>';
                 try {
-                    // Only fetch pending submissions (status = 'pending' or null)
                     const { data, error } = await supabase
                         .from('project_applications')
                         .select('*')
@@ -2239,10 +2228,8 @@
 
                     if (error) throw error;
                     
-                    alert('✅ Submission Approved!');
-                    
-                    // Refresh the list (will remove it since we only show pending)
-                    loadFormSubmissions();
+                    alert('✅ Submission Approved! Status updated in database.');
+                    await loadFormSubmissions();
                 } catch (err) {
                     alert('❌ Error approving: ' + err.message);
                     console.error('Approve error:', err);
@@ -2263,10 +2250,8 @@
 
                     if (error) throw error;
                     
-                    alert('❌ Submission Rejected!');
-                    
-                    // Refresh the list (will remove it since we only show pending)
-                    loadFormSubmissions();
+                    alert('❌ Submission Rejected! Status updated in database.');
+                    await loadFormSubmissions();
                 } catch (err) {
                     alert('❌ Error rejecting: ' + err.message);
                     console.error('Reject error:', err);
@@ -2275,7 +2260,7 @@
 
             // Delete submission - Permanently remove from database
             window.deleteSubmission = async (id) => {
-                if (!confirm('⚠️ Are you sure you want to DELETE this submission permanently?')) return;
+                if (!confirm('⚠️ Are you sure you want to DELETE this submission permanently from the database?')) return;
                 try {
                     const { error } = await supabase
                         .from('project_applications')
@@ -2284,13 +2269,38 @@
 
                     if (error) throw error;
                     
-                    alert('🗑️ Submission deleted permanently!');
-                    loadFormSubmissions();
+                    alert('🗑️ Submission deleted permanently from database!');
+                    await loadFormSubmissions();
                 } catch (err) {
                     alert('❌ Error deleting: ' + err.message);
                     console.error('Delete error:', err);
                 }
             };
+
+            // ============================================================
+            // ===== CLEAR ALL PENDING SUBMISSIONS =====
+            // ============================================================
+            document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL pending submissions permanently from the database?"))
+                    return;
+                const feedContainer = document.getElementById('inquiries-feed');
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all pending submissions...</div>';
+                try {
+                    const { error } = await supabase
+                        .from('project_applications')
+                        .delete()
+                        .or('status.eq.pending,status.is.null');
+                    
+                    if (error) throw error;
+                    
+                    alert('✅ All pending submissions have been deleted permanently.');
+                    await loadFormSubmissions();
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    alert('❌ Error clearing submissions: ' + err.message);
+                }
+            });
 
             // ============================================================
             // ===== LOAD MEETING MINUTES =====
@@ -2660,29 +2670,8 @@
             });
 
             // ============================================================
-            // ===== CLEAR LOGS FUNCTIONS =====
+            // ===== CLEAR PROJECTS AND APPLICATIONS =====
             // ============================================================
-            document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to DELETE ALL pending submissions? This will remove them permanently from the database."))
-                    return;
-                const feedContainer = document.getElementById('inquiries-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all pending submissions...</div>';
-                try {
-                    // Delete only pending submissions
-                    const { error } = await supabase
-                        .from('project_applications')
-                        .delete()
-                        .or('status.eq.pending,status.is.null');
-                    
-                    if (error) throw error;
-                    feedContainer.innerHTML = '✅ All pending submissions have been deleted permanently.';
-                    loadFormSubmissions();
-                } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                }
-            });
-
             document.getElementById('clear-projects-btn')?.addEventListener('click', async () => {
                 if (!confirm("Are you sure you want to delete ALL projects?")) return;
                 const feedContainer = document.getElementById('projects-feed');
@@ -2884,6 +2873,6 @@
                 });
             });
         })();
-    </script>   
+    </script>
 </body>
 </html>
