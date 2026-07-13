@@ -209,6 +209,33 @@
       .social-row { justify-content: center; }
     }
 
+    /* ----- typewriter integration (hero title) ----- */
+    .typewriter-wrapper {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.05rem;
+    }
+    .typewriter-text {
+      display: inline;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 0.08em solid var(--brand);
+      animation: blink-cursor 0.9s step-end infinite;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    @keyframes blink-cursor {
+      0%, 100% { border-color: var(--brand); }
+      50% { border-color: transparent; }
+    }
+    /* fallback for no-js / static */
+    .typewriter-static {
+      display: inline;
+      color: var(--brand);
+      font-weight: 700;
+    }
+
     /* ----- contact section (redesigned) ----- */
     .contact-section {
       padding: 72px 0;
@@ -349,13 +376,14 @@
     <section class="hero" id="about">
       <div class="container hero-grid">
         <div class="hero-content reveal">
-          <!-- Live date & time displayed above the greeting -->
-          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; font-weight: 500; color: var(--text-secondary);">
-            <span id="heroDate" style="background: rgba(59,130,246,0.08); padding: 4px 14px; border-radius: 40px; font-size: 0.9rem;">📅 Jul 12, 2026</span>
-            <span id="heroTime" style="background: rgba(16,185,129,0.08); padding: 4px 14px; border-radius: 40px; font-size: 0.9rem;">🕒 10:30 AM</span>
-            <span id="heroGreeting" style="background: rgba(139,92,246,0.08); padding: 4px 14px; border-radius: 40px; font-size: 0.9rem;">🌅 Good Morning</span>
-          </div>
-          <h1>Hi, I'm <span class="highlight">Nabin Chalise</span></h1>
+          <!-- Typewriter title: integrated from typewriter.html -->
+          <h1 style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;">
+            <span style="font-weight: 400;">Hi, I'm</span>
+            <span class="typewriter-wrapper">
+              <span id="typewriterText" class="typewriter-text"></span>
+              <span class="cursor-blink" style="display:inline-block; width:0.08em; height:1.1em; background:var(--brand); margin-left:2px; vertical-align:text-bottom; animation: blink-cursor 0.9s step-end infinite;"></span>
+            </span>
+          </h1>
           <p class="hero-tagline">Computer Operator &amp; ICT Professional · Galkot, Nepal</p>
           <figure class="hero-figure">
             <blockquote class="hero-quote"><p>“Search may find the door; awareness dissolves the seeker.”</p></blockquote>
@@ -441,14 +469,12 @@
       const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
-      // Initialize Supabase client
       let supabase;
       try {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         console.log('✅ Supabase client initialized');
       } catch (e) {
         console.error('❌ Supabase init error:', e);
-        // fallback: create a dummy client for demo
         supabase = {
           auth: { signInWithPassword: () => Promise.reject(new Error('Supabase not loaded')) },
           from: () => ({ insert: () => Promise.reject(new Error('Supabase not loaded')) })
@@ -492,16 +518,52 @@
       }, { threshold: 0.1 });
       document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-      // ----- LIVE CLOCK (global) -----
+      // ============================================================
+      //  TYPEWRITER INTEGRATION (from typewriter.html)
+      // ============================================================
+      (function typewriterInit() {
+        const target = document.getElementById('typewriterText');
+        if (!target) return;
+        const fullText = "Nabin Chalise";
+        let index = 0;
+        let isDeleting = false;
+        let timer = null;
+
+        function type() {
+          if (isDeleting) {
+            // delete
+            target.textContent = fullText.substring(0, index - 1);
+            index--;
+            if (index === 0) {
+              isDeleting = false;
+              timer = setTimeout(type, 800); // pause before typing again
+            } else {
+              timer = setTimeout(type, 45);
+            }
+          } else {
+            // type
+            target.textContent = fullText.substring(0, index + 1);
+            index++;
+            if (index === fullText.length) {
+              // full text: pause then delete
+              isDeleting = true;
+              timer = setTimeout(type, 1800);
+            } else {
+              timer = setTimeout(type, 70);
+            }
+          }
+        }
+
+        // start after a small delay
+        setTimeout(type, 400);
+      })();
+
+      // ----- LIVE CLOCK (widget only) -----
       const clockEl = document.getElementById('widgetClock');
       const secEl = document.getElementById('widgetSec');
       const dateEl = document.getElementById('widgetDate');
       const greetEl = document.getElementById('widgetGreeting');
       const formatToggle = document.getElementById('formatToggle');
-      // Hero date/time/greeting elements
-      const heroDate = document.getElementById('heroDate');
-      const heroTime = document.getElementById('heroTime');
-      const heroGreeting = document.getElementById('heroGreeting');
       let use24h = false;
 
       function getGreeting(h) {
@@ -532,12 +594,6 @@
         const dateStr = days[now.getDay()] + ' ' + months[now.getMonth()] + ' ' + now.getDate();
         dateEl.textContent = dateStr;
         greetEl.textContent = getGreeting(now.getHours());
-
-        // Update hero elements
-        const fullDateStr = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-        heroDate.textContent = '📅 ' + fullDateStr;
-        heroTime.textContent = '🕒 ' + display + suffix;
-        heroGreeting.textContent = getGreeting(now.getHours());
       }
       updateClock();
       setInterval(updateClock, 1000);
@@ -608,7 +664,6 @@
       modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-      // Helper: secure redirect with session persistence
       function secureRedirectToAdmin() {
         sessionStorage.setItem('auth_timestamp', Date.now().toString());
         sessionStorage.setItem('auth_verified', 'true');
