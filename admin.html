@@ -979,6 +979,22 @@
             background: #ef4444;
             color: #fff;
         }
+        .status-new {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .status-read {
+            background: #34d399;
+            color: #000;
+        }
+        .status-replied {
+            background: #8b5cf6;
+            color: #fff;
+        }
+        .status-archived {
+            background: #64748b;
+            color: #fff;
+        }
         .action-btn-sm {
             padding: 0.25rem 0.75rem;
             font-size: 0.75rem;
@@ -1383,8 +1399,8 @@
                 <li><a href="#" class="active">Dashboard</a></li>
                 <li><a href="#members-panel">Members</a></li>
                 <li><a href="#registrations-panel">Registrations</a></li>
+                <li><a href="#inquiries-panel">Inquiries</a></li>
                 <li><a href="#minutes-anchor">Live Minutes</a></li>
-                <li><a href="#inquiries-panel">Submissions</a></li>
                 <li><a href="#projects-panel">Upcoming Projects</a></li>
                 <li><a href="#applications-panel">Applications</a></li>
                 <li><a href="#galkot">Galkot</a></li>
@@ -1437,6 +1453,20 @@
         </div>
     </section>
 
+    <!-- ===== INQUIRIES (CONTACT FORM SUBMISSIONS) ===== -->
+    <section class="workspace-section" id="inquiries-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-envelope" aria-hidden="true" style="color: var(--cls-personal);"></i> Contact Form Inquiries</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-inquiries-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                <button class="action-btn clear-btn-accent" id="clear-inquiries-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
+            </div>
+        </div>
+        <div class="inquiries-feed" id="inquiries-feed">
+            <div class="status-msg">Loading inquiries...</div>
+        </div>
+    </section>
+
     <!-- ===== MEMBERS MANAGEMENT SECTION ===== -->
     <section class="workspace-section" id="members-panel">
         <div class="panel-header">
@@ -1486,20 +1516,6 @@
         </div>
         <div class="minutes-feed" id="minutes-feed">
             <div class="status-msg">Connecting to meeting minutes stream...</div>
-        </div>
-    </section>
-
-    <!-- ===== FORM SUBMISSIONS LOG ===== -->
-    <section class="workspace-section" id="inquiries-panel">
-        <div class="panel-header">
-            <h2><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> Form Submissions Log</h2>
-            <div class="panel-actions">
-                <button class="action-btn" id="refresh-inquiries-btn"><i class="fa-solid fa-rotate"></i> Refresh Logs</button>
-                <button class="action-btn clear-btn-accent" id="clear-inquiries-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All Logs</button>
-            </div>
-        </div>
-        <div class="inquiries-feed" id="inquiries-feed">
-            <div class="status-msg">Verifying backend connection access parameters...</div>
         </div>
     </section>
 
@@ -2003,6 +2019,102 @@
                     alert('❌ Error rejecting registration: ' + err.message);
                 }
             };
+
+            // ============================================================
+            // ===== LOAD INQUIRIES (CONTACT FORM) =====
+            // ============================================================
+            const loadInquiries = async () => {
+                const feedContainer = document.getElementById('inquiries-feed');
+                if (!feedContainer) return;
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('inquiries')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        feedContainer.innerHTML = '📭 No inquiries yet.';
+                        return;
+                    }
+
+                    feedContainer.innerHTML = data.map(item => `
+                        <article class="inquiry-node" style="border-left-color: var(--cls-personal);">
+                            <div class="node-meta">
+                                <span>ID: ${item.id}</span>
+                                <span>${new Date(item.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="node-sender" style="color: var(--cls-personal);">
+                                <i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(item.full_name)}
+                            </div>
+                            <a href="mailto:${escapeHtml(item.email)}" class="node-email">
+                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                            </a>
+                            ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
+                                <span class="status-badge status-${item.status || 'new'}">${item.status || 'new'}</span>
+                                <button class="action-btn-sm approve-btn" onclick="window.updateInquiryStatus(${item.id}, 'read')">Mark Read</button>
+                                <button class="action-btn-sm reject-btn" onclick="window.updateInquiryStatus(${item.id}, 'replied')">Mark Replied</button>
+                                <button class="action-btn-sm delete-btn" onclick="window.deleteInquiry(${item.id})">Delete</button>
+                            </div>
+                        </article>
+                    `).join('');
+                } catch (err) {
+                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading inquiries: ${err.message}</div>`;
+                }
+            };
+
+            // ===== INQUIRY FUNCTIONS =====
+            window.updateInquiryStatus = async (id, status) => {
+                if (!confirm(`Mark this inquiry as "${status}"?`)) return;
+                try {
+                    const { error } = await supabase
+                        .from('inquiries')
+                        .update({ status: status })
+                        .eq('id', id);
+                    if (error) throw error;
+                    alert(`✅ Inquiry marked as "${status}"`);
+                    loadInquiries();
+                } catch (err) {
+                    alert('❌ Error updating status: ' + err.message);
+                }
+            };
+
+            window.deleteInquiry = async (id) => {
+                if (!confirm('⚠️ Are you sure you want to DELETE this inquiry permanently?')) return;
+                try {
+                    const { error } = await supabase
+                        .from('inquiries')
+                        .delete()
+                        .eq('id', id);
+                    if (error) throw error;
+                    alert('🗑️ Inquiry deleted permanently!');
+                    loadInquiries();
+                } catch (err) {
+                    alert('❌ Error deleting: ' + err.message);
+                }
+            };
+
+            // ===== CLEAR ALL INQUIRIES =====
+            document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL inquiries permanently?")) return;
+                const feedContainer = document.getElementById('inquiries-feed');
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all inquiries...</div>';
+                try {
+                    const { error } = await supabase
+                        .from('inquiries')
+                        .delete()
+                        .neq('id', 0);
+                    if (error) throw error;
+                    alert('✅ All inquiries deleted permanently.');
+                    loadInquiries();
+                } catch (err) {
+                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    alert('❌ Error clearing inquiries: ' + err.message);
+                }
+            });
 
             // ============================================================
             // ===== MEMBERS MANAGEMENT =====
@@ -2733,6 +2845,19 @@
                         console.log('📡 Registrations subscription status:', status);
                     });
 
+                supabase.channel('inquiries-changes')
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'inquiries'
+                    }, () => {
+                        console.log('🔄 Inquiries table changed, refreshing...');
+                        loadInquiries();
+                    })
+                    .subscribe((status) => {
+                        console.log('📡 Inquiries subscription status:', status);
+                    });
+
                 supabase.channel('submissions-changes')
                     .on('postgres_changes', {
                         event: '*',
@@ -2786,6 +2911,7 @@
                         await Promise.all([
                             loadRegistrations(),
                             loadMembers(),
+                            loadInquiries(),
                             loadFormSubmissions(),
                             loadMeetingMinutes(),
                             loadProjects(),
@@ -2855,7 +2981,7 @@
                 document.querySelectorAll('.dash-card').forEach(el => observer.observe(el));
 
                 document.getElementById('refresh-registrations-btn')?.addEventListener('click', loadRegistrations);
-                document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadFormSubmissions);
+                document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadInquiries);
                 document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
                 document.getElementById('refresh-projects-btn')?.addEventListener('click', loadProjects);
                 document.getElementById('refresh-applications-btn')?.addEventListener('click', loadProjectApplications);
