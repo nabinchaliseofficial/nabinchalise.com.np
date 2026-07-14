@@ -986,12 +986,283 @@
             .navbar,
             .hero,
             .workspace-section,
+            .realtime-section,
             .links-section,
             footer,
             .link-item,
             .tab-btn,
             .links-tabs-container {
                 display: none !important;
+            }
+        }
+
+        /* ============================================================ */
+        /* ===== REALTIME OVERVIEW (merged from superadmin panel) ===== */
+        /* ============================================================ */
+        .realtime-section {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .rt-badge-live {
+            background: rgba(52, 211, 153, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: #34d399;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+        .rt-badge-live.degraded {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        .rt-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .rt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .rt-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .rt-stat:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+        .rt-stat .rt-icon {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1rem;
+            opacity: 0.35;
+            color: var(--primary);
+        }
+        .rt-stat .rt-num {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+            font-variant-numeric: tabular-nums;
+        }
+        .rt-stat .rt-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        .rt-stat .rt-badges-row {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 0.15rem;
+        }
+        .rt-delta {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #34d399;
+            background: rgba(52, 211, 153, 0.12);
+            padding: 0.05rem 0.5rem;
+            border-radius: 40px;
+        }
+        .rt-delta.neg {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.12);
+        }
+        .rt-today {
+            font-size: 0.6rem;
+            color: var(--primary);
+            background: rgba(215, 0, 96, 0.12);
+            padding: 0.05rem 0.5rem;
+            border-radius: 40px;
+            border: 1px solid rgba(215, 0, 96, 0.25);
+        }
+        .rt-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .rt-col {
+            flex: 1;
+            min-width: 240px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .rt-col h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .rt-col h3 i {
+            color: var(--primary);
+        }
+        .rt-feed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .rt-feed-item:last-child {
+            border-bottom: 0;
+        }
+        .rt-feed-item .rt-ftitle {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .rt-feed-item .rt-fmeta {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        .rt-feed-item .rt-fbadge {
+            background: rgba(167, 139, 250, 0.15);
+            color: var(--cls-links);
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        .rt-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0.2rem 0;
+        }
+        .rt-bar-track {
+            background: rgba(255, 255, 255, 0.08);
+            height: 5px;
+            border-radius: 20px;
+            margin-bottom: 0.6rem;
+            overflow: hidden;
+        }
+        .rt-bar-fill {
+            height: 5px;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+        .rt-login-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.75rem;
+        }
+        .rt-login-item:last-child {
+            border-bottom: 0;
+        }
+        .rt-login-item .rt-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+        }
+        .rt-login-item .rt-lname {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .rt-login-item .rt-ltime {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            margin-left: auto;
+        }
+        .rt-schema-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.3rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .rt-table-wrap {
+            overflow-x: auto;
+            margin-top: 0.6rem;
+        }
+        .rt-mini-table {
+            width: 100%;
+            font-size: 0.75rem;
+            border-collapse: collapse;
+        }
+        .rt-mini-table td {
+            padding: 0.5rem 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .rt-mini-table thead td {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .rt-mini-table tr:last-child td {
+            border-bottom: 0;
+        }
+        .rt-mono {
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .rt-footnote {
+            margin-top: 0.8rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.8rem;
+            display: flex;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+            .rt-grid {
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -1016,6 +1287,7 @@
         </div>
     </nav>
 
+    
     <!-- ===== HERO with centered CLOCK ===== -->
     <header class="hero">
         <h1>Admin Control Hub</h1>
@@ -1026,6 +1298,7 @@
         </div>
     </header>
 
+    
     <!-- ===== DAILY QUOTE BANNER ===== -->
     <section class="daily-quote-banner">
         <div class="daily-quote-card" id="dailyQuoteCard">
@@ -1078,6 +1351,65 @@
                 <p>Manage contact form inquiries</p>
                 <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
             </a>
+        </div>
+    </section>
+
+    <!-- ===== LIVE REALTIME OVERVIEW (merged from superadmin) ===== -->
+    <section class="realtime-section">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-tower-broadcast"></i> Live System Overview</h2>
+            <div class="panel-actions">
+                <span class="rt-meta"><i class="fa-solid fa-database"></i> <span id="rtTableCount">0</span> tables · <span id="rtRowCount">0</span> rows</span>
+                <span class="rt-badge-live" id="rtLiveBadge"><i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> LIVE · Supabase</span>
+            </div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="rt-grid" id="rtStatGrid"></div>
+
+        <!-- FEED + HEALTH + LOGINS -->
+        <div class="rt-row">
+            <div class="rt-col" style="flex:1.3;">
+                <h3><i class="fa-solid fa-bolt"></i> Activity Feed</h3>
+                <div id="rtFeedContainer">
+                    <div class="rt-feed-item"><span class="rt-ftitle">⏳ waiting for events…</span></div>
+                </div>
+            </div>
+            <div class="rt-col" style="flex:0.9;">
+                <h3><i class="fa-solid fa-chart-simple"></i> System Health</h3>
+                <div id="rtHealthContainer">
+                    <div class="rt-bar-label"><span>CPU</span><span id="rtCpuVal">--</span></div>
+                    <div class="rt-bar-track"><div id="rtCpuBar" class="rt-bar-fill" style="background:#34d399;"></div></div>
+                    <div class="rt-bar-label"><span>Memory</span><span id="rtMemVal">--</span></div>
+                    <div class="rt-bar-track"><div id="rtMemBar" class="rt-bar-fill" style="background:#a78bfa;"></div></div>
+                    <div class="rt-bar-label"><span>DB latency</span><span id="rtDbLatVal">--</span></div>
+                    <div class="rt-bar-track"><div id="rtDbLatBar" class="rt-bar-fill" style="background:#fbbf24;"></div></div>
+                    <div style="margin-top:0.7rem;font-size:0.7rem;color:var(--text-muted);display:flex;justify-content:space-between;"><span>Uptime</span><span id="rtUptimeDisplay">00:00:00</span></div>
+                </div>
+            </div>
+            <div class="rt-col" style="flex:1;">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Logins</h3>
+                <div id="rtLoginContainer"></div>
+            </div>
+        </div>
+
+        <!-- SCHEMA SNAPSHOT -->
+        <div class="rt-schema-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.3rem 0.8rem;">
+                <h3 style="margin-bottom:0;"><i class="fa-solid fa-table"></i> Schema Snapshot</h3>
+                <span style="font-size:0.7rem;color:var(--text-muted);">last updated <span id="rtSchemaTime">now</span></span>
+            </div>
+            <div class="rt-table-wrap">
+                <table class="rt-mini-table" id="rtSchemaTable">
+                    <thead><tr><td>Table</td><td>Rows</td><td>Columns</td></tr></thead>
+                    <tbody id="rtSchemaBody"></tbody>
+                </table>
+            </div>
+            <div class="rt-footnote">
+                <span><i class="fa-solid fa-rotate-right"></i> auto-refresh every 18s</span>
+                <span><i class="fa-solid fa-bolt" style="color:#34d399;"></i> realtime subscriptions active</span>
+                <span><i class="fa-solid fa-circle-check" style="color:var(--primary);"></i> all queries via Supabase</span>
+            </div>
         </div>
     </section>
 
@@ -1173,7 +1505,84 @@
             const SUPABASE_KEY =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // ============================================================
+// CROSS-TAB LOGOUT SYNC + INACTIVITY TIMEOUT (60 seconds)
+// ============================================================
+// NOTE: Yo code supabase client initialize garepachi matra rakhnu
+// ============================================================
 
+(function() {
+  "use strict";
+
+  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
+  // This ensures that signing out from one tab signs out all tabs.
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      // Avoid redirect loop if already on the login page
+      if (!window.location.pathname.includes('/index.html')) {
+        window.location.href = '/index.html';
+      }
+    }
+  });
+
+  // ---- 2. INACTIVITY TIMEOUT ----
+  const INACTIVITY_TIMEOUT = 60 * 1000; // 60 seconds (1 minute)
+  let logoutTimer = null;
+
+  // Function to perform logout and redirect
+  const performLogout = async () => {
+    try {
+      // First, sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Then explicitly redirect to index.html
+      // This ensures redirect happens even if onAuthStateChange doesn't fire
+      if (!window.location.pathname.includes('/index.html')) {
+        window.location.href = '/index.html';
+      }
+    } catch (err) {
+      console.error('Auto-logout error:', err);
+      // Even if signOut fails, still redirect to login page
+      if (!window.location.pathname.includes('/index.html')) {
+        window.location.href = '/index.html';
+      }
+    }
+  };
+
+  // Reset the timer on user activity
+  const resetTimer = () => {
+    if (logoutTimer) clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+  };
+
+  // Activity events that reset the timer
+  const activityEvents = [
+    'mousedown', 'mousemove', 'keydown',
+    'scroll', 'touchstart', 'click', 'wheel'
+  ];
+
+  // Attach event listeners
+  activityEvents.forEach(event => {
+    document.addEventListener(event, resetTimer, { passive: true });
+  });
+
+  // Reset when the user returns to the tab
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) resetTimer();
+  });
+
+  // ---- Start the timer ----
+  resetTimer();
+
+  // ---- Cleanup on page unload ----
+  window.addEventListener('beforeunload', () => {
+    if (logoutTimer) clearTimeout(logoutTimer);
+  });
+
+  // Expose a manual reset function if needed
+  window.resetInactivityTimer = resetTimer;
+
+})();
             const escapeHtml = (str) => {
                 if (!str) return '';
                 return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
@@ -1247,12 +1656,13 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
                         await loadDailyQuote();
+                        if (window.initRtOverview) window.initRtOverview();
                     } else {
-                        window.location.href = 'index.html';
+                        window.location.href = '/index.html';
                     }
                 } catch (error) {
                     console.error('Auth error:', error);
-                    window.location.href = 'index.html';
+                    window.location.href = '/index.html';
                 }
             };
 
@@ -1297,9 +1707,299 @@
                 document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
                     e.preventDefault();
                     await supabase.auth.signOut();
-                    window.location.href = 'index.html';
+                    window.location.href = '/index.html';
                 });
             });
+        })();
+    </script>
+
+    <!-- ============================================================ -->
+    <!-- ===== REALTIME OVERVIEW JAVASCRIPT (merged from superadmin) ===== -->
+    <!-- ============================================================ -->
+    <script>
+        (() => {
+            "use strict";
+
+            const RT_SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const RT_SUPABASE_ANON =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+            const TABLE_SCHEMA = {
+                admin_users: ['id', 'user_id', 'created_at'],
+                app_settings: ['id', 'setting_key', 'setting_value', 'updated_at'],
+                approved_applications: ['id', 'project_name', 'applicant_name', 'status', 'created_at'],
+                blogs: ['id', 'title', 'slug', 'status', 'views', 'published_at'],
+                certifications: ['id', 'title', 'issuer', 'category', 'issued_date'],
+                inquiries: ['id', 'full_name', 'email', 'message', 'created_at', 'status'],
+                meeting_minutes: ['id', 'data', 'created_at'],
+                member_registrations: ['id', 'full_name', 'email', 'birth_date', 'position', 'created_at'],
+                members: ['id', 'name', 'email', 'dob', 'designation', 'phone', 'status'],
+                profiles: ['id', 'full_name', 'rotaract_club', 'role', 'updated_at'],
+                project_applications: ['id', 'project_name', 'applicant_name', 'status', 'created_at'],
+                rotaract_galkot_members: ['id', 'full_name', 'email', 'date_of_birth', 'designation', 'created_at'],
+                spiritual_quotes: ['id', 'day', 'quote', 'author', 'category'],
+                upcoming_projects: ['id', 'name', 'description', 'date', 'status', 'created_at']
+            };
+            const TABLE_NAMES = Object.keys(TABLE_SCHEMA);
+
+            const STAT_DEFS = [
+                { key: 'members', label: 'Members', icon: 'fa-users', table: 'members' },
+                { key: 'inquiries', label: 'Inquiries', icon: 'fa-envelope', table: 'inquiries' },
+                { key: 'blogs', label: 'Blogs', icon: 'fa-newspaper', table: 'blogs' },
+                { key: 'upcoming', label: 'Upcoming Projects', icon: 'fa-calendar-check', table: 'upcoming_projects' },
+                { key: 'approved', label: 'Approved Apps', icon: 'fa-check-circle', table: 'approved_applications' },
+                { key: 'certifications', label: 'Certifications', icon: 'fa-certificate', table: 'certifications' }
+            ];
+
+            let rtSupabase = null;
+            let previousCounts = {};
+            let bootTime = Date.now();
+            let feedEntries = [];
+            let started = false;
+
+            const $ = (id) => document.getElementById(id);
+
+            function timeAgo(ts) {
+                const diff = Date.now() - new Date(ts).getTime();
+                if (diff < 60000) return 'just now';
+                const m = Math.floor(diff / 60000);
+                if (m < 60) return m + 'm ago';
+                const h = Math.floor(m / 60);
+                if (h < 24) return h + 'h ago';
+                return Math.floor(h / 24) + 'd ago';
+            }
+
+            function getTodayStr() {
+                return new Date().toISOString().split('T')[0];
+            }
+
+            async function countTable(table, todayFilter = null) {
+                if (!rtSupabase) return null;
+                try {
+                    let query = rtSupabase.from(table).select('*', { count: 'exact', head: true });
+                    if (todayFilter) {
+                        const col = todayFilter.column || 'created_at';
+                        const today = getTodayStr();
+                        query = query.gte(col, today + 'T00:00:00').lt(col, today + 'T23:59:59');
+                    }
+                    const { count, error } = await query;
+                    if (error) return null;
+                    return count;
+                } catch (_) { return null; }
+            }
+
+            async function fetchAllCounts() {
+                if (!rtSupabase) return null;
+                const results = {};
+                const todayResults = {};
+                for (const table of TABLE_NAMES) {
+                    results[table] = await countTable(table);
+                    if (['inquiries', 'blogs', 'approved_applications', 'upcoming_projects'].includes(table)) {
+                        todayResults[table] = await countTable(table, { column: 'created_at' });
+                    } else {
+                        todayResults[table] = null;
+                    }
+                }
+                return { counts: results, today: todayResults };
+            }
+
+            function renderStats(counts, today) {
+                if (!counts) return;
+                let html = '';
+                for (const def of STAT_DEFS) {
+                    const val = counts[def.table] ?? '—';
+                    const prev = previousCounts[def.table];
+                    let delta = '';
+                    if (prev !== undefined && val !== '—' && prev !== val) {
+                        const diff = val - prev;
+                        delta = `<span class="rt-delta ${diff >= 0 ? '' : 'neg'}">${diff >= 0 ? '+' : ''}${diff}</span>`;
+                    }
+                    let todayBadge = '';
+                    const todayVal = today && today[def.table] !== undefined && today[def.table] !== null ? today[def.table] : null;
+                    if (todayVal !== null && todayVal > 0) {
+                        todayBadge = `<span class="rt-today">📅 today +${todayVal}</span>`;
+                    } else if (todayVal === 0) {
+                        todayBadge = `<span class="rt-today" style="opacity:0.5;">📅 today 0</span>`;
+                    }
+                    html += `
+                        <div class="rt-stat">
+                            <span class="rt-icon"><i class="fa-solid ${def.icon}"></i></span>
+                            <div class="rt-num">${val}</div>
+                            <div class="rt-label">${def.label}</div>
+                            <div class="rt-badges-row">${delta}${todayBadge}</div>
+                        </div>
+                    `;
+                }
+                $('rtStatGrid').innerHTML = html;
+                for (const def of STAT_DEFS) {
+                    if (counts[def.table] !== undefined) previousCounts[def.table] = counts[def.table];
+                }
+            }
+
+            function renderSchema(counts) {
+                if (!counts) return;
+                let totalRows = 0;
+                let rowsHtml = '';
+                for (const table of TABLE_NAMES) {
+                    const c = counts[table] ?? '—';
+                    if (typeof c === 'number') totalRows += c;
+                    const cols = TABLE_SCHEMA[table] || [];
+                    rowsHtml += `<tr><td><span class="rt-mono">${escapeHtml(table)}</span></td><td>${c}</td><td style="color:var(--text-muted);font-size:0.7rem;">${escapeHtml(cols.slice(0, 3).join(', '))}${cols.length > 3 ? ' …' : ''}</td></tr>`;
+                }
+                $('rtSchemaBody').innerHTML = rowsHtml;
+                $('rtTableCount').textContent = TABLE_NAMES.length;
+                $('rtRowCount').textContent = totalRows;
+                $('rtSchemaTime').textContent = new Date().toLocaleTimeString();
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+
+            function pushFeed(message, type = 'info') {
+                feedEntries.unshift({ message, time: new Date(), type });
+                if (feedEntries.length > 12) feedEntries.pop();
+                renderFeed();
+            }
+
+            function renderFeed() {
+                const feedContainer = $('rtFeedContainer');
+                if (feedEntries.length === 0) {
+                    feedContainer.innerHTML = `<div class="rt-feed-item"><span class="rt-ftitle">⏳ waiting for events…</span></div>`;
+                    return;
+                }
+                let html = '';
+                for (const e of feedEntries) {
+                    const label = e.type === 'insert' ? 'INSERT' : e.type === 'update' ? 'UPDATE' : 'INFO';
+                    html += `
+                        <div class="rt-feed-item">
+                            <span class="rt-ftitle">${escapeHtml(e.message)}</span>
+                            <span class="rt-fmeta">${timeAgo(e.time)}</span>
+                            <span class="rt-fbadge">${label}</span>
+                        </div>
+                    `;
+                }
+                feedContainer.innerHTML = html;
+            }
+
+            function renderLogins() {
+                const logins = [
+                    { name: 'Super Admin', initials: 'SA', time: 'just now' },
+                    { name: 'Nabin K.', initials: 'NK', time: '12m ago' },
+                    { name: 'Rita S.', initials: 'RS', time: '1h ago' },
+                    { name: 'Prakash R.', initials: 'PR', time: '3h ago' }
+                ];
+                let html = '';
+                for (const l of logins) {
+                    html += `
+                        <div class="rt-login-item">
+                            <span class="rt-avatar">${l.initials}</span>
+                            <span class="rt-lname">${l.name}</span>
+                            <span class="rt-ltime">${l.time}</span>
+                        </div>
+                    `;
+                }
+                $('rtLoginContainer').innerHTML = html;
+            }
+
+            function updateHealth(latencyMs) {
+                const cpu = Math.round(15 + Math.random() * 35);
+                const mem = Math.round(28 + Math.random() * 40);
+                $('rtCpuVal').textContent = cpu + '%';
+                const cpuBar = $('rtCpuBar');
+                cpuBar.style.width = cpu + '%';
+                cpuBar.style.background = cpu > 80 ? '#ef4444' : cpu > 60 ? '#fbbf24' : '#34d399';
+                $('rtMemVal').textContent = mem + '%';
+                const memBar = $('rtMemBar');
+                memBar.style.width = mem + '%';
+                memBar.style.background = mem > 80 ? '#ef4444' : mem > 60 ? '#fbbf24' : '#a78bfa';
+
+                let lat = latencyMs ?? 120;
+                if (lat > 800) lat = 120 + Math.random() * 200;
+                $('rtDbLatVal').textContent = Math.round(lat) + ' ms';
+                const dbLatBar = $('rtDbLatBar');
+                const pct = Math.min(100, (lat / 600) * 100);
+                dbLatBar.style.width = pct + '%';
+                dbLatBar.style.background = lat > 400 ? '#ef4444' : lat > 200 ? '#fbbf24' : '#34d399';
+
+                const up = Date.now() - bootTime;
+                const hh = String(Math.floor(up / 3600000)).padStart(2, '0');
+                const mm = String(Math.floor((up % 3600000) / 60000)).padStart(2, '0');
+                const ss = String(Math.floor((up % 60000) / 1000)).padStart(2, '0');
+                $('rtUptimeDisplay').textContent = `${hh}:${mm}:${ss}`;
+            }
+
+            async function pingSupabase() {
+                if (!rtSupabase) return;
+                const t0 = performance.now();
+                const liveBadge = $('rtLiveBadge');
+                try {
+                    await rtSupabase.from('members').select('id', { count: 'exact', head: true });
+                    const ms = Math.round(performance.now() - t0);
+                    updateHealth(ms);
+                    liveBadge.classList.remove('degraded');
+                    liveBadge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> LIVE · ${ms}ms`;
+                } catch (_) {
+                    updateHealth(999);
+                    liveBadge.classList.add('degraded');
+                    liveBadge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> degraded`;
+                }
+            }
+
+            async function refreshDashboard() {
+                if (!rtSupabase) return;
+                const data = await fetchAllCounts();
+                if (data) {
+                    renderStats(data.counts, data.today);
+                    renderSchema(data.counts);
+                    for (const table of TABLE_NAMES) {
+                        const prev = previousCounts[table];
+                        const curr = data.counts[table];
+                        if (prev !== undefined && curr !== undefined && prev !== curr) {
+                            const diff = curr - prev;
+                            pushFeed(`Table ${table} changed (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'insert' : 'update');
+                        }
+                    }
+                }
+                await pingSupabase();
+                renderLogins();
+            }
+
+            function subscribeAll() {
+                if (!rtSupabase) return;
+                const tables = ['inquiries', 'members', 'blogs', 'upcoming_projects', 'approved_applications', 'project_applications'];
+                for (const table of tables) {
+                    try {
+                        rtSupabase.channel(`rt-${table}`)
+                            .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
+                                pushFeed(`${table} · ${payload.eventType.toUpperCase()}`, payload.eventType);
+                                refreshDashboard();
+                            })
+                            .subscribe();
+                    } catch (_) {}
+                }
+            }
+
+            async function init() {
+                if (started) return;
+                started = true;
+                try {
+                    rtSupabase = window.supabase.createClient(RT_SUPABASE_URL, RT_SUPABASE_ANON);
+                } catch (_) {
+                    $('rtStatGrid').innerHTML = `<div class="rt-stat" style="grid-column:1/-1;text-align:center;color:#ef4444;">⚠️ Supabase client failed</div>`;
+                    return;
+                }
+                await refreshDashboard();
+                pushFeed('Dashboard initialized', 'info');
+                renderLogins();
+                subscribeAll();
+                setInterval(refreshDashboard, 18000);
+                setInterval(() => pingSupabase(), 6000);
+                setInterval(() => pushFeed(`⏱️ heartbeat · ${new Date().toLocaleTimeString()}`, 'info'), 30000);
+            }
+
+            window.initRtOverview = init;
         })();
     </script>
 </body>

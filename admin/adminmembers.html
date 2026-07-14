@@ -858,6 +858,78 @@
             };
 
             // ============================================================
+// CROSS-TAB LOGOUT + INACTIVITY TIMEOUT (60 seconds)
+// ============================================================
+(function() {
+  "use strict";
+
+  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
+  // This ensures that signing out from one tab signs out all tabs.
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      // Avoid redirect loop if already on the login page
+      if (!window.location.pathname.includes('/index.html')) {
+        window.location.href = '/index.html';
+      }
+    }
+  });
+
+  // ---- 2. INACTIVITY TIMEOUT ----
+  const INACTIVITY_TIMEOUT = 60 * 1000; // 60 seconds (1 minute)
+  let logoutTimer = null;
+
+  // Function to perform logout (triggers the cross-tab sync via the listener above)
+  const performLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      // The onAuthStateChange listener will handle the redirect,
+      // but we also set a fallback redirect just in case.
+      if (!window.location.pathname.includes('/index.html')) {
+        window.location.href = '/index.html';
+      }
+    } catch (err) {
+      console.error('Auto-logout error:', err);
+    }
+  };
+
+  // Reset the timer on user activity
+  const resetTimer = () => {
+    if (logoutTimer) clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+  };
+
+  // Activity events that reset the timer
+  const activityEvents = [
+    'mousedown', 'mousemove', 'keydown',
+    'scroll', 'touchstart', 'click', 'wheel'
+  ];
+
+  // Attach event listeners
+  activityEvents.forEach(event => {
+    document.addEventListener(event, resetTimer, { passive: true });
+  });
+
+  // Reset when the user returns to the tab
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) resetTimer();
+  });
+
+  // ---- Start the timer ----
+  resetTimer();
+
+  // ---- Cleanup on page unload ----
+  window.addEventListener('beforeunload', () => {
+    if (logoutTimer) clearTimeout(logoutTimer);
+  });
+
+  // (Optional) Expose a manual reset function if needed
+  window.resetInactivityTimer = resetTimer;
+
+})();
+
+
+
+// ============================================================
             // ===== REJECT REGISTRATION =====
             // ============================================================
             window.rejectRegistration = async (id) => {
@@ -1105,11 +1177,11 @@
                         ]);
                         setupRealtimeSubscriptions();
                     } else {
-                        window.location.href = 'index.html';
+                        window.location.href = '/index.html';
                     }
                 } catch (error) {
                     console.error('Auth error:', error);
-                    window.location.href = 'index.html';
+                    window.location.href = '/index.html';
                 }
             };
 
@@ -1134,7 +1206,7 @@
             document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
                 e.preventDefault();
                 await supabase.auth.signOut();
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             });
 
             // ============================================================
