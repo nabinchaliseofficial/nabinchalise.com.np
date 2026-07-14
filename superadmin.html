@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Central Hub · Rotaract SPA</title>
+    <meta name="description" content="Unified SPA dashboard for Rotaract Club of Galkot Baglung – manage members, minutes, projects, inquiries & more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <style>
+        /* ============================================================
+               CSS VARIABLES · THEME (light / dark)
+               ============================================================ */
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-sidebar: rgba(15, 23, 42, 0.92);
+            --bg-surface: rgba(255, 255, 255, 0.75);
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-inverse: #f8fafc;
+            --border-light: rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --brand-pink: #D70060;
+            --brand-blue: #015491;
+            --brand-pink-hover: #b50051;
+            --brand-blue-hover: #003f6e;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --font: 'Inter', -apple-system, system-ui, sans-serif;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+            --sidebar-width: 260px;
+            --header-height: 64px;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b1424;
+            --bg-sidebar: rgba(11, 20, 36, 0.95);
+            --bg-surface: rgba(30, 41, 59, 0.7);
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --text-inverse: #0f172a;
+            --border-light: rgba(255, 255, 255, 0.06);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            height: 100%;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            height: 100%;
+            display: flex;
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--brand-pink);
+        }
+
+        /* ============================================================
+               SIDEBAR
+               ============================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-right: 1px solid var(--border-light);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), background 0.3s;
+            padding: 0 0 1rem 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .sidebar-brand {
+            padding: 1.2rem 1.5rem 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--brand-pink), var(--brand-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .brand-text {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-inverse);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+        .sidebar-brand .brand-text small {
+            display: block;
+            font-weight: 400;
+            font-size: 0.65rem;
+            opacity: 0.6;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+        .sidebar-nav .nav-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            padding: 0.6rem 0.8rem 0.3rem 0.8rem;
+            opacity: 0.5;
+            font-weight: 600;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.9rem;
+            border-radius: var(--radius-sm);
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font);
+        }
+        .sidebar-nav a i {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .sidebar-nav a:hover i {
+            transform: scale(1.1);
+        }
+        .sidebar-nav a.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(215, 0, 96, 0.25), rgba(1, 84, 145, 0.15));
+            border-left: 3px solid var(--brand-pink);
+        }
+        .sidebar-nav a.active i {
+            color: var(--brand-pink);
+        }
+        .sidebar-nav a .badge-dot {
+            margin-left: auto;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            flex-shrink: 0;
+        }
+        .sidebar-nav a .badge-dot.amber {
+            background: var(--accent-amber);
+        }
+
+        .sidebar-footer {
+            padding: 0.8rem 1.2rem 0.4rem 1.2rem;
+            border-top: 1px solid var(--border-light);
+            flex-shrink: 0;
+        }
+        .sidebar-footer .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.4rem 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            width: 100%;
+            font-family: var(--font);
+        }
+        .sidebar-footer .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .sidebar-footer .theme-toggle i {
+            font-size: 0.9rem;
+        }
+
+        /* ============================================================
+               MAIN CONTENT
+               ============================================================ */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: margin-left 0.3s;
+        }
+
+        /* top bar */
+        .topbar {
+            height: var(--header-height);
+            padding: 0 2rem;
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 1rem;
+            transition: background 0.3s;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topbar-left .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .topbar-left .hamburger:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+        [data-theme="dark"] .topbar-left .hamburger:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .topbar-left .page-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+        .topbar-left .page-title span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .topbar-right .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.25rem 0.8rem;
+            border-radius: 40px;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        .topbar-right .status-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* content area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 2rem 2rem 2rem;
+            transition: padding 0.3s;
+        }
+
+        /* ============================================================
+               VIEWS · each page is a section
+               ============================================================ */
+        .view {
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* iframe wrapper */
+        .iframe-wrapper {
+            width: 100%;
+            height: calc(100vh - var(--header-height) - 3rem);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            min-height: 400px;
+        }
+        .iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+        [data-theme="dark"] .iframe-wrapper iframe {
+            background: #0b1424;
+        }
+        .iframe-wrapper .iframe-loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.8rem;
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            z-index: 1;
+            transition: opacity 0.4s;
+            border-radius: var(--radius-md);
+        }
+        .iframe-wrapper .iframe-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .iframe-wrapper .iframe-loader .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-light);
+            border-top-color: var(--brand-pink);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .iframe-wrapper .iframe-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            display: flex;
+            gap: 0.4rem;
+        }
+        .iframe-wrapper .iframe-actions button {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .iframe-wrapper .iframe-actions button:hover {
+            background: var(--brand-pink);
+            border-color: var(--brand-pink);
+        }
+
+        /* ============================================================
+               DASHBOARD VIEW
+               ============================================================ */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .dash-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1.2rem 1rem 1.2rem;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            backdrop-filter: blur(4px);
+        }
+        .dash-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(215, 0, 96, 0.15);
+        }
+        .dash-stat .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+        }
+        .dash-stat .stat-top .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+        }
+        .dash-stat .stat-top .stat-icon.pink {
+            background: linear-gradient(135deg, var(--brand-pink), #a0154a);
+        }
+        .dash-stat .stat-top .stat-icon.blue {
+            background: linear-gradient(135deg, var(--brand-blue), #003f6e);
+        }
+        .dash-stat .stat-top .stat-icon.emerald {
+            background: linear-gradient(135deg, var(--accent-emerald), #059669);
+        }
+        .dash-stat .stat-top .stat-icon.amber {
+            background: linear-gradient(135deg, var(--accent-amber), #d97706);
+        }
+        .dash-stat .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+        .dash-stat .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .dash-stat .stat-change {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 40px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+        }
+
+        .dash-quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .dash-quick-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all var(--transition);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .dash-quick-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--brand-pink);
+        }
+        .dash-quick-card i {
+            font-size: 1.6rem;
+            color: var(--brand-pink);
+            margin-bottom: 0.2rem;
+        }
+        .dash-quick-card .label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dash-quick-card .desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .dash-welcome {
+            margin-bottom: 1.5rem;
+        }
+        .dash-welcome h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .dash-welcome p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================================
+               RESPONSIVE
+               ============================================================ */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .topbar-left .hamburger {
+                display: flex;
+            }
+            .content-area {
+                padding: 1rem 1.2rem 1.5rem 1.2rem;
+            }
+            .iframe-wrapper {
+                height: calc(100vh - var(--header-height) - 2.5rem);
+                min-height: 300px;
+            }
+            .dash-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            .topbar-right .status-badge {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dash-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+            .dash-stat .stat-number {
+                font-size: 1.4rem;
+            }
+            .dash-quick-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .topbar {
+                padding: 0 1rem;
+            }
+            .topbar-left .page-title {
+                font-size: 0.9rem;
+            }
+            .topbar-left .page-title span {
+                display: none;
+            }
+            .content-area {
+                padding: 0.8rem 0.8rem 1.2rem 0.8rem;
+            }
+            .iframe-wrapper {
+                height: calc(100vh - var(--header-height) - 1.5rem);
+                min-height: 200px;
+                border-radius: var(--radius-sm);
+            }
+            .sidebar-brand .brand-text {
+                font-size: 0.9rem;
+            }
+            .sidebar-nav a {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .dash-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .dash-stat {
+                padding: 0.8rem 0.6rem;
+            }
+            .dash-stat .stat-number {
+                font-size: 1.2rem;
+            }
+            .dash-quick-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            .dash-quick-card {
+                padding: 0.8rem 0.5rem;
+            }
+            .dash-quick-card i {
+                font-size: 1.2rem;
+            }
+            .dash-quick-card .label {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ============================================================
+               UTILITY
+               ============================================================ */
+        .text-muted {
+            color: var(--text-muted);
+        }
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gap-1 {
+            gap: 0.5rem;
+        }
+        .gap-2 {
+            gap: 1rem;
+        }
+
+        /* print */
+        @media print {
+            .sidebar,
+            .topbar,
+            .iframe-actions {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                padding: 0 !important;
+            }
+            .iframe-wrapper {
+                height: auto !important;
+                min-height: auto !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .iframe-wrapper iframe {
+                height: auto !important;
+                min-height: 800px;
+            }
+            .view {
+                display: block !important;
+            }
+            .view:not(.active) {
+                display: none !important;
+            }
+            .dash-grid,
+            .dash-quick-grid,
+            .dash-welcome {
+                display: none !important;
+            }
+        }
+
+        /* overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* nav link with external indicator */
+        .sidebar-nav a .ext-link {
+            margin-left: auto;
+            font-size: 0.6rem;
+            opacity: 0.3;
+        }
+        .sidebar-nav a:hover .ext-link {
+            opacity: 0.7;
+        }
+
+        /* View title */
+        .view-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .view-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .view-header h3 i {
+            color: var(--brand-pink);
+        }
+        .view-header .view-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .view-header .view-actions button {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            padding: 0.3rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            color: var(--text-primary);
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .view-header .view-actions button:hover {
+            background: var(--brand-pink);
+            color: #fff;
+            border-color: var(--brand-pink);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+           SIDEBAR OVERLAY (mobile)
+           ============================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================
+           SIDEBAR
+           ============================================================ -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-brand">
+            <div class="logo-icon"><i class="fas fa-rotate"></i></div>
+            <div class="brand-text">
+                Rotaract Hub
+                <small>Galkot Baglung · SPA</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Overview</div>
+            <a href="#dashboard" class="active" data-view="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+
+            <div class="nav-label" style="margin-top:0.6rem;">Content</div>
+            <a href="#blog" data-view="blog">
+                <i class="fas fa-newspaper"></i> Blog
+            </a>
+            <a href="#resume" data-view="resume">
+                <i class="fas fa-file-user"></i> Resume
+            </a>
+            <a href="#anthem" data-view="anthem">
+                <i class="fas fa-music"></i> Anthem
+            </a>
+
+            <div class="nav-label" style="margin-top:0.6rem;">Administration</div>
+            <a href="#admin" data-view="admin">
+                <i class="fas fa-crown"></i> Admin Hub
+            </a>
+            <a href="#inquiries" data-view="inquiries">
+                <i class="fas fa-envelope"></i> Inquiries
+                <span class="badge-dot amber"></span>
+            </a>
+            <a href="#members" data-view="members">
+                <i class="fas fa-users"></i> Members
+            </a>
+            <a href="#minutes" data-view="minutes">
+                <i class="fas fa-file-lines"></i> Minutes
+            </a>
+
+            <div class="nav-label" style="margin-top:0.6rem;">Projects</div>
+            <a href="#upcoming-projects" data-view="upcoming-projects">
+                <i class="fas fa-calendar-check"></i> Upcoming
+                <span class="badge-dot"></span>
+            </a>
+            <a href="#past-projects" data-view="past-projects">
+                <i class="fas fa-history"></i> Past
+            </a>
+            <a href="#approved" data-view="approved">
+                <i class="fas fa-check-circle"></i> Approved
+            </a>
+
+            <div class="nav-label" style="margin-top:0.6rem;">Services</div>
+            <a href="#pan" data-view="pan">
+                <i class="fas fa-address-card"></i> PAN Registration
+            </a>
+            <a href="#membership" data-view="membership">
+                <i class="fas fa-hand-peace"></i> Join Rotaract
+            </a>
+            <a href="#birthdays" data-view="birthdays">
+                <i class="fas fa-cake-candles"></i> Birthdays
+            </a>
+            <a href="#strategic" data-view="strategic">
+                <i class="fas fa-bullseye"></i> Strategic Plan
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeLabel">Dark</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ============================================================
+           MAIN WRAPPER
+           ============================================================ -->
+    <div class="main-wrapper" id="mainWrapper">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title" id="pageTitle">
+                    Dashboard <span>· Overview</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="status-badge">
+                    <span class="dot"></span>
+                    Live
+                </span>
+                <span style="font-size:0.75rem;color:var(--text-muted);" id="clockDisplay"></span>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <main class="content-area" id="contentArea">
+
+            <!-- ============================================================
+                   VIEW: DASHBOARD
+                   ============================================================ -->
+            <section class="view active" id="view-dashboard">
+                <div class="dash-welcome">
+                    <h2>Welcome back, Admin</h2>
+                    <p>Real-time overview of your Rotaract Club operations.</p>
+                </div>
+
+                <div class="dash-grid" id="dashStats">
+                    <div class="dash-stat">
+                        <div class="stat-top">
+                            <span class="stat-icon pink"><i class="fas fa-users"></i></span>
+                            <span class="stat-change">+12%</span>
+                        </div>
+                        <div class="stat-number" id="statMembers">0</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                    <div class="dash-stat">
+                        <div class="stat-top">
+                            <span class="stat-icon blue"><i class="fas fa-file-lines"></i></span>
+                            <span class="stat-change">+4</span>
+                        </div>
+                        <div class="stat-number" id="statMinutes">0</div>
+                        <div class="stat-label">Meeting Minutes</div>
+                    </div>
+                    <div class="dash-stat">
+                        <div class="stat-top">
+                            <span class="stat-icon emerald"><i class="fas fa-project-diagram"></i></span>
+                            <span class="stat-change">+2</span>
+                        </div>
+                        <div class="stat-number" id="statProjects">0</div>
+                        <div class="stat-label">Upcoming Projects</div>
+                    </div>
+                    <div class="dash-stat">
+                        <div class="stat-top">
+                            <span class="stat-icon amber"><i class="fas fa-envelope"></i></span>
+                            <span class="stat-change">+3</span>
+                        </div>
+                        <div class="stat-number" id="statInquiries">0</div>
+                        <div class="stat-label">Inquiries</div>
+                    </div>
+                </div>
+
+                <h3 style="font-weight:600;font-size:1rem;margin-bottom:0.8rem;color:var(--text-secondary);">
+                    <i class="fas fa-rocket" style="color:var(--brand-pink);margin-right:0.4rem;"></i>
+                    Quick Access
+                </h3>
+                <div class="dash-quick-grid">
+                    <a href="#admin" class="dash-quick-card" data-view="admin">
+                        <i class="fas fa-crown"></i>
+                        <span class="label">Admin Hub</span>
+                        <span class="desc">Central control</span>
+                    </a>
+                    <a href="#members" class="dash-quick-card" data-view="members">
+                        <i class="fas fa-users"></i>
+                        <span class="label">Members</span>
+                        <span class="desc">Manage roster</span>
+                    </a>
+                    <a href="#minutes" class="dash-quick-card" data-view="minutes">
+                        <i class="fas fa-file-lines"></i>
+                        <span class="label">Minutes</span>
+                        <span class="desc">Meeting logs</span>
+                    </a>
+                    <a href="#upcoming-projects" class="dash-quick-card" data-view="upcoming-projects">
+                        <i class="fas fa-calendar-check"></i>
+                        <span class="label">Projects</span>
+                        <span class="desc">Upcoming initiatives</span>
+                    </a>
+                    <a href="#inquiries" class="dash-quick-card" data-view="inquiries">
+                        <i class="fas fa-envelope"></i>
+                        <span class="label">Inquiries</span>
+                        <span class="desc">Contact form</span>
+                    </a>
+                    <a href="#blog" class="dash-quick-card" data-view="blog">
+                        <i class="fas fa-newspaper"></i>
+                        <span class="label">Blog</span>
+                        <span class="desc">Latest posts</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                   VIEW: IFRAME (generic template)
+                   ============================================================ -->
+            <!-- Blog -->
+            <section class="view" id="view-blog">
+                <div class="view-header">
+                    <h3><i class="fas fa-newspaper"></i> Blog</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('blog.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-blog"><div class="spinner"></div>Loading Blog…</div>
+                    <iframe src="blog.html" data-src="blog.html" loading="lazy" onload="hideLoader('loader-blog')"></iframe>
+                </div>
+            </section>
+
+            <!-- Resume -->
+            <section class="view" id="view-resume">
+                <div class="view-header">
+                    <h3><i class="fas fa-file-user"></i> Resume</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('resume.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-resume"><div class="spinner"></div>Loading Resume…</div>
+                    <iframe src="resume.html" data-src="resume.html" loading="lazy" onload="hideLoader('loader-resume')"></iframe>
+                </div>
+            </section>
+
+            <!-- Anthem -->
+            <section class="view" id="view-anthem">
+                <div class="view-header">
+                    <h3><i class="fas fa-music"></i> Anthem Player</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('anthem.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-anthem"><div class="spinner"></div>Loading Anthem…</div>
+                    <iframe src="anthem.html" data-src="anthem.html" loading="lazy" onload="hideLoader('loader-anthem')"></iframe>
+                </div>
+            </section>
+
+            <!-- Admin Hub -->
+            <section class="view" id="view-admin">
+                <div class="view-header">
+                    <h3><i class="fas fa-crown"></i> Admin Hub</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('admin.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-admin"><div class="spinner"></div>Loading Admin Hub…</div>
+                    <iframe src="admin.html" data-src="admin.html" loading="lazy" onload="hideLoader('loader-admin')"></iframe>
+                </div>
+            </section>
+
+            <!-- Inquiries -->
+            <section class="view" id="view-inquiries">
+                <div class="view-header">
+                    <h3><i class="fas fa-envelope"></i> Inquiries Management</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('admininquiries.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-inquiries"><div class="spinner"></div>Loading Inquiries…</div>
+                    <iframe src="admininquiries.html" data-src="admininquiries.html" loading="lazy" onload="hideLoader('loader-inquiries')"></iframe>
+                </div>
+            </section>
+
+            <!-- Members -->
+            <section class="view" id="view-members">
+                <div class="view-header">
+                    <h3><i class="fas fa-users"></i> Members Management</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('adminmembers.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-members"><div class="spinner"></div>Loading Members…</div>
+                    <iframe src="adminmembers.html" data-src="adminmembers.html" loading="lazy" onload="hideLoader('loader-members')"></iframe>
+                </div>
+            </section>
+
+            <!-- Minutes -->
+            <section class="view" id="view-minutes">
+                <div class="view-header">
+                    <h3><i class="fas fa-file-lines"></i> Meeting Minutes</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('adminminutes.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-minutes"><div class="spinner"></div>Loading Minutes…</div>
+                    <iframe src="adminminutes.html" data-src="adminminutes.html" loading="lazy" onload="hideLoader('loader-minutes')"></iframe>
+                </div>
+            </section>
+
+            <!-- Upcoming Projects -->
+            <section class="view" id="view-upcoming-projects">
+                <div class="view-header">
+                    <h3><i class="fas fa-calendar-check"></i> Upcoming Projects</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('upcomming-projects.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-upcoming"><div class="spinner"></div>Loading Projects…</div>
+                    <iframe src="upcomming-projects.html" data-src="upcomming-projects.html" loading="lazy" onload="hideLoader('loader-upcoming')"></iframe>
+                </div>
+            </section>
+
+            <!-- Past Projects -->
+            <section class="view" id="view-past-projects">
+                <div class="view-header">
+                    <h3><i class="fas fa-history"></i> Past Projects Archive</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('past-projects.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-past"><div class="spinner"></div>Loading Archive…</div>
+                    <iframe src="past-projects.html" data-src="past-projects.html" loading="lazy" onload="hideLoader('loader-past')"></iframe>
+                </div>
+            </section>
+
+            <!-- Approved Applications -->
+            <section class="view" id="view-approved">
+                <div class="view-header">
+                    <h3><i class="fas fa-check-circle"></i> Approved Applications</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('project-verified-list.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-approved"><div class="spinner"></div>Loading Approvals…</div>
+                    <iframe src="project-verified-list.html" data-src="project-verified-list.html" loading="lazy" onload="hideLoader('loader-approved')"></iframe>
+                </div>
+            </section>
+
+            <!-- PAN Registration -->
+            <section class="view" id="view-pan">
+                <div class="view-header">
+                    <h3><i class="fas fa-address-card"></i> PAN Registration</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('pan.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-pan"><div class="spinner"></div>Loading PAN Portal…</div>
+                    <iframe src="pan.html" data-src="pan.html" loading="lazy" onload="hideLoader('loader-pan')"></iframe>
+                </div>
+            </section>
+
+            <!-- Membership -->
+            <section class="view" id="view-membership">
+                <div class="view-header">
+                    <h3><i class="fas fa-hand-peace"></i> Join Rotaract</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('membership.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-membership"><div class="spinner"></div>Loading Membership…</div>
+                    <iframe src="membership.html" data-src="membership.html" loading="lazy" onload="hideLoader('loader-membership')"></iframe>
+                </div>
+            </section>
+
+            <!-- Birthdays -->
+            <section class="view" id="view-birthdays">
+                <div class="view-header">
+                    <h3><i class="fas fa-cake-candles"></i> Member Birthdays</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('birthdays.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-birthdays"><div class="spinner"></div>Loading Birthdays…</div>
+                    <iframe src="birthdays.html" data-src="birthdays.html" loading="lazy" onload="hideLoader('loader-birthdays')"></iframe>
+                </div>
+            </section>
+
+            <!-- Strategic Planning -->
+            <section class="view" id="view-strategic">
+                <div class="view-header">
+                    <h3><i class="fas fa-bullseye"></i> Strategic Planning</h3>
+                    <div class="view-actions">
+                        <button onclick="window.open('strategic-planning.html','_blank')"><i class="fas fa-external-link-alt"></i> Open</button>
+                        <button onclick="location.reload()"><i class="fas fa-sync-alt"></i> Reload</button>
+                    </div>
+                </div>
+                <div class="iframe-wrapper">
+                    <div class="iframe-loader" id="loader-strategic"><div class="spinner"></div>Loading Strategic Plan…</div>
+                    <iframe src="strategic-planning.html" data-src="strategic-planning.html" loading="lazy" onload="hideLoader('loader-strategic')"></iframe>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ============================================================
+           JAVASCRIPT · SPA ENGINE
+           ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // 1. SUPABASE CLIENT
+            // ============================================================
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_ANON_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+            let supabase;
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase connected');
+            } catch (_) {
+                console.warn('⚠️ Supabase init failed');
+            }
+
+            // ============================================================
+            // 2. DOM REFS
+            // ============================================================
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.getElementById('hamburgerBtn');
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            const views = document.querySelectorAll('.view');
+            const pageTitle = document.getElementById('pageTitle');
+
+            const viewMap = {
+                'dashboard': { label: 'Dashboard', sub: 'Overview' },
+                'blog': { label: 'Blog', sub: 'Latest posts' },
+                'resume': { label: 'Resume', sub: 'Professional profile' },
+                'anthem': { label: 'Anthem Player', sub: 'Rotaract songs' },
+                'admin': { label: 'Admin Hub', sub: 'Central control' },
+                'inquiries': { label: 'Inquiries', sub: 'Contact forms' },
+                'members': { label: 'Members', sub: 'Roster management' },
+                'minutes': { label: 'Minutes', sub: 'Meeting logs' },
+                'upcoming-projects': { label: 'Upcoming Projects', sub: 'Initiatives' },
+                'past-projects': { label: 'Past Projects', sub: 'Archive' },
+                'approved': { label: 'Approved Applications', sub: 'Verified' },
+                'pan': { label: 'PAN Registration', sub: 'Tax portal' },
+                'membership': { label: 'Join Rotaract', sub: 'Membership' },
+                'birthdays': { label: 'Birthdays', sub: 'Member celebrations' },
+                'strategic': { label: 'Strategic Planning', sub: 'Goals & vision' },
+            };
+
+            // ============================================================
+            // 3. ROUTING
+            // ============================================================
+            function navigate(viewId) {
+                // update nav
+                navLinks.forEach(a => {
+                    a.classList.toggle('active', a.dataset.view === viewId);
+                });
+
+                // update views
+                views.forEach(v => {
+                    v.classList.toggle('active', v.id === 'view-' + viewId);
+                });
+
+                // update title
+                const info = viewMap[viewId];
+                if (info) {
+                    pageTitle.innerHTML = `${info.label} <span>· ${info.sub}</span>`;
+                } else {
+                    pageTitle.textContent = viewId.replace(/-/g, ' ');
+                }
+
+                // update hash
+                if (window.location.hash !== '#' + viewId) {
+                    history.pushState(null, '', '#' + viewId);
+                }
+
+                // close sidebar on mobile
+                closeSidebar();
+
+                // if dashboard, refresh stats
+                if (viewId === 'dashboard') {
+                    refreshStats();
+                }
+
+                // if iframe view, reload iframe content on navigation
+                const viewEl = document.getElementById('view-' + viewId);
+                if (viewEl && viewId !== 'dashboard') {
+                    const iframe = viewEl.querySelector('iframe');
+                    if (iframe) {
+                        // only reload if it's not already loaded or if user wants fresh content
+                        // we use a small delay to let the view become active first
+                        setTimeout(() => {
+                            // if the iframe is empty or has a blank src, set it
+                            if (!iframe.src || iframe.src === 'about:blank') {
+                                iframe.src = iframe.dataset.src || iframe.src;
+                            }
+                        }, 50);
+                    }
+                }
+            }
+
+            function getViewFromHash() {
+                const hash = window.location.hash.replace('#', '') || 'dashboard';
+                return viewMap[hash] ? hash : 'dashboard';
+            }
+
+            // ============================================================
+            // 4. SIDEBAR TOGGLE
+            // ============================================================
+            function openSidebar() {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            hamburger.addEventListener('click', () => {
+                if (sidebar.classList.contains('open')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+
+            overlay.addEventListener('click', closeSidebar);
+
+            // close on escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
+
+            // ============================================================
+            // 5. NAV CLICKS
+            // ============================================================
+            navLinks.forEach(a => {
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const view = a.dataset.view;
+                    if (view) navigate(view);
+                });
+            });
+
+            // quick access cards
+            document.querySelectorAll('.dash-quick-card[data-view]').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const view = card.dataset.view;
+                    if (view) navigate(view);
+                });
+            });
+
+            // ============================================================
+            // 6. HASH CHANGE & INIT
+            // ============================================================
+            window.addEventListener('hashchange', () => {
+                const view = getViewFromHash();
+                navigate(view);
+            });
+
+            // handle browser back/forward
+            window.addEventListener('popstate', () => {
+                const view = getViewFromHash();
+                navigate(view);
+            });
+
+            // init
+            const initialView = getViewFromHash();
+            navigate(initialView);
+
+            // ============================================================
+            // 7. IFRAME LOADER HELPER
+            // ============================================================
+            window.hideLoader = function(loaderId) {
+                const el = document.getElementById(loaderId);
+                if (el) el.classList.add('hidden');
+            };
+
+            // also hide loaders for iframes that might load quickly
+            document.querySelectorAll('.iframe-wrapper iframe').forEach(iframe => {
+                iframe.addEventListener('load', function() {
+                    const loader = this.closest('.iframe-wrapper').querySelector('.iframe-loader');
+                    if (loader) loader.classList.add('hidden');
+                });
+                // if iframe already loaded, hide loader
+                if (iframe.contentWindow && iframe.contentWindow.location.href !== 'about:blank') {
+                    const loader = iframe.closest('.iframe-wrapper').querySelector('.iframe-loader');
+                    if (loader) loader.classList.add('hidden');
+                }
+            });
+
+            // ============================================================
+            // 8. DASHBOARD STATS
+            // ============================================================
+            async function refreshStats() {
+                if (!supabase) return;
+                try {
+                    // members count
+                    const { count: members, error: e1 } = await supabase
+                        .from('members')
+                        .select('*', { count: 'exact', head: true });
+                    if (!e1) document.getElementById('statMembers').textContent = members || 0;
+
+                    // minutes count
+                    const { count: minutes, error: e2 } = await supabase
+                        .from('meeting_minutes')
+                        .select('*', { count: 'exact', head: true });
+                    if (!e2) document.getElementById('statMinutes').textContent = minutes || 0;
+
+                    // projects count (upcoming)
+                    const { count: projects, error: e3 } = await supabase
+                        .from('upcoming_projects')
+                        .select('*', { count: 'exact', head: true });
+                    if (!e3) document.getElementById('statProjects').textContent = projects || 0;
+
+                    // inquiries count
+                    const { count: inquiries, error: e4 } = await supabase
+                        .from('inquiries')
+                        .select('*', { count: 'exact', head: true });
+                    if (!e4) document.getElementById('statInquiries').textContent = inquiries || 0;
+
+                } catch (_) { /* ignore */ }
+            }
+
+            // initial stats load
+            refreshStats();
+            // refresh every 30s
+            setInterval(refreshStats, 30000);
+
+            // ============================================================
+            // 9. CLOCK
+            // ============================================================
+            function updateClock() {
+                const now = new Date();
+                const str = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit',
+                    second: '2-digit' });
+                const el = document.getElementById('clockDisplay');
+                if (el) el.textContent = str;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // ============================================================
+            // 10. THEME TOGGLE
+            // ============================================================
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+
+            function getTheme() {
+                return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ?
+                    'dark' : 'light');
+            }
+
+            function applyTheme(t) {
+                document.documentElement.setAttribute('data-theme', t);
+                localStorage.setItem('theme', t);
+                if (t === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                    themeLabel.textContent = 'Light';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    themeLabel.textContent = 'Dark';
+                }
+            }
+
+            applyTheme(getTheme());
+
+            themeToggle.addEventListener('click', () => {
+                const cur = document.documentElement.getAttribute('data-theme');
+                applyTheme(cur === 'dark' ? 'light' : 'dark');
+            });
+
+            // ============================================================
+            // 11. KEYBOARD SHORTCUTS
+            // ============================================================
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+Shift+S = toggle sidebar
+                if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.key === 's')) {
+                    e.preventDefault();
+                    if (sidebar.classList.contains('open')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                }
+                // Ctrl+1..9 = navigate to views
+                const num = parseInt(e.key);
+                if (e.ctrlKey && num >= 1 && num <= 9) {
+                    const viewsList = ['dashboard', 'blog', 'resume', 'anthem', 'admin', 'inquiries', 'members',
+                        'minutes', 'upcoming-projects'
+                    ];
+                    if (num <= viewsList.length) {
+                        e.preventDefault();
+                        navigate(viewsList[num - 1]);
+                    }
+                }
+            });
+
+            console.log('✅ Rotaract SPA ready');
+            console.log('📌 Shortcuts: Ctrl+Shift+S toggle sidebar · Ctrl+1..9 navigate');
+
+        })();
+    </script>
+
+</body>
+</html>
