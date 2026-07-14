@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Central Hub Admin Dashboard</title>
+    <meta name="description" content="Unified admin dashboard for meeting minutes, inquiries, Galkot Municipality, and Rotaract initiatives." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <style>
+        /* --- BASE VARIABLES --- */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --cls-personal: #38bdf8;
+            --cls-professional: #34d399;
+            --cls-galkot: #fbbf24;
+            --cls-rotaract: #f43f5e;
+            --cls-links: #a78bfa;
+            --primary: #D70060;
+            --secondary: #015491;
+            --cta-logout: #ef4444;
+            --cta-logout-hover: #dc2626;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-dark: #f8fafc;
+                --bg-card: rgba(255, 255, 255, 0.8);
+                --border-color: rgba(0, 0, 0, 0.08);
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+        .navbar.scrolled {
+            padding: 0.6rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-logo i {
+            color: var(--cls-personal);
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .btn-logout {
+            background: var(--cta-logout);
+            color: #ffffff !important;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            min-height: 44px;
+        }
+        .btn-logout:hover {
+            background: var(--cta-logout-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            background: none;
+            border: none;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* HERO with centered clock */
+        .hero {
+            padding: 8rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            background: linear-gradient(to right, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .hero-clock {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.5rem 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+        .hero-clock .date {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero-clock {
+                font-size: 1.6rem;
+                padding: 0.4rem 1rem;
+                gap: 0.75rem;
+            }
+            .hero-clock .date {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* --- DAILY QUOTE BANNER --- */
+        .daily-quote-banner {
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            padding: 0 2rem;
+        }
+        .daily-quote-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.06));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            backdrop-filter: blur(4px);
+            transition: var(--transition-smooth);
+        }
+        .daily-quote-card:hover {
+            border-color: rgba(167, 139, 250, 0.3);
+        }
+        .daily-quote-card .day-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .daily-quote-card .day-badge i {
+            font-size: 0.8rem;
+        }
+        .daily-quote-card .quote-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-main);
+            flex: 1;
+            text-align: center;
+            min-width: 200px;
+        }
+        .daily-quote-card .quote-text i {
+            color: var(--cls-links);
+            opacity: 0.5;
+            font-size: 0.9rem;
+            margin: 0 0.3rem;
+        }
+        .daily-quote-card .quote-author {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .daily-quote-card .quote-author i {
+            color: var(--cls-galkot);
+            margin-right: 0.3rem;
+        }
+        .daily-quote-card .quote-status {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .daily-quote-card .quote-status.found {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        .daily-quote-card .quote-status.not-found {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+        .daily-quote-card .quote-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        @media (max-width: 768px) {
+            .daily-quote-card {
+                padding: 1rem 1.2rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            .daily-quote-card .quote-text {
+                font-size: 1rem;
+            }
+            .daily-quote-card .day-badge {
+                font-size: 0.75rem;
+                padding: 0.2rem 1rem;
+            }
+        }
+
+        /* --- NAVIGATION CARDS --- */
+        .nav-cards-section {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .nav-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+        .nav-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 180px;
+            justify-content: center;
+        }
+        .nav-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+        .nav-card .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: var(--transition-smooth);
+        }
+        .nav-card.card-members .icon-wrapper {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--cls-rotaract);
+        }
+        .nav-card.card-members:hover .icon-wrapper {
+            background: var(--cls-rotaract);
+            color: #fff;
+        }
+        .nav-card.card-projects .icon-wrapper {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--cls-galkot);
+        }
+        .nav-card.card-projects:hover .icon-wrapper {
+            background: var(--cls-galkot);
+            color: #000;
+        }
+        .nav-card.card-minutes .icon-wrapper {
+            background: rgba(215, 0, 96, 0.15);
+            color: var(--primary);
+        }
+        .nav-card.card-minutes:hover .icon-wrapper {
+            background: var(--primary);
+            color: #fff;
+        }
+        .nav-card.card-inquiries .icon-wrapper {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cls-personal);
+        }
+        .nav-card.card-inquiries:hover .icon-wrapper {
+            background: var(--cls-personal);
+            color: #000;
+        }
+        .nav-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .nav-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .nav-card .arrow-icon {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: var(--transition-smooth);
+            color: var(--cls-links);
+        }
+        .nav-card:hover .arrow-icon {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- rest of styles --- */
+        .workspace-section {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .panel-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .panel-header h2 i {
+            color: var(--cls-personal);
+        }
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .clear-btn-accent {
+            border-color: rgba(239, 68, 68, 0.25) !important;
+        }
+        .clear-btn-accent:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.6) !important;
+        }
+        .btn-primary-accent {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff !important;
+        }
+        .btn-primary-accent:hover {
+            background: #b50051;
+            border-color: #b50051;
+        }
+        .btn-edit-accent {
+            background: var(--cls-galkot);
+            border-color: var(--cls-galkot);
+            color: #000 !important;
+        }
+        .btn-edit-accent:hover {
+            background: #e5a800;
+            border-color: #e5a800;
+        }
+        .btn-add-accent {
+            background: var(--cls-professional);
+            border-color: var(--cls-professional);
+            color: #000 !important;
+        }
+        .btn-add-accent:hover {
+            background: #2bbf8a;
+            border-color: #2bbf8a;
+        }
+        .search-box-inline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.2rem 0.2rem 0.2rem 0.8rem;
+        }
+        .search-box-inline input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+            outline: none;
+            min-width: 150px;
+            font-family: 'Inter', sans-serif;
+        }
+        .search-box-inline input::placeholder {
+            color: var(--text-muted);
+        }
+        .search-box-inline button {
+            background: var(--cls-links);
+            border: none;
+            color: #000;
+            padding: 0.3rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .search-box-inline button:hover {
+            background: #9370db;
+        }
+        .inquiries-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+        .inquiry-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--cls-personal);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .node-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .node-sender {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .node-email {
+            font-size: 0.9rem;
+            color: var(--cls-personal);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .node-message {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: rgba(248, 250, 252, 0.9);
+            white-space: pre-wrap;
+        }
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        .links-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+        }
+        .links-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+        .links-header i {
+            color: var(--cls-links);
+            font-size: 1.5rem;
+        }
+        .links-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .links-tabs-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+        .tab-btn.active {
+            background: var(--cls-links);
+            color: #000;
+            border-color: var(--cls-links);
+        }
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+            transition: var(--transition-smooth);
+        }
+        .link-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            min-height: 44px;
+        }
+        .link-item.hidden {
+            display: none !important;
+        }
+        .link-item span {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .link-item i.link-icon {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: var(--transition-smooth);
+            width: 20px;
+            text-align: center;
+        }
+        .link-item i.arrow-icon {
+            transform: translateX(-5px);
+            opacity: 0;
+            color: var(--cls-links);
+            transition: var(--transition-smooth);
+        }
+        .link-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(167, 139, 250, 0.08), transparent);
+            transform: translateX(-100%);
+            transition: var(--transition-smooth);
+            z-index: -1;
+        }
+        .link-item:hover {
+            border-color: rgba(167, 139, 250, 0.4);
+            transform: translateX(4px);
+        }
+        .link-item:hover::after {
+            transform: translateX(0);
+        }
+        .link-item:hover i.link-icon {
+            color: var(--cls-links);
+        }
+        .link-item:hover i.arrow-icon {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .modal-title i {
+            color: var(--cls-galkot);
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--cls-galkot);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+        .form-actions .action-btn {
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-save-accent {
+            background: var(--cls-professional);
+            border-color: var(--cls-professional);
+            color: #000 !important;
+        }
+        .btn-save-accent:hover {
+            background: #2bbf8a;
+            border-color: #2bbf8a;
+        }
+        .btn-cancel-accent {
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+        .btn-cancel-accent:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.6) !important;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-new {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .status-read {
+            background: #34d399;
+            color: #000;
+        }
+        .status-replied {
+            background: #8b5cf6;
+            color: #fff;
+        }
+        .status-archived {
+            background: #64748b;
+            color: #fff;
+        }
+        .action-btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .action-btn-sm.approve-btn {
+            background: #34d399;
+            color: #000;
+        }
+        .action-btn-sm.approve-btn:hover {
+            background: #2bbf8a;
+        }
+        .action-btn-sm.reject-btn {
+            background: #ef4444;
+            color: #fff;
+        }
+        .action-btn-sm.reject-btn:hover {
+            background: #dc2626;
+        }
+        .action-btn-sm.delete-btn {
+            background: #f43f5e;
+            color: #fff;
+        }
+        .action-btn-sm.delete-btn:hover {
+            background: #e11d48;
+        }
+        .application-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            .nav-container {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 260px;
+                background: #0b111e;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 6rem 2rem 2rem;
+                gap: 2.5rem;
+                transition: var(--transition-smooth);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+                border-left: 1px solid var(--border-color);
+            }
+            .nav-container.active {
+                right: 0;
+            }
+            .nav-links {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                gap: 1.5rem;
+            }
+            .nav-links a {
+                width: 100%;
+                font-size: 1.1rem;
+            }
+            .btn-logout {
+                width: 100%;
+                justify-content: center;
+            }
+            .links-section,
+            .workspace-section {
+                padding: 0 1rem 3rem;
+            }
+            .inquiries-feed {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .search-box-inline input {
+                min-width: 100px;
+                width: 100%;
+            }
+            .search-box-inline {
+                flex: 1;
+            }
+            .nav-cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .navbar,
+            .hero,
+            .workspace-section,
+            .links-section,
+            footer,
+            .link-item,
+            .tab-btn,
+            .links-tabs-container {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar" aria-label="Main Navigation">
+        <a href="#" class="nav-logo">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i> CentralHub Admin
+        </a>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="nav-container" id="nav-container">
+            <ul class="nav-links">
+                <li><a href="#" class="active">Dashboard</a></li>
+            </ul>
+            <button class="btn-logout" id="logout-btn">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO with centered CLOCK ===== -->
+    <header class="hero">
+        <h1>Admin Control Hub</h1>
+        <p>Manage members, projects, meeting minutes, and inquiries from one central dashboard.</p>
+        <div class="hero-clock" id="liveClock">
+            <span id="clockTime">--:--:--</span>
+            <span class="date" id="clockDate">---- --, ----</span>
+        </div>
+    </header>
+
+    <!-- ===== DAILY QUOTE BANNER ===== -->
+    <section class="daily-quote-banner">
+        <div class="daily-quote-card" id="dailyQuoteCard">
+            <div class="day-badge" id="quoteDayBadge">
+                <i class="fa-solid fa-calendar-day"></i> Day <span id="quoteDayNumber">--</span>
+            </div>
+            <div class="quote-text">
+                <i class="fa-solid fa-quote-left"></i>
+                <span id="quoteText">Loading daily wisdom...</span>
+                <i class="fa-solid fa-quote-right"></i>
+            </div>
+            <div class="quote-author" id="quoteAuthor">
+                <i class="fa-solid fa-pen-fancy"></i> <span id="quoteAuthorName">—</span>
+            </div>
+            <span class="quote-status" id="quoteStatus">⏳ Loading</span>
+        </div>
+    </section>
+
+    <!-- ===== NAVIGATION CARDS ===== -->
+    <section class="nav-cards-section">
+        <div class="nav-cards-grid">
+            <!-- Members Management -->
+            <a href="adminmembers.html" class="nav-card card-members">
+                <div class="icon-wrapper"><i class="fa-solid fa-users"></i></div>
+                <h3>Members Management</h3>
+                <p>Manage active members and registration requests</p>
+                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Projects Management -->
+            <a href="adminupcomingproject.html" class="nav-card card-projects">
+                <div class="icon-wrapper"><i class="fa-solid fa-project-diagram"></i></div>
+                <h3>Projects Management</h3>
+                <p>Manage upcoming projects and applications</p>
+                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Minutes Management -->
+            <a href="adminminutes.html" class="nav-card card-minutes">
+                <div class="icon-wrapper"><i class="fa-solid fa-file-lines"></i></div>
+                <h3>Minutes Management</h3>
+                <p>View, edit, and print meeting minutes</p>
+                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Inquiries Management -->
+            <a href="admininquiries.html" class="nav-card card-inquiries">
+                <div class="icon-wrapper"><i class="fa-solid fa-envelope"></i></div>
+                <h3>Inquiries Management</h3>
+                <p>Manage contact form inquiries</p>
+                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== USEFUL LINKS ===== -->
+    <section class="links-section">
+        <div class="links-header">
+            <i class="fa-solid fa-link" aria-hidden="true"></i>
+            <h2>Useful Resources</h2>
+        </div>
+        <div class="links-tabs-container">
+            <button class="tab-btn active" data-filter="all">All Resources</button>
+            <button class="tab-btn" data-filter="learning">Learning</button>
+            <button class="tab-btn" data-filter="typing">Typing Tools</button>
+            <button class="tab-btn" data-filter="finance">Banks &amp; Finance</button>
+            <button class="tab-btn" data-filter="official">Official Logs</button>
+            <button class="tab-btn" data-filter="pan">PAN Portals</button>
+            <button class="tab-btn" data-filter="news">News</button>
+            <button class="tab-btn" data-filter="social">Socials</button>
+            <button class="tab-btn" data-filter="google">Google Suite</button>
+            <button class="tab-btn" data-filter="emails">Emails</button>
+            <button class="tab-btn" data-filter="share">Share Market</button>
+        </div>
+        <div class="links-grid" id="links-grid">
+            <!-- All links remain the same -->
+            <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-laravel link-icon"></i> Udemy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.coursera.org/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-graduation-cap link-icon"></i> Coursera</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.linkedin.com/learning/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-linkedin link-icon"></i> LinkedIn Learning</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.canvas.net/dashboard/in-progress" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-chalkboard-user link-icon"></i> Canvas</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://cursa.app/en" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-mobile-screen-button link-icon"></i> Cursa</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://academyeurope.org/all-courses" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-school link-icon"></i> Academy Europe</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.bbc.co.uk/learningenglish/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-language link-icon"></i> BBC English</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.typerush.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-keyboard link-icon"></i> TypeRush</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.edclub.com/sportal/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gamepad link-icon"></i> EdClub Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.speedtypingonline.com/typing-test" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-stopwatch link-icon"></i> Speed Typing Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.typing.com/student/lessons" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-medal link-icon"></i> Typing.com Lessons</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.keybr.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gauge-high link-icon"></i> Keybr Practice</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://typing.academy/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-award link-icon"></i> Typing Academy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://esewa.com.np/#/home" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-wallet link-icon" style="color:#60bb46;"></i> eSewa Wallet</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://globalonline.gibl.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-building-columns link-icon"></i> Global IME Smart</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://web.khalti.com/?csrt=818048846804071483#/" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-money-bill-transfer link-icon" style="color:#5c2d91;"></i> Khalti Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://emis.nepp.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-passport link-icon"></i> Rojgar EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://emis.cehrd.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-book-bookmark link-icon"></i> Education EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://phmis.molcpa.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-house-chimney-medical link-icon"></i> PHIMS Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://newpams.fcgo.gov.np/#/Login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-gears link-icon"></i> NEWPAMS Login</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://officerportal.ird.gov.np:8443/main/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-user-tie link-icon"></i> IRD Officer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://taxpayerportal.ird.gov.np/taxpayer/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-id-card-clip link-icon"></i> Taxpayer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://ird.gov.np/pan-search/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-magnifying-glass link-icon"></i> PAN Search Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://ird.gov.np/faq/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-circle-question link-icon"></i> PAN FAQs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="http://ereturns.ird.gov.np:8289/incometax/d01/d01ReturnEntry" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-file-invoice-dollar link-icon"></i> D01 Return Entry</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="http://ereturns.ird.gov.np:8289/general/taxpayerLogin" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-stamp link-icon"></i> Tax Clearance</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.hamropatro.com/newsStory" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-newspaper link-icon"></i> Hamro Patro News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://epaper.ekantipur.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-paper-plane link-icon"></i> eKantipur ePaper</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.techpana.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-microchip link-icon"></i> TechPana</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-facebook-f link-icon"></i> Facebook</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-instagram link-icon"></i> Instagram</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://x.com/home" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-x-twitter link-icon"></i> Twitter / X</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-linkedin-in link-icon"></i> LinkedIn</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://web.whatsapp.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-whatsapp link-icon"></i> WhatsApp Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-youtube link-icon"></i> YouTube</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://docs.google.com/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-word link-icon" style="color:#4285F4;"></i> Google Docs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://workspace.google.com/products/slides/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-powerpoint link-icon" style="color:#FBBC05;"></i> Google Slides</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://docs.google.com/spreadsheets/u/0/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-excel link-icon" style="color:#34A853;"></i> Google Sheets</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-envelope link-icon"></i> Gmail Workspace</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://mail.nepal.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-shield-halved link-icon"></i> Gov. NP Mail</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://sunconnect.sunlife.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-heart-pulse link-icon"></i> SunConnect Portfolio</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://auth.naasasecurities.com.np/realms/naasa/protocol/openid-connect/auth?client_id=kyc&scope=openid%20profile%20email%20roles&response_type=code&redirect_uri=https%3A%2F%2Fwww.naasasecurities.com.np%2Fapi%2Fauth%2Fcallback%2Fkeycloak&state=iQ0HmL3jhoEckqgKC_S20DZADWLrov95UiFv4x89LoA" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-user-shield link-icon"></i> NASA Securities</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://tms59.nepsetms.com.np/login" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-arrow-trend-up link-icon"></i> NEPSE TMS 59</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://merolagani.com/newsletter.aspx" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-mail-bulk link-icon"></i> MeroLagani News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.sharesansar.com/today-share-price" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-hand-holding-dollar link-icon"></i> Today's Share Price</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.nepsealpha.com/candlestick" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-candlestick link-icon"></i> NEPSE Candlesticks</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.nepsealpha.com/trading-signals/tech" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-wave-square link-icon"></i> Trading Signals</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.nepsealpha.com/floorsheet-analysis#broker_wise_top_buyer" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-pie link-icon"></i> Top Buyer Brokerwise</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.sebon.gov.np/right-share-approved" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-check-double link-icon"></i> SEBON Approved</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.sebon.gov.np/right-share-pipeline" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-ellipsis-h link-icon"></i> Right Share Pipeline</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://www.nepalstock.com/floor-sheet" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-table-list link-icon"></i> Floorsheet Logs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+            <a href="https://chukul.com/nepse-charts" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-line link-icon"></i> Chukul NEPSE Charts</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; 2026 Management Dashboard. Built for optimization and speed.</p>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ===== COMPLETE JAVASCRIPT ===== -->
+    <script>
+        (() => {
+            "use strict";
+
+            // ---- SUPABASE CLIENT ----
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            const escapeHtml = (str) => {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
+                    "&quot;").replace(/'/g, "&#039;");
+            };
+
+            // ---- LIVE CLOCK ----
+            function updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+                const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short',
+                    day: 'numeric' });
+                document.getElementById('clockTime').textContent = timeStr;
+                document.getElementById('clockDate').textContent = dateStr;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // ============================================================
+            // ===== DAILY QUOTE =====
+            // ============================================================
+            function getDayOfYear() {
+                const now = new Date();
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+            }
+
+            async function loadDailyQuote() {
+                const day = getDayOfYear();
+                document.getElementById('quoteDayNumber').textContent = day;
+
+                const quoteText = document.getElementById('quoteText');
+                const quoteAuthor = document.getElementById('quoteAuthorName');
+                const quoteStatus = document.getElementById('quoteStatus');
+
+                try {
+                    const { data, error } = await supabase
+                        .from('spiritual_quotes')
+                        .select('*')
+                        .eq('day', day)
+                        .maybeSingle();
+
+                    if (error) throw error;
+
+                    if (data) {
+                        quoteText.textContent = data.quote;
+                        quoteAuthor.textContent = data.author || 'Unknown';
+                        quoteStatus.textContent = '✅ Today\'s Quote';
+                        quoteStatus.className = 'quote-status found';
+                    } else {
+                        quoteText.textContent = 'No quote for today yet. Add one in the database.';
+                        quoteAuthor.textContent = '—';
+                        quoteStatus.textContent = '⚠️ No quote found';
+                        quoteStatus.className = 'quote-status not-found';
+                    }
+                } catch (err) {
+                    console.error('Error loading daily quote:', err);
+                    quoteText.textContent = 'Error loading quote. Please check connection.';
+                    quoteAuthor.textContent = '—';
+                    quoteStatus.textContent = '❌ Connection error';
+                    quoteStatus.className = 'quote-status error';
+                }
+            }
+
+            // ============================================================
+            // ===== SESSION VERIFICATION =====
+            // ============================================================
+            const verifySecureAuthentication = async () => {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        await loadDailyQuote();
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    window.location.href = 'index.html';
+                }
+            };
+
+            // ============================================================
+            // ===== DOM CONTENT LOADED =====
+            // ============================================================
+            document.addEventListener('DOMContentLoaded', () => {
+                verifySecureAuthentication();
+
+                const navbar = document.getElementById('navbar');
+                window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 50); });
+
+                const menuToggle = document.getElementById('menu-toggle');
+                const navContainer = document.getElementById('nav-container');
+                menuToggle.addEventListener('click', () => {
+                    navContainer.classList.toggle('active');
+                    const icon = menuToggle.querySelector('i');
+                    icon.className = navContainer.classList.contains('active') ? 'fa-solid fa-xmark' :
+                        'fa-solid fa-bars';
+                });
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navContainer.classList.remove('active');
+                        menuToggle.querySelector('i').className = 'fa-solid fa-bars';
+                    });
+                });
+
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                const linkItems = document.querySelectorAll('.link-item');
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        const filter = button.getAttribute('data-filter');
+                        linkItems.forEach(item => {
+                            const category = item.getAttribute('data-category');
+                            item.classList.toggle('hidden', filter !== 'all' && category !== filter);
+                        });
+                    });
+                });
+
+                document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await supabase.auth.signOut();
+                    window.location.href = 'index.html';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

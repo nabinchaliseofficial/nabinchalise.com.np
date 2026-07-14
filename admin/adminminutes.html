@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meeting Minutes Management</title>
+    <meta name="description" content="Manage real-time meeting minutes." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <style>
+        /* --- BASE VARIABLES --- */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --cls-personal: #38bdf8;
+            --cls-professional: #34d399;
+            --cls-galkot: #fbbf24;
+            --cls-rotaract: #f43f5e;
+            --cls-links: #a78bfa;
+            --primary: #D70060;
+            --secondary: #015491;
+            --cta-logout: #ef4444;
+            --cta-logout-hover: #dc2626;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-dark: #f8fafc;
+                --bg-card: rgba(255, 255, 255, 0.8);
+                --border-color: rgba(0, 0, 0, 0.08);
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+        .navbar.scrolled {
+            padding: 0.6rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-logo i {
+            color: var(--primary);
+        }
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .btn-back {
+            background: var(--cls-galkot);
+            color: #000 !important;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            min-height: 44px;
+        }
+        .btn-back:hover {
+            background: #e5a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+        .btn-logout {
+            background: var(--cta-logout);
+            color: #ffffff !important;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            min-height: 44px;
+        }
+        .btn-logout:hover {
+            background: var(--cta-logout-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* --- HERO --- */
+        .hero {
+            padding: 8rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* --- WORKSPACE SECTION --- */
+        .workspace-section {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .panel-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .panel-header h2 i {
+            color: var(--primary);
+        }
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .clear-btn-accent {
+            border-color: rgba(239, 68, 68, 0.25) !important;
+        }
+        .clear-btn-accent:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.6) !important;
+        }
+        .btn-primary-accent {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff !important;
+        }
+        .btn-primary-accent:hover {
+            background: #b50051;
+            border-color: #b50051;
+        }
+        .btn-edit-accent {
+            background: var(--cls-galkot);
+            border-color: var(--cls-galkot);
+            color: #000 !important;
+        }
+        .btn-edit-accent:hover {
+            background: #e5a800;
+            border-color: #e5a800;
+        }
+
+        .inquiries-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+        .inquiry-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .node-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .node-sender {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .node-email {
+            font-size: 0.9rem;
+            color: var(--cls-personal);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .node-message {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: rgba(248, 250, 252, 0.9);
+            white-space: pre-wrap;
+        }
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .print-selector-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .print-selector-bar select {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            min-height: 44px;
+            cursor: pointer;
+        }
+        .print-selector-bar select option {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        .action-btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+        }
+        .action-btn-sm.approve-btn {
+            background: #34d399;
+            color: #000;
+        }
+        .action-btn-sm.approve-btn:hover {
+            background: #2bbf8a;
+        }
+        .action-btn-sm.reject-btn {
+            background: #ef4444;
+            color: #fff;
+        }
+        .action-btn-sm.reject-btn:hover {
+            background: #dc2626;
+        }
+        .action-btn-sm.delete-btn {
+            background: #f43f5e;
+            color: #fff;
+        }
+        .action-btn-sm.delete-btn:hover {
+            background: #e11d48;
+        }
+        .application-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .modal-title i {
+            color: var(--cls-galkot);
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--cls-galkot);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+        .form-actions .action-btn {
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-save-accent {
+            background: var(--cls-professional);
+            border-color: var(--cls-professional);
+            color: #000 !important;
+        }
+        .btn-save-accent:hover {
+            background: #2bbf8a;
+            border-color: #2bbf8a;
+        }
+        .btn-cancel-accent {
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+        .btn-cancel-accent:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.6) !important;
+        }
+        .members-editor {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .member-entry {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        .member-entry input {
+            flex: 1;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+        .member-entry input:focus {
+            outline: none;
+            border-color: var(--cls-galkot);
+        }
+        .member-entry .remove-member-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+        }
+        .member-entry .remove-member-btn:hover {
+            transform: scale(1.2);
+        }
+        .add-member-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+            width: 100%;
+            text-align: center;
+        }
+        .add-member-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--cls-galkot);
+            color: var(--text-main);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .inquiries-feed {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .print-selector-bar {
+                flex-direction: column;
+            }
+            .print-selector-bar select {
+                width: 100%;
+            }
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            .workspace-section {
+                padding: 0 1rem;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .panel-actions {
+                flex-wrap: wrap;
+            }
+            .nav-actions {
+                flex-wrap: wrap;
+            }
+            .btn-back,
+            .btn-logout {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .navbar,
+            .hero,
+            .workspace-section,
+            .dashboard-grid,
+            .links-section,
+            footer,
+            .dash-card,
+            .project-card,
+            .link-item,
+            .tab-btn,
+            .links-tabs-container {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+                padding: 30px;
+                font-family: 'Inter', Arial, sans-serif;
+            }
+            .letterhead {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 3px double #D70060;
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+                position: relative;
+            }
+            .letterhead-logo {
+                position: absolute;
+                left: 0;
+                height: 75px;
+                width: auto;
+            }
+            .letterhead-text {
+                text-align: center;
+                width: 100%;
+            }
+            .letterhead h1 {
+                color: #D70060;
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            .letterhead h2 {
+                color: #015491;
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+            .letterhead-subtext {
+                font-size: 11px;
+                color: #444;
+            }
+            #outTitle {
+                text-align: center;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #1E293B;
+            }
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .meta-table td {
+                padding: 6px 8px;
+                border: 1px solid #cbd5e1;
+                font-size: 12px;
+            }
+            .meta-title {
+                font-weight: bold;
+                background: #f8fafc;
+                width: 22%;
+            }
+            .content-section {
+                margin-bottom: 20px;
+            }
+            .content-section h4 {
+                color: #015491;
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+                font-size: 13px;
+                text-transform: uppercase;
+            }
+            .agenda-item {
+                margin-bottom: 10px;
+                font-size: 12.5px;
+            }
+            .footer-sign {
+                margin-top: 45px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+            }
+            .sign-line {
+                border-top: 1px solid #000;
+                width: 200px;
+                text-align: center;
+                padding-top: 5px;
+                font-size: 12px;
+            }
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 5px;
+            }
+            .print-table th,
+            .print-table td {
+                border: 1px solid #cbd5e1;
+                padding: 5px 10px;
+                font-size: 11.5px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f8fafc;
+                font-weight: bold;
+            }
+            .modal-overlay {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar" aria-label="Main Navigation">
+        <a href="#" class="nav-logo">
+            <i class="fa-solid fa-file-lines" aria-hidden="true"></i> Minutes Management
+        </a>
+        <div class="nav-actions">
+            <button class="btn-back" id="backToAdminBtn">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Admin
+            </button>
+            <button class="btn-logout" id="logout-btn">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <header class="hero">
+        <h1><i class="fa-solid fa-file-lines" style="color:var(--primary);"></i> Meeting Minutes Management</h1>
+        <p>View, edit, print, and manage all meeting minutes in one place.</p>
+    </header>
+
+    <!-- ===== MEETING MINUTES ===== -->
+    <section class="workspace-section" id="minutes-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh Minutes</button>
+                <button class="action-btn clear-btn-accent" id="clear-minutes-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
+            </div>
+        </div>
+        <div class="print-selector-bar">
+            <label for="meetingSelect" style="font-weight:600;font-size:0.9rem;"><i class="fa-solid fa-print"></i> Select Meeting to Print:</label>
+            <select id="meetingSelect">
+                <option value="">-- Loading latest meetings --</option>
+            </select>
+            <button class="action-btn btn-primary-accent" id="printSelectedBtn"><i class="fa-solid fa-file-pdf"></i> Print Selected</button>
+            <button class="action-btn btn-edit-accent" id="editSelectedBtn"><i class="fa-solid fa-pen-to-square"></i> Edit Minute</button>
+        </div>
+        <div class="inquiries-feed" id="minutes-feed">
+            <div class="status-msg">Connecting to meeting minutes stream...</div>
+        </div>
+    </section>
+
+    <!-- ===== PRINT PREVIEW (Hidden) ===== -->
+    <div id="print-preview">
+        <div class="letterhead">
+            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
+            <div class="letterhead-text">
+                <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+                <h2>Rotary International District 3292 Nepal-Bhutan</h2>
+                <p class="letterhead-subtext">Club ID: 8823562 | Rota Year 2026-27</p>
+            </div>
+        </div>
+        <h3 id="outTitle">MINUTES OF MEETING</h3>
+        <table class="meta-table">
+            <tr><td class="meta-title">Meeting Number</td><td id="outMeetNo" style="width:28%;"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
+            <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Attendance Summary</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td></tr>
+        </table>
+        <div class="content-section" id="print-section-members"><h4>Attended Members</h4><div id="outPresentMembersNames"></div></div>
+        <div class="content-section" id="print-section-guests" style="display:none;"><h4>Special Guests / Observers</h4><div id="outGuestsNames"></div></div>
+        <div class="content-section"><h4>Agendas &amp; Key Resolutions</h4><div id="outAgendas"></div></div>
+        <div class="footer-sign"><div class="sign-line"><p id="outChairSign">Rtr. Nabin Chalise</p><p>Meeting Chairperson</p></div><div class="sign-line"><p id="outSecretarySign">Rtr. Madan Subedi</p><p>Club Secretary</p></div></div>
+    </div>
+
+    <!-- ===== EDIT MINUTES MODAL ===== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close edit modal"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-solid fa-pen-to-square"></i> Edit Meeting Minutes</div>
+            <form id="editMinuteForm">
+                <input type="hidden" id="editMinuteId" value="">
+                <div class="form-row"><div class="form-group"><label for="editMeetingNumber">Meeting Number</label><input type="text" id="editMeetingNumber" placeholder="e.g. 12th Regular Meeting" /></div><div class="form-group"><label for="editMeetingDate">Date &amp; Time</label><input type="datetime-local" id="editMeetingDate" /></div></div>
+                <div class="form-row"><div class="form-group"><label for="editVenue">Venue</label><input type="text" id="editVenue" placeholder="e.g. Club Hall, Galkot" /></div><div class="form-group"><label for="editChairperson">Chairperson</label><input type="text" id="editChairperson" placeholder="e.g. Rtr. Nabin Chalise" /></div></div>
+                <div class="form-row"><div class="form-group"><label for="editMembersPresent">Members Present (Count)</label><input type="number" id="editMembersPresent" min="0" /></div><div class="form-group"><label for="editGuestsCount">Guests Count</label><input type="number" id="editGuestsCount" min="0" /></div></div>
+                <div class="form-group"><label>Attended Members</label><div class="members-editor" id="membersEditor"></div><button type="button" class="add-member-btn" id="addMemberBtn"><i class="fa-solid fa-plus"></i> Add Member</button></div>
+                <div class="form-group"><label>Guests (one per line)</label><textarea id="editGuests" placeholder="Rtr. Guest Name 1&#10;Rtr. Guest Name 2" rows="2"></textarea></div>
+                <div class="form-group"><label>Agendas &amp; Resolutions</label><div id="agendasEditor"></div><button type="button" class="add-member-btn" id="addAgendaBtn"><i class="fa-solid fa-plus"></i> Add Agenda</button></div>
+                <div class="form-actions">
+                    <button type="button" class="action-btn btn-cancel-accent" id="modalCancelBtn">Cancel</button>
+                    <button type="submit" class="action-btn btn-save-accent"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; 2026 Meeting Minutes Management. Built for efficiency.</p>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        (() => {
+            "use strict";
+
+            // ---- SUPABASE CLIENT ----
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_KEY =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            let allMinutesData = [];
+            let editingId = null;
+
+            const escapeHtml = (str) => {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
+                    "&quot;").replace(/'/g, "&#039;");
+            };
+
+            // ============================================================
+            // ===== LOAD MEETING MINUTES =====
+            // ============================================================
+            const loadMeetingMinutes = async () => {
+                const feedContainer = document.getElementById('minutes-feed');
+                const selectDropdown = document.getElementById('meetingSelect');
+                if (!feedContainer) return;
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading meeting minutes...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('meeting_minutes')
+                        .select('*')
+                        .order('id', { ascending: false });
+                    if (error) throw error;
+                    allMinutesData = data || [];
+                    if (!allMinutesData.length) {
+                        selectDropdown.innerHTML = '<option value="">-- No meetings available --</option>';
+                        feedContainer.innerHTML = 'No meeting minutes found. Create one from the main admin panel.';
+                        return;
+                    }
+                    selectDropdown.innerHTML = allMinutesData.map((row, idx) => {
+                        const m = row.data || {};
+                        const titleText =
+                            `${m.meeting_number || 'Meeting'} - (${m.meeting_date ? new Date(m.meeting_date).toLocaleDateString() : 'Date N/A'})`;
+                        return `<option value="${row.id}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(titleText)}</option>`;
+                    }).join('');
+
+                    feedContainer.innerHTML = allMinutesData.map(row => {
+                        const m = row.data || {};
+                        const dateStr = m.meeting_date ? new Date(m.meeting_date).toLocaleString() : 'N/A';
+                        const memberCount = (m.members || []).length;
+                        const agendaCount = (m.agendas || []).length;
+                        return `
+                            <article class="inquiry-node" style="border-left-color: var(--primary);">
+                                <div class="node-meta">
+                                    <span>ID: ${row.id}</span>
+                                    <span>${dateStr}</span>
+                                </div>
+                                <div class="node-sender" style="color: var(--primary);">
+                                    <i class="fa-solid fa-file-lines" aria-hidden="true"></i> ${escapeHtml(m.meeting_number || 'Untitled Meeting')}
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(m.venue || 'N/A')}
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                    <i class="fa-solid fa-user-tie" aria-hidden="true"></i> Chairperson: ${escapeHtml(m.chairperson || 'N/A')}
+                                </div>
+                                <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap;">
+                                    <span><i class="fa-solid fa-users"></i> Members: ${memberCount}</span>
+                                    <span><i class="fa-solid fa-user-plus"></i> Guests: ${m.guests_count || 0}</span>
+                                    <span><i class="fa-solid fa-list"></i> Agendas: ${agendaCount}</span>
+                                </div>
+                                ${m.agendas && m.agendas.length > 0 ? `
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                        <i class="fa-solid fa-list-check"></i> Latest Agenda: ${escapeHtml(m.agendas[0].title || 'N/A')}
+                                    </div>
+                                ` : ''}
+                                <div class="application-actions">
+                                    <button class="action-btn-sm approve-btn" onclick="window.editMinute(${row.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                    <button class="action-btn-sm delete-btn" onclick="window.deleteMinute(${row.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading meeting minutes: ${err.message}</div>`;
+                    selectDropdown.innerHTML = '<option value="">Error loading meetings</option>';
+                }
+            };
+
+            // ============================================================
+            // ===== DELETE MINUTE =====
+            // ============================================================
+            window.deleteMinute = async (id) => {
+                if (!confirm('⚠️ Are you sure you want to DELETE this meeting minute permanently from the database?')) return;
+                try {
+                    const { error } = await supabase
+                        .from('meeting_minutes')
+                        .delete()
+                        .eq('id', id);
+                    if (error) throw error;
+                    alert('✅ Meeting minute deleted successfully from database!');
+                    loadMeetingMinutes();
+                } catch (err) {
+                    alert('❌ Error deleting meeting minute: ' + err.message);
+                }
+            };
+
+            // ============================================================
+            // ===== CLEAR ALL MINUTES =====
+            // ============================================================
+            document.getElementById('clear-minutes-btn')?.addEventListener('click', async () => {
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL meeting minutes permanently from the database?")) return;
+                const feedContainer = document.getElementById('minutes-feed');
+                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all minutes...</div>';
+                try {
+                    const { error } = await supabase
+                        .from('meeting_minutes')
+                        .delete()
+                        .neq('id', 0);
+                    if (error) throw error;
+                    alert('✅ All meeting minutes deleted permanently from database.');
+                    loadMeetingMinutes();
+                } catch (err) {
+                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    alert('❌ Error clearing minutes: ' + err.message);
+                }
+            });
+
+            // ============================================================
+            // ===== POPULATE PRINT PREVIEW =====
+            // ============================================================
+            window.populatePrintPreviewFromData = (m) => {
+                const dateObj = m.meeting_date ? new Date(m.meeting_date) : new Date();
+                document.getElementById('outMeetNo').innerText = m.meeting_number || 'N/A';
+                document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', { dateStyle: 'medium',
+                    timeStyle: 'short' });
+                document.getElementById('outVenue').innerText = m.venue || 'N/A';
+                document.getElementById('outChair').innerText = m.chairperson || 'N/A';
+                document.getElementById('outChairSign').innerText = m.chairperson || 'N/A';
+                document.getElementById('outPres').innerText = m.members_present || 0;
+                document.getElementById('outGst').innerText = m.guests_count || 0;
+                let memberHTML =
+                    `<table class="print-table"><thead><tr><th style="width:8%;text-align:center;">S.N.</th><th style="width:52%;">Name</th><th style="width:40%;">Designation</th></tr></thead><tbody>`;
+                (m.members || []).forEach((mem, i) => {
+                    memberHTML +=
+                        `<tr><td style="text-align:center;">${i+1}</td><td>${escapeHtml(mem.name)}</td><td>${escapeHtml(mem.role)}</td></tr>`;
+                });
+                memberHTML += `</tbody></table>`;
+                document.getElementById('outPresentMembersNames').innerHTML = (m.members && m.members.length) ? memberHTML :
+                    '<p style="font-size:12px;">No members marked present.</p>';
+                const guestSection = document.getElementById('print-section-guests');
+                if (m.guests && m.guests.length) {
+                    let guestHTML =
+                        `<table class="print-table"><thead><tr><th style="width:8%;text-align:center;">S.N.</th><th style="width:92%;">Guest Details</th></tr></thead><tbody>`;
+                    m.guests.forEach((g, i) => { guestHTML +=
+                            `<tr><td style="text-align:center;">${i+1}</td><td>${escapeHtml(g)}</td></tr>`; });
+                    guestHTML += `</tbody></table>`;
+                    document.getElementById('outGuestsNames').innerHTML = guestHTML;
+                    guestSection.style.display = 'block';
+                } else { guestSection.style.display = 'none'; }
+                let agendaHTML = '';
+                (m.agendas || []).forEach((a, i) => {
+                    agendaHTML +=
+                        `<div class="agenda-item"><strong>Agenda ${i+1}: ${escapeHtml(a.title)}</strong><p style="margin:3px 0 0 12px;color:#333;">${escapeHtml(a.description)}</p></div>`;
+                });
+                document.getElementById('outAgendas').innerHTML = agendaHTML || '<p>No formal agendas recorded.</p>';
+            };
+
+            window.printSpecificMinute = (id) => {
+                const found = allMinutesData.find(item => item.id == id);
+                if (found && found.data) {
+                    window.populatePrintPreviewFromData(found.data);
+                    setTimeout(() => window.print(), 300);
+                } else { alert('Minute data not found for printing.'); }
+            };
+
+            // ============================================================
+            // ===== EDIT MINUTES MODAL =====
+            // ============================================================
+            window.editMinute = (id) => {
+                const found = allMinutesData.find(item => item.id == id);
+                if (!found) { alert('Meeting not found.'); return; }
+                openEditModal(found);
+            };
+
+            const editModal = document.getElementById('editModal');
+            const editForm = document.getElementById('editMinuteForm');
+
+            const openEditModal = (minuteData) => {
+                if (!minuteData) return;
+                editingId = minuteData.id;
+                const m = minuteData.data || {};
+                document.getElementById('editMinuteId').value = minuteData.id;
+                document.getElementById('editMeetingNumber').value = m.meeting_number || '';
+                document.getElementById('editMeetingDate').value = m.meeting_date ? new Date(m.meeting_date).toISOString()
+                    .slice(0, 16) : '';
+                document.getElementById('editVenue').value = m.venue || '';
+                document.getElementById('editChairperson').value = m.chairperson || '';
+                document.getElementById('editMembersPresent').value = m.members_present || 0;
+                document.getElementById('editGuestsCount').value = m.guests_count || 0;
+                const membersEditor = document.getElementById('membersEditor');
+                membersEditor.innerHTML = '';
+                (m.members || []).forEach((mem) => addMemberRow(mem.name, mem.role));
+                if ((m.members || []).length === 0) addMemberRow('', '');
+                document.getElementById('editGuests').value = (m.guests || []).join('\n');
+                const agendasEditor = document.getElementById('agendasEditor');
+                agendasEditor.innerHTML = '';
+                (m.agendas || []).forEach((agenda) => addAgendaRow(agenda.title, agenda.description));
+                if ((m.agendas || []).length === 0) addAgendaRow('', '');
+                editModal.classList.add('active');
+            };
+
+            const closeEditModal = () => {
+                editModal.classList.remove('active');
+                editingId = null;
+            };
+
+            function addMemberRow(name = '', role = '') {
+                const container = document.getElementById('membersEditor');
+                const div = document.createElement('div');
+                div.className = 'member-entry';
+                div.innerHTML =
+                    `<input type="text" placeholder="Member Name" value="${escapeHtml(name)}" class="member-name" /><input type="text" placeholder="Designation" value="${escapeHtml(role)}" class="member-role" /><button type="button" class="remove-member-btn" title="Remove member"><i class="fa-solid fa-xmark"></i></button>`;
+                div.querySelector('.remove-member-btn').addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            }
+
+            function addAgendaRow(title = '', description = '') {
+                const container = document.getElementById('agendasEditor');
+                const div = document.createElement('div');
+                div.className = 'member-entry';
+                div.style.flexWrap = 'wrap';
+                div.innerHTML =
+                    `<input type="text" placeholder="Agenda Title" value="${escapeHtml(title)}" class="agenda-title" style="flex:1 1 100%;" /><input type="text" placeholder="Description" value="${escapeHtml(description)}" class="agenda-desc" style="flex:1 1 100%;" /><button type="button" class="remove-member-btn" title="Remove agenda"><i class="fa-solid fa-xmark"></i></button>`;
+                div.querySelector('.remove-member-btn').addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            }
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!editingId) { alert('No minute selected for editing.'); return; }
+                const meetingNumber = document.getElementById('editMeetingNumber').value.trim();
+                const meetingDate = document.getElementById('editMeetingDate').value;
+                const venue = document.getElementById('editVenue').value.trim();
+                const chairperson = document.getElementById('editChairperson').value.trim();
+                const membersPresent = parseInt(document.getElementById('editMembersPresent').value) || 0;
+                const guestsCount = parseInt(document.getElementById('editGuestsCount').value) || 0;
+                const memberRows = document.querySelectorAll('#membersEditor .member-entry');
+                const members = [];
+                memberRows.forEach(row => {
+                    const name = row.querySelector('.member-name').value.trim();
+                    const role = row.querySelector('.member-role').value.trim();
+                    if (name || role) members.push({ name: name || 'Unnamed', role: role || 'Member' });
+                });
+                const guestsText = document.getElementById('editGuests').value;
+                const guests = guestsText.split('\n').map(g => g.trim()).filter(g => g);
+                const agendaRows = document.querySelectorAll('#agendasEditor .member-entry');
+                const agendas = [];
+                agendaRows.forEach(row => {
+                    const title = row.querySelector('.agenda-title').value.trim();
+                    const desc = row.querySelector('.agenda-desc').value.trim();
+                    if (title || desc) agendas.push({ title: title || 'Untitled Agenda', description: desc || '' });
+                });
+                const updatedData = {
+                    meeting_number: meetingNumber,
+                    meeting_date: meetingDate || new Date().toISOString(),
+                    venue: venue,
+                    chairperson: chairperson,
+                    members_present: membersPresent,
+                    guests_count: guestsCount,
+                    members: members,
+                    guests: guests,
+                    agendas: agendas
+                };
+                try {
+                    const { error } = await supabase
+                        .from('meeting_minutes')
+                        .update({ data: updatedData })
+                        .eq('id', editingId);
+                    if (error) throw error;
+                    alert('✅ Meeting minutes updated successfully!');
+                    closeEditModal();
+                    loadMeetingMinutes();
+                } catch (err) { alert('❌ Error updating meeting minutes: ' + err.message); }
+            });
+
+            document.getElementById('modalCloseBtn').addEventListener('click', closeEditModal);
+            document.getElementById('modalCancelBtn').addEventListener('click', closeEditModal);
+            editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+            document.getElementById('addMemberBtn')?.addEventListener('click', () => addMemberRow('', ''));
+            document.getElementById('addAgendaBtn')?.addEventListener('click', () => addAgendaRow('', ''));
+
+            // ============================================================
+            // ===== BUTTON EVENTS =====
+            // ============================================================
+            document.getElementById('refresh-minutes-btn')?.addEventListener('click', loadMeetingMinutes);
+
+            document.getElementById('printSelectedBtn')?.addEventListener('click', () => {
+                const selectedId = document.getElementById('meetingSelect').value;
+                if (!selectedId) { alert('Please select a meeting record first.'); return; }
+                window.printSpecificMinute(selectedId);
+            });
+
+            document.getElementById('editSelectedBtn')?.addEventListener('click', () => {
+                const selectedId = document.getElementById('meetingSelect').value;
+                if (!selectedId) { alert('Please select a meeting record to edit.'); return; }
+                const found = allMinutesData.find(item => item.id == selectedId);
+                if (found) openEditModal(found);
+                else alert('Meeting data not found.');
+            });
+
+            // ============================================================
+            // ===== REALTIME SUBSCRIPTIONS =====
+            // ============================================================
+            const setupRealtimeSubscriptions = () => {
+                supabase.channel('minutes-changes')
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'meeting_minutes'
+                    }, () => {
+                        console.log('🔄 Meeting minutes changed, refreshing...');
+                        loadMeetingMinutes();
+                    })
+                    .subscribe((status) => {
+                        console.log('📡 Minutes subscription status:', status);
+                    });
+            };
+
+            // ============================================================
+            // ===== SESSION VERIFICATION =====
+            // ============================================================
+            const verifySecureAuthentication = async () => {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        await loadMeetingMinutes();
+                        setupRealtimeSubscriptions();
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    window.location.href = 'index.html';
+                }
+            };
+
+            // ============================================================
+            // ===== NAVBAR SCROLL =====
+            // ============================================================
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                navbar.classList.toggle('scrolled', window.scrollY > 50);
+            });
+
+            // ============================================================
+            // ===== BACK TO ADMIN =====
+            // ============================================================
+            document.getElementById('backToAdminBtn')?.addEventListener('click', () => {
+                window.location.href = 'admin.html';
+            });
+
+            // ============================================================
+            // ===== LOGOUT =====
+            // ============================================================
+            document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await supabase.auth.signOut();
+                window.location.href = 'index.html';
+            });
+
+            // ============================================================
+            // ===== DOM CONTENT LOADED =====
+            // ============================================================
+            document.addEventListener('DOMContentLoaded', () => {
+                verifySecureAuthentication();
+            });
+
+        })();
+    </script>
+</body>
+</html>

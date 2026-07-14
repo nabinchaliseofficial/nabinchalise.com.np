@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <!-- html2pdf library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -922,8 +923,10 @@
             // ===== SUPABASE CONFIG =====
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            
+            // Use Supabase client
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             const TABLE_NAME = "members";
-            const ENDPOINT = `${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*`;
 
             // DOM refs
             const grid = document.getElementById('profileGrid');
@@ -1347,21 +1350,18 @@
                 birthdayChips.innerHTML = `<span class="no-birthday">⏳ loading ...</span>`;
 
                 try {
-                    const response = await fetch(ENDPOINT, {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    // Use Supabase client instead of fetch
+                    const { data, error } = await supabase
+                        .from(TABLE_NAME)
+                        .select('*')
+                        .order('created_at', { ascending: false });
 
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        throw new Error(`HTTP ${response.status} — ${errText}`);
+                    if (error) throw error;
+
+                    if (!data || !Array.isArray(data)) {
+                        throw new Error('No data received');
                     }
 
-                    const data = await response.json();
-                    if (!Array.isArray(data)) throw new Error('Unexpected response format');
                     allMembers = data;
                     applyFiltersAndRender(searchInput.value);
                 } catch (err) {

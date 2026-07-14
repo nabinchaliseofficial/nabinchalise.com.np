@@ -429,7 +429,7 @@
 
       <button type="submit" class="btn-submit" id="submitBtn">
         <span class="loading-spinner"></span>
-        <span class="btn-text"><i class="fas fa-pen-fancy"></i> Register & Save to Supabase</span>
+        <span class="btn-text"><i class="fas fa-pen-fancy"></i> Register & Save to Database</span>
       </button>
     </form>
 
@@ -440,7 +440,7 @@
     </div>
 
     <div class="footnote">
-      <i class="fas fa-database" style="margin-right: 6px;"></i> Data stored securely in Supabase
+      <i class="fas fa-database" style="margin-right: 6px;"></i> Data stored securely in Database
     </div>
   </div>
 
@@ -472,7 +472,7 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
     // ============================================================
 
-    // NEW TABLE NAME - using UUID primary key (no sequence issues)
+    // TABLE NAME - using UUID primary key (no sequence issues)
     const TABLE_NAME = 'member_registrations';
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -592,17 +592,17 @@
           }
         }
 
-        // Build record - id will be auto-generated as UUID
+        // Build record - CORRECTED FIELD MAPPING
         const record = {
           timestamp: new Date().toISOString(),
-          name: name,
+          full_name: name,              // Changed from 'name' to 'full_name'
           address: address,
-          phone_number: phone,
+          phone: phone,                 // Changed from 'phone_number' to 'phone'
           blood_group: bloodGroup || null,
           gender: gender,
           email: email,
-          date_of_birth: dob,
-          designation: designation || null,
+          birth_date: dob,              // Changed from 'date_of_birth' to 'birth_date'
+          position: designation || null, // Changed from 'designation' to 'position'
           profession: profession || null,
           profile_image: profileImageBase64,
           mentor: mentor || null

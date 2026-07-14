@@ -983,7 +983,7 @@
         e.preventDefault();
         supabase.auth.getSession().then(({ data }) => {
           if (data.session) {
-            window.location.href = 'admin.html';
+            window.location.href = 'admin/admin.html';
           } else {
             openModal();
           }
@@ -1054,7 +1054,7 @@
             showSuccess();
             loginForm.style.display = 'none';
             setTimeout(() => {
-              window.location.href = 'admin.html';
+              window.location.href = 'admin/admin.html';
             }, 800);
           } else {
             showError('Unable to authenticate. Please try again.');
