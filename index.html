@@ -375,8 +375,54 @@
       font-weight: 800;
       color: #2563eb;
     }
-    .quote-card blockquote { font-size: 1.6rem; font-weight: 400; line-height: 1.4; max-width: 700px; margin: 0 auto; }
-    .quote-card .author { margin-top: 16px; color: #94a3b8; font-size: 0.95rem; }
+    .quote-card blockquote {
+      font-size: 1.6rem;
+      font-weight: 400;
+      line-height: 1.4;
+      max-width: 700px;
+      margin: 0 auto;
+      min-height: 80px;
+      transition: opacity 0.3s ease;
+    }
+    .quote-card .author {
+      margin-top: 16px;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .quote-card .author i {
+      color: #2563eb;
+      margin-right: 6px;
+    }
+    .quote-card .day-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      padding: 4px 18px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    #quoteStatus {
+      transition: all 0.3s ease;
+      font-size: 0.75rem;
+      padding: 4px 16px;
+      border-radius: 40px;
+      background: rgba(37,99,235,0.1);
+      color: #94a3b8;
+    }
+    #quoteStatus.found {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+    }
+    #quoteStatus.not-found {
+      background: rgba(245,158,11,0.15);
+      color: #f59e0b;
+    }
+    #quoteStatus.error {
+      background: rgba(239,68,68,0.15);
+      color: #ef4444;
+    }
 
     /* ====== CONTACT ====== */
     .contact-grid {
@@ -663,6 +709,7 @@
       .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
       .section { padding: 48px 0; }
       .quote-card blockquote { font-size: 1.2rem; }
+      .quote-card { padding: 32px 20px; }
       .modal-box { padding: 28px 20px; }
     }
   </style>
@@ -827,9 +874,15 @@
   <section class="section" id="quote">
     <div class="container">
       <div class="quote-card" id="quoteCard">
-        <blockquote id="quoteText">The journey of a thousand miles begins with a single step.</blockquote>
-        <div class="author" id="quoteAuthor">— Lao Tzu · Day <span id="quoteDay">1</span></div>
-        <div style="margin-top:20px; display:flex; gap:12px; justify-content:center;">
+        <div class="day-badge">
+          <i class="fas fa-calendar-day"></i> Day <span id="quoteDayNumber">--</span>
+        </div>
+        <blockquote id="quoteText">Loading daily wisdom...</blockquote>
+        <div class="author" id="quoteAuthor">
+          <i class="fas fa-pen-fancy"></i> <span id="quoteAuthorName">—</span>
+        </div>
+        <div style="margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <span id="quoteStatus">⏳ Loading</span>
           <button class="btn btn-outline btn-sm" onclick="copyQuote()">📋 Copy</button>
           <button class="btn btn-outline btn-sm" onclick="shareQuote()">🔗 Share</button>
         </div>
@@ -1095,17 +1148,90 @@
       updateDash();
       setInterval(updateDash, 1000);
 
-      // ====== QUOTE ======
-      document.getElementById('quoteDay').textContent = new Date().getDate();
+      // ====== DAILY QUOTE FROM SUPABASE ======
+      function getDayOfYear() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now - start;
+        return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+      }
 
+      async function loadDailyQuote() {
+        const day = getDayOfYear();
+        const dayEl = document.getElementById('quoteDayNumber');
+        const quoteText = document.getElementById('quoteText');
+        const quoteAuthor = document.getElementById('quoteAuthorName');
+        const quoteStatus = document.getElementById('quoteStatus');
+        
+        if (dayEl) dayEl.textContent = day;
+        
+        try {
+          const { data, error } = await supabase
+            .from('spiritual_quotes')
+            .select('*')
+            .eq('day', day)
+            .maybeSingle();
+          
+          if (error) throw error;
+          
+          if (data) {
+            quoteText.textContent = data.quote;
+            quoteAuthor.textContent = data.author || 'Unknown';
+            quoteStatus.textContent = '✅ Today\'s Wisdom';
+            quoteStatus.className = 'found';
+          } else {
+            quoteText.textContent = 'No quote for today yet. Check back tomorrow!';
+            quoteAuthor.textContent = '—';
+            quoteStatus.textContent = '⚠️ No quote found';
+            quoteStatus.className = 'not-found';
+          }
+        } catch (err) {
+          console.error('Error loading daily quote:', err);
+          quoteText.textContent = 'Error loading quote. Please check connection.';
+          quoteAuthor.textContent = '—';
+          quoteStatus.textContent = '❌ Connection error';
+          quoteStatus.className = 'error';
+        }
+      }
+
+      // Load quote when page loads
+      loadDailyQuote();
+
+      // ====== COPY & SHARE QUOTE ======
       window.copyQuote = function() {
         const q = document.getElementById('quoteText').textContent;
-        navigator.clipboard?.writeText(q).then(() => alert('Quote copied!'));
+        const status = document.getElementById('quoteStatus');
+        if (q && !q.includes('Loading') && !q.includes('Error') && !q.includes('No quote')) {
+          navigator.clipboard?.writeText(q).then(() => {
+            const originalText = status.textContent;
+            const originalClass = status.className;
+            status.textContent = '✅ Copied!';
+            status.className = 'found';
+            setTimeout(() => {
+              status.textContent = originalText;
+              status.className = originalClass;
+            }, 2000);
+          });
+        } else {
+          alert('No quote available to copy.');
+        }
       };
+
       window.shareQuote = function() {
         const q = document.getElementById('quoteText').textContent;
-        if (navigator.share) navigator.share({ title: 'Quote', text: q });
-        else alert('Share: ' + q);
+        const a = document.getElementById('quoteAuthorName').textContent;
+        if (q && !q.includes('Loading') && !q.includes('Error') && !q.includes('No quote')) {
+          const shareText = `"${q}" — ${a}`;
+          if (navigator.share) {
+            navigator.share({ title: 'Daily Quote', text: shareText });
+          } else {
+            navigator.clipboard?.writeText(shareText).then(() => {
+              alert('📋 Quote copied to clipboard!');
+            });
+          }
+        } else {
+          alert('No quote available to share.');
+        }
       };
 
       // ====== SCROLL PROGRESS ======
@@ -1124,53 +1250,53 @@
       const links = document.getElementById('navLinks');
       toggle.addEventListener('click', () => links.classList.toggle('open'));
 
-     // ====== CONTACT FORM WITH SUPABASE ======
-document.getElementById('contactForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const btn = this.querySelector('button[type="submit"]');
-  const originalText = btn.textContent;
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-  
-  const inputs = this.querySelectorAll('input, textarea');
-  const fullName = inputs[0].value.trim();
-  const email = inputs[1].value.trim();
-  const message = inputs[2].value.trim();
-  
-  if (!fullName || !email || !message) {
-    alert('⚠️ Please fill in all fields.');
-    btn.textContent = originalText;
-    btn.disabled = false;
-    return;
-  }
-  
-  try {
-    const { data, error } = await supabase
-      .from('inquiries')
-      .insert([
-        { 
-          full_name: fullName,
-          email: email,
-          message: message
+      // ====== CONTACT FORM WITH SUPABASE ======
+      document.getElementById('contactForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const btn = this.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+        
+        const inputs = this.querySelectorAll('input, textarea');
+        const fullName = inputs[0].value.trim();
+        const email = inputs[1].value.trim();
+        const message = inputs[2].value.trim();
+        
+        if (!fullName || !email || !message) {
+          alert('⚠️ Please fill in all fields.');
+          btn.textContent = originalText;
+          btn.disabled = false;
+          return;
         }
-      ]);
-    
-    if (error) {
-      console.error('Supabase error:', error);
-      alert('❌ Failed to send message. Please try again.');
-    } else {
-      alert('✅ Message sent successfully! I\'ll get back to you soon.');
-      this.reset();
-    }
-  } catch (err) {
-    console.error('Error:', err);
-    alert('❌ Network error. Please check your connection.');
-  }
-  
-  btn.textContent = originalText;
-  btn.disabled = false;
-});
+        
+        try {
+          const { data, error } = await supabase
+            .from('inquiries')
+            .insert([
+              { 
+                full_name: fullName,
+                email: email,
+                message: message
+              }
+            ]);
+          
+          if (error) {
+            console.error('Supabase error:', error);
+            alert('❌ Failed to send message. Please try again.');
+          } else {
+            alert('✅ Message sent successfully! I\'ll get back to you soon.');
+            this.reset();
+          }
+        } catch (err) {
+          console.error('Error:', err);
+          alert('❌ Network error. Please check your connection.');
+        }
+        
+        btn.textContent = originalText;
+        btn.disabled = false;
+      });
 
       // ====== NAVBAR SCROLL ======
       const navbar = document.getElementById('navbar');
