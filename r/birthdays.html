@@ -6,6 +6,8 @@
     <title>Rotaract · Member Dashboard</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- html2pdf library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         * {
             margin: 0;
@@ -743,6 +745,47 @@
             transform: scale(1.05);
         }
 
+        /* Popup logo */
+        .popup-logo {
+            margin-bottom: 0.5rem;
+        }
+        .popup-logo img {
+            border-radius: 50%;
+            border: 3px solid #fbbf24;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Download button row - only Card remains */
+        .popup-download-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+        .popup-download-row .close-btn {
+            margin-top: 0;
+            padding: 0.6rem 1.8rem;
+            font-size: 0.9rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        .popup-download-row .close-btn:hover {
+            background: #0f172a;
+        }
+
+        /* Club name line */
+        .club-name-line {
+            margin-top: 0.8rem;
+            font-weight: 600;
+            color: #78350f;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.3);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -849,11 +892,27 @@
 
     <!-- ===== BIRTHDAY POPUP ===== -->
     <div id="birthdayPopup" class="birthday-popup-overlay">
-        <div class="birthday-popup">
+        <div class="birthday-popup" id="popupContent">
+            <!-- Club Logo -->
+            <div class="popup-logo">
+                <img src="rotaract logo.jpg" alt="Rotaract Club Logo" width="80" height="80" id="popupLogoImg">
+            </div>
             <div class="confetti">🎉🎂🎉</div>
             <h2>Happy Birthday!!!</h2>
+
             <div class="name" id="popupName">Rtr. Member</div>
             <div class="message">🎊 Wishing you a wonderful day! 🎊</div>
+
+            <!-- Only Card download button -->
+            <div class="popup-download-row">
+                <button class="close-btn" id="downloadCardBtn"><i class="fas fa-download"></i> Card</button>
+            </div>
+
+            <!-- Club name line -->
+            <div class="club-name-line">
+                <i class="fas fa-heart" style="color:#b45309;"></i> ROTARACT CLUB OF GALKOT BAGLUNG <i class="fas fa-heart" style="color:#b45309;"></i>
+            </div>
+
             <button class="close-btn" onclick="closePopup()"><i class="fas fa-heart"></i> Thank You!</button>
         </div>
     </div>
@@ -861,7 +920,6 @@
     <script>
         (function() {
             // ===== SUPABASE CONFIG =====
-            // FIXED: Using the correct publishable key
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const TABLE_NAME = "members";
@@ -879,6 +937,7 @@
             const searchBtn = document.getElementById('searchBtn');
             const popup = document.getElementById('birthdayPopup');
             const popupName = document.getElementById('popupName');
+            const popupContent = document.getElementById('popupContent');
 
             let allMembers = [];
             let popupTimeout = null;
@@ -901,7 +960,6 @@
                 today.setHours(0, 0, 0, 0);
                 const dMonth = d.getMonth(),
                     dDay = d.getDate();
-                // Check for birthdays in the next 'days' days
                 for (let i = 0; i <= days; i++) {
                     const check = new Date(today);
                     check.setDate(check.getDate() + i);
@@ -946,9 +1004,7 @@
             function getFullNameWithPrefix(member) {
                 const name = member.name || member.full_name || '—';
                 if (name === '—') return '—';
-                // Check if name already has prefix
                 if (name.startsWith('Rtr.') || name.startsWith('Rtr ') || name.startsWith('Rtr')) return name;
-                // Don't add prefix for names that already have title
                 if (name.includes('Dr.') || name.includes('Mr.') || name.includes('Ms.') || name.includes('Mrs.')) return name;
                 return `Rtr. ${name}`;
             }
@@ -960,7 +1016,6 @@
                 popup.classList.add('active');
                 popupShownForToday = true;
 
-                // Auto-close after 15 seconds
                 if (popupTimeout) clearTimeout(popupTimeout);
                 popupTimeout = setTimeout(() => {
                     closePopup();
@@ -975,9 +1030,108 @@
                 }
             };
 
-            // Close popup on background click
             popup.addEventListener('click', function(e) {
                 if (e.target === this) closePopup();
+            });
+
+            // ===== PDF DOWNLOAD for the popup card =====
+            document.getElementById('downloadCardBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                // Clone the popup content to avoid affecting the live UI
+                const clone = popupContent.cloneNode(true);
+                // Remove buttons from clone
+                const downloadRow = clone.querySelector('.popup-download-row');
+                if (downloadRow) downloadRow.remove();
+                const thankBtn = clone.querySelector('.close-btn:last-child');
+                if (thankBtn) thankBtn.remove();
+                // Ensure the clone has proper styling
+                clone.style.width = '100%';
+                clone.style.maxWidth = '500px';
+                clone.style.margin = '0 auto';
+                clone.style.padding = '2rem';
+                clone.style.borderRadius = '30px';
+                clone.style.background = 'linear-gradient(135deg, #fef9c3, #fde047)';
+                clone.style.border = '2px solid #fbbf24';
+                clone.style.boxShadow = '0 25px 60px rgba(0,0,0,0.3)';
+                clone.style.textAlign = 'center';
+                clone.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+                // Ensure logo image is visible
+                const logoImg = clone.querySelector('#popupLogoImg');
+                if (logoImg) {
+                    logoImg.style.width = '80px';
+                    logoImg.style.height = '80px';
+                    logoImg.style.borderRadius = '50%';
+                    logoImg.style.border = '3px solid #fbbf24';
+                    logoImg.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                    logoImg.style.display = 'inline-block';
+                }
+                // Ensure all text is visible
+                const confetti = clone.querySelector('.confetti');
+                if (confetti) confetti.style.fontSize = '4rem';
+                const h2 = clone.querySelector('h2');
+                if (h2) {
+                    h2.style.fontSize = '2.2rem';
+                    h2.style.fontWeight = '800';
+                    h2.style.color = '#78350f';
+                    h2.style.margin = '0.5rem 0';
+                }
+                const nameEl = clone.querySelector('.name');
+                if (nameEl) {
+                    nameEl.style.fontSize = '1.8rem';
+                    nameEl.style.fontWeight = '700';
+                    nameEl.style.color = '#92400e';
+                    nameEl.style.background = 'rgba(255,255,255,0.5)';
+                    nameEl.style.padding = '0.3rem 1.5rem';
+                    nameEl.style.borderRadius = '60px';
+                    nameEl.style.display = 'inline-block';
+                    nameEl.style.margin = '0.5rem 0';
+                }
+                const message = clone.querySelector('.message');
+                if (message) {
+                    message.style.fontSize = '1.1rem';
+                    message.style.color = '#78350f';
+                    message.style.margin = '0.8rem 0';
+                    message.style.fontWeight = '500';
+                }
+                const clubLine = clone.querySelector('.club-name-line');
+                if (clubLine) {
+                    clubLine.style.marginTop = '0.8rem';
+                    clubLine.style.fontWeight = '600';
+                    clubLine.style.color = '#78350f';
+                    clubLine.style.fontSize = '0.9rem';
+                    clubLine.style.background = 'rgba(255,255,255,0.3)';
+                    clubLine.style.padding = '0.3rem 1rem';
+                    clubLine.style.borderRadius = '40px';
+                    clubLine.style.display = 'inline-block';
+                }
+
+                // Create a temporary container to render the clone
+                const container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.left = '-9999px';
+                container.style.top = '0';
+                container.style.width = '500px';
+                container.style.padding = '20px';
+                container.style.background = 'transparent';
+                container.appendChild(clone);
+                document.body.appendChild(container);
+
+                // Use html2pdf to generate PDF from the clone
+                const opt = {
+                    margin:        [0.5, 0.5, 0.5, 0.5],
+                    filename:     'birthday_card.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, letterRendering: true, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(clone).save().then(function() {
+                    document.body.removeChild(container);
+                }).catch(function(err) {
+                    console.error('PDF generation error:', err);
+                    document.body.removeChild(container);
+                });
             });
 
             // ===== RENDER =====
@@ -988,7 +1142,6 @@
                     return;
                 }
 
-                // Check for today's birthday and show popup
                 const todayBirthdays = members.filter(m => isBirthdayToday(m.birthday || m.dob));
                 if (todayBirthdays.length > 0 && !popupShownForToday) {
                     const firstBirthday = todayBirthdays[0];
@@ -1012,7 +1165,6 @@
                     const isBirthday = birthdayRaw ? isBirthdayToday(birthdayRaw) : false;
                     const photoSrc = getPhotoSrc(member);
 
-                    // top
                     const topDiv = document.createElement('div');
                     topDiv.className = 'card-top';
 
@@ -1063,7 +1215,6 @@
                     topDiv.appendChild(nameDiv);
                     card.appendChild(topDiv);
 
-                    // details
                     const details = document.createElement('div');
                     details.className = 'card-details';
                     const fields = [
@@ -1087,7 +1238,6 @@
                     });
                     card.appendChild(details);
 
-                    // footer
                     const footer = document.createElement('div');
                     footer.className = 'card-footer';
                     if (member.id) {
@@ -1162,7 +1312,6 @@
                     const pa = (a.position || '').toLowerCase().trim();
                     const pb = (b.position || '').toLowerCase().trim();
                     
-                    // Find matching priority
                     let rankA = 99, rankB = 99;
                     for (const [key, value] of Object.entries(priority)) {
                         if (pa.includes(key)) rankA = Math.min(rankA, value);
@@ -1229,7 +1378,7 @@
             refreshBtn.addEventListener('click', async () => {
                 refreshBtn.disabled = true;
                 refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
-                popupShownForToday = false; // reset so popup can show again on refresh
+                popupShownForToday = false;
                 await fetchMembers();
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
                 refreshBtn.disabled = false;
