@@ -96,24 +96,10 @@
         .nav-logo i {
             color: var(--cls-galkot);
         }
-        .nav-links {
+        .nav-actions {
             display: flex;
-            gap: 1rem;
-            list-style: none;
+            gap: 0.75rem;
             align-items: center;
-        }
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-        }
-        .nav-links a:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.05);
         }
         .btn-back {
             background: var(--cls-galkot);
@@ -265,12 +251,12 @@
             border-color: #b50051;
         }
 
-        .inquiries-feed {
+        .projects-feed {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 1.5rem;
         }
-        .inquiry-node {
+        .project-node {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-left: 4px solid var(--cls-galkot);
@@ -281,6 +267,11 @@
             gap: 0.75rem;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+        }
+        .project-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
         .node-meta {
             display: flex;
@@ -289,18 +280,14 @@
             color: var(--text-muted);
             font-weight: 500;
         }
-        .node-sender {
+        .node-title {
             font-size: 1.15rem;
             font-weight: 600;
             color: var(--text-main);
         }
-        .node-email {
+        .node-detail {
             font-size: 0.9rem;
-            color: var(--cls-personal);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
+            color: var(--text-muted);
         }
         .node-message {
             background: rgba(15, 23, 42, 0.4);
@@ -310,6 +297,8 @@
             font-size: 0.95rem;
             color: rgba(248, 250, 252, 0.9);
             white-space: pre-wrap;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .status-msg {
             grid-column: 1 / -1;
@@ -348,7 +337,7 @@
         }
 
         .action-btn-sm {
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.85rem;
             font-size: 0.75rem;
             border-radius: 6px;
             border: none;
@@ -356,20 +345,17 @@
             font-weight: 600;
             transition: var(--transition-smooth);
             font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
-        .action-btn-sm.approve-btn {
-            background: #34d399;
+        .action-btn-sm.edit-btn {
+            background: var(--cls-galkot);
             color: #000;
         }
-        .action-btn-sm.approve-btn:hover {
-            background: #2bbf8a;
-        }
-        .action-btn-sm.reject-btn {
-            background: #ef4444;
-            color: #fff;
-        }
-        .action-btn-sm.reject-btn:hover {
-            background: #dc2626;
+        .action-btn-sm.edit-btn:hover {
+            background: #e5a800;
+            transform: scale(1.02);
         }
         .action-btn-sm.delete-btn {
             background: #f43f5e;
@@ -377,6 +363,23 @@
         }
         .action-btn-sm.delete-btn:hover {
             background: #e11d48;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.approve-btn {
+            background: #34d399;
+            color: #000;
+        }
+        .action-btn-sm.approve-btn:hover {
+            background: #2bbf8a;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.reject-btn {
+            background: #ef4444;
+            color: #fff;
+        }
+        .action-btn-sm.reject-btn:hover {
+            background: #dc2626;
+            transform: scale(1.02);
         }
         .application-actions {
             display: flex;
@@ -390,6 +393,8 @@
             font-size: 0.75rem;
             font-weight: 600;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .status-pending {
             background: #fbbf24;
@@ -541,42 +546,28 @@
             border-color: rgba(239, 68, 68, 0.6) !important;
         }
 
-        .search-box-inline {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.2rem 0.2rem 0.2rem 0.8rem;
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #34d399;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        .search-box-inline input {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            padding: 0.4rem 0;
-            font-size: 0.85rem;
-            outline: none;
-            min-width: 150px;
-            font-family: 'Inter', sans-serif;
+        .toast.error {
+            border-left-color: #ef4444;
         }
-        .search-box-inline input::placeholder {
-            color: var(--text-muted);
-        }
-        .search-box-inline button {
-            background: var(--cls-links);
-            border: none;
-            color: #000;
-            padding: 0.3rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-        }
-        .search-box-inline button:hover {
-            background: #9370db;
+        .toast.info {
+            border-left-color: #3b82f6;
         }
 
         footer {
@@ -605,12 +596,22 @@
                 transform: translateY(0) scale(1);
             }
         }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
             }
-            .inquiries-feed {
+            .projects-feed {
                 grid-template-columns: 1fr;
             }
             .modal-content {
@@ -639,6 +640,14 @@
             .panel-actions {
                 flex-wrap: wrap;
             }
+            .nav-actions {
+                flex-wrap: wrap;
+            }
+            .btn-back,
+            .btn-logout {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
         }
     </style>
 </head>
@@ -649,7 +658,7 @@
         <a href="#" class="nav-logo">
             <i class="fa-solid fa-project-diagram" aria-hidden="true"></i> Project Management
         </a>
-        <div style="display:flex; gap: 0.75rem; align-items:center;">
+        <div class="nav-actions">
             <button class="btn-back" id="backToAdminBtn">
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Admin
             </button>
@@ -681,7 +690,7 @@
             <select id="projectSelect"><option value="">-- Loading projects --</option></select>
             <button class="action-btn btn-primary-accent" id="viewProjectBtn" style="background: var(--cls-links); border-color: var(--cls-links);"><i class="fa-solid fa-eye"></i> View Details</button>
         </div>
-        <div class="inquiries-feed" id="projects-feed">
+        <div class="projects-feed" id="projects-feed">
             <div class="status-msg">Loading upcoming projects...</div>
         </div>
     </section>
@@ -695,7 +704,7 @@
                 <button class="action-btn clear-btn-accent" id="clear-applications-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All Logs</button>
             </div>
         </div>
-        <div class="inquiries-feed" id="applications-feed">
+        <div class="projects-feed" id="applications-feed">
             <div class="status-msg">Loading project applications...</div>
         </div>
     </section>
@@ -748,6 +757,21 @@
                     "&quot;").replace(/'/g, "&#039;");
             };
 
+            // ---- TOAST ----
+            const showToast = (message, type = 'success') => {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            };
+
             // ============================================================
             // ===== LOAD PROJECTS =====
             // ============================================================
@@ -755,7 +779,8 @@
                 const feedContainer = document.getElementById('projects-feed');
                 const selectDropdown = document.getElementById('projectSelect');
                 if (!feedContainer) return;
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading projects...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('upcoming_projects')
@@ -763,31 +788,60 @@
                         .order('id', { ascending: false });
                     if (error) throw error;
                     allProjects = data || [];
+
                     if (!allProjects.length) {
                         selectDropdown.innerHTML = '<option value="">-- No projects available --</option>';
-                        feedContainer.innerHTML = 'No upcoming projects created yet. Click "Add New Project" to get started.';
+                        feedContainer.innerHTML =
+                            '📋 No upcoming projects created yet. Click "Add New Project" to get started.';
                         return;
                     }
+
                     selectDropdown.innerHTML = allProjects.map((project, idx) =>
                         `<option value="${project.id}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(project.name)}</option>`
                     ).join('');
+
                     feedContainer.innerHTML = allProjects.map(project => `
-                        <article class="inquiry-node" style="border-left-color: var(--cls-galkot);">
-                            <div class="node-meta"><span>ID: ${project.id}</span><span>${escapeHtml(project.date)}</span></div>
-                            <div class="node-sender" style="color: var(--cls-galkot);"><i class="fa-solid fa-project-diagram" aria-hidden="true"></i> ${escapeHtml(project.name)}</div>
-                            <div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-users" aria-hidden="true"></i> ${escapeHtml(project.target_audience)}</div>
-                            <div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(project.location)}</div>
+                        <article class="project-node" style="border-left-color: var(--cls-galkot);">
+                            <div class="node-meta">
+                                <span>ID: ${project.id}</span>
+                                <span>${escapeHtml(project.date)}</span>
+                            </div>
+                            <div class="node-title" style="color: var(--cls-galkot);">
+                                <i class="fa-solid fa-project-diagram" aria-hidden="true"></i> ${escapeHtml(project.name)}
+                            </div>
+                            <div class="node-detail">
+                                <i class="fa-solid fa-users" aria-hidden="true"></i> ${escapeHtml(project.target_audience)}
+                            </div>
+                            <div class="node-detail">
+                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(project.location)}
+                            </div>
                             ${project.description ? `<div class="node-message">${escapeHtml(project.description)}</div>` : ''}
-                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                                <button class="action-btn-sm approve-btn" onclick="window.editProject(${project.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button class="action-btn-sm delete-btn" onclick="window.deleteProject(${project.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                            <div class="application-actions">
+                                <button class="action-btn-sm edit-btn" data-id="${project.id}" data-action="edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                <button class="action-btn-sm delete-btn" data-id="${project.id}" data-action="delete"><i class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         </article>
                     `).join('');
+
+                    // Attach event listeners
+                    document.querySelectorAll('.project-node .action-btn-sm').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const id = parseInt(btn.dataset.id);
+                            const action = btn.dataset.action;
+                            if (action === 'delete') {
+                                deleteProject(id);
+                            } else if (action === 'edit') {
+                                editProject(id);
+                            }
+                        });
+                    });
+
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading projects: ${err.message}</div>`;
                     selectDropdown.innerHTML = '<option value="">Error loading projects</option>';
+                    showToast('Error loading projects: ' + err.message, 'error');
                 }
             };
 
@@ -805,79 +859,122 @@
                         .select('*')
                         .order('created_at', { ascending: false });
                     if (error) throw error;
+
                     if (!data || data.length === 0) {
-                        feedContainer.innerHTML = 'No applications submitted yet.';
+                        feedContainer.innerHTML = '📭 No applications submitted yet.';
                         return;
                     }
-                    feedContainer.innerHTML = data.map(item => `
-                        <article class="inquiry-node" style="border-left-color: var(--cls-professional);">
-                            <div class="node-meta"><span>ID: ${item.id}</span><span>${new Date(item.created_at).toLocaleString()}</span></div>
-                            <div class="node-sender" style="color: var(--cls-professional);"><i class="fa-solid fa-project-diagram" aria-hidden="true"></i> ${escapeHtml(item.project_name)}</div>
-                            <div class="node-sender" style="font-size: 1rem;">${escapeHtml(item.applicant_name)}</div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-email"><i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}</a>
-                            <div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone_number)}</div>
-                            ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
-                            <div class="application-actions">
-                                <span class="status-badge status-${item.status || 'pending'}">${item.status || 'pending'}</span>
-                                <button class="action-btn-sm approve-btn" onclick="window.updateApplicationStatus(${item.id}, 'approved')">Approve</button>
-                                <button class="action-btn-sm reject-btn" onclick="window.updateApplicationStatus(${item.id}, 'rejected')">Reject</button>
-                                <button class="action-btn-sm delete-btn" onclick="window.deleteApplication(${item.id})"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </article>
-                    `).join('');
+
+                    feedContainer.innerHTML = data.map(item => {
+                        const statusColor = item.status === 'pending' ? '#fbbf24' :
+                            item.status === 'approved' ? '#34d399' :
+                            item.status === 'rejected' ? '#ef4444' : '#3b82f6';
+                        return `
+                            <article class="project-node" style="border-left-color: ${statusColor};">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span>${new Date(item.created_at).toLocaleString()}</span>
+                                </div>
+                                <div class="node-title" style="color: ${statusColor};">
+                                    <i class="fa-solid fa-project-diagram" aria-hidden="true"></i> ${escapeHtml(item.project_name)}
+                                </div>
+                                <div class="node-title" style="font-size: 1rem; color: var(--text-main);">
+                                    <i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(item.applicant_name)}
+                                </div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal); text-decoration: none;">
+                                    <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                                </a>
+                                <div class="node-detail">
+                                    <i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone_number)}
+                                </div>
+                                ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
+                                <div class="application-actions">
+                                    <span class="status-badge status-${item.status || 'pending'}">${item.status || 'pending'}</span>
+                                    <button class="action-btn-sm approve-btn" data-id="${item.id}" data-action="approve"><i class="fa-regular fa-check"></i> Approve</button>
+                                    <button class="action-btn-sm reject-btn" data-id="${item.id}" data-action="reject"><i class="fa-regular fa-circle-xmark"></i> Reject</button>
+                                    <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="delete-app"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+
+                    // Attach event listeners for applications
+                    document.querySelectorAll('#applications-feed .action-btn-sm').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = parseInt(btn.dataset.id);
+                            const action = btn.dataset.action;
+                            if (action === 'approve') {
+                                await updateApplicationStatus(id, 'approved');
+                            } else if (action === 'reject') {
+                                await updateApplicationStatus(id, 'rejected');
+                            } else if (action === 'delete-app') {
+                                await deleteApplication(id);
+                            }
+                        });
+                    });
+
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading applications: ${err.message}</div>`;
+                    showToast('Error loading applications: ' + err.message, 'error');
                 }
             };
 
             // ============================================================
             // ===== PROJECT FUNCTIONS =====
             // ============================================================
-            window.editProject = (id) => {
+            const editProject = (id) => {
                 const project = allProjects.find(p => p.id === id);
-                if (!project) { alert('Project not found.'); return; }
+                if (!project) { showToast('Project not found.', 'error'); return; }
                 openProjectModal(project);
             };
 
-            window.deleteProject = async (id) => {
-                if (!confirm('⚠️ Are you sure you want to delete this project permanently from the database?')) return;
+            const deleteProject = async (id) => {
+                if (!confirm(`⚠️ Are you sure you want to delete project #${id} permanently?`)) return;
                 try {
                     const { error } = await supabase
                         .from('upcoming_projects')
                         .delete()
                         .eq('id', id);
                     if (error) throw error;
-                    alert('✅ Project deleted successfully from database!');
-                    loadProjects();
-                } catch (err) { alert('❌ Error deleting project: ' + err.message); }
+                    showToast(`🗑️ Project #${id} deleted!`, 'success');
+                    await loadProjects();
+                } catch (err) {
+                    showToast('❌ Error deleting project: ' + err.message, 'error');
+                }
             };
 
             // ============================================================
             // ===== APPLICATION FUNCTIONS =====
             // ============================================================
-            window.updateApplicationStatus = async (id, status) => {
+            const updateApplicationStatus = async (id, status) => {
                 try {
                     const { error } = await supabase
                         .from('project_applications')
-                        .update({ status })
+                        .update({ status: status })
                         .eq('id', id);
                     if (error) throw error;
-                    loadApplications();
-                } catch (err) { alert('Error updating status: ' + err.message); }
+                    showToast(`✅ Application #${id} ${status}!`, 'success');
+                    await loadApplications();
+                } catch (err) {
+                    showToast('❌ Error updating status: ' + err.message, 'error');
+                }
             };
 
-            window.deleteApplication = async (id) => {
-                if (!confirm('Are you sure you want to delete this application?')) return;
+            const deleteApplication = async (id) => {
+                if (!confirm(`⚠️ Are you sure you want to delete application #${id}?`)) return;
                 try {
                     const { error } = await supabase
                         .from('project_applications')
                         .delete()
                         .eq('id', id);
                     if (error) throw error;
-                    alert('✅ Application deleted successfully!');
-                    loadApplications();
-                } catch (err) { alert('Error deleting application: ' + err.message); }
+                    showToast(`🗑️ Application #${id} deleted!`, 'success');
+                    await loadApplications();
+                } catch (err) {
+                    showToast('❌ Error deleting application: ' + err.message, 'error');
+                }
             };
 
             // ============================================================
@@ -887,6 +984,7 @@
                 const modal = document.getElementById('projectModal');
                 const title = document.getElementById('projectModalTitle');
                 const submitBtnText = document.getElementById('projectSubmitBtnText');
+
                 if (project) {
                     title.innerText = 'Edit Project';
                     submitBtnText.innerText = 'Update Project';
@@ -912,8 +1010,17 @@
                 editingProjectId = null;
             };
 
+            // ---- Modal events ----
+            document.getElementById('projectModalCloseBtn').addEventListener('click', closeProjectModal);
+            document.getElementById('projectModalCancelBtn').addEventListener('click', closeProjectModal);
+            document.getElementById('projectModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('projectModal')) closeProjectModal();
+            });
+
+            // ---- Project form submit ----
             document.getElementById('projectForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const projectData = {
                     name: document.getElementById('projectName').value.trim(),
                     date: document.getElementById('projectDate').value.trim(),
@@ -921,11 +1028,15 @@
                     location: document.getElementById('projectLocation').value.trim(),
                     description: document.getElementById('projectDescription').value.trim()
                 };
-                if (!projectData.name || !projectData.date || !projectData.target_audience || !projectData.location) {
-                    alert('Please fill in all required fields marked with *.');
+
+                if (!projectData.name || !projectData.date || !projectData.target_audience || !projectData
+                    .location) {
+                    showToast('Please fill in all required fields marked with *.', 'error');
                     return;
                 }
+
                 const projectId = document.getElementById('projectId').value;
+
                 try {
                     let result;
                     if (projectId) {
@@ -939,136 +1050,127 @@
                             .insert([projectData]);
                     }
                     if (result.error) throw result.error;
-                    alert(projectId ? '✅ Project updated successfully in database!' : '✅ New project added successfully!');
+                    showToast(projectId ? '✅ Project updated successfully!' : '✅ New project added!', 'success');
                     closeProjectModal();
-                    loadProjects();
-                } catch (err) { alert('❌ Error saving project: ' + err.message); }
+                    await loadProjects();
+                } catch (err) {
+                    showToast('❌ Error saving project: ' + err.message, 'error');
+                }
             });
 
-            document.getElementById('projectModalCloseBtn').addEventListener('click', closeProjectModal);
-            document.getElementById('projectModalCancelBtn').addEventListener('click', closeProjectModal);
-            document.getElementById('projectModal').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('projectModal')) closeProjectModal();
-            });
+            // ============================================================
+            // ===== EXPOSE GLOBALLY =====
+            // ============================================================
+            window.editProject = editProject;
+            window.deleteProject = deleteProject;
+            window.updateApplicationStatus = updateApplicationStatus;
+            window.deleteApplication = deleteApplication;
 
-          // ============================================================
-// CROSS-TAB LOGOUT + INACTIVITY TIMEOUT (60 seconds)
-// ============================================================
-(function() {
-  "use strict";
+            // ============================================================
+            // ===== CROSS-TAB LOGOUT + INACTIVITY TIMEOUT =====
+            // ============================================================
+            (function() {
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT' || !session) {
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    }
+                });
 
-  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
-  // This ensures that signing out from one tab signs out all tabs.
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      // Avoid redirect loop if already on the login page
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    }
-  });
+                const INACTIVITY_TIMEOUT = 1800 * 1000;
+                let logoutTimer = null;
 
-  // ---- 2. INACTIVITY TIMEOUT ----
-  const INACTIVITY_TIMEOUT = 60 * 1000; // 60 seconds (1 minute)
-  let logoutTimer = null;
+                const performLogout = async () => {
+                    try {
+                        await supabase.auth.signOut();
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    } catch (err) {
+                        console.error('Auto-logout error:', err);
+                    }
+                };
 
-  // Function to perform logout (triggers the cross-tab sync via the listener above)
-  const performLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      // The onAuthStateChange listener will handle the redirect,
-      // but we also set a fallback redirect just in case.
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    } catch (err) {
-      console.error('Auto-logout error:', err);
-    }
-  };
+                const resetTimer = () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+                };
 
-  // Reset the timer on user activity
-  const resetTimer = () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-  };
+                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
+                activityEvents.forEach(event => {
+                    document.addEventListener(event, resetTimer, { passive: true });
+                });
 
-  // Activity events that reset the timer
-  const activityEvents = [
-    'mousedown', 'mousemove', 'keydown',
-    'scroll', 'touchstart', 'click', 'wheel'
-  ];
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) resetTimer();
+                });
 
-  // Attach event listeners
-  activityEvents.forEach(event => {
-    document.addEventListener(event, resetTimer, { passive: true });
-  });
+                resetTimer();
+                window.addEventListener('beforeunload', () => { if (logoutTimer) clearTimeout(logoutTimer); });
+            })();
 
-  // Reset when the user returns to the tab
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) resetTimer();
-  });
-
-  // ---- Start the timer ----
-  resetTimer();
-
-  // ---- Cleanup on page unload ----
-  window.addEventListener('beforeunload', () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-  });
-
-  // (Optional) Expose a manual reset function if needed
-  window.resetInactivityTimer = resetTimer;
-
-})();
-
-
-
-// ============================================================
+            // ============================================================
             // ===== BUTTON EVENTS =====
             // ============================================================
             document.getElementById('addProjectBtn')?.addEventListener('click', () => openProjectModal(null));
+
             document.getElementById('editProjectBtn')?.addEventListener('click', () => {
                 const selectedId = document.getElementById('projectSelect').value;
-                if (!selectedId) { alert('Please select a project to edit.'); return; }
+                if (!selectedId) { showToast('Please select a project to edit.', 'error'); return; }
                 const found = allProjects.find(item => item.id == selectedId);
                 if (found) openProjectModal(found);
-                else alert('Project not found.');
+                else showToast('Project not found.', 'error');
             });
+
             document.getElementById('viewProjectBtn')?.addEventListener('click', () => {
                 const selectedId = document.getElementById('projectSelect').value;
-                if (!selectedId) { alert('Please select a project to view.'); return; }
+                if (!selectedId) { showToast('Please select a project to view.', 'error'); return; }
                 const found = allProjects.find(item => item.id == selectedId);
                 if (found) {
                     alert(
-                        `📋 Project Details:\n\nName: ${found.name}\nDate: ${found.date}\nAudience: ${found.target_audience}\nLocation: ${found.location}\n${found.description ? '\nDescription: ' + found.description : ''}`
+                        `📋 Project Details:\n\nName: ${found.name}\nDate: ${found.date}\nAudience: ${found.target_audience}\nLocation: ${found.location}${found.description ? '\n\nDescription: ' + found.description : ''}`
                     );
-                } else alert('Project not found.');
+                } else showToast('Project not found.', 'error');
             });
 
-            document.getElementById('refresh-projects-btn')?.addEventListener('click', loadProjects);
-            document.getElementById('refresh-applications-btn')?.addEventListener('click', loadApplications);
+            document.getElementById('refresh-projects-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing projects...', 'info');
+                loadProjects();
+            });
 
+            document.getElementById('refresh-applications-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing applications...', 'info');
+                loadApplications();
+            });
+
+            // ============================================================
+            // ===== CLEAR ALL =====
+            // ============================================================
             document.getElementById('clear-projects-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to delete ALL projects from the database?")) return;
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL projects permanently?")) return;
                 const feedContainer = document.getElementById('projects-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Clearing all projects...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Clearing all projects...</div>';
                 try {
                     const { error } = await supabase
                         .from('upcoming_projects')
                         .delete()
                         .neq('id', 0);
                     if (error) throw error;
-                    feedContainer.innerHTML = '✅ All projects have been cleared successfully from database.';
+                    showToast('✅ All projects cleared!', 'success');
                     document.getElementById('projectSelect').innerHTML = '<option value="">-- No projects available --</option>';
                     allProjects = [];
+                    await loadProjects();
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('❌ Error clearing projects: ' + err.message, 'error');
                 }
             });
 
             document.getElementById('clear-applications-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to delete ALL applications from the database?")) return;
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL applications permanently?")) return;
                 const feedContainer = document.getElementById('applications-feed');
                 feedContainer.innerHTML =
                     '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Clearing all applications...</div>';
@@ -1078,10 +1180,12 @@
                         .delete()
                         .neq('id', 0);
                     if (error) throw error;
-                    feedContainer.innerHTML = '✅ All applications have been cleared successfully from database.';
+                    showToast('✅ All applications cleared!', 'success');
+                    await loadApplications();
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('❌ Error clearing applications: ' + err.message, 'error');
                 }
             });
 

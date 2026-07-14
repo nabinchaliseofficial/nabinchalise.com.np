@@ -242,12 +242,12 @@
             border-color: #e5a800;
         }
 
-        .inquiries-feed {
+        .members-feed {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 1.5rem;
         }
-        .inquiry-node {
+        .member-node {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-left: 4px solid var(--cls-rotaract);
@@ -258,6 +258,11 @@
             gap: 0.75rem;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+        }
+        .member-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
         .node-meta {
             display: flex;
@@ -266,18 +271,14 @@
             color: var(--text-muted);
             font-weight: 500;
         }
-        .node-sender {
+        .node-title {
             font-size: 1.15rem;
             font-weight: 600;
             color: var(--text-main);
         }
-        .node-email {
+        .node-detail {
             font-size: 0.9rem;
-            color: var(--cls-personal);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
+            color: var(--text-muted);
         }
         .node-message {
             background: rgba(15, 23, 42, 0.4);
@@ -287,6 +288,8 @@
             font-size: 0.95rem;
             color: rgba(248, 250, 252, 0.9);
             white-space: pre-wrap;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .status-msg {
             grid-column: 1 / -1;
@@ -335,7 +338,7 @@
         }
 
         .action-btn-sm {
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.85rem;
             font-size: 0.75rem;
             border-radius: 6px;
             border: none;
@@ -343,6 +346,9 @@
             font-weight: 600;
             transition: var(--transition-smooth);
             font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
         .action-btn-sm.approve-btn {
             background: #34d399;
@@ -350,6 +356,7 @@
         }
         .action-btn-sm.approve-btn:hover {
             background: #2bbf8a;
+            transform: scale(1.02);
         }
         .action-btn-sm.reject-btn {
             background: #ef4444;
@@ -357,6 +364,7 @@
         }
         .action-btn-sm.reject-btn:hover {
             background: #dc2626;
+            transform: scale(1.02);
         }
         .action-btn-sm.delete-btn {
             background: #f43f5e;
@@ -364,6 +372,15 @@
         }
         .action-btn-sm.delete-btn:hover {
             background: #e11d48;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.edit-btn {
+            background: var(--cls-galkot);
+            color: #000;
+        }
+        .action-btn-sm.edit-btn:hover {
+            background: #e5a800;
+            transform: scale(1.02);
         }
         .application-actions {
             display: flex;
@@ -377,6 +394,8 @@
             font-size: 0.75rem;
             font-weight: 600;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .status-pending {
             background: #fbbf24;
@@ -524,6 +543,30 @@
             border-color: rgba(239, 68, 68, 0.6) !important;
         }
 
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #34d399;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+        .toast.info {
+            border-left-color: #3b82f6;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -550,12 +593,22 @@
                 transform: translateY(0) scale(1);
             }
         }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
             }
-            .inquiries-feed {
+            .members-feed {
                 grid-template-columns: 1fr;
             }
             .modal-content {
@@ -628,7 +681,7 @@
                 <button class="action-btn clear-btn-accent" id="clear-registrations-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
             </div>
         </div>
-        <div class="inquiries-feed" id="registrations-feed">
+        <div class="members-feed" id="registrations-feed">
             <div class="status-msg">Loading registration requests...</div>
         </div>
     </section>
@@ -647,7 +700,7 @@
                 <button class="action-btn clear-btn-accent" id="clear-members-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
             </div>
         </div>
-        <div class="inquiries-feed" id="members-feed">
+        <div class="members-feed" id="members-feed">
             <div class="status-msg">Loading registered members...</div>
         </div>
     </section>
@@ -709,13 +762,29 @@
                     "&quot;").replace(/'/g, "&#039;");
             };
 
+            // ---- TOAST ----
+            const showToast = (message, type = 'success') => {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            };
+
             // ============================================================
             // ===== LOAD REGISTRATIONS =====
             // ============================================================
             const loadRegistrations = async () => {
                 const feedContainer = document.getElementById('registrations-feed');
                 if (!feedContainer) return;
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registrations...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registrations...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('member_registrations')
@@ -723,76 +792,80 @@
                         .order('created_at', { ascending: false });
                     if (error) throw error;
                     registrationsData = data || [];
+
                     if (!registrationsData.length) {
-                        feedContainer.innerHTML = 'No pending registrations.';
+                        feedContainer.innerHTML = '📭 No pending registrations.';
                         return;
                     }
+
                     feedContainer.innerHTML = registrationsData.map(item => {
-                        const firstName = item.name ? item.name.split(' ')[0] : '';
+                        const name = item.full_name || item.name || '';
                         return `
-                            <article class="inquiry-node" style="border-left-color: #fbbf24;">
-                                <div class="node-meta"><span>ID: ${item.id}</span><span>${new Date(item.created_at).toLocaleString()}</span></div>
-                                <div class="node-sender" style="color: var(--cls-rotaract);">
-                                    <i class="fa-solid fa-user"></i> ${escapeHtml(item.name)}
-                                    ${firstName ? `<span style="font-weight:400;color:var(--text-muted);font-size:0.9rem;">(${escapeHtml(firstName)})</span>` : ''}
+                            <article class="member-node" style="border-left-color: #fbbf24;">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span>${new Date(item.created_at).toLocaleString()}</span>
                                 </div>
-                                <a href="mailto:${escapeHtml(item.email)}" class="node-email"><i class="fa-solid fa-envelope"></i> ${escapeHtml(item.email)}</a>
-                                ${item.phone ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-phone"></i> ${escapeHtml(item.phone)}</div>` : ''}
-                                ${item.position ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.position)}</div>` : ''}
-                                ${item.address ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.address)}</div>` : ''}
-                                ${item.profession ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.profession)}</div>` : ''}
-                                ${item.gender ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-venus-mars"></i> ${escapeHtml(item.gender)}</div>` : ''}
-                                ${item.blood_group ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-droplet"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
-                                ${item.birthday || item.birth_date || item.date_of_birth ? `<div style="font-size:0.9rem;color:var(--text-muted);"><i class="fa-solid fa-calendar"></i> ${new Date(item.birthday || item.birth_date || item.date_of_birth).toLocaleDateString()}</div>` : ''}
+                                <div class="node-title" style="color: var(--cls-rotaract);">
+                                    <i class="fa-solid fa-user"></i> ${escapeHtml(name)}
+                                </div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal); text-decoration: none;">
+                                    <i class="fa-solid fa-envelope"></i> ${escapeHtml(item.email)}
+                                </a>
+                                ${item.phone || item.phone_number ? `<div class="node-detail"><i class="fa-solid fa-phone"></i> ${escapeHtml(item.phone || item.phone_number)}</div>` : ''}
+                                ${item.position || item.designation ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.position || item.designation)}</div>` : ''}
+                                ${item.address ? `<div class="node-detail"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.address)}</div>` : ''}
+                                ${item.profession ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.profession)}</div>` : ''}
+                                ${item.gender ? `<div class="node-detail"><i class="fa-solid fa-venus-mars"></i> ${escapeHtml(item.gender)}</div>` : ''}
+                                ${item.blood_group ? `<div class="node-detail"><i class="fa-solid fa-droplet"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
+                                ${item.birth_date || item.birthday || item.date_of_birth ? `<div class="node-detail"><i class="fa-solid fa-calendar"></i> ${new Date(item.birth_date || item.birthday || item.date_of_birth).toLocaleDateString()}</div>` : ''}
                                 <div class="application-actions">
-                                    <button class="action-btn-sm approve-btn" onclick="window.acceptMember('${item.id}')"><i class="fa-solid fa-check"></i> Accept Member</button>
-                                    <button class="action-btn-sm delete-btn" onclick="window.rejectRegistration('${item.id}')"><i class="fa-solid fa-trash"></i> Reject</button>
+                                    <button class="action-btn-sm approve-btn" data-id="${item.id}" data-action="accept"><i class="fa-solid fa-check"></i> Accept Member</button>
+                                    <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="reject"><i class="fa-solid fa-trash"></i> Reject</button>
                                 </div>
                             </article>
                         `;
                     }).join('');
+
+                    // Attach event listeners
+                    document.querySelectorAll('#registrations-feed .action-btn-sm').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const id = btn.dataset.id;
+                            const action = btn.dataset.action;
+                            if (action === 'accept') {
+                                acceptMember(id);
+                            } else if (action === 'reject') {
+                                rejectRegistration(id);
+                            }
+                        });
+                    });
+
                 } catch (err) {
                     feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;">Error: ${err.message}</div>`;
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('Error loading registrations: ' + err.message, 'error');
                 }
             };
 
             // ============================================================
-            // ===== CLEAR ALL REGISTRATIONS =====
-            // ============================================================
-            document.getElementById('clear-registrations-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to DELETE ALL registration requests permanently?")) return;
-                const feedContainer = document.getElementById('registrations-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all registrations...</div>';
-                try {
-                    const { error } = await supabase
-                        .from('member_registrations')
-                        .delete()
-                        .neq('id', 0);
-                    if (error) throw error;
-                    alert('✅ All registration requests deleted permanently from database.');
-                    loadRegistrations();
-                } catch (err) {
-                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    alert('❌ Error clearing registrations: ' + err.message);
-                }
-            });
-
-            // ============================================================
             // ===== ACCEPT MEMBER =====
             // ============================================================
-            window.acceptMember = async (id) => {
-                if (!confirm('Accept this member and move to active members list?')) return;
+            const acceptMember = async (id) => {
+                if (!confirm('✅ Accept this member and move to active members list?')) return;
 
                 try {
                     const reg = registrationsData.find(r => String(r.id) === String(id));
                     if (!reg) {
-                        alert('Registration record not found. Please refresh and try again.');
+                        showToast('Registration record not found. Please refresh and try again.', 'error');
                         return;
                     }
 
+                    // Get the name from various possible column names
+                    const fullName = reg.full_name || reg.name || '';
+
                     const memberData = {
-                        name: reg.name || reg.full_name || '',
+                        name: fullName,
                         email: reg.email || '',
                         phone: reg.phone || reg.phone_number || '',
                         gender: reg.gender || '',
@@ -804,6 +877,7 @@
                         created_at: new Date().toISOString()
                     };
 
+                    // Check if member already exists
                     const { data: existing, error: checkError } = await supabase
                         .from('members')
                         .select('id')
@@ -815,7 +889,7 @@
                     }
 
                     if (existing) {
-                        alert('⚠️ This member already exists in the members list. Deleting from registrations...');
+                        showToast('⚠️ Member already exists. Deleting from registrations...', 'info');
                         const { error: deleteError } = await supabase
                             .from('member_registrations')
                             .delete()
@@ -826,6 +900,7 @@
                         return;
                     }
 
+                    // Insert into members table
                     const { data: insertData, error: insertError } = await supabase
                         .from('members')
                         .insert([memberData])
@@ -836,6 +911,7 @@
                         throw new Error(insertError.message);
                     }
 
+                    // Delete from registrations
                     const { error: deleteError } = await supabase
                         .from('member_registrations')
                         .delete()
@@ -846,94 +922,22 @@
                         throw new Error(deleteError.message);
                     }
 
-                    alert('✅ Member accepted and added to active members list!');
+                    showToast('✅ Member accepted and added to active members list!', 'success');
 
                     await loadRegistrations();
                     await loadMembers(document.getElementById('memberSearchInput')?.value || '');
 
                 } catch (err) {
                     console.error('❌ Error in acceptMember:', err);
-                    alert('❌ Error accepting member: ' + err.message);
+                    showToast('❌ Error accepting member: ' + err.message, 'error');
                 }
             };
 
             // ============================================================
-// CROSS-TAB LOGOUT + INACTIVITY TIMEOUT (60 seconds)
-// ============================================================
-(function() {
-  "use strict";
-
-  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
-  // This ensures that signing out from one tab signs out all tabs.
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      // Avoid redirect loop if already on the login page
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    }
-  });
-
-  // ---- 2. INACTIVITY TIMEOUT ----
-  const INACTIVITY_TIMEOUT = 60 * 1000; // 60 seconds (1 minute)
-  let logoutTimer = null;
-
-  // Function to perform logout (triggers the cross-tab sync via the listener above)
-  const performLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      // The onAuthStateChange listener will handle the redirect,
-      // but we also set a fallback redirect just in case.
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    } catch (err) {
-      console.error('Auto-logout error:', err);
-    }
-  };
-
-  // Reset the timer on user activity
-  const resetTimer = () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-  };
-
-  // Activity events that reset the timer
-  const activityEvents = [
-    'mousedown', 'mousemove', 'keydown',
-    'scroll', 'touchstart', 'click', 'wheel'
-  ];
-
-  // Attach event listeners
-  activityEvents.forEach(event => {
-    document.addEventListener(event, resetTimer, { passive: true });
-  });
-
-  // Reset when the user returns to the tab
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) resetTimer();
-  });
-
-  // ---- Start the timer ----
-  resetTimer();
-
-  // ---- Cleanup on page unload ----
-  window.addEventListener('beforeunload', () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-  });
-
-  // (Optional) Expose a manual reset function if needed
-  window.resetInactivityTimer = resetTimer;
-
-})();
-
-
-
-// ============================================================
             // ===== REJECT REGISTRATION =====
             // ============================================================
-            window.rejectRegistration = async (id) => {
-                if (!confirm('Reject this registration? This will delete it permanently.')) return;
+            const rejectRegistration = async (id) => {
+                if (!confirm('❌ Reject this registration? This will delete it permanently.')) return;
 
                 try {
                     const { error } = await supabase
@@ -946,12 +950,12 @@
                         throw new Error(error.message);
                     }
 
-                    alert('✅ Registration rejected and removed.');
+                    showToast('🗑️ Registration rejected and removed.', 'info');
                     await loadRegistrations();
 
                 } catch (err) {
                     console.error('❌ Error in rejectRegistration:', err);
-                    alert('❌ Error rejecting registration: ' + err.message);
+                    showToast('❌ Error rejecting registration: ' + err.message, 'error');
                 }
             };
 
@@ -961,86 +965,95 @@
             const loadMembers = async (searchTerm = '') => {
                 const feedContainer = document.getElementById('members-feed');
                 if (!feedContainer) return;
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading members...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading members...</div>';
                 try {
                     let query = supabase.from('members').select('*').order('id', { ascending: false });
-                    if (searchTerm) {
-                        query = query.ilike('name', `%${searchTerm}%`);
+                    if (searchTerm && searchTerm.trim()) {
+                        query = query.ilike('name', `%${searchTerm.trim()}%`);
                     }
                     const { data, error } = await query;
                     if (error) throw error;
                     allMembersData = data || [];
+
                     if (!allMembersData.length) {
-                        feedContainer.innerHTML = 'No members found in the database. Click "Add Member" to get started.';
+                        feedContainer.innerHTML =
+                            '📋 No members found in the database. Click "Add Member" to get started.';
                         return;
                     }
+
                     feedContainer.innerHTML = allMembersData.map(item => `
-                        <article class="inquiry-node" style="border-left-color: var(--cls-rotaract);">
-                            <div class="node-meta"><span>ID: ${item.id}</span><span>${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</span></div>
-                            <div class="node-sender" style="color: var(--cls-rotaract);"><i class="fa-solid fa-user" aria-hidden="true"></i> ${escapeHtml(item.name)}</div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-email"><i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}</a>
-                            ${item.phone ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone)}</div>` : ''}
-                            ${item.position ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.position)}</div>` : ''}
-                            ${item.address ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(item.address)}</div>` : ''}
-                            ${item.profession ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.profession)}</div>` : ''}
-                            ${item.gender ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i> ${escapeHtml(item.gender)}</div>` : ''}
-                            ${item.blood_group ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-droplet" aria-hidden="true"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
-                            ${item.birthday ? `<div style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${new Date(item.birthday).toLocaleDateString()}</div>` : ''}
+                        <article class="member-node" style="border-left-color: var(--cls-rotaract);">
+                            <div class="node-meta">
+                                <span>ID: ${item.id}</span>
+                                <span>${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</span>
+                            </div>
+                            <div class="node-title" style="color: var(--cls-rotaract);">
+                                <i class="fa-solid fa-user" aria-hidden="true"></i> ${escapeHtml(item.name)}
+                            </div>
+                            <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal); text-decoration: none;">
+                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                            </a>
+                            ${item.phone ? `<div class="node-detail"><i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone)}</div>` : ''}
+                            ${item.position ? `<div class="node-detail"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.position)}</div>` : ''}
+                            ${item.address ? `<div class="node-detail"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(item.address)}</div>` : ''}
+                            ${item.profession ? `<div class="node-detail"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.profession)}</div>` : ''}
+                            ${item.gender ? `<div class="node-detail"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i> ${escapeHtml(item.gender)}</div>` : ''}
+                            ${item.blood_group ? `<div class="node-detail"><i class="fa-solid fa-droplet" aria-hidden="true"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
+                            ${item.birthday ? `<div class="node-detail"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${new Date(item.birthday).toLocaleDateString()}</div>` : ''}
                             <div class="application-actions">
-                                <button class="action-btn-sm approve-btn" onclick="window.editMember(${item.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button class="action-btn-sm delete-btn" onclick="window.deleteMember(${item.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                                <button class="action-btn-sm edit-btn" data-id="${item.id}" data-action="edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="delete"><i class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         </article>
                     `).join('');
+
+                    // Attach event listeners
+                    document.querySelectorAll('#members-feed .action-btn-sm').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const id = parseInt(btn.dataset.id);
+                            const action = btn.dataset.action;
+                            if (action === 'delete') {
+                                deleteMember(id);
+                            } else if (action === 'edit') {
+                                editMember(id);
+                            }
+                        });
+                    });
+
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading members: ${err.message}</div>`;
+                    showToast('Error loading members: ' + err.message, 'error');
                 }
             };
 
             // ============================================================
             // ===== DELETE MEMBER =====
             // ============================================================
-            window.deleteMember = async (id) => {
-                if (!confirm('Are you sure you want to permanently delete this member? This action cannot be undone.'))
+            const deleteMember = async (id) => {
+                if (!confirm(`⚠️ Are you sure you want to permanently delete member #${id}? This action cannot be undone.`))
                     return;
                 try {
                     const { error } = await supabase.from('members').delete().eq('id', id);
                     if (error) throw error;
-                    alert('✅ Member deleted successfully!');
-                    loadMembers(document.getElementById('memberSearchInput').value);
-                } catch (err) { alert('Error deleting member: ' + err.message); }
-            };
-
-            // ============================================================
-            // ===== CLEAR ALL MEMBERS =====
-            // ============================================================
-            document.getElementById('clear-members-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to DELETE ALL members permanently from the database?")) return;
-                const feedContainer = document.getElementById('members-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all members...</div>';
-                try {
-                    const { error } = await supabase
-                        .from('members')
-                        .delete()
-                        .neq('id', 0);
-                    if (error) throw error;
-                    alert('✅ All members deleted permanently from database.');
-                    loadMembers();
+                    showToast(`🗑️ Member #${id} deleted!`, 'success');
+                    await loadMembers(document.getElementById('memberSearchInput').value);
                 } catch (err) {
-                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    alert('❌ Error clearing members: ' + err.message);
+                    showToast('❌ Error deleting member: ' + err.message, 'error');
                 }
-            });
+            };
 
             // ============================================================
             // ===== EDIT MEMBER =====
             // ============================================================
-            window.editMember = async (id) => {
+            const editMember = async (id) => {
                 try {
                     const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
                     if (error) throw error;
-                    if (!data) { alert('Member not found.'); return; }
+                    if (!data) { showToast('Member not found.', 'error'); return; }
+
                     editingMemberId = id;
                     document.getElementById('memberId').value = id;
                     document.getElementById('memberName').value = data.name || '';
@@ -1052,10 +1065,13 @@
                     document.getElementById('memberAddress').value = data.address || '';
                     document.getElementById('memberProfession').value = data.profession || '';
                     document.getElementById('memberBirthday').value = data.birthday ? data.birthday.split('T')[0] : '';
+
                     document.getElementById('memberModalTitle').textContent = 'Edit Member';
                     document.getElementById('memberSubmitBtnText').textContent = 'Update Member';
                     document.getElementById('memberModal').classList.add('active');
-                } catch (err) { alert('Error loading member data: ' + err.message); }
+                } catch (err) {
+                    showToast('Error loading member data: ' + err.message, 'error');
+                }
             };
 
             // ============================================================
@@ -1075,11 +1091,20 @@
                 editingMemberId = null;
             };
 
+            // ---- Modal events ----
+            document.getElementById('memberModalCloseBtn')?.addEventListener('click', closeMemberModal);
+            document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeMemberModal);
+            document.getElementById('memberModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('memberModal')) closeMemberModal();
+            });
+            document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
+
             // ============================================================
             // ===== MEMBER FORM SUBMIT =====
             // ============================================================
             document.getElementById('memberForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const memberData = {
                     name: document.getElementById('memberName').value.trim(),
                     email: document.getElementById('memberEmail').value.trim(),
@@ -1091,36 +1116,44 @@
                     profession: document.getElementById('memberProfession').value.trim(),
                     birthday: document.getElementById('memberBirthday').value || null
                 };
+
                 if (!memberData.name || !memberData.email) {
-                    alert('Name and Email are required fields.');
+                    showToast('Name and Email are required fields.', 'error');
                     return;
                 }
+
                 const memberId = document.getElementById('memberId').value;
+
                 try {
                     let result;
                     if (memberId) {
-                        result = await supabase.from('members').update(memberData).eq('id', parseInt(memberId));
+                        result = await supabase
+                            .from('members')
+                            .update(memberData)
+                            .eq('id', parseInt(memberId));
                     } else {
-                        result = await supabase.from('members').insert([memberData]);
+                        result = await supabase
+                            .from('members')
+                            .insert([memberData]);
                     }
                     if (result.error) throw result.error;
-                    alert(memberId ? '✅ Member updated successfully!' : '✅ New member added successfully!');
+
+                    showToast(memberId ? '✅ Member updated successfully!' : '✅ New member added!', 'success');
                     closeMemberModal();
-                    loadMembers(document.getElementById('memberSearchInput').value);
-                } catch (err) { alert('❌ Error saving member: ' + err.message); }
+                    await loadMembers(document.getElementById('memberSearchInput').value);
+                } catch (err) {
+                    showToast('❌ Error saving member: ' + err.message, 'error');
+                }
             });
 
-            document.getElementById('memberModalCloseBtn')?.addEventListener('click', closeMemberModal);
-            document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeMemberModal);
-            document.getElementById('memberModal')?.addEventListener('click', (e) => {
-                if (e.target === document.getElementById('memberModal')) closeMemberModal();
-            });
-            document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
-
+            // ============================================================
+            // ===== SEARCH =====
+            // ============================================================
             document.getElementById('memberSearchBtn')?.addEventListener('click', () => {
                 const searchTerm = document.getElementById('memberSearchInput').value.trim();
                 loadMembers(searchTerm);
             });
+
             document.getElementById('memberSearchInput')?.addEventListener('keyup', (e) => {
                 if (e.key === 'Enter') {
                     const searchTerm = document.getElementById('memberSearchInput').value.trim();
@@ -1128,10 +1161,113 @@
                 }
             });
 
+            // ============================================================
+            // ===== REFRESH BUTTONS =====
+            // ============================================================
             document.getElementById('refresh-members-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing members...', 'info');
                 loadMembers(document.getElementById('memberSearchInput').value);
             });
-            document.getElementById('refresh-registrations-btn')?.addEventListener('click', loadRegistrations);
+
+            document.getElementById('refresh-registrations-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing registrations...', 'info');
+                loadRegistrations();
+            });
+
+            // ============================================================
+            // ===== CLEAR ALL =====
+            // ============================================================
+            document.getElementById('clear-registrations-btn')?.addEventListener('click', async () => {
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL registration requests permanently?")) return;
+                const feedContainer = document.getElementById('registrations-feed');
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all registrations...</div>';
+                try {
+                    const { error } = await supabase
+                        .from('member_registrations')
+                        .delete()
+                        .neq('id', 0);
+                    if (error) throw error;
+                    showToast('✅ All registrations cleared!', 'success');
+                    await loadRegistrations();
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('❌ Error clearing registrations: ' + err.message, 'error');
+                }
+            });
+
+            document.getElementById('clear-members-btn')?.addEventListener('click', async () => {
+                if (!confirm("⚠️ Are you sure you want to DELETE ALL members permanently?")) return;
+                const feedContainer = document.getElementById('members-feed');
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all members...</div>';
+                try {
+                    const { error } = await supabase
+                        .from('members')
+                        .delete()
+                        .neq('id', 0);
+                    if (error) throw error;
+                    showToast('✅ All members cleared!', 'success');
+                    await loadMembers();
+                } catch (err) {
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('❌ Error clearing members: ' + err.message, 'error');
+                }
+            });
+
+            // ============================================================
+            // ===== EXPOSE GLOBALLY =====
+            // ============================================================
+            window.acceptMember = acceptMember;
+            window.rejectRegistration = rejectRegistration;
+            window.deleteMember = deleteMember;
+            window.editMember = editMember;
+
+            // ============================================================
+            // ===== CROSS-TAB LOGOUT + INACTIVITY TIMEOUT =====
+            // ============================================================
+            (function() {
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT' || !session) {
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    }
+                });
+
+                const INACTIVITY_TIMEOUT = 60 * 1000;
+                let logoutTimer = null;
+
+                const performLogout = async () => {
+                    try {
+                        await supabase.auth.signOut();
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    } catch (err) {
+                        console.error('Auto-logout error:', err);
+                    }
+                };
+
+                const resetTimer = () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+                };
+
+                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
+                activityEvents.forEach(event => {
+                    document.addEventListener(event, resetTimer, { passive: true });
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) resetTimer();
+                });
+
+                resetTimer();
+                window.addEventListener('beforeunload', () => { if (logoutTimer) clearTimeout(logoutTimer); });
+            })();
 
             // ============================================================
             // ===== REALTIME SUBSCRIPTIONS =====

@@ -249,6 +249,11 @@
             gap: 0.75rem;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            transition: var(--transition-smooth);
+        }
+        .inquiry-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
         .node-meta {
             display: flex;
@@ -270,6 +275,9 @@
             align-items: center;
             gap: 0.4rem;
         }
+        .node-email:hover {
+            text-decoration: underline;
+        }
         .node-message {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -278,6 +286,8 @@
             font-size: 0.95rem;
             color: rgba(248, 250, 252, 0.9);
             white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
         }
         .status-msg {
             grid-column: 1 / -1;
@@ -288,7 +298,7 @@
         }
 
         .action-btn-sm {
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.85rem;
             font-size: 0.75rem;
             border-radius: 6px;
             border: none;
@@ -296,6 +306,9 @@
             font-weight: 600;
             transition: var(--transition-smooth);
             font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
         }
         .action-btn-sm.approve-btn {
             background: #34d399;
@@ -303,13 +316,15 @@
         }
         .action-btn-sm.approve-btn:hover {
             background: #2bbf8a;
+            transform: scale(1.02);
         }
         .action-btn-sm.reject-btn {
-            background: #ef4444;
+            background: #8b5cf6;
             color: #fff;
         }
         .action-btn-sm.reject-btn:hover {
-            background: #dc2626;
+            background: #7c3aed;
+            transform: scale(1.02);
         }
         .action-btn-sm.delete-btn {
             background: #f43f5e;
@@ -317,6 +332,7 @@
         }
         .action-btn-sm.delete-btn:hover {
             background: #e11d48;
+            transform: scale(1.02);
         }
         .application-actions {
             display: flex;
@@ -330,6 +346,8 @@
             font-size: 0.75rem;
             font-weight: 600;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .status-new {
             background: #3b82f6;
@@ -356,22 +374,47 @@
             font-size: 0.85rem;
         }
 
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #34d399;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+        .toast.info {
+            border-left-color: #3b82f6;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
             }
             to {
                 opacity: 1;
-            }
-        }
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
             }
         }
 
@@ -439,7 +482,7 @@
             </div>
         </div>
         <div class="inquiries-feed" id="inquiries-feed">
-            <div class="status-msg">Loading inquiries...</div>
+            <div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>
         </div>
     </section>
 
@@ -460,10 +503,25 @@
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+            // ---- HELPERS ----
             const escapeHtml = (str) => {
                 if (!str) return '';
                 return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
                     "&quot;").replace(/'/g, "&#039;");
+            };
+
+            const showToast = (message, type = 'success') => {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
             };
 
             // ============================================================
@@ -472,7 +530,8 @@
             const loadInquiries = async () => {
                 const feedContainer = document.getElementById('inquiries-feed');
                 if (!feedContainer) return;
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>';
+                feedContainer.innerHTML =
+                '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('inquiries')
@@ -482,141 +541,98 @@
                     if (error) throw error;
 
                     if (!data || data.length === 0) {
-                        feedContainer.innerHTML = '📭 No inquiries yet.';
+                        feedContainer.innerHTML =
+                            '<div class="status-msg">📭 No inquiries yet. Check back later!</div>';
                         return;
                     }
 
-                    feedContainer.innerHTML = data.map(item => `
-                        <article class="inquiry-node" style="border-left-color: var(--cls-personal);">
-                            <div class="node-meta">
-                                <span>ID: ${item.id}</span>
-                                <span>${new Date(item.created_at).toLocaleString()}</span>
-                            </div>
-                            <div class="node-sender" style="color: var(--cls-personal);">
-                                <i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(item.full_name)}
-                            </div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-email">
-                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
-                            </a>
-                            ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
-                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
-                                <span class="status-badge status-${item.status || 'new'}">${item.status || 'new'}</span>
-                                <button class="action-btn-sm approve-btn" onclick="window.updateInquiryStatus(${item.id}, 'read')"><i class="fa-regular fa-check"></i> Mark Read</button>
-                                <button class="action-btn-sm reject-btn" onclick="window.updateInquiryStatus(${item.id}, 'replied')"><i class="fa-regular fa-reply"></i> Mark Replied</button>
-                                <button class="action-btn-sm delete-btn" onclick="window.deleteInquiry(${item.id})"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </article>
-                    `).join('');
+                    feedContainer.innerHTML = data.map(item => {
+                        const statusColor = item.status === 'new' ? 'var(--cls-personal)' :
+                            item.status === 'read' ? '#34d399' :
+                            item.status === 'replied' ? '#8b5cf6' : '#64748b';
+                        return `
+                            <article class="inquiry-node" style="border-left-color: ${statusColor};">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span>${new Date(item.created_at).toLocaleString()}</span>
+                                </div>
+                                <div class="node-sender" style="color: ${statusColor};">
+                                    <i class="fa-regular fa-user" aria-hidden="true"></i> ${escapeHtml(item.full_name)}
+                                </div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-email">
+                                    <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
+                                </a>
+                                ${item.message ? `<div class="node-message">${escapeHtml(item.message)}</div>` : ''}
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
+                                    <span class="status-badge status-${item.status || 'new'}">${item.status || 'new'}</span>
+                                    <button class="action-btn-sm approve-btn" data-id="${item.id}" data-action="read">
+                                        <i class="fa-regular fa-check"></i> Mark Read
+                                    </button>
+                                    <button class="action-btn-sm reject-btn" data-id="${item.id}" data-action="replied">
+                                        <i class="fa-regular fa-reply"></i> Mark Replied
+                                    </button>
+                                    <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="delete">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+
+                    // ---- ATTACH EVENT LISTENERS TO BUTTONS ----
+                    document.querySelectorAll('.action-btn-sm').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = parseInt(btn.dataset.id);
+                            const action = btn.dataset.action;
+
+                            if (action === 'delete') {
+                                await deleteInquiry(id);
+                            } else {
+                                await updateInquiryStatus(id, action);
+                            }
+                        });
+                    });
+
                 } catch (err) {
-                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading inquiries: ${err.message}</div>`;
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading inquiries: ${err.message}</div>`;
+                    showToast('Error loading inquiries: ' + err.message, 'error');
                 }
             };
 
-         // ============================================================
-// CROSS-TAB LOGOUT + INACTIVITY TIMEOUT (60 seconds)
-// ============================================================
-(function() {
-  "use strict";
-
-  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
-  // This ensures that signing out from one tab signs out all tabs.
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      // Avoid redirect loop if already on the login page
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    }
-  });
-
-  // ---- 2. INACTIVITY TIMEOUT ----
-  const INACTIVITY_TIMEOUT = 60 * 1000; // 60 seconds (1 minute)
-  let logoutTimer = null;
-
-  // Function to perform logout (triggers the cross-tab sync via the listener above)
-  const performLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      // The onAuthStateChange listener will handle the redirect,
-      // but we also set a fallback redirect just in case.
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    } catch (err) {
-      console.error('Auto-logout error:', err);
-    }
-  };
-
-  // Reset the timer on user activity
-  const resetTimer = () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-  };
-
-  // Activity events that reset the timer
-  const activityEvents = [
-    'mousedown', 'mousemove', 'keydown',
-    'scroll', 'touchstart', 'click', 'wheel'
-  ];
-
-  // Attach event listeners
-  activityEvents.forEach(event => {
-    document.addEventListener(event, resetTimer, { passive: true });
-  });
-
-  // Reset when the user returns to the tab
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) resetTimer();
-  });
-
-  // ---- Start the timer ----
-  resetTimer();
-
-  // ---- Cleanup on page unload ----
-  window.addEventListener('beforeunload', () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-  });
-
-  // (Optional) Expose a manual reset function if needed
-  window.resetInactivityTimer = resetTimer;
-
-})();
-
-
-
-// ============================================================
+            // ============================================================
             // ===== UPDATE INQUIRY STATUS =====
             // ============================================================
-            window.updateInquiryStatus = async (id, status) => {
-                if (!confirm(`Mark this inquiry as "${status}"?`)) return;
+            const updateInquiryStatus = async (id, status) => {
                 try {
                     const { error } = await supabase
                         .from('inquiries')
                         .update({ status: status })
                         .eq('id', id);
                     if (error) throw error;
-                    alert(`✅ Inquiry marked as "${status}"`);
-                    loadInquiries();
+                    showToast(`✅ Inquiry #${id} marked as "${status}"`, 'success');
+                    await loadInquiries();
                 } catch (err) {
-                    alert('❌ Error updating status: ' + err.message);
+                    showToast('❌ Error updating status: ' + err.message, 'error');
                 }
             };
 
             // ============================================================
             // ===== DELETE INQUIRY =====
             // ============================================================
-            window.deleteInquiry = async (id) => {
-                if (!confirm('⚠️ Are you sure you want to DELETE this inquiry permanently?')) return;
+            const deleteInquiry = async (id) => {
+                if (!confirm(`⚠️ Are you sure you want to DELETE inquiry #${id} permanently?`)) return;
                 try {
                     const { error } = await supabase
                         .from('inquiries')
                         .delete()
                         .eq('id', id);
                     if (error) throw error;
-                    alert('🗑️ Inquiry deleted permanently from database!');
-                    loadInquiries();
+                    showToast(`🗑️ Inquiry #${id} deleted permanently!`, 'success');
+                    await loadInquiries();
                 } catch (err) {
-                    alert('❌ Error deleting: ' + err.message);
+                    showToast('❌ Error deleting inquiry: ' + err.message, 'error');
                 }
             };
 
@@ -626,38 +642,81 @@
             document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
                 if (!confirm("⚠️ Are you sure you want to DELETE ALL inquiries permanently?")) return;
                 const feedContainer = document.getElementById('inquiries-feed');
-                feedContainer.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all inquiries...</div>';
+                feedContainer.innerHTML =
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all inquiries...</div>';
                 try {
                     const { error } = await supabase
                         .from('inquiries')
                         .delete()
                         .neq('id', 0);
                     if (error) throw error;
-                    alert('✅ All inquiries deleted permanently from database.');
-                    loadInquiries();
+                    showToast('✅ All inquiries deleted permanently!', 'success');
+                    await loadInquiries();
                 } catch (err) {
-                    feedContainer.innerHTML = `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    alert('❌ Error clearing inquiries: ' + err.message);
+                    feedContainer.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
+                    showToast('❌ Error clearing inquiries: ' + err.message, 'error');
                 }
             });
 
             // ============================================================
-            // ===== REALTIME SUBSCRIPTIONS =====
+            // ===== REFRESH BUTTON =====
             // ============================================================
-            const setupRealtimeSubscriptions = () => {
-                supabase.channel('inquiries-changes')
-                    .on('postgres_changes', {
-                        event: '*',
-                        schema: 'public',
-                        table: 'inquiries'
-                    }, () => {
-                        console.log('🔄 Inquiries table changed, refreshing...');
-                        loadInquiries();
-                    })
-                    .subscribe((status) => {
-                        console.log('📡 Inquiries subscription status:', status);
-                    });
-            };
+            document.getElementById('refresh-inquiries-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing inquiries...', 'info');
+                loadInquiries();
+            });
+
+            // ============================================================
+            // ===== CROSS-TAB LOGOUT + INACTIVITY TIMEOUT =====
+            // ============================================================
+            (function() {
+                // ---- 1. CROSS-TAB SYNC ----
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT' || !session) {
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    }
+                });
+
+                // ---- 2. INACTIVITY TIMEOUT (60 seconds) ----
+                const INACTIVITY_TIMEOUT = 1800 * 1000;
+                let logoutTimer = null;
+
+                const performLogout = async () => {
+                    try {
+                        await supabase.auth.signOut();
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    } catch (err) {
+                        console.error('Auto-logout error:', err);
+                    }
+                };
+
+                const resetTimer = () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+                };
+
+                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
+                activityEvents.forEach(event => {
+                    document.addEventListener(event, resetTimer, { passive: true });
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) resetTimer();
+                });
+
+                resetTimer();
+
+                window.addEventListener('beforeunload', () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                });
+
+                window.resetInactivityTimer = resetTimer;
+            })();
 
             // ============================================================
             // ===== SESSION VERIFICATION =====
@@ -667,7 +726,6 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
                         await loadInquiries();
-                        setupRealtimeSubscriptions();
                     } else {
                         window.location.href = '/index.html';
                     }
@@ -706,8 +764,6 @@
             // ============================================================
             document.addEventListener('DOMContentLoaded', () => {
                 verifySecureAuthentication();
-
-                document.getElementById('refresh-inquiries-btn')?.addEventListener('click', loadInquiries);
             });
 
         })();
