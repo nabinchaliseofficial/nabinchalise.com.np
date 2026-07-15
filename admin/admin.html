@@ -1279,7 +1279,7 @@
         </button>
         <div class="nav-container" id="nav-container">
             <ul class="nav-links">
-                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="/dashboard.html" class="active">Blog Dashboard</a></li>
             </ul>
             <button class="btn-logout" id="logout-btn">
                 <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
@@ -1505,84 +1505,52 @@
             const SUPABASE_KEY =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
             // ============================================================
-// CROSS-TAB LOGOUT SYNC + INACTIVITY TIMEOUT (60 seconds)
-// ============================================================
-// NOTE: Yo code supabase client initialize garepachi matra rakhnu
-// ============================================================
+            // CROSS-TAB LOGOUT SYNC + INACTIVITY TIMEOUT (30 minutes)
+            // ============================================================
+            (function() {
+                "use strict";
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT' || !session) {
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    }
+                });
+                const INACTIVITY_TIMEOUT = 1800 * 1000; // 30 minutes
+                let logoutTimer = null;
+                const performLogout = async () => {
+                    try {
+                        await supabase.auth.signOut();
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    } catch (err) {
+                        console.error('Auto-logout error:', err);
+                        if (!window.location.pathname.includes('/index.html')) {
+                            window.location.href = '/index.html';
+                        }
+                    }
+                };
+                const resetTimer = () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+                };
+                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
+                activityEvents.forEach(event => {
+                    document.addEventListener(event, resetTimer, { passive: true });
+                });
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) resetTimer();
+                });
+                resetTimer();
+                window.addEventListener('beforeunload', () => {
+                    if (logoutTimer) clearTimeout(logoutTimer);
+                });
+                window.resetInactivityTimer = resetTimer;
+            })();
 
-(function() {
-  "use strict";
-
-  // ---- 1. CROSS-TAB SYNC: Listen for auth state changes ----
-  // This ensures that signing out from one tab signs out all tabs.
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      // Avoid redirect loop if already on the login page
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    }
-  });
-
-  // ---- 2. INACTIVITY TIMEOUT ----
-  const INACTIVITY_TIMEOUT = 1800 * 1000; // 60 seconds (1 minute)
-  let logoutTimer = null;
-
-  // Function to perform logout and redirect
-  const performLogout = async () => {
-    try {
-      // First, sign out from Supabase
-      await supabase.auth.signOut();
-      
-      // Then explicitly redirect to index.html
-      // This ensures redirect happens even if onAuthStateChange doesn't fire
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    } catch (err) {
-      console.error('Auto-logout error:', err);
-      // Even if signOut fails, still redirect to login page
-      if (!window.location.pathname.includes('/index.html')) {
-        window.location.href = '/index.html';
-      }
-    }
-  };
-
-  // Reset the timer on user activity
-  const resetTimer = () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-  };
-
-  // Activity events that reset the timer
-  const activityEvents = [
-    'mousedown', 'mousemove', 'keydown',
-    'scroll', 'touchstart', 'click', 'wheel'
-  ];
-
-  // Attach event listeners
-  activityEvents.forEach(event => {
-    document.addEventListener(event, resetTimer, { passive: true });
-  });
-
-  // Reset when the user returns to the tab
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) resetTimer();
-  });
-
-  // ---- Start the timer ----
-  resetTimer();
-
-  // ---- Cleanup on page unload ----
-  window.addEventListener('beforeunload', () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-  });
-
-  // Expose a manual reset function if needed
-  window.resetInactivityTimer = resetTimer;
-
-})();
             const escapeHtml = (str) => {
                 if (!str) return '';
                 return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
@@ -1724,30 +1692,35 @@
             const RT_SUPABASE_ANON =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
+            // full schema as provided
             const TABLE_SCHEMA = {
                 admin_users: ['id', 'user_id', 'created_at'],
-                app_settings: ['id', 'setting_key', 'setting_value', 'updated_at'],
-                approved_applications: ['id', 'project_name', 'applicant_name', 'status', 'created_at'],
-                blogs: ['id', 'title', 'slug', 'status', 'views', 'published_at'],
-                certifications: ['id', 'title', 'issuer', 'category', 'issued_date'],
+                app_settings: ['id', 'setting_key', 'setting_value', 'updated_at', 'updated_by'],
+                approved_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
+                blogs: ['id', 'title', 'slug', 'content', 'excerpt', 'featured_image', 'tags', 'status', 'views', 'created_at', 'updated_at', 'published_at'],
+                certifications: ['id', 'title', 'issuer', 'description', 'category', 'verify_url', 'issued_date', 'expiry_date', 'credential_id', 'created_at', 'updated_at'],
                 inquiries: ['id', 'full_name', 'email', 'message', 'created_at', 'status'],
-                meeting_minutes: ['id', 'data', 'created_at'],
-                member_registrations: ['id', 'full_name', 'email', 'birth_date', 'position', 'created_at'],
-                members: ['id', 'name', 'email', 'dob', 'designation', 'phone', 'status'],
-                profiles: ['id', 'full_name', 'rotaract_club', 'role', 'updated_at'],
-                project_applications: ['id', 'project_name', 'applicant_name', 'status', 'created_at'],
-                rotaract_galkot_members: ['id', 'full_name', 'email', 'date_of_birth', 'designation', 'created_at'],
-                spiritual_quotes: ['id', 'day', 'quote', 'author', 'category'],
-                upcoming_projects: ['id', 'name', 'description', 'date', 'status', 'created_at']
+                meeting_minutes: ['id', 'data', 'created_at', 'user_id'],
+                member_registrations: ['id', 'timestamp', 'full_name', 'address', 'phone', 'blood_group', 'gender', 'email', 'birth_date', 'position', 'profession', 'profile_image', 'mentor', 'created_at', 'phone_number'],
+                members: ['id', 'name', 'address', 'rotary_id', 'phone', 'blood_group', 'gender', 'email', 'dob', 'designation', 'profession', 'photo_url', 'created_at', 'updated_at', 'birthday', 'position', 'photo', 'status', 'date_of_birth', 'mentor', 'phone_number', 'profile_image', 'timestamp'],
+                pages: ['id', 'page_path', 'page_directory', 'filename', 'title', 'content', 'meta_description', 'keywords', 'slug', 'is_published', 'created_at', 'updated_at'],
+                profiles: ['id', 'updated_at', 'full_name', 'rotaract_club', 'role'],
+                project_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
+                project_applications_view: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'application_status', 'application_date', 'project_description', 'project_date', 'project_location'],
+                rotaract_galkot_members: ['id', 'full_name', 'address', 'phone_number', 'blood_group', 'gender', 'email', 'date_of_birth', 'designation', 'profession', 'mentor', 'photo_url', 'created_at'],
+                spiritual_quotes: ['id', 'day', 'quote', 'author', 'category', 'created_at', 'updated_at'],
+                upcoming_projects: ['id', 'name', 'description', 'date', 'target_audience', 'location', 'status', 'created_at', 'updated_at']
             };
             const TABLE_NAMES = Object.keys(TABLE_SCHEMA);
 
+            // Stat definitions: include 'approved_applications' and 'member_registrations'
             const STAT_DEFS = [
                 { key: 'members', label: 'Members', icon: 'fa-users', table: 'members' },
+                { key: 'member_registrations', label: 'Member Registrations', icon: 'fa-user-plus', table: 'member_registrations' },
                 { key: 'inquiries', label: 'Inquiries', icon: 'fa-envelope', table: 'inquiries' },
                 { key: 'blogs', label: 'Blogs', icon: 'fa-newspaper', table: 'blogs' },
                 { key: 'upcoming', label: 'Upcoming Projects', icon: 'fa-calendar-check', table: 'upcoming_projects' },
-                { key: 'approved', label: 'Approved Apps', icon: 'fa-check-circle', table: 'approved_applications' },
+                { key: 'approved_applications', label: 'Approved Apps', icon: 'fa-check-circle', table: 'approved_applications' },
                 { key: 'certifications', label: 'Certifications', icon: 'fa-certificate', table: 'certifications' }
             ];
 
@@ -1783,18 +1756,26 @@
                         query = query.gte(col, today + 'T00:00:00').lt(col, today + 'T23:59:59');
                     }
                     const { count, error } = await query;
-                    if (error) return null;
+                    if (error) {
+                        console.warn('count error for', table, error);
+                        return null;
+                    }
                     return count;
-                } catch (_) { return null; }
+                } catch (e) {
+                    console.warn('count exception', table, e);
+                    return null;
+                }
             }
 
             async function fetchAllCounts() {
                 if (!rtSupabase) return null;
                 const results = {};
                 const todayResults = {};
+                // tables to compute today's count
+                const todayTables = ['inquiries', 'blogs', 'approved_applications', 'upcoming_projects', 'member_registrations', 'members'];
                 for (const table of TABLE_NAMES) {
                     results[table] = await countTable(table);
-                    if (['inquiries', 'blogs', 'approved_applications', 'upcoming_projects'].includes(table)) {
+                    if (todayTables.includes(table)) {
                         todayResults[table] = await countTable(table, { column: 'created_at' });
                     } else {
                         todayResults[table] = null;
@@ -1831,6 +1812,7 @@
                     `;
                 }
                 $('rtStatGrid').innerHTML = html;
+                // update previous counts
                 for (const def of STAT_DEFS) {
                     if (counts[def.table] !== undefined) previousCounts[def.table] = counts[def.table];
                 }
@@ -1953,6 +1935,7 @@
                 if (data) {
                     renderStats(data.counts, data.today);
                     renderSchema(data.counts);
+                    // push feed events for changed tables (only if count changed)
                     for (const table of TABLE_NAMES) {
                         const prev = previousCounts[table];
                         const curr = data.counts[table];
@@ -1968,7 +1951,7 @@
 
             function subscribeAll() {
                 if (!rtSupabase) return;
-                const tables = ['inquiries', 'members', 'blogs', 'upcoming_projects', 'approved_applications', 'project_applications'];
+                const tables = ['inquiries', 'members', 'member_registrations', 'blogs', 'upcoming_projects', 'approved_applications', 'project_applications'];
                 for (const table of tables) {
                     try {
                         rtSupabase.channel(`rt-${table}`)
