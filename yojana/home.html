@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>गलकोट नगरपालिका — योजना खाता (गृहपृष्ठ)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ROOT ===== */
+        :root {
+            --paper: #FAF6EC;
+            --paper-2: #F3EDDC;
+            --ink: #2B2620;
+            --ink-soft: #5B5346;
+            --maroon: #7A1F2B;
+            --maroon-dark: #5C1620;
+            --navy: #1B3358;
+            --gold: #B8862F;
+            --line: #D8CDB0;
+            --line-strong: #B9AC85;
+            --ok: #3E6B3A;
+            --warn: #A6431B;
+            --shadow: 0 2px 10px rgba(43, 38, 32, .08), 0 1px 2px rgba(43, 38, 32, .10);
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--paper-2);
+            color: var(--ink);
+            font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Noto Serif Devanagari', 'Noto Sans Devanagari', serif;
+            color: var(--maroon-dark);
+            margin: 0 0 6px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .seal {
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 32% 28%, #E9C983, #B8862F 60%, #8C6A22 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 3px rgba(43, 38, 32, .12);
+        }
+
+        .seal svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .brand h1 {
+            font-size: 18px;
+            line-height: 1.3;
+        }
+
+        .brand .sub {
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .save-indicator {
+            font-size: 12.5px;
+            color: var(--ok);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--line);
+        }
+
+        .save-indicator .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ok);
+            flex-shrink: 0;
+        }
+
+        .btn-save {
+            all: unset;
+            cursor: pointer;
+            background: var(--maroon);
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: background .2s, transform .1s;
+            letter-spacing: .02em;
+            box-shadow: 0 2px 6px rgba(122, 31, 43, .25);
+        }
+
+        .btn-save:hover {
+            background: var(--maroon-dark);
+        }
+
+        .btn-save:active {
+            transform: scale(0.96);
+        }
+
+        .btn-save.saved {
+            background: var(--ok);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--maroon);
+            padding-bottom: 8px;
+        }
+
+        .card h2 .tag {
+            font-size: 11px;
+            background: var(--maroon);
+            color: #F6ECDD;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: .03em;
+        }
+
+        .card .hint {
+            font-size: 12.5px;
+            color: var(--ink-soft);
+            margin: -6px 0 14px;
+        }
+
+        /* ===== GRID ===== */
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .g2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .g3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .g4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        .g5 {
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        }
+
+        @media (max-width: 800px) {
+            .g2,
+            .g3,
+            .g4,
+            .g5 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 500px) {
+            .g2,
+            .g3,
+            .g4,
+            .g5 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== FIELDS ===== */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field label {
+            font-size: 12px;
+            color: var(--ink-soft);
+            font-weight: 600;
+        }
+
+        .field .req {
+            color: var(--maroon);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            font-family: inherit;
+            font-size: 13.5px;
+            color: var(--ink);
+            background: #fff;
+            border: 1px solid var(--line-strong);
+            border-radius: 6px;
+            padding: 7px 9px;
+            width: 100%;
+            transition: border-color .2s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            line-height: 1.5;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(184, 134, 47, .2);
+        }
+
+        input[readonly] {
+            background: var(--paper-2);
+            cursor: default;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 800px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== BACKGROUND TEXT (editable) ===== */
+        .bg-editor {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: var(--ink-soft);
+            background: #fff;
+            padding: 14px 18px;
+            border-radius: 6px;
+            border-left: 4px solid var(--gold);
+            margin-top: 4px;
+            min-height: 200px;
+            width: 100%;
+            font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+            resize: vertical;
+        }
+
+        .bg-editor:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(184, 134, 47, .2);
+        }
+
+        /* ===== SIGNATURE BOX ===== */
+        .signature-box {
+            background: var(--paper-2);
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-top: 12px;
+            border: 1px dashed var(--line-strong);
+        }
+
+        .signature-box .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .signature-box .row>div {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .signature-box .row .label {
+            font-size: 11px;
+            color: var(--ink-soft);
+        }
+
+        .signature-box .sig-field {
+            border: none;
+            border-bottom: 1px solid var(--line-strong);
+            background: transparent;
+            padding: 4px 2px;
+            font-size: 13px;
+            width: 100%;
+            font-family: inherit;
+            color: var(--ink);
+        }
+
+        .signature-box .sig-field:focus {
+            outline: none;
+            border-bottom-color: var(--gold);
+        }
+
+        .foot-note {
+            font-size: 11.5px;
+            color: var(--ink-soft);
+            margin-top: 4px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 12px 14px;
+            }
+            .brand h1 {
+                font-size: 15px;
+            }
+            .card {
+                padding: 12px 14px;
+            }
+            .card h2 {
+                font-size: 16px;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .btn-save {
+                padding: 6px 16px;
+                font-size: 12px;
+            }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+            .header {
+                border: 1px solid #ccc;
+                box-shadow: none;
+            }
+            .save-indicator {
+                border: none;
+            }
+            .btn-save {
+                display: none !important;
+            }
+            .bg-editor {
+                border-left: 4px solid #999;
+                background: #f9f9f9;
+            }
+            .sig-field {
+                border-bottom: 1px solid #999 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header no-print">
+            <div class="brand">
+                <div class="seal">
+                    <svg viewBox="0 0 48 48" fill="none">
+                        <path d="M6 34 L18 16 L24 26 L30 12 L42 34 Z" fill="#5C1620"/>
+                        <circle cx="24" cy="10" r="4" fill="#F6ECDD"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>गलकोट नगरपालिका</h1>
+                    <div class="sub">नगर कार्यपालिकाको कार्यालय · योजना खाता</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="save-indicator" id="saveIndicator">
+                    <span class="dot"></span> स्वतः सुरक्षित
+                </div>
+                <button class="btn-save" id="btnSave">💾 सेभ गर्नुहोस्</button>
+            </div>
+        </header>
+
+        <!-- ===== COVER PAGE ===== -->
+        <div class="card">
+            <h2>योजना खाता — गृहपृष्ठ <span class="tag">अनिवार्य</span></h2>
+            <p class="hint">गलकोट नगरपालिका, नगर कार्यपालिकाको कार्यालय, गण्डकी प्रदेश, बागलुङद्वारा जारी योजना खाताको मुख्य विवरण। यहाँ भरिएको जानकारी अन्य सबै पत्र तथा फारामहरूमा स्वतः प्रयोग हुनेछ।</p>
+
+            <!-- === Project Identity === -->
+            <div style="margin-bottom:18px;">
+                <h3 style="font-size:15px; margin-bottom:8px;">योजना पहिचान</h3>
+                <div class="grid g3">
+                    <div class="field"><label>योजनाको नाम <span class="req">*</span></label><input type="text" data-obj="cover" data-field="name" placeholder="जस्तै: ... गाउँ सिँचाइ नहर"></div>
+                    <div class="field"><label>वडा नं.</label><input type="text" data-obj="cover" data-field="ward" placeholder="जस्तै ५"></div>
+                    <div class="field"><label>मार्ग / टोल</label><input type="text" data-obj="cover" data-field="tole"></div>
+                    <div class="field"><label>योजना कोड नं.</label><input type="text" data-obj="cover" data-field="code"></div>
+                    <div class="field"><label>आर्थिक वर्ष</label><input type="text" data-obj="cover" data-field="fiscalYear" placeholder="२०८२/०८३"></div>
+                    <div class="field"><label>जिल्ला</label><input type="text" value="बागलुङ" readonly></div>
+                </div>
+            </div>
+
+            <!-- === Cost & Timeline === -->
+            <div style="margin-bottom:18px;">
+                <h3 style="font-size:15px; margin-bottom:8px;">लागत तथा समयतालिका</h3>
+                <div class="grid g4">
+                    <div class="field"><label>कुल लागत (रु.)</label><input type="number" data-obj="cover" data-field="totalCost" placeholder="०"></div>
+                    <div class="field"><label>कुल लागत अक्षरमा</label><input type="text" data-obj="cover" data-field="totalCostWords" placeholder="अक्षेरुपी ..."></div>
+                    <div class="field"><label>सम्झौता मिति</label><input type="text" data-obj="cover" data-field="agreementDate" placeholder="२०८२/../.."></div>
+                    <div class="field"><label>सुरु हुने मिति</label><input type="text" data-obj="cover" data-field="startDate"></div>
+                    <div class="field"><label>सम्पन्न हुने मिति</label><input type="text" data-obj="cover" data-field="endDate"></div>
+                    <div class="field"><label>स्थिति</label>
+                        <select data-obj="cover" data-field="status">
+                            <option value="draft">मस्यौदा</option>
+                            <option value="agreement_signed">सम्झौता भएको</option>
+                            <option value="in_progress">कार्यरत</option>
+                            <option value="completed">सम्पन्न</option>
+                            <option value="transferred">हस्तान्तरण भएको</option>
+                            <option value="closed">बन्द</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === Technical & Contributions === -->
+            <div class="two-col" style="margin-bottom:18px;">
+                <div>
+                    <h3 style="font-size:15px; margin-bottom:8px;">प्राविधिक</h3>
+                    <div class="grid g2">
+                        <div class="field"><label>इन्जिनियर</label><input type="text" data-obj="cover" data-field="engineer"></div>
+                        <div class="field"><label>सव. इन्जिनियर</label><input type="text" data-obj="cover" data-field="subEngineer"></div>
+                        <div class="field col-span-2"><label>सुपरभाइजर</label><input type="text" data-obj="cover" data-field="supervisor"></div>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-size:15px; margin-bottom:8px;">योगदान (रु.)</h3>
+                    <div class="grid g2">
+                        <div class="field"><label>न.पा.</label><input type="number" data-obj="cover" data-field="contribNPa"></div>
+                        <div class="field"><label>उपभोक्ता</label><input type="number" data-obj="cover" data-field="contribUS"></div>
+                        <div class="field"><label>निजी क्षेत्र</label><input type="number" data-obj="cover" data-field="contribPrivate"></div>
+                        <div class="field"><label>गैह्र सरकारी</label><input type="number" data-obj="cover" data-field="contribNGO"></div>
+                        <div class="field"><label>विषयगत कार्यालय</label><input type="number" data-obj="cover" data-field="contribSectoral"></div>
+                        <div class="field"><label>अन्य</label><input type="number" data-obj="cover" data-field="contribOther"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === Custodian === -->
+            <div>
+                <h3 style="font-size:15px; margin-bottom:8px;">योजना खाता बुझिलिने व्यक्ति</h3>
+                <p class="hint">"योजना खाता राख्ने व्यक्ति ७ दिनभन्दा बढी बाहिर रहने भए अर्को पदाधिकारीलाई बुझाएर मात्र जानुपर्ने।"</p>
+                <div class="grid g4">
+                    <div class="field"><label>नाम, थर</label><input type="text" data-obj="cover" data-field="custodianName"></div>
+                    <div class="field"><label>पद</label><input type="text" data-obj="cover" data-field="custodianPost"></div>
+                    <div class="field"><label>मिति</label><input type="text" data-obj="cover" data-field="custodianDate"></div>
+                    <div class="field"><label>निर्णय मिति</label><input type="text" data-obj="cover" data-field="custodianDecisionDate"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== पृष्ठभूमि (Background) — सम्पादनयोग्य ===== -->
+        <div class="card">
+            <h2>पृष्ठभूमि <span class="tag">सम्पादनयोग्य</span></h2>
+            <p class="hint">तलको पाठलाई आवश्यकता अनुसार सम्पादन गर्नुहोस्। सबै परिवर्तन स्वतः सुरक्षित हुन्छन्।</p>
+            <textarea class="bg-editor" data-obj="cover" data-field="backgroundText" id="bgEditor" rows="12"></textarea>
+        </div>
+
+        <!-- ===== हस्ताक्षर बाकस (Signature Box) — सम्पादनयोग्य ===== -->
+        <div class="card">
+            <h2>हस्ताक्षर विवरण <span class="tag">सम्पादनयोग्य</span></h2>
+            <div class="signature-box">
+                <div class="grid g2" style="margin-bottom:10px;">
+                    <div class="field">
+                        <label>उपभोक्ता समितिको नाम</label>
+                        <input type="text" data-obj="cover" data-field="sigCommitteeName" placeholder="उपभोक्ता समितिको नाम">
+                    </div>
+                    <div class="field">
+                        <label>निर्णय मिति</label>
+                        <input type="text" data-obj="cover" data-field="sigDecisionDate" placeholder="२०८२/../..">
+                    </div>
+                </div>
+                <div class="field" style="margin-bottom:10px;">
+                    <label>जिम्मेवारी पाउने व्यक्तिको नाम</label>
+                    <input type="text" data-obj="cover" data-field="sigResponsiblePerson" placeholder="श्री ...">
+                </div>
+                <div class="row">
+                    <div>
+                        <div class="label">योजना खाता बुझिलिने व्यक्तिको</div>
+                        <strong>दस्तखतः</strong>
+                        <input type="text" class="sig-field" data-obj="cover" data-field="sigSignature" placeholder="हस्ताक्षर">
+                    </div>
+                    <div>
+                        <div class="label">नाम थर:</div>
+                        <input type="text" class="sig-field" data-obj="cover" data-field="sigName" placeholder="नाम थर">
+                    </div>
+                    <div>
+                        <div class="label">पदः</div>
+                        <input type="text" class="sig-field" data-obj="cover" data-field="sigPost" placeholder="पद">
+                    </div>
+                    <div>
+                        <div class="label">मिति:</div>
+                        <input type="text" class="sig-field" data-obj="cover" data-field="sigDate" placeholder="मिति">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div style="text-align:center; font-size:12px; color:var(--ink-soft); padding:10px 0;" class="no-print">
+            गलकोट नगरपालिका — योजना खाता · डाटा स्वतः सुरक्षित हुन्छ
+        </div>
+
+    </div>
+
+    <script>
+        /* ============================================================
+           DATA LAYER
+           ============================================================ */
+        const DB_KEY = 'galkotYojanaKhata_v2';
+
+        function defaultDB() {
+            return {
+                cover: {
+                    // गृहपृष्ठका सबै फिल्डहरू + पृष्ठभूमि पाठ + हस्ताक्षर फिल्डहरू
+                    name: '',
+                    ward: '',
+                    tole: '',
+                    code: '',
+                    fiscalYear: '',
+                    totalCost: '',
+                    totalCostWords: '',
+                    agreementDate: '',
+                    startDate: '',
+                    endDate: '',
+                    status: 'draft',
+                    engineer: '',
+                    subEngineer: '',
+                    supervisor: '',
+                    contribNPa: '',
+                    contribUS: '',
+                    contribPrivate: '',
+                    contribNGO: '',
+                    contribSectoral: '',
+                    contribOther: '',
+                    custodianName: '',
+                    custodianPost: '',
+                    custodianDate: '',
+                    custodianDecisionDate: '',
+                    // पृष्ठभूमि पाठ (सम्पादनयोग्य)
+                    backgroundText: `नेपाल सरकार संघीय मामिला तथा सामान्य प्रशासन मन्त्रालय, गलकोट नगरपालिका, नगर कार्यपालिकाको कार्यालयद्वारा वडा नं. .. मा कार्यान्वीत ......... योजनासंग सम्बन्धित सम्पूर्ण विवरणहरु पारदर्शी ढंगबाट सार्वजनिक समीक्षाको लागि उपलब्ध गराउने उद्देश्यले यो योजना खाता ......... उपभोक्ता समितिलाई उपलब्ध गराइएको छ।
+
+यो योजना खातामा भएको पेज नं. .... देखि .... सम्मको पानाहरुमा योजनासँग सम्बन्धित आम्दानी–खर्चको विवरण लगायत अन्य सम्पूर्ण विवरणहरु :- योजनाको लागत अनुमान, नक्सा, डिजाईन, स्पेसिफिकेशन, नगद, आम्दानी तथा खर्च, मालसामान खरीद, खर्च तथा मौज्दात, कामदारहरुको हाजिरी एवम् ज्याला भुक्तानी आदि उपभोक्ता समितिले अद्यावधिक गरी दुरुस्त राखुपर्नेछ।
+
+यो खाता उपभोक्ता समितिले तोकेको व्यक्तिले समय समयमा अद्यावधिक गर्नुको साथै यस योजनासँग सम्बन्धित विभिन्न व्यक्ति, निकायहरु तथा उपभोक्ताले चाहेको बेलामा सजिलैसँग उपलब्ध हुने गरी राखु पर्दछ। यस योजना खातालाई सुरक्षित राखे एवम् आवश्यक परेको बेलामा उपलब्ध गराउने जिम्मेवारी उपभोक्ता समितिबाट तोकिएको व्यक्तिको हुनेछ। यसका साथै ती व्यक्तिहरु, निकायहरु तथा उपभोक्ताहरुले यस योजनाको प्राविधिक एवम् व्यवस्थापन पक्षसँग सम्बन्धित सल्लाह तथा सुझावहरु यसै पुस्तिकामा उल्लेख गर्न सक्रेछन्।
+
+यस योजनाका विविध पक्षहरुको लेखाजोखा रकम निकासा तथा अन्तिम मूल्यांकन समेत यसै खाताको आधारमा गरिने हुनाले यस पुस्तिकालाई सुरक्षित एवम् जतनका साथ राखुका साथै यस पुस्तिकामा राखुपर्ने हरेक विवरणहरु सहि एवम् जिम्मेवार ढंगले भर्नु सम्बन्धित उपभोक्ता समितिको उत्तरदायित्व हुनेछ।
+
+योजना सञ्चालन तथा व्यवस्थापन सम्बन्धमा उपभोक्ता समितिले आफूलाई स्पष्ट नभएका कुराहरु आवश्यकता अनुसार न.पा.को प्राविधिक ग. न.पा. ले तोकेको फिल्ड अफिसरसँग सल्लाह गर्नुपर्छ र योजनाको नाप नक्सा आदि प्रष्टसँग निर्दिष्ट स्थानमा भर्नु पर्दछ। साथै योजनासँग सरोकार राखे अन्य पक्षबाट बेलाबखत प्राप्त हुने सल्लाह/सुझाव पनि उपर्युक्त स्थानमा रेकर्ड गर्नु पर्दछ।
+
+योजनाको सम्पूर्ण कार्य सम्पन्न भईसकेपछि प्रयोग नभएका पानाहरु प्रष्ट देखिने गरी चिन्हद्वारा प्रयोग नभएको भनि उल्लेख गर्नु पर्नेछ। तर प्रयोग नभएका कुनै पनि पाना च्यातिनु हुँदैन।
+
+योजनाका निर्माण कार्य सम्पन्न भई सकेपछि लेखा परीक्षणको प्रयोजनको लागि माग गरिएमा उपभोक्ता समितिले यो योजना खाता सम्बन्धित कार्यालय (गलकोट नगरपालिका) मा बुझाउनु पर्नेछ। सो कार्य सम्पन्न हुनासाथ न.पा. ले यस खातालाई पुनः सम्बन्धित उपभोक्ता समितिलाई फिर्ता गर्नु पर्नेछ।`,
+                    // हस्ताक्षर बाकसका फिल्डहरू
+                    sigCommitteeName: '',
+                    sigDecisionDate: '',
+                    sigResponsiblePerson: '',
+                    sigSignature: '',
+                    sigName: '',
+                    sigPost: '',
+                    sigDate: ''
+                },
+                beneficiaries: {},
+                corres: {},
+                agreement: {},
+                audit: {},
+                notice: {},
+                transfer: {},
+                completion: {},
+                attMeta: {},
+                assembly: [],
+                officials: [],
+                monitoring: [],
+                meetings: [],
+                installments: [],
+                ledger: [],
+                materials: [],
+                participation: [],
+                attendanceWorkers: [],
+                receipts: []
+            };
+        }
+
+        let DB;
+        try {
+            const raw = localStorage.getItem(DB_KEY);
+            DB = raw ? JSON.parse(raw) : defaultDB();
+        } catch (e) {
+            DB = defaultDB();
+        }
+
+        // सुनिश्चित गर्नुहोस् कि cover अवस्थित छ र सबै फिल्डहरू छन्
+        if (!DB.cover) DB.cover = {};
+        const defaultCover = defaultDB().cover;
+        for (const k of Object.keys(defaultCover)) {
+            if (!(k in DB.cover)) DB.cover[k] = defaultCover[k];
+        }
+
+        let saveTimer = null;
+        let isManualSave = false;
+
+        function saveDB(showFeedback = true) {
+            localStorage.setItem(DB_KEY, JSON.stringify(DB));
+
+            const ind = document.getElementById('saveIndicator');
+            const btn = document.getElementById('btnSave');
+
+            if (showFeedback) {
+                if (ind) {
+                    ind.innerHTML = '<span class="dot"></span> सुरक्षित ✓';
+                }
+                if (btn) {
+                    btn.textContent = '✅ सेभ भयो!';
+                    btn.classList.add('saved');
+                    setTimeout(() => {
+                        btn.textContent = '💾 सेभ गर्नुहोस्';
+                        btn.classList.remove('saved');
+                    }, 2000);
+                }
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    if (ind && !isManualSave) {
+                        ind.innerHTML = '<span class="dot"></span> स्वतः सुरक्षित';
+                    }
+                    isManualSave = false;
+                }, 1500);
+            } else {
+                // Auto-save: just update indicator
+                if (ind) {
+                    ind.innerHTML = '<span class="dot"></span> स्वतः सुरक्षित';
+                }
+            }
+        }
+
+        // ===== BIND INPUTS =====
+        function fillForms() {
+            document.querySelectorAll('[data-obj]').forEach(el => {
+                const { obj, field } = el.dataset;
+                const val = (DB[obj] && DB[obj][field] !== undefined) ? DB[obj][field] : '';
+                if (el.tagName === 'SELECT') {
+                    el.value = val || '';
+                } else if (el.tagName === 'TEXTAREA') {
+                    el.value = val || '';
+                } else {
+                    el.value = val || '';
+                }
+            });
+        }
+
+        // ===== AUTO-SAVE on input/change =====
+        document.addEventListener('input', (e) => {
+            const t = e.target;
+            if (t.matches('[data-obj]')) {
+                const { obj, field } = t.dataset;
+                if (!DB[obj]) DB[obj] = {};
+                DB[obj][field] = t.value;
+                saveDB(false); // auto-save, no flashy feedback
+            }
+        });
+
+        document.addEventListener('change', (e) => {
+            const t = e.target;
+            if (t.tagName === 'SELECT' && t.matches('[data-obj]')) {
+                const { obj, field } = t.dataset;
+                if (!DB[obj]) DB[obj] = {};
+                DB[obj][field] = t.value;
+                saveDB(false);
+            }
+        });
+
+        // ===== MANUAL SAVE BUTTON =====
+        document.getElementById('btnSave').addEventListener('click', function() {
+            // पहिले सबै फिल्डबाट डाटा सङ्कलन गरौं (पुन: पढौं)
+            document.querySelectorAll('[data-obj]').forEach(el => {
+                const { obj, field } = el.dataset;
+                if (!DB[obj]) DB[obj] = {};
+                if (el.tagName === 'SELECT') {
+                    DB[obj][field] = el.value;
+                } else {
+                    DB[obj][field] = el.value;
+                }
+            });
+            isManualSave = true;
+            saveDB(true);
+        });
+
+        // ===== INIT =====
+        fillForms();
+
+        // पृष्ठभूमि पाठलाई म्यानुअल रूपमा सेट गरौं (पहिले नै भरिएको छ)
+        console.log('📘 गलकोट नगरपालिका — योजना खाता (गृहपृष्ठ) लोड भयो।');
+        console.log('📦 डाटा:', DB);
+
+        // यदि backgroundText खाली छ भने डिफल्ट सेट गरौं
+        if (!DB.cover.backgroundText || DB.cover.backgroundText.trim() === '') {
+            DB.cover.backgroundText = defaultDB().cover.backgroundText;
+            document.querySelector('[data-obj="cover"][data-field="backgroundText"]').value = DB.cover.backgroundText;
+            saveDB(false);
+        }
+    </script>
+
+</body>
+</html>
