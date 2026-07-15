@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>गलकोट नगरपालिका — उपभोक्ता समिति गठन विवरण</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #FAF6EC;
+            --paper-2: #F3EDDC;
+            --ink: #2B2620;
+            --ink-soft: #5B5346;
+            --maroon: #7A1F2B;
+            --maroon-dark: #5C1620;
+            --gold: #B8862F;
+            --line: #D8CDB0;
+            --line-strong: #B9AC85;
+            --shadow: 0 2px 10px rgba(43,38,32,.08);
+            --radius: 10px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--paper-2);
+            color: var(--ink);
+            font-family: 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 30px 40px;
+            box-shadow: var(--shadow);
+        }
+        h2 {
+            font-family: 'Noto Serif Devanagari', serif;
+            color: var(--maroon-dark);
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--gold);
+            padding-left: 12px;
+        }
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-right: 8px;
+            color: var(--maroon-dark);
+            min-width: 150px;
+        }
+        input.form-input {
+            border: none;
+            border-bottom: 2px dashed var(--maroon);
+            background-color: #fff;
+            padding: 4px 8px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 14px;
+            color: var(--ink);
+            border-radius: 4px;
+            outline: none;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        input.form-input:focus {
+            background-color: #fff9e6;
+            border-bottom: 2px solid var(--gold);
+        }
+        .inline-input {
+            display: inline-block;
+            border: none;
+            border-bottom: 2px dashed var(--maroon);
+            background-color: #fff;
+            padding: 2px 6px;
+            font-size: 14px;
+            outline: none;
+            margin: 0 4px;
+            border-radius: 3px;
+        }
+        
+        /* Table Styling */
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid var(--line-strong);
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th {
+            background-color: var(--maroon);
+            color: #fff;
+            font-family: 'Noto Serif Devanagari', serif;
+            font-weight: 600;
+        }
+        td input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 14px;
+            background: transparent;
+            text-align: center;
+        }
+        td input:focus {
+            background: #fff8e1;
+        }
+        
+        .btn-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--maroon-dark);
+        }
+        .divider {
+            border: none;
+            border-top: 2px solid var(--line);
+            margin: 25px 0;
+        }
+        ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        ol li {
+            margin-bottom: 6px;
+        }
+        .footer-note {
+            text-align: center;
+            color: var(--ink-soft);
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body { background: #fff; padding: 5px; }
+            .container { box-shadow: none; border: none; }
+            .btn-container { display: none; }
+            input.form-input, .inline-input { background: transparent !important; border-bottom: 1px solid #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>३. उपभोक्ता समिति सम्बन्धी विवरण:</h2>
+    
+    <h2>३.१ योजनाबाट लाभान्वित हुने</h2>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>(क) जम्मा परिवार संख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+        <div class="form-group">
+            <label>(ख) जम्मा जनसंख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>(ग) पिछडिएको परिवार संख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+        <div class="form-group">
+            <label>(घ) पिछडिएको वर्गको जनसंख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>(ङ) अन्य परिवार संख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+        <div class="form-group">
+            <label>(च) अन्य वर्गको जनसंख्या</label>
+            <input type="text" class="form-input" placeholder="संख्या लेख्नुहोस्">
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <label style="min-width: 220px;">३.२ उपभोक्ता समिति गठन भएको मिति:</label>
+        <input type="date" class="form-input" style="max-width: 200px;">
+    </div>
+
+    <h2>३.३ उपभोक्ता भेलामा उपस्थिति संख्या:</h2>
+    <p>
+        आज मिति <input type="date" class="inline-input"> गतेका दिन यस वडा नं. <input type="text" class="inline-input" style="width: 50px;" placeholder="वडा नं"> का अध्यक्ष/सदस्य/सचिव श्री <input type="text" class="inline-input" style="width: 200px;" placeholder="नाम"> को अध्यक्षतामा बसेको <input type="text" class="inline-input" style="width: 250px;" placeholder="योजनाको नाम"> योजनाको लागि उपभोक्ता समिति गठन गर्ने प्रयोजनार्थ सम्बन्धित उपभोक्ताहरूको भेलामा निम्नुसार उपस्थिति रहेको छ ।
+    </p>
+
+    <div class="btn-container">
+        <button type="button" class="btn" onclick="addRow()">+ नयाँ पङ्क्ति (Row) थप्नुहोस्</button>
+    </div>
+
+    <div class="table-container">
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">क्र.स.</th>
+                    <th style="width: 35%;">सहभागीको नाम</th>
+                    <th style="width: 15%;">लिङ्ग</th>
+                    <th style="width: 27%;">ठेगाना</th>
+                    <th style="width: 15%;">हस्ताक्षर</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" placeholder="नाम थर"></td>
+                    <td><input type="text" placeholder="पु./मhi"></td>
+                    <td><input type="text" placeholder="ठेगाना"></td>
+                    <td><input type="text" placeholder="सही"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" placeholder="नाम थर"></td>
+                    <td><input type="text" placeholder="पु./मhi"></td>
+                    <td><input type="text" placeholder="ठेगाना"></td>
+                    <td><input type="text" placeholder="सही"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" placeholder="नाम थर"></td>
+                    <td><input type="text" placeholder="पु./मhi"></td>
+                    <td><input type="text" placeholder="ठेगाना"></td>
+                    <td><input type="text" placeholder="सही"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="divider">
+
+    <h2>प्रस्तावहरू:</h2>
+    <ol>
+        <li>उपभोक्ता समिति गठन सम्बन्धमा ।</li>
+        <li>अनुगमन तथा सुपेरीवेक्षण समिति गठन सम्बन्धमा ।</li>
+        <li>जनसहभागिता/जनश्रमदान सम्बन्धमा ।</li>
+        <li>विविध</li>
+    </ol>
+
+    <h2>निर्णयहरू:</h2>
+    <p>
+        निर्णय नं. १: यस वडा नं. <input type="text" class="inline-input" style="width: 50px;"> स्थित <input type="text" class="inline-input" style="width: 250px;" placeholder="स्थान/योजना"> योजना ग.न.पा. बीच सम्झौता गरि सम्पन्न गर्ने प्रयोजनार्थ देहायका पदाधिकारीहरू रहेको एक <input type="text" class="inline-input" style="width: 200px;" placeholder="निर्माण/मर्मत"> निर्माण/मर्मत उपभोक्ता समिति गठन गर्ने निर्णय गरियो ।
+    </p>
+
+    <div class="footer-note">
+        गलकोट नगरपालिका — योजना खाता · पृष्ठ ४ र ५
+    </div>
+
+</div>
+
+<script>
+    function addRow() {
+        const tbody = document.getElementById('tableBody');
+        const rowCount = tbody.rows.length + 1;
+        const newRow = tbody.insertRow();
+        
+        newRow.innerHTML = `
+            <td>${rowCount}</td>
+            <td><input type="text" placeholder="नाम थर"></td>
+            <td><input type="text" placeholder="पु./मhi"></td>
+            <td><input type="text" placeholder="ठेगाना"></td>
+            <td><input type="text" placeholder="सही"></td>
+        `;
+    }
+</script>
+
+</body>
+</html>

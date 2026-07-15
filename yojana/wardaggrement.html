@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>सिफारिस सम्बन्धमा</title>
+    <style>
+        body {
+            font-family: 'Kalimati', 'Preeti', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #000;
+        }
+        .page {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            text-align: center;
+        }
+        .logo-box img {
+            width: 70px;
+            height: auto;
+        }
+        .office-header {
+            text-align: center;
+            flex-grow: 1;
+            margin-top: 5px;
+        }
+        .office-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .office-header h3 {
+            margin: 5px 0;
+            font-size: 18px;
+        }
+        .office-header p {
+            margin: 0;
+            font-size: 16px;
+        }
+        .province-text {
+            text-align: right;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .letter-info-line {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+        .subject {
+            text-align: center;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .to-address {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .body-content {
+            line-height: 2.2;
+            text-align: justify;
+            margin-bottom: 40px;
+        }
+        .signature-section {
+            text-align: right;
+            margin-top: 40px;
+        }
+        .signature-box {
+            display: inline-block;
+            text-align: center;
+            border-top: 1px dotted #000;
+            width: 200px;
+            padding-top: 5px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+        
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                padding: 15mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- Top Header with Logo -->
+    <div class="province-text">गण्डकी प्रदेश, नेपाल</div>
+    
+    <div class="header-container">
+        <div class="logo-box">
+            <!-- यहाँ लोगोको इमेज फाइलको नाम राख्नुहोला (जस्तै: logo.png) -->
+            <img src="logo.png" alt="Logo">
+        </div>
+        <div class="office-header">
+            <h2>गलकोट नगरपालिका</h2>
+            <h3>........ नं. वडा कार्यालय</h3>
+            <p>.............., बागलुङ</p>
+        </div>
+    </div>
+
+    <!-- Letter Number and Date Line -->
+    <div class="letter-info-line">
+        <div>
+            प.सं.: ........................<br>
+            च.नं.: ........................
+        </div>
+        <div style="text-align: right;">
+            मिति ....................................<br>
+            नेपाल सम्वत् ........................
+        </div>
+    </div>
+
+    <!-- Subject -->
+    <div class="subject">
+        विषयः सिफारिस सम्बन्धमा ।
+    </div>
+
+    <!-- To Address -->
+    <div class="to-address">
+        श्री प्रमुख प्रशासकीय अधिकृतज्यू,<br>
+        गलकोट नगरपालिका नगर कार्यपालिकाको कार्यालय<br>
+        गलकोट बागलुङ ।
+    </div>
+
+    <!-- Body Content -->
+    <div class="body-content">
+        प्रस्तुत विषयमा आर्थिक वर्ष .................................... को स्वीकृत कार्यक्रम अन्तर्गत यस वडा नं. .................................... टोलमा .................................................................................................... योजना निर्माण/मर्मतको लागि मिति ................. को आम भेलाबाट .................................................................................................... उपभोक्ता समिति गठन भई निर्माण/मर्मत सुधारको लागि लागत अनुमान तयार भइसकेकोले उपभोक्ता समितिका अध्यक्ष श्री ........................................................................ सचिव श्री ........................................................................ र कोषाध्यक्ष श्री................................................ का नाममा नियमानुसार योजना सम्झौता गरी पहिलो पेश्की उपलब्ध गराइदिनुहुनाका लागि सिफारिस साथ अनुरोध छ ।
+    </div>
+
+    <!-- Signature -->
+    <div class="signature-section">
+        <div class="signature-box">
+            वडा अध्यक्ष
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <span>गलकोट नगरपालिका</span>
+        <span>११</span>
+        <span>योजना किताब</span>
+    </div>
+</div>
+
+</body>
+</html>
