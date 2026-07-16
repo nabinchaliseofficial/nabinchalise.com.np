@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Course Manager · Galkot Tech</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+  
+  <!-- Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: { primary: { DEFAULT:'#2563EB', 600:'#2563EB',700:'#1d4ed8' }, accent:'#06B6D4', success:'#10B981', danger:'#EF4444', ink:'#0F172A' },
+          fontFamily: { display: ['Manrope','sans-serif'], body: ['Inter','sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.0/dist/umd/supabase.min.js"></script>
+  <style>
+    body { background: #080D18; color: #E6EAF2; font-family: 'Inter', sans-serif; }
+    html.light body { background: #FAFBFF; color: #0F172A; }
+    .glass{ background:rgba(15,23,42,0.65); backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); }
+    html.light .glass{ background:rgba(255,255,255,0.7); border:1px solid rgba(15,23,42,0.06); }
+    .card{ background:rgba(255,255,255,0.03); border:1px solid rgba(148,163,184,0.08); }
+    html.light .card{ background:#fff; border:1px solid rgba(15,23,42,0.06); }
+    .grad-text{ background:linear-gradient(90deg,#60A5FA,#06B6D4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .btn-primary{ background:linear-gradient(135deg,#2563EB,#06B6D4); }
+    .btn-primary:hover{ filter:brightness(1.08); }
+    .btn-danger{ background:#EF4444; }
+    .btn-danger:hover{ background:#dc2626; }
+    ::-webkit-scrollbar{ width:8px; background:transparent; }
+    ::-webkit-scrollbar-thumb{ background:#1e2b45; border-radius:8px; }
+    html.light ::-webkit-scrollbar-thumb{ background:#dbe3f5; }
+    .table-wrap { overflow-x: auto; }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
+    .modal-bg { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
+    @media print { .no-print { display: none !important; } }
+    
+    body {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    .no-select {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    #sessionExpiredOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #sessionExpiredOverlay.active {
+      display: flex;
+    }
+    #sessionExpiredOverlay .icon {
+      font-size: 4rem;
+      color: #EF4444;
+      margin-bottom: 1rem;
+    }
+    #sessionExpiredOverlay h2 {
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    #sessionExpiredOverlay p {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+    }
+    #sessionExpiredOverlay .btn {
+      background: linear-gradient(135deg,#2563EB,#06B6D4);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    #sessionExpiredOverlay .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .live-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9998;
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: #1a2332;
+      border: 1px solid rgba(148,163,184,0.12);
+      color: #E6EAF2;
+      font-size: 14px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 400px;
+    }
+    #notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    #notification.success { border-color: #10B981; border-left: 4px solid #10B981; }
+    #notification.error { border-color: #EF4444; border-left: 4px solid #EF4444; }
+    #notification.info { border-color: #2563EB; border-left: 4px solid #2563EB; }
+
+    .photo-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(6,182,212,0.3);
+    }
+    .photo-preview-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 1.5rem;
+      border: 2px solid rgba(148,163,184,0.2);
+    }
+    .table-photo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(6,182,212,0.2);
+    }
+    .table-photo-placeholder {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    
+    .filter-input {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148,163,184,0.08);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #E6EAF2;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .filter-input:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+    }
+    .filter-input::placeholder {
+      color: #64748b;
+    }
+    html.light .filter-input {
+      background: #f8fafc;
+      color: #0F172A;
+    }
+
+    /* Mode Badge */
+    .mode-badge {
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .mode-online { background: rgba(16,185,129,0.2); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+    .mode-offline { background: rgba(59,130,246,0.2); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
+    .mode-hybrid { background: rgba(139,92,246,0.2); color: #8B5CF6; border: 1px solid rgba(139,92,246,0.3); }
+    html.light .mode-online { background: #d1fae5; color: #065f46; }
+    html.light .mode-offline { background: #dbeafe; color: #1e40af; }
+    html.light .mode-hybrid { background: #ede9fe; color: #5b21b6; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased" oncontextmenu="return false;" onkeydown="return disableKeys(event);">
+
+  <!-- SESSION EXPIRED OVERLAY -->
+  <div id="sessionExpiredOverlay">
+    <div class="icon"><i class="fas fa-clock"></i></div>
+    <h2>Session Expired</h2>
+    <p>Your admin session has timed out for security.</p>
+    <button class="btn" onclick="window.location.href='index.html'">
+      <i class="fas fa-arrow-left mr-2"></i>Return to Home
+    </button>
+  </div>
+
+  <!-- NOTIFICATION TOAST -->
+  <div id="notification"></div>
+
+  <!-- MAIN ADMIN UI -->
+  <div id="adminApp" class="max-w-7xl mx-auto px-4 pt-6 pb-20">
+    <!-- header -->
+    <header class="flex flex-wrap items-center justify-between gap-4 mb-8 no-print">
+      <div class="flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-display font-bold">GT</span>
+        <div>
+          <h1 class="font-display font-extrabold text-2xl text-white">Admin <span class="grad-text">Panel</span></h1>
+          <p class="text-xs text-slate-400 flex items-center gap-2">
+            <span class="live-indicator"></span>
+            <span id="liveStatus">Live</span>
+            <span class="mx-1">·</span>
+            <span id="recordCount">0 entries</span>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="sessionTimer" class="text-sm text-slate-400 bg-white/5 px-3 py-1.5 rounded-full"><i class="far fa-clock mr-1"></i> <span id="timerDisplay">5:00</span></span>
+        <button id="logoutBtn" class="text-sm bg-white/10 hover:bg-danger/20 text-slate-300 hover:text-white px-4 py-2 rounded-xl transition">
+          <i class="fas fa-sign-out-alt mr-1"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Add new record - Updated with all fields -->
+    <div class="glass rounded-2xl p-5 mb-8 no-print fade-in">
+      <h2 class="font-display font-bold text-lg text-white mb-3"><i class="fas fa-plus-circle text-accent mr-2"></i>Add New Record</h2>
+      <form id="addForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <input type="text" id="addStudentId" placeholder="Student ID (e.g. GT-2025-011)" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="text" id="addName" placeholder="Student Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="text" id="addFather" placeholder="Father's Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="text" id="addMother" placeholder="Mother's Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="date" id="addDob" placeholder="Date of Birth" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <select id="addGender" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <option value="">Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" id="addAddress" placeholder="Address" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="text" id="addCourse" placeholder="Course" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="number" id="addGrade" placeholder="Grade (0-100)" min="0" max="100" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="date" id="addEnrollment" placeholder="Enrollment Date" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <input type="date" id="addCompletion" placeholder="Completion Date" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <select id="addMode" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <option value="">Mode</option>
+          <option value="Online">Online</option>
+          <option value="Offline">Offline</option>
+          <option value="Hybrid">Hybrid</option>
+        </select>
+        <input type="text" id="addSkills" placeholder="Skills (comma separated)" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+        <div class="flex gap-2 sm:col-span-2 lg:col-span-3">
+          <button type="submit" class="btn-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex-1"><i class="fas fa-save mr-1"></i>Add</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Filter and Table -->
+    <div class="glass rounded-2xl p-4 overflow-hidden fade-in">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="font-display font-bold text-lg text-white"><i class="fas fa-table text-accent mr-2"></i>All Records</h2>
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-search text-slate-500 text-xs"></i>
+            <input type="text" id="filterInput" placeholder="Filter by name, ID, course..." class="filter-input w-48 sm:w-56">
+            <button id="clearFilterBtn" class="text-xs text-slate-400 hover:text-white transition" title="Clear filter">
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+          <span id="lastUpdated" class="text-xs text-slate-400">Last updated: just now</span>
+          <button id="refreshBtn" class="text-sm text-slate-400 hover:text-white transition"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="w-full text-sm">
+          <thead class="text-slate-400 border-b border-white/5">
+            <tr>
+              <th class="text-left py-3 px-2">Photo</th>
+              <th class="text-left py-3 px-2">ID</th>
+              <th class="text-left py-3 px-2">Student</th>
+              <th class="text-left py-3 px-2">Father</th>
+              <th class="text-left py-3 px-2">Mother</th>
+              <th class="text-left py-3 px-2">Course</th>
+              <th class="text-left py-3 px-2">Grade</th>
+              <th class="text-left py-3 px-2">Status</th>
+              <th class="text-left py-3 px-2">Mode</th>
+              <th class="text-center py-3 px-2 no-print">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-white/5">
+            <!-- dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+      <p id="emptyMsg" class="text-center text-slate-500 py-8 text-sm">No records found. Add one above.</p>
+      <div id="filterEmptyMsg" class="hidden text-center text-slate-500 py-4 text-sm">No records match your filter.</div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL - Updated with all fields -->
+  <div id="editModal" class="fixed inset-0 z-50 hidden modal-bg flex items-center justify-center no-print">
+    <div class="glass rounded-2xl p-6 max-w-2xl w-full mx-4 fade-in max-h-[90vh] overflow-y-auto">
+      <h3 class="font-display font-bold text-lg text-white mb-4"><i class="fas fa-pen text-accent mr-2"></i>Edit Record</h3>
+      <form id="editForm">
+        <input type="hidden" id="editId">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="text" id="editStudentId" placeholder="Student ID" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="text" id="editName" placeholder="Student Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="text" id="editFather" placeholder="Father's Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="text" id="editMother" placeholder="Mother's Name" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="date" id="editDob" placeholder="Date of Birth" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <select id="editGender" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+            <option value="">Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" id="editAddress" placeholder="Address" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="text" id="editCourse" placeholder="Course" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="number" id="editGrade" placeholder="Grade (0-100)" min="0" max="100" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="text" id="editCert" placeholder="Certificate" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="date" id="editEnrollment" placeholder="Enrollment Date" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <input type="date" id="editCompletion" placeholder="Completion Date" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          <select id="editMode" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+            <option value="">Mode</option>
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+          <input type="text" id="editSkills" placeholder="Skills (comma separated)" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none">
+          
+          <!-- Photo Upload -->
+          <div class="sm:col-span-2 border border-white/10 rounded-xl p-3">
+            <label class="text-xs text-slate-400 uppercase tracking-wider block mb-2">Student Photo</label>
+            <div class="flex items-center gap-4">
+              <div id="photoPreviewContainer">
+                <div id="photoPreview" class="photo-preview-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              </div>
+              <div class="flex-1">
+                <input type="file" id="editPhoto" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/20 file:text-white hover:file:bg-primary/30 cursor-pointer">
+                <p class="text-[10px] text-slate-500 mt-1">Upload JPG, PNG, or WEBP (max 5MB)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button type="submit" class="btn-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex-1"><i class="fas fa-check mr-1"></i>Update</button>
+          <button type="button" id="closeEditModal" class="bg-white/10 text-slate-300 px-6 py-2.5 rounded-xl text-sm flex-1">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // SECURITY
+    // =============================================
+    function disableKeys(e) {
+      const key = e.keyCode || e.which;
+      if (key === 123 || 
+          (e.ctrlKey && e.shiftKey && (key === 73 || key === 74)) ||
+          (e.ctrlKey && key === 85) ||
+          (e.ctrlKey && key === 83)) {
+        e.preventDefault();
+        return false;
+      }
+      return true;
+    }
+    document.addEventListener('keydown', disableKeys);
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('drop', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+
+    // =============================================
+    // AUTHENTICATION
+    // =============================================
+    function checkSession() {
+      const session = sessionStorage.getItem('adminSession');
+      const sessionTime = sessionStorage.getItem('adminSessionTime');
+      
+      if (!session || session !== 'active') {
+        window.location.href = 'index.html';
+        return false;
+      }
+      
+      if (sessionTime) {
+        const elapsed = (Date.now() - parseInt(sessionTime)) / 1000;
+        if (elapsed > 300) {
+          sessionStorage.removeItem('adminSession');
+          sessionStorage.removeItem('adminSessionTime');
+          showSessionExpired();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function showSessionExpired() {
+      document.getElementById('sessionExpiredOverlay').classList.add('active');
+      document.getElementById('adminApp').style.display = 'none';
+    }
+
+    // =============================================
+    // SUPABASE CONFIG
+    // =============================================
+    const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const STORAGE_BUCKET = 'student-photos';
+
+    // =============================================
+    // STATE
+    // =============================================
+    let records = [];
+    let filteredRecords = [];
+    let sessionTimer = null;
+    let timeLeft = 300;
+    let subscription = null;
+    let lastUpdateTime = new Date();
+    let currentFilter = '';
+
+    // DOM refs
+    const adminApp = document.getElementById('adminApp');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const tableBody = document.getElementById('tableBody');
+    const emptyMsg = document.getElementById('emptyMsg');
+    const filterEmptyMsg = document.getElementById('filterEmptyMsg');
+    const recordCount = document.getElementById('recordCount');
+    const editModal = document.getElementById('editModal');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const sessionExpiredOverlay = document.getElementById('sessionExpiredOverlay');
+    const liveStatus = document.getElementById('liveStatus');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const notification = document.getElementById('notification');
+    const filterInput = document.getElementById('filterInput');
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+    // =============================================
+    // NOTIFICATION
+    // =============================================
+    let notificationTimeout = null;
+
+    function showNotification(message, type = 'info', duration = 3000) {
+      notification.textContent = message;
+      notification.className = type;
+      notification.classList.add('show');
+      clearTimeout(notificationTimeout);
+      notificationTimeout = setTimeout(() => {
+        notification.classList.remove('show');
+      }, duration);
+    }
+
+    // =============================================
+    // SESSION TIMER
+    // =============================================
+    function startTimer() {
+      timeLeft = 300;
+      timerDisplay.textContent = '5:00';
+      clearInterval(sessionTimer);
+      sessionTimer = setInterval(() => {
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (timeLeft <= 0) {
+          clearInterval(sessionTimer);
+          sessionStorage.removeItem('adminSession');
+          sessionStorage.removeItem('adminSessionTime');
+          showSessionExpired();
+        }
+        if (timeLeft > 0 && timeLeft % 30 === 0) {
+          sessionStorage.setItem('adminSessionTime', Date.now().toString());
+        }
+      }, 1000);
+    }
+
+    // =============================================
+    // LOGOUT
+    // =============================================
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.removeItem('adminSession');
+        sessionStorage.removeItem('adminSessionTime');
+        clearInterval(sessionTimer);
+        window.location.href = 'index.html';
+      }
+    }
+    logoutBtn.addEventListener('click', logout);
+
+    // =============================================
+    // REAL-TIME SUBSCRIPTION
+    // =============================================
+    function setupRealtimeSubscription() {
+      if (subscription) {
+        supabase.removeChannel(subscription);
+        subscription = null;
+      }
+
+      subscription = supabase
+        .channel('admin_records_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'course_records' }, (payload) => {
+          liveStatus.textContent = 'Live';
+          liveStatus.style.color = '#10B981';
+          
+          switch (payload.eventType) {
+            case 'INSERT':
+              if (payload.new) {
+                records.unshift(payload.new);
+                applyFilter();
+                showNotification(`✅ New record added: ${payload.new.student_name}`, 'success');
+              }
+              break;
+            case 'UPDATE':
+              if (payload.new) {
+                const idx = records.findIndex(r => r.id === payload.new.id);
+                if (idx !== -1) {
+                  records[idx] = payload.new;
+                } else {
+                  records.unshift(payload.new);
+                }
+                applyFilter();
+                showNotification(`✏️ Record updated: ${payload.new.student_name}`, 'info');
+              }
+              break;
+            case 'DELETE':
+              if (payload.old) {
+                records = records.filter(r => r.id !== payload.old.id);
+                applyFilter();
+                showNotification(`🗑️ Record deleted: ${payload.old.student_name}`, 'error');
+              }
+              break;
+          }
+          lastUpdateTime = new Date();
+          updateLastUpdated();
+        })
+        .subscribe((status, err) => {
+          if (status === 'SUBSCRIBED') {
+            liveStatus.textContent = 'Live';
+            liveStatus.style.color = '#10B981';
+          } else if (status === 'CHANNEL_ERROR') {
+            liveStatus.textContent = 'Reconnecting...';
+            liveStatus.style.color = '#F59E0B';
+          }
+        });
+    }
+
+    // =============================================
+    // PHOTO FUNCTIONS
+    // =============================================
+    
+    function getStudentPhotoUrl(studentId) {
+      if (!studentId) return null;
+      const { data } = supabase.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(`${studentId}.jpg`);
+      return data.publicUrl;
+    }
+
+    function getStudentPhotoHtml(studentId, studentName) {
+      if (!studentId) {
+        return `<div class="table-photo-placeholder"><i class="fas fa-user"></i></div>`;
+      }
+      
+      const initials = studentName ? studentName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?';
+      const url = getStudentPhotoUrl(studentId);
+      
+      return `<img src="${url}" 
+                   class="table-photo" 
+                   alt="${studentName || 'Student'}"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                   onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />
+              <div class="table-photo-placeholder" style="display:none;">${initials}</div>`;
+    }
+
+    async function uploadStudentPhoto(studentId, file) {
+      if (!file || !studentId) {
+        showNotification('⚠️ Student ID or file missing', 'error');
+        return null;
+      }
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${studentId}.${fileExt}`;
+      
+      try {
+        showNotification('📤 Uploading photo...', 'info', 2000);
+        
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+        
+        if (error) {
+          console.error('Upload error:', error);
+          showNotification('⚠️ Failed to upload: ' + error.message, 'error');
+          return null;
+        }
+        
+        const { data: urlData } = supabase.storage
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(fileName);
+        
+        const photoUrl = urlData.publicUrl;
+        
+        try {
+          const { error: updateError } = await supabase
+            .from('course_records')
+            .update({ photo_url: photoUrl })
+            .eq('student_id', studentId);
+          
+          if (updateError) {
+            console.log('Photo URL not saved to DB (column may not exist)');
+          }
+        } catch (dbError) {
+          console.log('DB update skipped');
+        }
+        
+        showNotification('✅ Photo uploaded successfully!', 'success');
+        return photoUrl;
+        
+      } catch (err) {
+        console.error('Upload error:', err);
+        showNotification('⚠️ Failed to upload photo', 'error');
+        return null;
+      }
+    }
+
+    // =============================================
+    // CRUD OPERATIONS
+    // =============================================
+    async function fetchRecords() {
+      try {
+        const { data, error } = await supabase
+          .from('course_records')
+          .select('*')
+          .order('id', { ascending: false });
+        
+        if (error) {
+          console.error('Fetch error:', error);
+          showNotification('⚠️ Error fetching records: ' + error.message, 'error');
+          records = [];
+          applyFilter();
+          return false;
+        }
+        
+        records = data || [];
+        applyFilter();
+        lastUpdateTime = new Date();
+        updateLastUpdated();
+        return true;
+        
+      } catch (err) {
+        console.error('Fetch error:', err);
+        records = [];
+        applyFilter();
+        showNotification('⚠️ Error fetching records. Please refresh.', 'error');
+        return false;
+      }
+    }
+
+    async function addRecord(record) {
+      try {
+        const { data, error } = await supabase
+          .from('course_records')
+          .insert([record])
+          .select();
+        
+        if (error) {
+          console.error('Add error:', error);
+          showNotification('❌ Failed to add record: ' + error.message, 'error');
+          return false;
+        }
+        
+        if (data && data.length) {
+          if (!records.find(r => r.id === data[0].id)) {
+            records.unshift(data[0]);
+            applyFilter();
+          }
+          showNotification(`✅ Successfully added: ${record.student_name}`, 'success');
+        }
+        return true;
+        
+      } catch (err) {
+        console.error('Add error:', err);
+        showNotification('❌ Failed to add record.', 'error');
+        return false;
+      }
+    }
+
+    async function updateRecord(id, updated) {
+      try {
+        const { data, error } = await supabase
+          .from('course_records')
+          .update(updated)
+          .eq('id', id)
+          .select();
+        
+        if (error) {
+          console.error('Update error:', error);
+          showNotification('❌ Failed to update record: ' + error.message, 'error');
+          return false;
+        }
+        
+        if (data && data.length) {
+          const idx = records.findIndex(r => r.id === id);
+          if (idx !== -1) records[idx] = data[0];
+          applyFilter();
+          showNotification(`✅ Record updated successfully`, 'success');
+        }
+        return true;
+        
+      } catch (err) {
+        console.error('Update error:', err);
+        showNotification('❌ Failed to update record.', 'error');
+        return false;
+      }
+    }
+
+    async function deleteRecord(id) {
+      if (!confirm('Delete this record?')) return;
+      try {
+        const { error } = await supabase
+          .from('course_records')
+          .delete()
+          .eq('id', id);
+        
+        if (error) {
+          console.error('Delete error:', error);
+          showNotification('❌ Failed to delete record: ' + error.message, 'error');
+          return;
+        }
+        
+        records = records.filter(r => r.id !== id);
+        applyFilter();
+        showNotification(`🗑️ Record deleted successfully`, 'error');
+        
+      } catch (err) {
+        console.error('Delete error:', err);
+        showNotification('❌ Failed to delete record.', 'error');
+      }
+    }
+
+    // =============================================
+    // FILTER FUNCTION
+    // =============================================
+    function applyFilter() {
+      const filter = filterInput.value.toLowerCase().trim();
+      currentFilter = filter;
+      
+      if (!filter) {
+        filteredRecords = [...records];
+      } else {
+        filteredRecords = records.filter(r => {
+          const searchStr = [
+            r.student_id || '',
+            r.student_name || '',
+            r.father_name || '',
+            r.mother_name || '',
+            r.course || '',
+            r.skills || '',
+            r.certificate || '',
+            r.address || '',
+            r.mode || '',
+            r.gender || ''
+          ].filter(Boolean).join(' ').toLowerCase();
+          return searchStr.includes(filter);
+        });
+      }
+      
+      renderTable();
+    }
+
+    // =============================================
+    // RENDER TABLE - Updated with Mode column
+    // =============================================
+    function renderTable() {
+      const data = filteredRecords;
+      
+      if (data.length === 0) {
+        tableBody.innerHTML = '';
+        if (currentFilter && records.length > 0) {
+          emptyMsg.classList.add('hidden');
+          filterEmptyMsg.classList.remove('hidden');
+        } else if (records.length === 0) {
+          emptyMsg.classList.remove('hidden');
+          filterEmptyMsg.classList.add('hidden');
+        } else {
+          emptyMsg.classList.add('hidden');
+          filterEmptyMsg.classList.remove('hidden');
+        }
+        recordCount.textContent = `${records.length} entries`;
+        return;
+      }
+      
+      emptyMsg.classList.add('hidden');
+      filterEmptyMsg.classList.add('hidden');
+      recordCount.textContent = `${records.length} entries${currentFilter ? ` (${data.length} filtered)` : ''}`;
+      
+      tableBody.innerHTML = data.map(r => {
+        const status = r.grade >= 40 ? 'Pass' : 'Fail';
+        const badge = status === 'Pass' ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger';
+        const photoHtml = getStudentPhotoHtml(r.student_id, r.student_name);
+        
+        // Mode badge
+        let modeBadge = '<span class="text-slate-400">—</span>';
+        if (r.mode) {
+          const modeLower = r.mode.toLowerCase();
+          let cls = 'mode-online';
+          if (modeLower === 'offline') cls = 'mode-offline';
+          else if (modeLower === 'hybrid') cls = 'mode-hybrid';
+          modeBadge = `<span class="mode-badge ${cls}">${r.mode}</span>`;
+        }
+        
+        return `<tr class="hover:bg-white/5 transition fade-in">
+          <td class="py-3 px-2">
+            <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+              ${photoHtml}
+            </div>
+          </td>
+          <td class="py-3 px-2 font-mono text-xs text-slate-400">${r.id}</td>
+          <td class="py-3 px-2 font-medium text-white">${r.student_name || '—'}</td>
+          <td class="py-3 px-2 text-slate-300 text-sm">${r.father_name || '—'}</td>
+          <td class="py-3 px-2 text-slate-300 text-sm">${r.mother_name || '—'}</td>
+          <td class="py-3 px-2 text-slate-300">${r.course || '—'}</td>
+          <td class="py-3 px-2 font-mono">${r.grade || 0}%</td>
+          <td class="py-3 px-2"><span class="text-xs px-2 py-1 rounded-full ${badge}">${status}</span></td>
+          <td class="py-3 px-2">${modeBadge}</td>
+          <td class="py-3 px-2 text-center no-print">
+            <button class="editBtn text-accent hover:text-white mr-2 transition" data-id="${r.id}"><i class="fas fa-edit"></i></button>
+            <button class="deleteBtn text-danger hover:text-white transition" data-id="${r.id}"><i class="fas fa-trash-alt"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      document.querySelectorAll('.editBtn').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(Number(btn.dataset.id)));
+      });
+      document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', () => deleteRecord(Number(btn.dataset.id)));
+      });
+    }
+
+    function updateLastUpdated() {
+      const now = new Date();
+      const diff = Math.floor((now - lastUpdateTime) / 1000);
+      if (diff < 60) {
+        lastUpdated.textContent = `Last updated: ${diff} seconds ago`;
+      } else if (diff < 3600) {
+        const mins = Math.floor(diff / 60);
+        lastUpdated.textContent = `Last updated: ${mins} minute${mins > 1 ? 's' : ''} ago`;
+      } else {
+        lastUpdated.textContent = `Last updated: ${lastUpdateTime.toLocaleTimeString()}`;
+      }
+    }
+
+    // =============================================
+    // ADD FORM - Updated with all fields
+    // =============================================
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const student_id = document.getElementById('addStudentId').value.trim();
+      const student_name = document.getElementById('addName').value.trim();
+      const father_name = document.getElementById('addFather').value.trim();
+      const mother_name = document.getElementById('addMother').value.trim();
+      const dob = document.getElementById('addDob').value;
+      const gender = document.getElementById('addGender').value;
+      const address = document.getElementById('addAddress').value.trim();
+      const course = document.getElementById('addCourse').value.trim();
+      const grade = Number(document.getElementById('addGrade').value);
+      const enrollment_date = document.getElementById('addEnrollment').value;
+      const completion_date = document.getElementById('addCompletion').value;
+      const mode = document.getElementById('addMode').value;
+      const skillsInput = document.getElementById('addSkills').value.trim();
+      
+      if (!student_id || !student_name || !course || isNaN(grade) || grade < 0 || grade > 100) {
+        showNotification('⚠️ Please fill all required fields correctly (grade 0-100)', 'error');
+        return;
+      }
+      
+      const record = {
+        student_id,
+        student_name,
+        father_name: father_name || null,
+        mother_name: mother_name || null,
+        dob: dob || null,
+        gender: gender || null,
+        address: address || null,
+        course,
+        grade,
+        enrollment_date: enrollment_date || null,
+        completion_date: completion_date || null,
+        mode: mode || null,
+        skills: skillsInput || null,
+        certificate: grade >= 40 ? `CERT-${String(Date.now()).slice(-6)}` : null,
+        issue_date: new Date().toISOString().split('T')[0]
+      };
+      
+      await addRecord(record);
+      document.getElementById('addForm').reset();
+    });
+
+    // =============================================
+    // EDIT MODAL - Updated with all fields
+    // =============================================
+    async function openEditModal(id) {
+      const rec = records.find(r => r.id === id);
+      if (!rec) {
+        showNotification('⚠️ Record not found', 'error');
+        return;
+      }
+      
+      document.getElementById('editId').value = rec.id;
+      document.getElementById('editStudentId').value = rec.student_id || '';
+      document.getElementById('editName').value = rec.student_name || '';
+      document.getElementById('editFather').value = rec.father_name || '';
+      document.getElementById('editMother').value = rec.mother_name || '';
+      document.getElementById('editDob').value = rec.dob || '';
+      document.getElementById('editGender').value = rec.gender || '';
+      document.getElementById('editAddress').value = rec.address || '';
+      document.getElementById('editCourse').value = rec.course || '';
+      document.getElementById('editGrade').value = rec.grade || 0;
+      document.getElementById('editCert').value = rec.certificate || '';
+      document.getElementById('editEnrollment').value = rec.enrollment_date || '';
+      document.getElementById('editCompletion').value = rec.completion_date || '';
+      document.getElementById('editMode').value = rec.mode || '';
+      document.getElementById('editSkills').value = rec.skills || '';
+      
+      // Show existing photo
+      const photoPreview = document.getElementById('photoPreview');
+      const studentId = rec.student_id;
+      
+      if (studentId) {
+        const url = getStudentPhotoUrl(studentId);
+        const img = new Image();
+        img.onload = () => {
+          photoPreview.innerHTML = `<img src="${url}" class="photo-preview" alt="Student photo" />`;
+          photoPreview.className = '';
+        };
+        img.onerror = () => {
+          photoPreview.innerHTML = `<i class="fas fa-user"></i>`;
+          photoPreview.className = 'photo-preview-placeholder';
+        };
+        img.src = url;
+      }
+      
+      editModal.classList.remove('hidden');
+    }
+
+    closeEditModal.addEventListener('click', () => editModal.classList.add('hidden'));
+    
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = Number(document.getElementById('editId').value);
+      const student_id = document.getElementById('editStudentId').value.trim();
+      const student_name = document.getElementById('editName').value.trim();
+      const father_name = document.getElementById('editFather').value.trim();
+      const mother_name = document.getElementById('editMother').value.trim();
+      const dob = document.getElementById('editDob').value;
+      const gender = document.getElementById('editGender').value;
+      const address = document.getElementById('editAddress').value.trim();
+      const course = document.getElementById('editCourse').value.trim();
+      const grade = Number(document.getElementById('editGrade').value);
+      const certificate = document.getElementById('editCert').value.trim();
+      const enrollment_date = document.getElementById('editEnrollment').value;
+      const completion_date = document.getElementById('editCompletion').value;
+      const mode = document.getElementById('editMode').value;
+      const skills = document.getElementById('editSkills').value.trim();
+      
+      if (!student_id || !student_name || !course || isNaN(grade) || grade < 0 || grade > 100) {
+        showNotification('⚠️ Invalid input', 'error');
+        return;
+      }
+      
+      // Handle photo upload
+      const photoFile = document.getElementById('editPhoto').files[0];
+      if (photoFile) {
+        await uploadStudentPhoto(student_id, photoFile);
+        const photoPreview = document.getElementById('photoPreview');
+        const url = getStudentPhotoUrl(student_id);
+        photoPreview.innerHTML = `<img src="${url}" class="photo-preview" alt="Student photo" />`;
+        photoPreview.className = '';
+      }
+      
+      const updated = {
+        student_id,
+        student_name,
+        father_name: father_name || null,
+        mother_name: mother_name || null,
+        dob: dob || null,
+        gender: gender || null,
+        address: address || null,
+        course,
+        grade,
+        certificate: certificate || (grade >= 40 ? `CERT-${String(id).padStart(3,'0')}` : null),
+        enrollment_date: enrollment_date || null,
+        completion_date: completion_date || null,
+        mode: mode || null,
+        skills: skills || null
+      };
+      
+      await updateRecord(id, updated);
+      editModal.classList.add('hidden');
+      document.getElementById('editPhoto').value = '';
+    });
+
+    editModal.addEventListener('click', (e) => {
+      if (e.target === editModal) editModal.classList.add('hidden');
+    });
+
+    // =============================================
+    // FILTER EVENTS
+    // =============================================
+    filterInput.addEventListener('input', applyFilter);
+    
+    clearFilterBtn.addEventListener('click', () => {
+      filterInput.value = '';
+      applyFilter();
+    });
+
+    // =============================================
+    // REFRESH
+    // =============================================
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.querySelector('i').classList.add('fa-spin');
+      await fetchRecords();
+      refreshBtn.querySelector('i').classList.remove('fa-spin');
+      showNotification('🔄 Records refreshed', 'info');
+    });
+
+    // =============================================
+    // INIT
+    // =============================================
+    (async function init() {
+      if (!checkSession()) return;
+      
+      startTimer();
+      
+      showNotification('🔄 Loading records...', 'info', 1500);
+      
+      const success = await fetchRecords();
+      
+      if (!success) {
+        showNotification('⚠️ Could not load records. Please refresh.', 'error', 5000);
+      }
+      
+      setupRealtimeSubscription();
+      
+      setInterval(updateLastUpdated, 5000);
+      
+      ['click', 'keydown', 'scroll', 'mousemove'].forEach(event => {
+        document.addEventListener(event, () => {
+          if (!document.getElementById('sessionExpiredOverlay').classList.contains('active')) {
+            sessionStorage.setItem('adminSessionTime', Date.now().toString());
+            if (timeLeft < 60) {
+              timeLeft = 300;
+              timerDisplay.textContent = '5:00';
+            }
+          }
+        });
+      });
+    })();
+
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted && !checkSession()) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (subscription) {
+        supabase.removeChannel(subscription);
+        subscription = null;
+      }
+    });
+
+    console.log('%c⚠️ SECURITY NOTICE', 'font-size: 20px; font-weight: bold; color: red;');
+    console.log('%cThis is a secure admin panel. Unauthorized access is prohibited.', 'font-size: 14px; color: orange;');
+  </script>
+</body>
+</html>

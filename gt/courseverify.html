@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Verify · Galkot Tech</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  
+  <!-- Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: { primary: { DEFAULT:'#2563EB', 600:'#2563EB',700:'#1d4ed8' }, accent:'#06B6D4', success:'#10B981', danger:'#EF4444', ink:'#0F172A' },
+          fontFamily: { display: ['Manrope','sans-serif'], body: ['Inter','sans-serif'] },
+          animation: { 'float': 'float 6s ease-in-out infinite' },
+          keyframes: { float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-8px)' } } }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- QRCode.js for QR generation -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.0/dist/umd/supabase.min.js"></script>
+
+  <style>
+    body { background: #080D18; color: #E6EAF2; font-family: 'Inter', sans-serif; }
+    html.light body { background: #FAFBFF; color: #0F172A; }
+    .glass{ background:rgba(15,23,42,0.65); backdrop-filter:blur(16px); border:1px solid rgba(148,163,184,0.12); }
+    html.light .glass{ background:rgba(255,255,255,0.7); border:1px solid rgba(15,23,42,0.06); }
+    .card{ background:rgba(255,255,255,0.03); border:1px solid rgba(148,163,184,0.08); }
+    html.light .card{ background:#fff; border:1px solid rgba(15,23,42,0.06); }
+    .grad-text{ background:linear-gradient(90deg,#60A5FA,#06B6D4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .btn-primary{ background:linear-gradient(135deg,#2563EB,#06B6D4); }
+    .btn-primary:hover{ filter:brightness(1.08); }
+    ::-webkit-scrollbar{ width:8px; background:transparent; }
+    ::-webkit-scrollbar-thumb{ background:#1e2b45; border-radius:8px; }
+    html.light ::-webkit-scrollbar-thumb{ background:#dbe3f5; }
+
+    .result-popup { animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    .result-popup.exit { animation: popOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes popOut { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.9) translateY(10px); } }
+
+    .grade-ring { transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .grade-ring.animate { stroke-dashoffset: 0; }
+
+    .shimmer { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .live-indicator { display: inline-block; width: 8px; height: 8px; background: #10B981; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+    .verified-badge { background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 4px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+    .status-chip { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid rgba(16,185,129,0.2); padding: 4px 12px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+    .skill-tag { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.15); color: #b0d4f0; padding: 2px 12px; border-radius: 999px; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.3px; }
+    html.light .skill-tag { color: #0F172A; background: #f0f7ff; border-color: #cbd5e1; }
+
+    /* Student photo */
+    .student-photo-wrapper {
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid rgba(6,182,212,0.3);
+      background: #1e293b;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .student-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .student-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #94a3b8;
+      background: #1e293b;
+      font-family: 'Inter', sans-serif;
+    }
+    html.light .student-photo-wrapper { border-color: #cbd5e1; background: #f1f5f9; }
+    html.light .student-photo-placeholder { background: #f1f5f9; color: #64748b; }
+
+    /* Official Seal */
+    .official-seal {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(6,182,212,0.3);
+    }
+
+    /* Certificate Design */
+    .certificate-border {
+      border: 3px double rgba(6,182,212,0.2);
+      border-radius: 16px;
+      padding: 2px;
+    }
+    .certificate-inner {
+      border: 2px solid rgba(6,182,212,0.1);
+      border-radius: 14px;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.02);
+    }
+    html.light .certificate-inner {
+      background: rgba(255,255,255,0.8);
+    }
+
+    .certificate-title {
+      font-family: 'Manrope', sans-serif;
+      background: linear-gradient(135deg, #2563EB, #06B6D4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .certificate-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #06B6D4, transparent);
+      width: 60%;
+      margin: 0 auto;
+    }
+
+    /* Mode badge */
+    .mode-badge {
+      padding: 2px 12px;
+      border-radius: 999px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .mode-online { background: rgba(16,185,129,0.2); color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+    .mode-offline { background: rgba(59,130,246,0.2); color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
+    .mode-hybrid { background: rgba(139,92,246,0.2); color: #8B5CF6; border: 1px solid rgba(139,92,246,0.3); }
+
+    /* Certificate Table Styles */
+    .cert-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    .cert-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(148,163,184,0.08);
+    }
+    .cert-table .label {
+      color: #94a3b8;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      width: 35%;
+    }
+    .cert-table .value {
+      color: #E6EAF2;
+      font-weight: 500;
+      width: 65%;
+    }
+    html.light .cert-table .value { color: #0F172A; }
+    html.light .cert-table td { border-bottom-color: rgba(15,23,42,0.06); }
+
+    /* A4 Print Styles - Optimized */
+    @media print {
+      .no-print { display: none !important; }
+      .print-visible { display: block !important; }
+      
+      body, html, .dark, .light { 
+        background: white !important; 
+        color: black !important; 
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* A4 Page Setup */
+      @page {
+        size: A4 portrait;
+        margin: 15mm 12mm 15mm 12mm;
+      }
+      
+      /* Force all elements to fit A4 */
+      #resultContainer, .glass, .result-popup, #resultCard {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-radius: 0 !important;
+      }
+      
+      .certificate-border {
+        border: 2px solid #1a1a1a !important;
+        border-radius: 8px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      
+      .certificate-inner {
+        border: 1px solid #ccc !important;
+        border-radius: 6px !important;
+        padding: 1.2rem !important;
+        background: white !important;
+      }
+      
+      .glass, .card, .result-popup { 
+        background: white !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+        backdrop-filter: none !important;
+      }
+      
+      .grad-text { 
+        background: none !important; 
+        color: black !important; 
+        -webkit-background-clip: unset !important; 
+        background-clip: unset !important; 
+      }
+      
+      .btn-primary { background: #333 !important; color: white !important; }
+      .text-slate-400, .text-slate-500, .text-slate-300, .text-slate-200 { color: #333 !important; }
+      .text-white { color: black !important; }
+      .text-accent { color: #1a1a1a !important; }
+      .border-white\/10, .border-white\/5 { border-color: #ccc !important; }
+      
+      #gradeCircle { stroke: #222 !important; }
+      .card { border: 1px solid #ddd !important; background: white !important; }
+      .grade-ring { transition: none !important; }
+      .bg-success\/20 { background: #e6e6e6 !important; color: black !important; }
+      .text-success { color: black !important; }
+      
+      footer { border-top-color: #ccc !important; color: #333 !important; }
+      #resultContainer .glass { padding: 0 !important; border-radius: 0 !important; }
+      
+      * { color: black !important; }
+      .font-mono { color: black !important; }
+      .fa-print, .fa-check-circle { color: black !important; }
+      #gradeDisplay { color: black !important; }
+      
+      .verified-badge { 
+        background: #222 !important; 
+        color: white !important; 
+        box-shadow: none !important;
+        font-size: 0.6rem !important;
+        padding: 2px 10px !important;
+      }
+      .status-chip { 
+        background: #eee !important; 
+        color: black !important; 
+        border-color: #aaa !important; 
+      }
+      .skill-tag { 
+        background: #f5f5f5 !important; 
+        color: black !important; 
+        border-color: #ccc !important; 
+        font-size: 0.5rem !important;
+        padding: 1px 8px !important;
+      }
+      
+      .live-indicator { display: none !important; }
+      #qrCodeContainer canvas { border: 1px solid #ddd; max-width: 48px !important; max-height: 48px !important; }
+      .student-photo-wrapper { 
+        border: 2px solid #333 !important; 
+        width: 60px !important;
+        height: 60px !important;
+      }
+      .student-photo-placeholder { 
+        background: #f5f5f5 !important; 
+        color: #333 !important; 
+        font-size: 1.5rem !important;
+      }
+      .official-seal { 
+        border: 2px solid #333 !important; 
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .certificate-border { border-color: #333 !important; }
+      .certificate-inner { background: white !important; border-color: #ddd !important; }
+      .certificate-title { 
+        -webkit-text-fill-color: #1a1a1a !important; 
+        color: #1a1a1a !important; 
+        font-size: 1.6rem !important;
+      }
+      .certificate-divider { background: #ccc !important; }
+      .mode-online, .mode-offline, .mode-hybrid { 
+        background: #eee !important; 
+        color: #333 !important; 
+        border-color: #ccc !important; 
+        font-size: 0.5rem !important;
+        padding: 1px 8px !important;
+      }
+      
+      /* Certificate Table Print */
+      .cert-table td {
+        padding: 4px 8px !important;
+        border-bottom: 1px solid #ddd !important;
+      }
+      .cert-table .label {
+        color: #555 !important;
+        font-size: 0.55rem !important;
+      }
+      .cert-table .value {
+        color: #000 !important;
+        font-size: 0.65rem !important;
+      }
+      
+      /* Reduce spacing for print */
+      .certificate-inner .text-center.mb-4 { margin-bottom: 0.5rem !important; }
+      .certificate-inner .my-4 { margin-top: 0.4rem !important; margin-bottom: 0.4rem !important; }
+      .certificate-inner .my-3 { margin-top: 0.3rem !important; margin-bottom: 0.3rem !important; }
+      .certificate-inner .py-2 { padding-top: 0.3rem !important; padding-bottom: 0.3rem !important; }
+      .certificate-inner .mt-3 { margin-top: 0.4rem !important; }
+      .certificate-inner .pt-2 { padding-top: 0.3rem !important; }
+      .certificate-inner .pt-3 { padding-top: 0.4rem !important; }
+      .certificate-inner .gap-2 { gap: 0.3rem !important; }
+      .certificate-inner .gap-3 { gap: 0.4rem !important; }
+      
+      /* Student name size */
+      #studentName { font-size: 2rem !important; }
+      
+      /* Ensure table fits */
+      .grid { display: block !important; }
+      .grid-cols-2, .grid-cols-3, .grid-cols-4 { 
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+      }
+      .grid-cols-2 > *, .grid-cols-3 > *, .grid-cols-4 > * {
+        flex: 1 1 45% !important;
+        min-width: 100px !important;
+      }
+      
+      /* QR and signatures row */
+      .grid-cols-1.sm\:grid-cols-3 {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+      }
+      .grid-cols-1.sm\:grid-cols-3 > * {
+        flex: 1 1 auto !important;
+      }
+      
+      /* Hide verification status bar in print */
+      .bg-white\/5.rounded-xl.p-3.no-print {
+        display: none !important;
+      }
+      
+      /* Ensure the print button is hidden */
+      .no-print { display: none !important; }
+      
+      /* Make sure content stays on one page */
+      #resultCard {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      
+      /* Certificate ID at bottom */
+      .text-\[7px\] { font-size: 6px !important; }
+      .text-\[8px\] { font-size: 7px !important; }
+      .text-\[9px\] { font-size: 7px !important; }
+      .text-\[10px\] { font-size: 8px !important; }
+      .text-\[11px\] { font-size: 9px !important; }
+      
+      /* Fix seal image */
+      .official-seal { 
+        width: 40px !important; 
+        height: 40px !important; 
+      }
+      
+      /* QR Code size */
+      #qrCodeContainer .w-14 { width: 40px !important; height: 40px !important; }
+      #qrCodeCanvas { width: 36px !important; height: 36px !important; }
+      #qrCodeCanvas canvas { width: 36px !important; height: 36px !important; }
+      
+      /* Student photo */
+      .student-photo-wrapper {
+        width: 60px !important;
+        height: 60px !important;
+      }
+      
+      /* Remove background from cards */
+      .card {
+        background: white !important;
+        border: 1px solid #ddd !important;
+      }
+      
+      /* Mode badge print */
+      .mode-badge {
+        font-size: 0.5rem !important;
+        padding: 1px 6px !important;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 inset-x-0 z-50 no-print">
+    <div class="glass mx-auto mt-3 max-w-4xl rounded-2xl px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-2 font-display font-extrabold text-lg">
+          <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-sm">GT</span>
+          <span>Galkot <span class="grad-text">Tech</span></span>
+        </a>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-slate-400 flex items-center gap-2">
+            <span class="live-indicator"></span>
+            <span id="liveStatus">Live</span>
+          </span>
+          <button id="themeToggle" class="w-9 h-9 rounded-lg border border-white/10 hover:border-white/25 flex items-center justify-center transition">
+            <i class="fas fa-moon" id="themeIcon"></i>
+          </button>
+          <a href="index.html" class="text-sm text-slate-400 hover:text-white transition"><i class="fas fa-arrow-left mr-2"></i>Back</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-4xl mx-auto px-4 pt-28 pb-20">
+    <div class="text-center mb-10 no-print">
+      <h1 class="font-display font-extrabold text-4xl sm:text-5xl text-white">
+        <i class="fas fa-id-card text-accent mr-3"></i>Verify Course
+      </h1>
+      <p class="text-slate-400 mt-3">Enter Student ID & Certificate ID · Instant verification</p>
+    </div>
+
+    <!-- Search box -->
+    <div class="glass rounded-2xl p-6 mb-8 no-print">
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="relative flex-1 w-full">
+            <i class="fas fa-id-badge absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+            <input type="text" id="studentIdInput" placeholder="Student ID (e.g. GT-2025-001)" 
+                   class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 font-mono">
+          </div>
+          <div class="relative flex-1 w-full">
+            <i class="fas fa-certificate absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+            <input type="text" id="certIdInput" placeholder="Certificate ID (e.g. CERT-2025-001)" 
+                   class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 font-mono">
+          </div>
+          <button id="verifyBtn" class="btn-primary text-white px-8 py-3.5 rounded-xl text-sm font-semibold whitespace-nowrap w-full sm:w-auto">
+            <i class="fas fa-search mr-2"></i>Verify
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="resultContainer" class="hidden">
+      <div class="glass rounded-3xl p-6 sm:p-8 result-popup relative" id="resultCard">
+        <!-- Print & Download PDF Buttons -->
+        <div class="no-print absolute top-4 right-4 flex gap-2">
+          <button id="downloadPdfBtn" class="text-slate-400 hover:text-white transition text-sm bg-white/5 px-3 py-1.5 rounded-lg">
+            <i class="fas fa-file-pdf mr-1"></i>PDF
+          </button>
+          <button id="printBtn" class="text-slate-400 hover:text-white transition text-sm bg-white/5 px-3 py-1.5 rounded-lg">
+            <i class="fas fa-print mr-1"></i>Print
+          </button>
+        </div>
+
+        <!-- CERTIFICATE OF COMPLETION - Beautiful Design -->
+        <div class="certificate-border mb-6">
+          <div class="certificate-inner">
+            <!-- Certificate Header -->
+            <div class="text-center mb-4">
+              <div class="flex items-center justify-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-sm font-bold no-print">GT</span>
+                <span class="font-display font-extrabold text-xl text-white no-print">Galkot Tech</span>
+                <!-- Print version of logo -->
+                <span class="hidden print-visible font-display font-extrabold text-xl">Galkot Tech</span>
+              </div>
+              <div class="certificate-divider"></div>
+              <h1 class="certificate-title text-3xl sm:text-4xl mt-3 tracking-wider">
+                <i class="fas fa-award text-accent mr-2" style="-webkit-text-fill-color: initial; color: #06B6D4;"></i>
+                CERTIFICATE OF COMPLETION
+              </h1>
+              <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">This certificate is proudly presented to</p>
+            </div>
+
+            <!-- Student Name - Large & Prominent -->
+            <div class="text-center py-2">
+              <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white" id="studentName">—</h2>
+              <p class="text-sm text-slate-400 font-mono mt-1" id="studentIdDisplay">—</p>
+            </div>
+
+            <!-- Certificate Details Table - Attractive Design -->
+            <div class="my-4">
+              <table class="cert-table">
+                <tbody>
+                  <tr>
+                    <td class="label"><i class="fas fa-graduation-cap mr-2 text-accent"></i>Course</td>
+                    <td class="value" id="courseDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-star mr-2 text-yellow-500"></i>Grade</td>
+                    <td class="value" id="gradeDisplay">0%</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-check-circle mr-2 text-success"></i>Status</td>
+                    <td class="value" id="statusText">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-user mr-2 text-accent"></i>Father</td>
+                    <td class="value" id="fatherName">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-user mr-2 text-pink-500"></i>Mother</td>
+                    <td class="value" id="motherName">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-calendar mr-2 text-blue-500"></i>Date of Birth</td>
+                    <td class="value" id="dobDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-venus-mars mr-2 text-purple-500"></i>Gender</td>
+                    <td class="value" id="genderDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>Address</td>
+                    <td class="value" id="addressDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-wifi mr-2 text-green-500"></i>Mode</td>
+                    <td class="value" id="modeDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-calendar-plus mr-2 text-indigo-500"></i>Enrollment Date</td>
+                    <td class="value" id="enrollmentDate">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-calendar-check mr-2 text-emerald-500"></i>Completion Date</td>
+                    <td class="value" id="completionDate">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-id-card mr-2 text-orange-500"></i>Certificate ID</td>
+                    <td class="value font-mono" id="certDisplay">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-calendar mr-2 text-teal-500"></i>Issue Date</td>
+                    <td class="value" id="issueDate">—</td>
+                  </tr>
+                  <tr>
+                    <td class="label"><i class="fas fa-check-double mr-2 text-success"></i>Last Verified</td>
+                    <td class="value" id="lastVerifiedDisplay">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Skills -->
+            <div class="my-3 pt-2 border-t border-white/5">
+              <p class="text-[9px] text-slate-400 uppercase tracking-wider text-center mb-2">
+                <i class="fas fa-tools mr-1"></i>Skills Acquired
+              </p>
+              <div class="flex flex-wrap justify-center gap-1.5" id="skillsContainer">
+                <!-- Skills will be dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Footer: QR + Signatures -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center mt-3 pt-3 border-t border-white/5">
+              <!-- QR Code -->
+              <div class="flex items-center gap-3 justify-center sm:justify-start">
+                <div id="qrCodeContainer" class="w-14 h-14 bg-white/5 rounded-lg flex items-center justify-center p-1">
+                  <div id="qrCodeCanvas" style="width:48px;height:48px;"></div>
+                </div>
+                <div>
+                  <p class="text-[8px] text-slate-400 uppercase tracking-wider">Verify Online</p>
+                  <p class="text-[8px] font-mono text-slate-500 break-all" id="qrUrlDisplay">galkottech.com/verify</p>
+                </div>
+              </div>
+
+              <!-- Signatures -->
+              <div class="flex justify-center gap-6">
+                <div class="text-center">
+                  <p class="text-[9px] text-slate-400 uppercase tracking-wider">Managing Director</p>
+                  <p class="text-accent text-xs font-medium">Sanju Neupane</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-[9px] text-slate-400 uppercase tracking-wider">Instructor</p>
+                  <a href="https://nabinchalise.com.np/" target="_blank" class="text-accent text-xs font-medium hover:underline no-print">
+                    Nabin Chalise <i class="fas fa-external-link-alt text-[8px]"></i>
+                  </a>
+                  <span class="hidden print-visible text-accent text-xs font-medium">Nabin Chalise</span>
+                </div>
+              </div>
+
+              <!-- Official Seal -->
+              <div class="flex justify-center sm:justify-end">
+                <img src="gt.png" alt="Official Seal" class="official-seal" style="width:50px;height:50px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div style="display:none;" class="flex items-center gap-2">
+                  <i class="fas fa-stamp text-2xl text-accent/60"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Text -->
+            <div class="mt-3 pt-2 border-t border-white/5 text-center">
+              <p class="text-[8px] text-slate-500">
+                <i class="fas fa-check-circle text-success mr-1"></i> 
+                This certificate is digitally verifiable. Scan the QR code to verify authenticity.
+                <span class="no-print"> · <span id="verifyCountDisplay">0</span> verifications</span>
+              </p>
+              <p class="text-[7px] text-slate-500 mt-1">© Galkot Tech · Institute of Technology · Nepal</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Status Bar - Only visible on screen -->
+        <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] bg-white/5 rounded-xl p-3 no-print">
+          <div><span class="text-slate-400">Status:</span> <span class="text-success font-semibold">Active Graduate</span></div>
+          <div><span class="text-slate-400">Institute:</span> <span class="text-white font-medium">Galkot Tech</span></div>
+          <div><span class="text-slate-400">Verified:</span> <span class="text-white" id="verificationTime">—</span></div>
+          <div><span class="text-slate-400">Location:</span> <span class="text-white">Nepal</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading / Error -->
+    <div id="loadingState" class="hidden text-center py-12 no-print"><div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent"></div><p class="text-slate-400 mt-3">Verifying...</p></div>
+    <div id="errorState" class="hidden glass rounded-2xl p-6 text-center border border-danger/30 no-print"><i class="fas fa-exclamation-circle text-3xl text-danger mb-3"></i><p class="text-white font-semibold" id="errorMessage">Verification failed</p><p class="text-slate-400 text-sm mt-1">Check Student ID & Certificate ID</p></div>
+  </main>
+
+  <footer class="border-t border-white/5 py-6 text-center text-xs text-slate-500 no-print">© 2026 Galkot Tech · Course Verification · Realtime Data</footer>
+
+  <script>
+    // ===== SUPABASE =====
+    const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const STORAGE_BUCKET = 'student-photos';
+
+    // DOM elements
+    const studentIdInput = document.getElementById('studentIdInput');
+    const certIdInput = document.getElementById('certIdInput');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const resultCard = document.getElementById('resultCard');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // All display elements
+    const studentName = document.getElementById('studentName');
+    const studentIdDisplay = document.getElementById('studentIdDisplay');
+    const gradeDisplay = document.getElementById('gradeDisplay');
+    const courseDisplay = document.getElementById('courseDisplay');
+    const certDisplay = document.getElementById('certDisplay');
+    const statusText = document.getElementById('statusText');
+    const gradeCircle = document.getElementById('gradeCircle');
+    const liveStatus = document.getElementById('liveStatus');
+    const fatherName = document.getElementById('fatherName');
+    const motherName = document.getElementById('motherName');
+    const issueDate = document.getElementById('issueDate');
+    const verificationTime = document.getElementById('verificationTime');
+    const verifyCountDisplay = document.getElementById('verifyCountDisplay');
+    const studentPhoto = document.getElementById('studentPhoto');
+    const studentPhotoPlaceholder = document.getElementById('studentPhotoPlaceholder');
+    const skillsContainer = document.getElementById('skillsContainer');
+    
+    // New fields
+    const dobDisplay = document.getElementById('dobDisplay');
+    const genderDisplay = document.getElementById('genderDisplay');
+    const addressDisplay = document.getElementById('addressDisplay');
+    const modeDisplay = document.getElementById('modeDisplay');
+    const enrollmentDate = document.getElementById('enrollmentDate');
+    const completionDate = document.getElementById('completionDate');
+    const lastVerifiedDisplay = document.getElementById('lastVerifiedDisplay');
+
+    let currentSubscription = null;
+    let currentData = null;
+    let qrCodeInstance = null;
+    let verifyCount = 0;
+    let autoVerified = false;
+
+    // ===== Default skills =====
+    const defaultSkills = ['MS Word', 'Excel', 'PowerPoint', 'Internet', 'Email', 'Typing', 'AI Tools', 'Photoshop'];
+
+    // ===== Helper functions =====
+    function safeSetText(element, value) {
+      if (element) {
+        element.textContent = value || '—';
+      }
+    }
+
+    function safeSetHTML(element, value) {
+      if (element) {
+        element.innerHTML = value || '—';
+      }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      } catch {
+        return dateStr;
+      }
+    }
+
+    function getModeBadge(mode) {
+      if (!mode) return '<span class="text-white text-sm">—</span>';
+      const modeLower = mode.toLowerCase();
+      let cls = 'mode-online';
+      if (modeLower === 'offline') cls = 'mode-offline';
+      else if (modeLower === 'hybrid') cls = 'mode-hybrid';
+      return `<span class="mode-badge ${cls}">${mode}</span>`;
+    }
+
+    // ===== QR generation =====
+    function generateQR(studentId, certId) {
+      const qrContainer = document.getElementById('qrCodeCanvas');
+      if (!qrContainer) return;
+      
+      qrContainer.innerHTML = '';
+      const url = `https://galkottech.com/verify?studentID=${encodeURIComponent(studentId)}&CertificateID=${encodeURIComponent(certId)}`;
+      const qrUrlDisplay = document.getElementById('qrUrlDisplay');
+      if (qrUrlDisplay) {
+        qrUrlDisplay.textContent = 'galkottech.com/verify';
+      }
+      try {
+        qrCodeInstance = new QRCode(qrContainer, { text: url, width: 48, height: 48, colorDark: '#0F172A', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+      } catch(e) { 
+        qrContainer.innerHTML = '<span class="text-[8px] text-slate-400">QR</span>'; 
+      }
+    }
+
+    // ===== Real-time =====
+    function setupRealtimeSubscription() {
+      if (currentSubscription) { supabase.removeChannel(currentSubscription); currentSubscription = null; }
+      currentSubscription = supabase
+        .channel('course_records_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'course_records' }, (payload) => {
+          if (currentData) {
+            if (payload.new && payload.new.student_id === currentData.student_id) { verifyStudent(currentData.student_id, currentData.certificate); }
+            if (payload.eventType === 'DELETE' && payload.old && payload.old.student_id === currentData.student_id) {
+              if (resultContainer) resultContainer.classList.add('hidden'); 
+              currentData = null; 
+              showError('This record has been removed from the system.');
+            }
+          }
+          if (liveStatus) {
+            liveStatus.textContent = 'Live'; 
+            liveStatus.style.color = '#10B981';
+          }
+        })
+        .subscribe((status) => { 
+          if (status === 'CHANNEL_ERROR' && liveStatus) { 
+            liveStatus.textContent = 'Reconnecting...'; 
+            liveStatus.style.color = '#F59E0B'; 
+          } 
+        });
+    }
+
+    // ===== Get student photo =====
+    function loadStudentPhoto(studentId, studentNameText) {
+      if (!studentPhoto || !studentPhotoPlaceholder) return;
+      
+      studentPhoto.style.display = 'none';
+      studentPhotoPlaceholder.style.display = 'flex';
+      
+      let initials = '👤';
+      if (studentNameText && studentNameText !== '—' && studentNameText !== 'Student') {
+        const nameParts = studentNameText.trim().split(' ');
+        if (nameParts.length > 0) {
+          initials = nameParts.map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        }
+      }
+      studentPhotoPlaceholder.textContent = initials;
+
+      const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+      let loaded = false;
+
+      for (const ext of extensions) {
+        const filePath = `${studentId}.${ext}`;
+        const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+        
+        if (data && data.publicUrl) {
+          const img = new Image();
+          img.onload = () => {
+            studentPhoto.src = data.publicUrl;
+            studentPhoto.style.display = 'block';
+            studentPhotoPlaceholder.style.display = 'none';
+            loaded = true;
+          };
+          img.onerror = () => {};
+          img.src = data.publicUrl;
+        }
+      }
+    }
+
+    // ===== Render skills =====
+    function renderSkills(skillsString) {
+      if (!skillsContainer) return;
+      
+      skillsContainer.innerHTML = '';
+      let skills = defaultSkills;
+      
+      if (skillsString && skillsString.trim() !== '') {
+        skills = skillsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      }
+      
+      if (skills.length === 0) {
+        skills = defaultSkills;
+      }
+      
+      skills.forEach(skill => {
+        const tag = document.createElement('span');
+        tag.className = 'skill-tag';
+        tag.textContent = skill;
+        skillsContainer.appendChild(tag);
+      });
+    }
+
+    // ===== Show result =====
+    function showResult(data) {
+      currentData = data;
+      verifyCount++;
+      
+      safeSetText(verifyCountDisplay, verifyCount);
+      
+      const grade = Number(data.grade);
+      const isPass = grade >= 40;
+      const status = isPass ? '✅ Pass' : '❌ Fail';
+      const cert = data.certificate || `CERT-${String(data.id).padStart(3,'0')}`;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12: true });
+
+      // Basic info
+      safeSetText(studentName, data.student_name || 'Student');
+      safeSetText(studentIdDisplay, data.student_id || `GT-${String(data.id).padStart(3,'0')}`);
+      safeSetText(gradeDisplay, grade + '%');
+      safeSetText(courseDisplay, data.course || 'Course');
+      safeSetText(certDisplay, cert);
+      safeSetText(statusText, status);
+      
+      // Father/Mother
+      safeSetText(fatherName, data.father_name);
+      safeSetText(motherName, data.mother_name);
+      
+      // New fields
+      safeSetText(dobDisplay, formatDate(data.dob));
+      safeSetText(genderDisplay, data.gender);
+      safeSetText(addressDisplay, data.address);
+      safeSetHTML(modeDisplay, getModeBadge(data.mode));
+      safeSetText(enrollmentDate, formatDate(data.enrollment_date));
+      safeSetText(completionDate, formatDate(data.completion_date));
+      safeSetText(lastVerifiedDisplay, formatDate(data.last_verified_at) || dateStr);
+      
+      // Issue date
+      if (data.issue_date) {
+        const issueDateObj = new Date(data.issue_date);
+        safeSetText(issueDate, issueDateObj.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }));
+      } else {
+        safeSetText(issueDate, dateStr);
+      }
+      
+      safeSetText(verificationTime, `${dateStr} ${timeStr}`);
+
+      // Render skills
+      renderSkills(data.skills);
+
+      // Grade circle
+      if (gradeCircle) {
+        const circumference = 314.159;
+        const offset = circumference - (grade / 100) * circumference;
+        gradeCircle.style.strokeDashoffset = circumference;
+        void gradeCircle.offsetHeight;
+        gradeCircle.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+        gradeCircle.style.strokeDashoffset = offset;
+        gradeCircle.setAttribute('data-offset', offset);
+      }
+
+      // QR
+      const studentId = data.student_id || `GT-${String(data.id).padStart(3,'0')}`;
+      generateQR(studentId, cert);
+
+      // Load student photo
+      loadStudentPhoto(studentId, data.student_name);
+
+      if (resultContainer) resultContainer.classList.remove('hidden');
+      if (resultCard) {
+        resultCard.classList.remove('exit');
+        resultCard.classList.add('result-popup');
+      }
+      if (errorState) errorState.classList.add('hidden');
+      if (loadingState) loadingState.classList.add('hidden');
+      
+      if (window.innerWidth < 768 && resultContainer) {
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function showError(msg) { 
+      if (loadingState) loadingState.classList.add('hidden'); 
+      if (resultContainer) resultContainer.classList.add('hidden'); 
+      if (errorState) errorState.classList.remove('hidden'); 
+      if (errorMessage) errorMessage.textContent = msg || 'Verification failed.'; 
+      if (window.innerWidth < 768 && errorState) {
+        errorState.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // ===== Verify =====
+    async function verifyStudent(studentId, certId) {
+      if (resultContainer) resultContainer.classList.add('hidden'); 
+      if (errorState) errorState.classList.add('hidden'); 
+      if (loadingState) loadingState.classList.remove('hidden');
+      
+      const sId = studentId.trim().toUpperCase();
+      const cId = certId.trim().toUpperCase();
+      
+      if (!sId || !cId) { 
+        if (loadingState) loadingState.classList.add('hidden'); 
+        showError('Please enter both Student ID and Certificate ID.'); 
+        return; 
+      }
+      
+      try {
+        console.log('🔍 Searching for:', sId, cId);
+        
+        // Check table access
+        const { data: testData, error: testError } = await supabase
+          .from('course_records')
+          .select('id')
+          .limit(1);
+        
+        if (testError) {
+          console.error('❌ Table access error:', testError);
+          showError('Database connection error. Please check if table exists.');
+          return;
+        }
+        
+        console.log('✅ Table accessible');
+        
+        // Find student
+        let { data, error } = await supabase
+          .from('course_records')
+          .select('*')
+          .eq('student_id', sId)
+          .eq('certificate', cId)
+          .maybeSingle();
+        
+        if (!data && !error) {
+          const { data: ilikeData, error: ilikeError } = await supabase
+            .from('course_records')
+            .select('*')
+            .ilike('student_id', sId)
+            .ilike('certificate', cId)
+            .maybeSingle();
+          data = ilikeData;
+          error = ilikeError;
+        }
+        
+        if (error) {
+          console.error('❌ Supabase error:', error);
+          showError('Database error: ' + error.message);
+          return;
+        }
+        
+        if (data) { 
+          console.log('✅ Student found:', data.student_name);
+          showResult(data); 
+        } else {
+          const { data: sData } = await supabase
+            .from('course_records')
+            .select('*')
+            .ilike('student_id', sId)
+            .maybeSingle();
+            
+          if (sData) {
+            showError('Certificate ID does not match this student. Please check your Certificate ID.');
+          } else {
+            showError('No student found with the provided Student ID and Certificate ID combination.');
+          }
+        }
+      } catch (err) { 
+        console.error('❌ Verification error:', err); 
+        showError('Unable to verify at this time. Please try again later. Error: ' + err.message); 
+      }
+    }
+
+    // ===== Auto-complete =====
+    if (studentIdInput) {
+      studentIdInput.addEventListener('blur', async () => {
+        const sId = studentIdInput.value.trim().toUpperCase();
+        if (sId.length < 3) return;
+        try {
+          const { data } = await supabase
+            .from('course_records')
+            .select('certificate')
+            .ilike('student_id', sId)
+            .maybeSingle();
+          if (data && data.certificate && certIdInput) {
+            certIdInput.value = data.certificate;
+          }
+        } catch(e) {}
+      });
+    }
+
+    // ===== Events =====
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', () => { 
+        if (studentIdInput && certIdInput) {
+          verifyStudent(studentIdInput.value, certIdInput.value); 
+        }
+      });
+    }
+    
+    if (studentIdInput) {
+      studentIdInput.addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter') { 
+          e.preventDefault(); 
+          if (!certIdInput?.value.trim()) {
+            certIdInput?.focus(); 
+          } else {
+            verifyBtn?.click(); 
+          }
+        } 
+      });
+    }
+    
+    if (certIdInput) {
+      certIdInput.addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter') { 
+          e.preventDefault(); 
+          verifyBtn?.click(); 
+        } 
+      });
+    }
+    
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => window.print());
+    }
+    
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    if (downloadPdfBtn) {
+      downloadPdfBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
+    // ===== Theme =====
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const root = document.documentElement;
+    
+    function setTheme(mode) { 
+      root.classList.toggle('light', mode === 'light'); 
+      root.classList.toggle('dark', mode !== 'light'); 
+      if (themeIcon) {
+        themeIcon.className = mode === 'light' ? 'fas fa-sun' : 'fas fa-moon'; 
+      }
+      localStorage.setItem('galkot-theme', mode); 
+    }
+    
+    setTheme(localStorage.getItem('galkot-theme') || 'dark');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => { 
+        setTheme(root.classList.contains('light') ? 'dark' : 'light'); 
+      });
+    }
+
+    // ===== Auto-verify =====
+    function checkUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get('studentID');
+      const certId = urlParams.get('CertificateID');
+      
+      if (studentId && certId && !autoVerified) {
+        autoVerified = true;
+        if (studentIdInput) studentIdInput.value = studentId;
+        if (certIdInput) certIdInput.value = certId;
+        setTimeout(() => {
+          verifyStudent(studentId, certId);
+        }, 500);
+        return true;
+      }
+      return false;
+    }
+
+    // ===== Initialize =====
+    window.addEventListener('load', () => { 
+      setupRealtimeSubscription(); 
+      const hasParams = checkUrlParams();
+      if (!hasParams && studentIdInput) {
+        setTimeout(() => {
+          studentIdInput.focus();
+        }, 300);
+      }
+    });
+    
+    window.addEventListener('beforeunload', () => { 
+      if (currentSubscription) {
+        supabase.removeChannel(currentSubscription);
+        currentSubscription = null;
+      }
+    });
+    
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('studentID');
+        const certId = urlParams.get('CertificateID');
+        if (studentId && certId && !autoVerified) {
+          autoVerified = true;
+          if (studentIdInput) studentIdInput.value = studentId;
+          if (certIdInput) certIdInput.value = certId;
+          setTimeout(() => {
+            verifyStudent(studentId, certId);
+          }, 300);
+        }
+      }
+    });
+
+    console.log('%c✅ Galkot Tech Course Verification', 'font-size: 16px; font-weight: bold; color: #06B6D4;');
+    console.log('%c📄 Final Certificate ready for A4 printing', 'font-size: 12px; color: #94a3b8;');
+  </script>
+</body>
+</html>
