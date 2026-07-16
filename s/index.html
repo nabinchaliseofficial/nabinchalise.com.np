@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>Nexus · Login</title>
+  <title>Nepal Share Portal · Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
@@ -18,19 +18,19 @@
     }
 
     :root {
-      --bg-primary: #030712;
-      --bg-secondary: #111827;
-      --bg-card: rgba(17, 24, 39, 0.55);
+      --bg-primary: #050816;
+      --bg-secondary: #0F172A;
+      --bg-card: rgba(15, 23, 42, 0.55);
       --border-glass: rgba(255, 255, 255, 0.06);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --text-muted: #64748b;
-      --primary: #3B82F6;
-      --primary-glow: rgba(59, 130, 246, 0.25);
-      --secondary: #8B5CF6;
-      --accent: #06B6D4;
+      --primary: #00E676;
+      --primary-glow: rgba(0, 230, 118, 0.25);
+      --secondary: #2979FF;
+      --accent: #FFD54F;
       --success: #22C55E;
-      --error: #EF4444;
+      --error: #FF5252;
       --shadow-soft: 0 20px 60px -15px rgba(0, 0, 0, 0.7);
       --radius-card: 28px;
       --radius-input: 16px;
@@ -70,9 +70,9 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-      background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
-                  radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+      background: radial-gradient(circle at 20% 30%, rgba(0, 230, 118, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(41, 121, 255, 0.10) 0%, transparent 45%),
+                  radial-gradient(circle at 40% 80%, rgba(255, 213, 79, 0.06) 0%, transparent 40%),
                   var(--bg-primary);
       background-blend-mode: overlay;
     }
@@ -83,18 +83,18 @@
       filter: blur(100px);
       pointer-events: none;
       z-index: 1;
-      opacity: 0.5;
+      opacity: 0.4;
       transition: transform 0.2s ease-out;
     }
-    .blur-1 { width: 500px; height: 500px; background: #3B82F6; top: -12%; left: -8%; }
-    .blur-2 { width: 450px; height: 450px; background: #8B5CF6; bottom: -10%; right: -5%; }
-    .blur-3 { width: 300px; height: 300px; background: #06B6D4; top: 40%; left: 60%; opacity: 0.3; }
+    .blur-1 { width: 500px; height: 500px; background: #00E676; top: -12%; left: -8%; opacity: 0.15; }
+    .blur-2 { width: 450px; height: 450px; background: #2979FF; bottom: -10%; right: -5%; opacity: 0.12; }
+    .blur-3 { width: 300px; height: 300px; background: #FFD54F; top: 40%; left: 60%; opacity: 0.08; }
 
     /* ---- particles (floating) ---- */
     .particle {
       position: fixed;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(0, 230, 118, 0.05);
       pointer-events: none;
       z-index: 1;
       animation: floatParticle 18s infinite alternate ease-in-out;
@@ -105,8 +105,8 @@
     .p4 { width: 16px; height: 16px; top: 30%; right: 5%; animation-duration: 24s; }
 
     @keyframes floatParticle {
-      0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-      100% { transform: translate(40px, -60px) scale(1.8); opacity: 0.6; }
+      0% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+      100% { transform: translate(40px, -60px) scale(1.8); opacity: 0.5; }
     }
 
     /* ---- main wrapper ---- */
@@ -151,19 +151,19 @@
     .brand-badge .logo-icon {
       font-size: 2.2rem;
       color: var(--primary);
-      background: rgba(59, 130, 246, 0.12);
+      background: rgba(0, 230, 118, 0.12);
       padding: 10px;
       border-radius: 18px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(0, 230, 118, 0.15);
     }
     .brand-badge span {
       font-weight: 700;
       font-size: 1.6rem;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #f8fafc 40%, #94a3b8);
+      background: linear-gradient(135deg, #00E676, #2979FF);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -297,7 +297,7 @@
     }
     .lang-selector button.active {
       background: var(--primary);
-      color: #fff;
+      color: #050816;
       box-shadow: 0 4px 12px var(--primary-glow);
     }
 
@@ -389,7 +389,7 @@
       border-radius: var(--radius-btn);
       font-size: 1rem;
       font-weight: 600;
-      color: white;
+      color: #050816;
       cursor: pointer;
       box-shadow: 0 8px 28px var(--primary-glow);
       transition: var(--transition-smooth);
@@ -406,8 +406,8 @@
     .btn-login:disabled { opacity: 0.6; pointer-events: none; }
     .btn-login .spinner {
       width: 20px; height: 20px;
-      border: 2px solid rgba(255,255,255,0.2);
-      border-top-color: white;
+      border: 2px solid rgba(0,0,0,0.15);
+      border-top-color: #050816;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       display: none;
@@ -548,7 +548,7 @@
   <div class="particle p4"></div>
 
   <!-- toast -->
-  <div id="toast" class="toast"><i class="fas fa-check-circle" style="color:#22C55E;"></i> <span id="toastMsg">Login successful</span></div>
+  <div id="toast" class="toast"><i class="fas fa-check-circle" style="color:#00E676;"></i> <span id="toastMsg">Login successful</span></div>
 
   <!-- main -->
   <div class="login-wrapper">
@@ -557,21 +557,21 @@
     <div class="hero-side">
       <div class="hero-content">
         <div class="brand-badge">
-          <span class="logo-icon"><i class="fas fa-cube"></i></span>
-          <span>Nexus</span>
+          <span class="logo-icon"><i class="fas fa-chart-line"></i></span>
+          <span>Nepal Share Portal</span>
         </div>
         <h1 class="hero-title">
-          Build the <br /><span class="highlight">future</span> of your<br /> organization.
+          Your Gateway to <br /><span class="highlight">NEPSE</span> &amp; <br />Smart Investing
         </h1>
-        <p class="hero-sub">Secure, intelligent, and beautifully crafted. Sign in to access your dashboard.</p>
+        <p class="hero-sub">Access real-time market data, IPO alerts, portfolio tools, and AI insights — all in one premium dashboard.</p>
         <div class="trust-row">
-          <span class="trust-item"><i class="fas fa-shield-alt"></i> SOC2 compliant</span>
-          <span class="trust-item"><i class="fas fa-lock"></i> 256-bit SSL</span>
+          <span class="trust-item"><i class="fas fa-shield-alt"></i> Secure &amp; Trusted</span>
+          <span class="trust-item"><i class="fas fa-chart-bar"></i> Live NEPSE</span>
           <span class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</span>
         </div>
       </div>
       <div class="hero-footer">
-        <span>© 2025 Nexus · All rights reserved</span>
+        <span>© 2026 Nepal Share Portal · All rights reserved</span>
         <div style="display:flex; gap:16px;">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>
@@ -585,7 +585,7 @@
       <div class="card-header">
         <div class="welcome">
           <h2>Welcome back</h2>
-          <p>Sign in to your account</p>
+          <p>Sign in to your portfolio</p>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <div class="lang-selector">
@@ -620,9 +620,9 @@
       </form>
 
       <!-- Demo credentials quick fill -->
-      <div style="margin-top: 14px; background: rgba(59,130,246,0.06); border-radius: 12px; padding: 10px 14px; border: 1px dashed rgba(59,130,246,0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <span style="font-size: 0.65rem; color: var(--text-muted);">Demo: <code style="color:var(--primary);">demo@galkotmun.gov.np</code> / <code style="color:var(--primary);">Demo@123</code></span>
-        <button type="button" id="autoFillBtn" style="background: var(--primary); border: none; color: white; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s;">Auto Fill</button>
+      <div style="margin-top: 14px; background: rgba(0,230,118,0.06); border-radius: 12px; padding: 10px 14px; border: 1px dashed rgba(0,230,118,0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 0.65rem; color: var(--text-muted);">Demo: <code style="color:var(--primary);">demo@nepalshare.com</code> / <code style="color:var(--primary);">Demo@123</code></span>
+        <button type="button" id="autoFillBtn" style="background: var(--primary); border: none; color: #050816; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s;">Auto Fill</button>
       </div>
 
       <div class="divider"><hr /><span>OR</span><hr /></div>
@@ -634,7 +634,7 @@
       </div>
 
       <div class="signup-link">
-        Don’t have an account? <a href="#">Create one</a>
+        Don't have an account? <a href="#">Create one</a>
       </div>
 
       <div class="ssl-badge">
@@ -648,7 +648,7 @@
       'use strict';
 
       // ============================================================
-      // SUPABASE CONFIG (for real auth — redirect to planningindex.html)
+      // SUPABASE CONFIG
       // ============================================================
       const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
       const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
@@ -670,7 +670,7 @@
       const autoFillBtn = document.getElementById('autoFillBtn');
 
       // Demo credentials
-      const DEMO_EMAIL = 'demo@galkotmun.gov.np';
+      const DEMO_EMAIL = 'demo@nepalshare.com';
       const DEMO_PASSWORD = 'Demo@123';
 
       // ---- auto fill demo ----
@@ -717,13 +717,13 @@
           this.classList.add('active');
           const isNe = this.dataset.lang === 'ne';
           document.querySelector('.welcome h2').textContent = isNe ? 'फेरि स्वागत छ' : 'Welcome back';
-          document.querySelector('.welcome p').textContent = isNe ? 'आफ्नो खातामा प्रवेश गर्नुहोस्' : 'Sign in to your account';
+          document.querySelector('.welcome p').textContent = isNe ? 'आफ्नो खातामा प्रवेश गर्नुहोस्' : 'Sign in to your portfolio';
           document.querySelector('.form-group input[type="email"]').placeholder = isNe ? 'इमेल ठेगाना' : 'Email address';
           document.querySelector('.form-group input[type="password"]').placeholder = isNe ? 'पासवर्ड' : 'Password';
           document.querySelector('.remember-me').innerHTML = `<input type="checkbox" checked /> ${isNe ? 'मलाई सम्झनुहोस्' : 'Remember me'}`;
           document.querySelector('.forgot-link').textContent = isNe ? 'पासवर्ड बिर्सनुभयो?' : 'Forgot password?';
           document.getElementById('btnText').textContent = isNe ? 'लगइन गर्नुहोस्' : 'Sign In';
-          document.querySelector('.signup-link').innerHTML = isNe ? 'खाता छैन? <a href="#">एउटा बनाउनुहोस्</a>' : 'Don’t have an account? <a href="#">Create one</a>';
+          document.querySelector('.signup-link').innerHTML = isNe ? 'खाता छैन? <a href="#">एउटा बनाउनुहोस्</a>' : 'Don\'t have an account? <a href="#">Create one</a>';
           document.querySelector('.ssl-badge').innerHTML = `<i class="fas fa-lock"></i> ${isNe ? 'सुरक्षित · २५६-बिट इन्क्रिप्सन' : 'Secured · 256-bit encryption'}`;
         });
       });
@@ -761,7 +761,7 @@
           if (error) throw error;
 
           // Success — show toast and redirect
-          toastMsg.textContent = 'Welcome! Redirecting to dashboard...';
+          toastMsg.textContent = 'Welcome to Nepal Share Portal! Redirecting...';
           toast.classList.add('show');
           loginBtn.disabled = false;
           spinner.style.display = 'none';
@@ -810,16 +810,12 @@
         });
       });
 
-      // ---- check for existing session (optional) ----
-      async function checkSession() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          window.location.href = 'planningindex.html';
-        }
-      }
-      checkSession();
+      // ============================================================
+      // REMOVED: Automatic session redirect
+      // Now user must click Login button to sign in
+      // ============================================================
 
-      console.log('✨ Nexus login ready · redirects to planningindex.html');
+      console.log('📈 Nepal Share Portal login ready');
     })();
   </script>
 </body>
