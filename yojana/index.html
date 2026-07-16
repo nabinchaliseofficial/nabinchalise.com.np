@@ -1,590 +1,826 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>गलकोट नगरपालिका · योजना खाता व्यवस्थापन</title>
-  <!-- Google Fonts: Inter + Noto Sans Devanagari -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Nexus · Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Lucide Icons (CDN) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ----- CSS Variables (Premium palette) ----- */
-    :root {
-      --primary: #0F766E;
-      --primary-light: #14B8A6;
-      --accent: #F59E0B;
-      --bg: #F8FAFC;
-      --card: #ffffff;
-      --text: #1E293B;
-      --text-muted: #475569;
-      --border: #E9ECEF;
-      --shadow: 0 20px 40px -12px rgba(0,0,0,0.08), 0 8px 24px -6px rgba(15,118,110,0.06);
-      --shadow-hover: 0 30px 50px -16px rgba(0,0,0,0.12);
-      --radius: 18px;
-      --radius-sm: 12px;
-      --transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --glass: rgba(255,255,255,0.55);
-      --glass-border: rgba(255,255,255,0.25);
-    }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body {
-      font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      line-height: 1.5;
+    :root {
+      --bg-primary: #030712;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.55);
+      --border-glass: rgba(255, 255, 255, 0.06);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --primary: #3B82F6;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --secondary: #8B5CF6;
+      --accent: #06B6D4;
+      --success: #22C55E;
+      --error: #EF4444;
+      --shadow-soft: 0 20px 60px -15px rgba(0, 0, 0, 0.7);
+      --radius-card: 28px;
+      --radius-input: 16px;
+      --radius-btn: 40px;
+      --transition-smooth: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
-    ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 12px; }
-
-    /* ----- SIDEBAR (glass + premium) ----- */
-    .sidebar {
-      width: 270px;
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-right: 1px solid var(--glass-border);
-      box-shadow: 4px 0 20px -8px rgba(0,0,0,0.04);
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      height: 100vh;
-      flex-shrink: 0;
-      transition: var(--transition);
-      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin: 0;
+      color: var(--text-primary);
+      position: relative;
+      overflow-x: hidden;
+      transition: background 0.3s;
+    }
+
+    body.light {
+      --bg-primary: #f1f5f9;
+      --bg-secondary: #e2e8f0;
+      --bg-card: rgba(255, 255, 255, 0.60);
+      --border-glass: rgba(0, 0, 0, 0.05);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --shadow-soft: 0 20px 60px -15px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ---- animated mesh background ---- */
+    .mesh-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                  var(--bg-primary);
+      background-blend-mode: overlay;
+    }
+
+    .floating-blur {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+      transition: transform 0.2s ease-out;
+    }
+    .blur-1 { width: 500px; height: 500px; background: #3B82F6; top: -12%; left: -8%; }
+    .blur-2 { width: 450px; height: 450px; background: #8B5CF6; bottom: -10%; right: -5%; }
+    .blur-3 { width: 300px; height: 300px; background: #06B6D4; top: 40%; left: 60%; opacity: 0.3; }
+
+    /* ---- particles (floating) ---- */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+      z-index: 1;
+      animation: floatParticle 18s infinite alternate ease-in-out;
+    }
+    .p1 { width: 12px; height: 12px; top: 15%; left: 10%; animation-duration: 22s; }
+    .p2 { width: 20px; height: 20px; bottom: 20%; right: 15%; animation-duration: 26s; }
+    .p3 { width: 8px; height: 8px; top: 60%; left: 85%; animation-duration: 20s; }
+    .p4 { width: 16px; height: 16px; top: 30%; right: 5%; animation-duration: 24s; }
+
+    @keyframes floatParticle {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+      100% { transform: translate(40px, -60px) scale(1.8); opacity: 0.6; }
+    }
+
+    /* ---- main wrapper ---- */
+    .login-wrapper {
       position: relative;
       z-index: 10;
+      width: 100%;
+      max-width: 1280px;
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 30px;
+      align-items: stretch;
+      backdrop-filter: blur(2px);
     }
 
-    .sidebar-brand {
-      padding: 24px 20px 16px;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
+    /* ---- left hero ---- */
+    .hero-side {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 40px 36px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-smooth);
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand-badge {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border-radius: var(--radius-sm);
-      display: flex;
+    .brand-badge .logo-icon {
+      font-size: 2.2rem;
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.12);
+      padding: 10px;
+      border-radius: 18px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .brand-badge span {
       font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 8px 16px -6px rgba(15,118,110,0.3);
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f8fafc 40%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .brand-text h2 {
-      font-size: 1.1rem;
+    .hero-title {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
       font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-top: 12px;
     }
-    .brand-text span {
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 400px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 36px;
+      margin-top: 18px;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .trust-item i {
+      color: var(--success);
+      font-size: 0.9rem;
+    }
+
+    .hero-footer {
+      margin-top: 30px;
+      border-top: 1px solid var(--border-glass);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
       font-size: 0.7rem;
       color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.3px;
     }
-
-    .menu-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px 12px 20px;
-    }
-
-    .menu-group {
-      margin-bottom: 20px;
-    }
-    .menu-group-title {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
+    .hero-footer a {
       color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .hero-footer a:hover { color: var(--text-primary); }
+
+    /* ---- right card ---- */
+    .login-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 40px 34px;
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .card-header .welcome {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .card-header .welcome h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+    }
+    .card-header .welcome p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 40px;
+      padding: 8px 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+      font-family: var(--font-sans);
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.08); }
+
+    .lang-selector {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 40px;
+      padding: 4px;
+      border: 1px solid var(--border-glass);
+    }
+    .lang-selector button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.65rem;
       font-weight: 600;
-      padding: 0 12px 6px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: var(--font-sans);
+    }
+    .lang-selector button.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    /* ---- form ---- */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .form-group .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .form-group .form-input {
+      width: 100%;
+      padding: 18px 16px 18px 48px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-input);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      transition: var(--transition-smooth);
+      outline: none;
+      font-family: var(--font-sans);
+      backdrop-filter: blur(4px);
+    }
+    .form-group .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-glow);
+      background: rgba(255,255,255,0.06);
+    }
+    .form-group .form-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+    .form-group .form-input.error { border-color: var(--error); }
+    .form-group .form-input.success { border-color: var(--success); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
       opacity: 0.6;
     }
 
-    .menu-list {
-      list-style: none;
+    .row-flex {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 6px 0 22px;
     }
-
-    .menu-list li a {
+    .remember-me {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 16px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text);
-      text-decoration: none;
-      transition: var(--transition);
-      position: relative;
-      background: transparent;
-      border: none;
-      width: 100%;
-      cursor: pointer;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
     }
+    .remember-me input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 16px; height: 16px;
+      border-radius: 4px;
+    }
+    .forgot-link {
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--secondary); }
 
-    .menu-list li a i {
-      width: 22px;
-      height: 22px;
+    .btn-login {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: var(--radius-btn);
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 28px var(--primary-glow);
+      transition: var(--transition-smooth);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
-      transition: var(--transition);
-      flex-shrink: 0;
-    }
-
-    .menu-list li a .menu-label {
-      white-space: nowrap;
-    }
-
-    /* Active state: pill + gradient + vertical indicator */
-    .menu-list li a.active {
-      background: linear-gradient(135deg, rgba(15,118,110,0.10), rgba(20,184,166,0.08));
-      color: var(--primary);
-      font-weight: 600;
-      box-shadow: inset 0 0 0 1px rgba(15,118,110,0.08);
-    }
-
-    .menu-list li a.active i {
-      color: var(--primary);
-    }
-
-    .menu-list li a.active::before {
-      content: '';
-      position: absolute;
-      left: 6px;
-      top: 20%;
-      height: 60%;
-      width: 4px;
-      background: linear-gradient(180deg, var(--primary), var(--primary-light));
-      border-radius: 8px;
-    }
-
-    .menu-list li a:hover:not(.active) {
-      background: rgba(15,118,110,0.04);
-    }
-
-    /* ----- TOP NAV (glass + premium) ----- */
-    .main-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+      gap: 10px;
+      font-family: var(--font-sans);
+      position: relative;
       overflow: hidden;
-      background: var(--bg);
     }
+    .btn-login:hover { transform: scale(1.02); box-shadow: 0 12px 40px var(--primary-glow); }
+    .btn-login:active { transform: scale(0.97); }
+    .btn-login:disabled { opacity: 0.6; pointer-events: none; }
+    .btn-login .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-login .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: scale(0);
+      animation: rippleAnim 0.6s ease-out;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
-    .topnav {
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 12px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .topnav-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .topnav-left .page-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .topnav-center {
-      flex: 1;
-      max-width: 380px;
-      min-width: 140px;
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(4px);
-      border-radius: 60px;
-      padding: 0 16px;
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: var(--transition);
-    }
-    .topnav-center:focus-within {
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 4px rgba(20,184,166,0.08);
-    }
-    .topnav-center i {
-      color: var(--text-muted);
-      margin-right: 8px;
-    }
-    .topnav-center input {
-      border: none;
-      background: transparent;
-      padding: 10px 0;
-      font-size: 0.9rem;
-      width: 100%;
-      outline: none;
-      color: var(--text);
-    }
-    .topnav-center input::placeholder {
-      color: var(--text-muted);
-      opacity: 0.6;
-    }
-
-    .topnav-right {
+    .divider {
       display: flex;
       align-items: center;
       gap: 16px;
-      flex-shrink: 0;
+      margin: 22px 0 18px;
     }
+    .divider hr { flex: 1; border: none; border-top: 1px solid var(--border-glass); }
+    .divider span { color: var(--text-muted); font-size: 0.7rem; font-weight: 500; }
 
-    .topnav-right .badge-year {
-      background: rgba(15,118,110,0.06);
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--primary);
-      letter-spacing: 0.2px;
-      white-space: nowrap;
-    }
-
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 40px;
-      border: none;
-      background: transparent;
+    .social-login {
       display: flex;
-      align-items: center;
+      gap: 12px;
       justify-content: center;
-      color: var(--text-muted);
-      transition: var(--transition);
-      cursor: pointer;
-      position: relative;
-    }
-    .icon-btn:hover {
-      background: rgba(0,0,0,0.04);
-      color: var(--text);
-    }
-    .icon-btn .dot {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 10px;
-      border: 2px solid white;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 40px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-      box-shadow: 0 4px 8px -4px rgba(15,118,110,0.2);
-    }
-
-    /* ----- CONTENT AREA (card + glass) ----- */
-    .content-wrapper {
-      flex: 1;
-      padding: 20px 28px 28px;
-      overflow: auto;
-      background: var(--bg);
-    }
-
-    .content-card {
-      background: rgba(255,255,255,0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--glass-border);
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: var(--transition);
-      min-height: 480px;
-    }
-
-    .content-card iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: white;
-      border-radius: var(--radius);
-    }
-
-    /* Breadcrumb (optional inside card header) */
-    .card-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid rgba(0,0,0,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       flex-wrap: wrap;
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(4px);
-      border-radius: var(--radius) var(--radius) 0 0;
     }
-    .card-header .breadcrumb {
+    .social-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-input);
+      color: var(--text-primary);
       font-size: 0.8rem;
-      color: var(--text-muted);
+      font-weight: 500;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      font-family: var(--font-sans);
+    }
+    .social-btn:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+    .social-btn i { font-size: 1.1rem; }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .signup-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .signup-link a:hover { color: var(--secondary); }
+
+    .ssl-badge {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-    }
-    .card-header .breadcrumb span { color: var(--text); font-weight: 500; }
-    .card-header .action-badge {
-      background: var(--primary);
-      color: white;
-      font-size: 0.7rem;
-      padding: 4px 12px;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+      padding: 6px 14px;
       border-radius: 40px;
+      border: 1px solid var(--border-glass);
+      background: rgba(255,255,255,0.02);
+      align-self: flex-start;
+    }
+    .ssl-badge i { color: var(--success); }
+
+    /* ---- toast ---- */
+    .toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #0f172a;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-weight: 500;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ---- responsive ---- */
+    @media (max-width: 1024px) {
+      .login-wrapper { grid-template-columns: 1fr; }
+      .hero-side { order: -1; }
+      .hero-title { font-size: 2.4rem; }
+    }
+    @media (max-width: 640px) {
+      .login-card { padding: 28px 18px; }
+      .hero-side { padding: 28px 18px; }
+      .card-header { flex-direction: column; gap: 12px; }
+      .social-btn { min-width: 60px; padding: 12px 8px; font-size: 0.7rem; }
+      .brand-badge span { font-size: 1.2rem; }
     }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .sidebar { width: 220px; }
-      .topnav { padding: 10px 16px; }
-      .content-wrapper { padding: 14px 16px 20px; }
-    }
-
-    @media (max-width: 700px) {
-      .sidebar { width: 68px; }
-      .sidebar-brand .brand-text, 
-      .menu-group-title,
-      .menu-list li a .menu-label {
-        display: none;
-      }
-      .menu-list li a { justify-content: center; padding: 12px; }
-      .menu-list li a i { margin: 0; }
-      .menu-list li a.active::before { left: 4px; }
-      .topnav-center { max-width: 140px; }
-      .topnav .badge-year { display: none; }
-    }
-
-    @media (max-width: 480px) {
-      .sidebar { width: 56px; }
-      .topnav-left .page-title { font-size: 0.9rem; }
-      .topnav-center { max-width: 100px; }
-      .topnav-center input { font-size: 0.75rem; }
-      .icon-btn { width: 32px; height: 32px; }
-      .avatar { width: 32px; height: 32px; font-size: 0.7rem; }
-    }
-
-    /* utilities */
-    .flex { display: flex; align-items: center; gap: 8px; }
-    .text-muted { color: var(--text-muted); }
+    /* ---- utilities ---- */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 8px; }
+    .gap-1 { gap: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- SIDEBAR (glass + grouped) -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">ग</div>
-      <div class="brand-text">
-        <h2>गलकोट नगरपालिका</h2>
-        <span>योजना खाता प्रणाली</span>
-      </div>
-    </div>
-    <div class="menu-container">
-      <!-- Group 1: Dashboard -->
-      <div class="menu-group">
-        <div class="menu-group-title">मुख्य</div>
-        <ul class="menu-list">
-          <li><a href="home.html" target="contentFrame" class="active" data-title="गृह पृष्ठ"><i data-lucide="layout-dashboard"></i><span class="menu-label">गृह पृष्ठ</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 2: योजना व्यवस्थापन -->
-      <div class="menu-group">
-        <div class="menu-group-title">योजना व्यवस्थापन</div>
-        <ul class="menu-list">
-          <li><a href="background.html" target="contentFrame" data-title="पृष्ठभूमि, भूमिका तथा दायित्व"><i data-lucide="file-text"></i><span class="menu-label">पृष्ठभूमि</span></a></li>
-          <li><a href="user_committee.html" target="contentFrame" data-title="उपभोक्ता समिति विवरण"><i data-lucide="users"></i><span class="menu-label">उपभोक्ता समिति</span></a></li>
-          <li><a href="officials.html" target="contentFrame" data-title="पदाधिकारी/बैठक निर्णय"><i data-lucide="briefcase"></i><span class="menu-label">पदाधिकारी</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 3: सम्झौता -->
-      <div class="menu-group">
-        <div class="menu-group-title">सम्झौता</div>
-        <ul class="menu-list">
-          <li><a href="aggrement.html" target="contentFrame" data-title="सम्झौताको लागि सिफारिस"><i data-lucide="file-signature"></i><span class="menu-label">सिफारिस</span></a></li>
-          <li><a href="wardaggrement.html" target="contentFrame" data-title="वडाको सिफारिस"><i data-lucide="map-pin"></i><span class="menu-label">वडा सिफारिस</span></a></li>
-          <li><a href="useraggrement.html" target="contentFrame" data-title="योजना सम्झौता (उपभोक्ता)"><i data-lucide="handshake"></i><span class="menu-label">उपभोक्ता सम्झौता</span></a></li>
-          <li><a href="finalagreement.html" target="contentFrame" data-title="योजना सम्झौता फाराम"><i data-lucide="file-check"></i><span class="menu-label">सम्झौता फाराम</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 4: वित्तीय विवरण -->
-      <div class="menu-group">
-        <div class="menu-group-title">वित्तीय</div>
-        <ul class="menu-list">
-          <li><a href="ledger.html" target="contentFrame" data-title="आम्दानी र खर्च खाता"><i data-lucide="wallet"></i><span class="menu-label">आम्दानी/खर्च</span></a></li>
-          <li><a href="receipt.html" target="contentFrame" data-title="रकम बुझेको भरपाई"><i data-lucide="receipt"></i><span class="menu-label">भरपाई</span></a></li>
-          <li><a href="audit.html" target="contentFrame" data-title="सार्वजनिक लेखा परीक्षण"><i data-lucide="clipboard-check"></i><span class="menu-label">लेखा परीक्षण</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 5: प्रतिवेदन / अन्य -->
-      <div class="menu-group">
-        <div class="menu-group-title">प्रतिवेदन</div>
-        <ul class="menu-list">
-          <li><a href="materials.html" target="contentFrame" data-title="निर्माण सामग्री र औजार"><i data-lucide="hammer"></i><span class="menu-label">सामग्री/औजार</span></a></li>
-          <li><a href="participation.html" target="contentFrame" data-title="जनसहभागिता विवरण"><i data-lucide="users-round"></i><span class="menu-label">जनसहभागिता</span></a></li>
-          <li><a href="attendance.html" target="contentFrame" data-title="डोर हाजिरी"><i data-lucide="clipboard-list"></i><span class="menu-label">हाजिरी</span></a></li>
-          <li><a href="notice.html" target="contentFrame" data-title="सूचना पाटी"><i data-lucide="bell"></i><span class="menu-label">सूचना</span></a></li>
-          <li><a href="transfer.html" target="contentFrame" data-title="योजना हस्तान्तरण"><i data-lucide="arrow-right-left"></i><span class="menu-label">हस्तान्तरण</span></a></li>
-          <li><a href="completion.html" target="contentFrame" data-title="योजना सम्पन्न प्रतिवेदन"><i data-lucide="flag"></i><span class="menu-label">सम्पन्न</span></a></li>
-          <li><a href="summary.html" target="contentFrame" data-title="संक्षिप्त विवरण तथा नियम"><i data-lucide="list-checks"></i><span class="menu-label">संक्षिप्त विवरण</span></a></li>
-          <li><a href="correspondence.html" target="contentFrame" data-title="पत्राचार तथा सिफारिसहरू"><i data-lucide="mail"></i><span class="menu-label">पत्राचार</span></a></li>
-        </ul>
-      </div>
-    </div>
-  </aside>
+  <!-- mesh bg -->
+  <div class="mesh-bg"></div>
+  <div class="floating-blur blur-1"></div>
+  <div class="floating-blur blur-2"></div>
+  <div class="floating-blur blur-3"></div>
 
-  <!-- MAIN CONTAINER -->
-  <div class="main-container">
+  <!-- particles -->
+  <div class="particle p1"></div>
+  <div class="particle p2"></div>
+  <div class="particle p3"></div>
+  <div class="particle p4"></div>
 
-    <!-- TOP NAV (glass) -->
-    <nav class="topnav">
-      <div class="topnav-left">
-        <span class="page-title" id="pageTitle">गृह पृष्ठ</span>
-      </div>
-      <div class="topnav-center">
-        <i data-lucide="search" size="18"></i>
-        <input type="text" placeholder="योजना खोज्नुहोस्..." aria-label="Search">
-      </div>
-      <div class="topnav-right">
-        <span class="badge-year">आ.व. २०८२/०८३</span>
-        <button class="icon-btn" aria-label="Notifications"><i data-lucide="bell"></i><span class="dot"></span></button>
-        <button class="icon-btn" aria-label="Dark mode"><i data-lucide="moon"></i></button>
-        <div class="avatar">ग</div>
-      </div>
-    </nav>
+  <!-- toast -->
+  <div id="toast" class="toast"><i class="fas fa-check-circle" style="color:#22C55E;"></i> <span id="toastMsg">Login successful</span></div>
 
-    <!-- CONTENT CARD with breadcrumb & iframe -->
-    <div class="content-wrapper">
-      <div class="content-card">
-        <div class="card-header">
-          <div class="breadcrumb">
-            <i data-lucide="home" size="14"></i> / <span id="breadcrumbLabel">गृह पृष्ठ</span>
-          </div>
-          <span class="action-badge">प्रणाली संस्करण २.०</span>
+  <!-- main -->
+  <div class="login-wrapper">
+
+    <!-- LEFT HERO -->
+    <div class="hero-side">
+      <div class="hero-content">
+        <div class="brand-badge">
+          <span class="logo-icon"><i class="fas fa-cube"></i></span>
+          <span>Nexus</span>
         </div>
-        <iframe src="home.html" name="contentFrame" id="contentFrame" title="गलकोट नगरपालिका योजना खाता"></iframe>
+        <h1 class="hero-title">
+          Build the <br /><span class="highlight">future</span> of your<br /> organization.
+        </h1>
+        <p class="hero-sub">Secure, intelligent, and beautifully crafted. Sign in to access your dashboard.</p>
+        <div class="trust-row">
+          <span class="trust-item"><i class="fas fa-shield-alt"></i> SOC2 compliant</span>
+          <span class="trust-item"><i class="fas fa-lock"></i> 256-bit SSL</span>
+          <span class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</span>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <span>© 2025 Nexus · All rights reserved</span>
+        <div style="display:flex; gap:16px;">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Help</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT CARD -->
+    <div class="login-card">
+      <div class="card-header">
+        <div class="welcome">
+          <h2>Welcome back</h2>
+          <p>Sign in to your account</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="lang-selector">
+            <button class="active" data-lang="en">EN</button>
+            <button data-lang="ne">ने</button>
+          </div>
+          <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> <span id="themeLabel">Dark</span></button>
+        </div>
+      </div>
+
+      <!-- form -->
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="email" class="form-input" placeholder="Email address" required />
+        </div>
+        <div class="form-group">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="password" class="form-input" placeholder="Password" required />
+          <button type="button" class="toggle-pw" id="togglePw"><i class="fas fa-eye"></i></button>
+        </div>
+
+        <div class="row-flex">
+          <label class="remember-me"><input type="checkbox" checked /> Remember me</label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span id="btnText">Sign In</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Demo credentials quick fill -->
+      <div style="margin-top: 14px; background: rgba(59,130,246,0.06); border-radius: 12px; padding: 10px 14px; border: 1px dashed rgba(59,130,246,0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 0.65rem; color: var(--text-muted);">Demo: <code style="color:var(--primary);">demo@galkotmun.gov.np</code> / <code style="color:var(--primary);">Demo@123</code></span>
+        <button type="button" id="autoFillBtn" style="background: var(--primary); border: none; color: white; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s;">Auto Fill</button>
+      </div>
+
+      <div class="divider"><hr /><span>OR</span><hr /></div>
+
+      <div class="social-login">
+        <button class="social-btn"><i class="fab fa-google"></i> Google</button>
+        <button class="social-btn"><i class="fab fa-microsoft"></i> Microsoft</button>
+        <button class="social-btn"><i class="fab fa-github"></i> GitHub</button>
+      </div>
+
+      <div class="signup-link">
+        Don’t have an account? <a href="#">Create one</a>
+      </div>
+
+      <div class="ssl-badge">
+        <i class="fas fa-lock"></i> Secured · 256-bit encryption
       </div>
     </div>
   </div>
 
   <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
+    (function() {
+      'use strict';
 
-    // ---- NAVIGATION LOGIC: set active, update title & breadcrumb ----
-    const links = document.querySelectorAll('.menu-list li a');
-    const pageTitle = document.getElementById('pageTitle');
-    const breadcrumbLabel = document.getElementById('breadcrumbLabel');
-    const iframe = document.getElementById('contentFrame');
+      // ============================================================
+      // SUPABASE CONFIG (for real auth — redirect to planningindex.html)
+      // ============================================================
+      const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function setActiveLink(activeLink) {
-      // remove active from all
-      links.forEach(link => link.classList.remove('active'));
-      // add active to clicked
-      activeLink.classList.add('active');
-      // update title & breadcrumb from data-title or text content
-      let title = activeLink.getAttribute('data-title');
-      if (!title) {
-        const labelSpan = activeLink.querySelector('.menu-label');
-        title = labelSpan ? labelSpan.textContent : activeLink.textContent.trim();
-      }
-      pageTitle.textContent = title;
-      breadcrumbLabel.textContent = title;
-    }
+      // DOM refs
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('spinner');
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const togglePw = document.getElementById('togglePw');
+      const themeToggle = document.getElementById('themeToggle');
+      const themeLabel = document.getElementById('themeLabel');
+      const langBtns = document.querySelectorAll('.lang-selector button');
+      const autoFillBtn = document.getElementById('autoFillBtn');
 
-    // click handler
-    links.forEach(link => {
-      link.addEventListener('click', function(e) {
-        setActiveLink(this);
-        // iframe src is already set via target/href, but we keep it
+      // Demo credentials
+      const DEMO_EMAIL = 'demo@galkotmun.gov.np';
+      const DEMO_PASSWORD = 'Demo@123';
+
+      // ---- auto fill demo ----
+      autoFillBtn.addEventListener('click', function() {
+        email.value = DEMO_EMAIL;
+        password.value = DEMO_PASSWORD;
+        email.classList.remove('error');
+        password.classList.remove('error');
       });
-    });
 
-    // set default active (home)
-    const defaultActive = document.querySelector('.menu-list li a[href="home.html"]');
-    if (defaultActive) setActiveLink(defaultActive);
+      // ---- ripple effect ----
+      loginBtn.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
 
-    // if iframe loads, ensure active link matches (optional)
-    iframe.addEventListener('load', function() {
-      // we could parse src, but we keep it simple
-    });
+      // ---- toggle password ----
+      togglePw.addEventListener('click', function() {
+        const type = password.type === 'password' ? 'text' : 'password';
+        password.type = type;
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+      });
 
-    // ---- Dark mode toggle (demo) ----
-    document.querySelector('.icon-btn[aria-label="Dark mode"]')?.addEventListener('click', function() {
-      document.body.style.background = document.body.style.background === '#1E293B' ? '' : '#1E293B';
-      // toggle some basic dark
-      const isDark = document.body.style.background === '#1E293B';
-      document.body.style.color = isDark ? '#F1F5F9' : '';
-      document.querySelector('.main-container').style.background = isDark ? '#0F172A' : '';
-      document.querySelector('.content-card').style.background = isDark ? 'rgba(30,41,59,0.8)' : '';
-      document.querySelector('.topnav').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
-      document.querySelector('.sidebar').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
-      // simple icon swap
-      const icon = this.querySelector('i');
-      if (icon) {
-        if (isDark) {
-          icon.setAttribute('data-lucide', 'sun');
-        } else {
-          icon.setAttribute('data-lucide', 'moon');
+      // ---- theme toggle ----
+      let darkMode = true;
+      themeToggle.addEventListener('click', function() {
+        darkMode = !darkMode;
+        document.body.classList.toggle('light', !darkMode);
+        themeLabel.textContent = darkMode ? 'Dark' : 'Light';
+        this.innerHTML = darkMode ? '<i class="fas fa-moon"></i> <span id="themeLabel">Dark</span>' : '<i class="fas fa-sun"></i> <span id="themeLabel">Light</span>';
+      });
+
+      // ---- lang switch (demo) ----
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          langBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const isNe = this.dataset.lang === 'ne';
+          document.querySelector('.welcome h2').textContent = isNe ? 'फेरि स्वागत छ' : 'Welcome back';
+          document.querySelector('.welcome p').textContent = isNe ? 'आफ्नो खातामा प्रवेश गर्नुहोस्' : 'Sign in to your account';
+          document.querySelector('.form-group input[type="email"]').placeholder = isNe ? 'इमेल ठेगाना' : 'Email address';
+          document.querySelector('.form-group input[type="password"]').placeholder = isNe ? 'पासवर्ड' : 'Password';
+          document.querySelector('.remember-me').innerHTML = `<input type="checkbox" checked /> ${isNe ? 'मलाई सम्झनुहोस्' : 'Remember me'}`;
+          document.querySelector('.forgot-link').textContent = isNe ? 'पासवर्ड बिर्सनुभयो?' : 'Forgot password?';
+          document.getElementById('btnText').textContent = isNe ? 'लगइन गर्नुहोस्' : 'Sign In';
+          document.querySelector('.signup-link').innerHTML = isNe ? 'खाता छैन? <a href="#">एउटा बनाउनुहोस्</a>' : 'Don’t have an account? <a href="#">Create one</a>';
+          document.querySelector('.ssl-badge').innerHTML = `<i class="fas fa-lock"></i> ${isNe ? 'सुरक्षित · २५६-बिट इन्क्रिप्सन' : 'Secured · 256-bit encryption'}`;
+        });
+      });
+
+      // ============================================================
+      // FORM SUBMIT — Supabase login + redirect to planningindex.html
+      // ============================================================
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // basic validation
+        let valid = true;
+        if (!email.value.trim()) { email.classList.add('error'); valid = false; } else { email.classList.remove('error'); }
+        if (!password.value) { password.classList.add('error'); valid = false; } else { password.classList.remove('error'); }
+
+        if (!valid) {
+          toastMsg.textContent = 'Please fill in all fields';
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+          return;
         }
-        lucide.createIcons();
-      }
-    });
 
-    // ---- notification bell dot demo ----
-    // no extra logic
+        // loading state
+        loginBtn.disabled = true;
+        btnText.textContent = 'Signing in...';
+        spinner.style.display = 'block';
+
+        try {
+          // Attempt real Supabase login
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email.value.trim(),
+            password: password.value
+          });
+
+          if (error) throw error;
+
+          // Success — show toast and redirect
+          toastMsg.textContent = 'Welcome! Redirecting to dashboard...';
+          toast.classList.add('show');
+          loginBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'Sign In';
+
+          setTimeout(() => {
+            window.location.href = 'planningindex.html';
+          }, 1200);
+
+        } catch (err) {
+          // Show error
+          let msg = err.message;
+          if (err.message.includes('Invalid login')) msg = '❌ Invalid email or password.';
+          else if (err.message.includes('Email not confirmed')) msg = '📧 Please confirm your email.';
+          else if (err.message.includes('fetch')) msg = '🌐 Network error. Check your connection.';
+          toastMsg.textContent = msg;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 3000);
+
+          loginBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'Sign In';
+        }
+      });
+
+      // ---- live input validation ----
+      email.addEventListener('input', function() {
+        if (this.value.trim()) this.classList.remove('error');
+        else this.classList.add('error');
+      });
+      password.addEventListener('input', function() {
+        if (this.value) this.classList.remove('error');
+        else this.classList.add('error');
+      });
+
+      // ---- mouse parallax for blurs ----
+      document.addEventListener('mousemove', function(e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        const blurs = document.querySelectorAll('.floating-blur');
+        blurs.forEach((el, i) => {
+          const speed = 10 + i * 5;
+          const moveX = (x - 0.5) * speed;
+          const moveY = (y - 0.5) * speed;
+          el.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+      });
+
+      // ---- check for existing session (optional) ----
+      async function checkSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          window.location.href = 'planningindex.html';
+        }
+      }
+      checkSession();
+
+      console.log('✨ Nexus login ready · redirects to planningindex.html');
+    })();
   </script>
 </body>
 </html>
