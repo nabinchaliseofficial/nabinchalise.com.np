@@ -1,590 +1,422 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>गलकोट नगरपालिका · योजना खाता व्यवस्थापन</title>
-  <!-- Google Fonts: Inter + Noto Sans Devanagari -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Lucide Icons (CDN) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    /* ----- CSS Variables (Premium palette) ----- */
-    :root {
-      --primary: #0F766E;
-      --primary-light: #14B8A6;
-      --accent: #F59E0B;
-      --bg: #F8FAFC;
-      --card: #ffffff;
-      --text: #1E293B;
-      --text-muted: #475569;
-      --border: #E9ECEF;
-      --shadow: 0 20px 40px -12px rgba(0,0,0,0.08), 0 8px 24px -6px rgba(15,118,110,0.06);
-      --shadow-hover: 0 30px 50px -16px rgba(0,0,0,0.12);
-      --radius: 18px;
-      --radius-sm: 12px;
-      --transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --glass: rgba(255,255,255,0.55);
-      --glass-border: rgba(255,255,255,0.25);
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>गलकोट नगरपालिका · प्रवेश पृष्ठ</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ----- CSS Variables (same palette as dashboard) ----- */
+        :root {
+            --primary: #0F766E;
+            --primary-light: #14B8A6;
+            --primary-dark: #0D5E58;
+            --accent: #F59E0B;
+            --bg: #F0F4F8;
+            --card: #ffffff;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: #E9ECEF;
+            --shadow: 0 20px 48px -12px rgba(15, 118, 110, 0.18), 0 8px 24px -6px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 30px 60px -16px rgba(15, 118, 110, 0.25);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --glass: rgba(255, 255, 255, 0.60);
+            --glass-border: rgba(255, 255, 255, 0.30);
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      line-height: 1.5;
-    }
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 10% 30%, rgba(15, 118, 110, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 90% 70%, rgba(20, 184, 166, 0.04) 0%, transparent 50%);
+        }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
-    ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 12px; }
+        /* ----- Login Card (glass + premium) ----- */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 32px 36px;
+            transition: var(--transition);
+            text-align: center;
+        }
 
-    /* ----- SIDEBAR (glass + premium) ----- */
-    .sidebar {
-      width: 270px;
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-right: 1px solid var(--glass-border);
-      box-shadow: 4px 0 20px -8px rgba(0,0,0,0.04);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      flex-shrink: 0;
-      transition: var(--transition);
-      overflow: hidden;
-      position: relative;
-      z-index: 10;
-    }
+        .login-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
 
-    .sidebar-brand {
-      padding: 24px 20px 16px;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0 auto 12px;
+            box-shadow: 0 10px 20px -8px rgba(15, 118, 110, 0.30);
+        }
 
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 8px 16px -6px rgba(15,118,110,0.3);
-    }
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
 
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .brand-text h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text);
-    }
-    .brand-text span {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
+        .login-card .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding-bottom: 20px;
+        }
 
-    .menu-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px 12px 20px;
-    }
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
 
-    .menu-group {
-      margin-bottom: 20px;
-    }
-    .menu-group-title {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-muted);
-      font-weight: 600;
-      padding: 0 12px 6px;
-      opacity: 0.6;
-    }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
 
-    .menu-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+        .form-group .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 40px;
+            transition: var(--transition);
+            padding: 0 16px;
+        }
 
-    .menu-list li a {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 10px 16px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text);
-      text-decoration: none;
-      transition: var(--transition);
-      position: relative;
-      background: transparent;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-    }
+        .form-group .input-wrapper:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.08);
+            background: rgba(255, 255, 255, 0.8);
+        }
 
-    .menu-list li a i {
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: var(--transition);
-      flex-shrink: 0;
-    }
+        .form-group .input-wrapper i {
+            color: var(--text-muted);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
 
-    .menu-list li a .menu-label {
-      white-space: nowrap;
-    }
+        .form-group .input-wrapper input {
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--text);
+            font-family: inherit;
+        }
 
-    /* Active state: pill + gradient + vertical indicator */
-    .menu-list li a.active {
-      background: linear-gradient(135deg, rgba(15,118,110,0.10), rgba(20,184,166,0.08));
-      color: var(--primary);
-      font-weight: 600;
-      box-shadow: inset 0 0 0 1px rgba(15,118,110,0.08);
-    }
+        .form-group .input-wrapper input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
 
-    .menu-list li a.active i {
-      color: var(--primary);
-    }
+        .login-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 18px -6px rgba(15, 118, 110, 0.30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
 
-    .menu-list li a.active::before {
-      content: '';
-      position: absolute;
-      left: 6px;
-      top: 20%;
-      height: 60%;
-      width: 4px;
-      background: linear-gradient(180deg, var(--primary), var(--primary-light));
-      border-radius: 8px;
-    }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px -8px rgba(15, 118, 110, 0.35);
+        }
 
-    .menu-list li a:hover:not(.active) {
-      background: rgba(15,118,110,0.04);
-    }
+        .login-btn:active {
+            transform: scale(0.97);
+        }
 
-    /* ----- TOP NAV (glass + premium) ----- */
-    .main-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-      background: var(--bg);
-    }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-    .topnav {
-      background: rgba(255,255,255,0.70);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 12px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+        .error-msg {
+            background: #FEF2F2;
+            color: #B91C1C;
+            padding: 10px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #FECACA;
+        }
 
-    .topnav-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        .error-msg.show {
+            display: flex;
+        }
 
-    .topnav-left .page-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
+        .footer-note {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            letter-spacing: 0.2px;
+        }
 
-    .topnav-center {
-      flex: 1;
-      max-width: 380px;
-      min-width: 140px;
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(4px);
-      border-radius: 60px;
-      padding: 0 16px;
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: var(--transition);
-    }
-    .topnav-center:focus-within {
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 4px rgba(20,184,166,0.08);
-    }
-    .topnav-center i {
-      color: var(--text-muted);
-      margin-right: 8px;
-    }
-    .topnav-center input {
-      border: none;
-      background: transparent;
-      padding: 10px 0;
-      font-size: 0.9rem;
-      width: 100%;
-      outline: none;
-      color: var(--text);
-    }
-    .topnav-center input::placeholder {
-      color: var(--text-muted);
-      opacity: 0.6;
-    }
+        .footer-note a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
 
-    .topnav-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-shrink: 0;
-    }
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
 
-    .topnav-right .badge-year {
-      background: rgba(15,118,110,0.06);
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--primary);
-      letter-spacing: 0.2px;
-      white-space: nowrap;
-    }
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 40px;
-      border: none;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      transition: var(--transition);
-      cursor: pointer;
-      position: relative;
-    }
-    .icon-btn:hover {
-      background: rgba(0,0,0,0.04);
-      color: var(--text);
-    }
-    .icon-btn .dot {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 10px;
-      border: 2px solid white;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 40px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-      box-shadow: 0 4px 8px -4px rgba(15,118,110,0.2);
-    }
-
-    /* ----- CONTENT AREA (card + glass) ----- */
-    .content-wrapper {
-      flex: 1;
-      padding: 20px 28px 28px;
-      overflow: auto;
-      background: var(--bg);
-    }
-
-    .content-card {
-      background: rgba(255,255,255,0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--glass-border);
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: var(--transition);
-      min-height: 480px;
-    }
-
-    .content-card iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: white;
-      border-radius: var(--radius);
-    }
-
-    /* Breadcrumb (optional inside card header) */
-    .card-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid rgba(0,0,0,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(4px);
-      border-radius: var(--radius) var(--radius) 0 0;
-    }
-    .card-header .breadcrumb {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .card-header .breadcrumb span { color: var(--text); font-weight: 500; }
-    .card-header .action-badge {
-      background: var(--primary);
-      color: white;
-      font-size: 0.7rem;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .sidebar { width: 220px; }
-      .topnav { padding: 10px 16px; }
-      .content-wrapper { padding: 14px 16px 20px; }
-    }
-
-    @media (max-width: 700px) {
-      .sidebar { width: 68px; }
-      .sidebar-brand .brand-text, 
-      .menu-group-title,
-      .menu-list li a .menu-label {
-        display: none;
-      }
-      .menu-list li a { justify-content: center; padding: 12px; }
-      .menu-list li a i { margin: 0; }
-      .menu-list li a.active::before { left: 4px; }
-      .topnav-center { max-width: 140px; }
-      .topnav .badge-year { display: none; }
-    }
-
-    @media (max-width: 480px) {
-      .sidebar { width: 56px; }
-      .topnav-left .page-title { font-size: 0.9rem; }
-      .topnav-center { max-width: 100px; }
-      .topnav-center input { font-size: 0.75rem; }
-      .icon-btn { width: 32px; height: 32px; }
-      .avatar { width: 32px; height: 32px; font-size: 0.7rem; }
-    }
-
-    /* utilities */
-    .flex { display: flex; align-items: center; gap: 8px; }
-    .text-muted { color: var(--text-muted); }
-  </style>
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 20px 28px;
+            }
+            .brand-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 1.4rem;
+            }
+            .login-card h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- SIDEBAR (glass + grouped) -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">ग</div>
-      <div class="brand-text">
-        <h2>गलकोट नगरपालिका</h2>
-        <span>योजना खाता प्रणाली</span>
-      </div>
-    </div>
-    <div class="menu-container">
-      <!-- Group 1: Dashboard -->
-      <div class="menu-group">
-        <div class="menu-group-title">मुख्य</div>
-        <ul class="menu-list">
-          <li><a href="home.html" target="contentFrame" class="active" data-title="गृह पृष्ठ"><i data-lucide="layout-dashboard"></i><span class="menu-label">गृह पृष्ठ</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 2: योजना व्यवस्थापन -->
-      <div class="menu-group">
-        <div class="menu-group-title">योजना व्यवस्थापन</div>
-        <ul class="menu-list">
-          <li><a href="background.html" target="contentFrame" data-title="पृष्ठभूमि, भूमिका तथा दायित्व"><i data-lucide="file-text"></i><span class="menu-label">पृष्ठभूमि</span></a></li>
-          <li><a href="user_committee.html" target="contentFrame" data-title="उपभोक्ता समिति विवरण"><i data-lucide="users"></i><span class="menu-label">उपभोक्ता समिति</span></a></li>
-          <li><a href="officials.html" target="contentFrame" data-title="पदाधिकारी/बैठक निर्णय"><i data-lucide="briefcase"></i><span class="menu-label">पदाधिकारी</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 3: सम्झौता -->
-      <div class="menu-group">
-        <div class="menu-group-title">सम्झौता</div>
-        <ul class="menu-list">
-          <li><a href="aggrement.html" target="contentFrame" data-title="सम्झौताको लागि सिफारिस"><i data-lucide="file-signature"></i><span class="menu-label">सिफारिस</span></a></li>
-          <li><a href="wardaggrement.html" target="contentFrame" data-title="वडाको सिफारिस"><i data-lucide="map-pin"></i><span class="menu-label">वडा सिफारिस</span></a></li>
-          <li><a href="useraggrement.html" target="contentFrame" data-title="योजना सम्झौता (उपभोक्ता)"><i data-lucide="handshake"></i><span class="menu-label">उपभोक्ता सम्झौता</span></a></li>
-          <li><a href="finalagreement.html" target="contentFrame" data-title="योजना सम्झौता फाराम"><i data-lucide="file-check"></i><span class="menu-label">सम्झौता फाराम</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 4: वित्तीय विवरण -->
-      <div class="menu-group">
-        <div class="menu-group-title">वित्तीय</div>
-        <ul class="menu-list">
-          <li><a href="ledger.html" target="contentFrame" data-title="आम्दानी र खर्च खाता"><i data-lucide="wallet"></i><span class="menu-label">आम्दानी/खर्च</span></a></li>
-          <li><a href="receipt.html" target="contentFrame" data-title="रकम बुझेको भरपाई"><i data-lucide="receipt"></i><span class="menu-label">भरपाई</span></a></li>
-          <li><a href="audit.html" target="contentFrame" data-title="सार्वजनिक लेखा परीक्षण"><i data-lucide="clipboard-check"></i><span class="menu-label">लेखा परीक्षण</span></a></li>
-        </ul>
-      </div>
-      <!-- Group 5: प्रतिवेदन / अन्य -->
-      <div class="menu-group">
-        <div class="menu-group-title">प्रतिवेदन</div>
-        <ul class="menu-list">
-          <li><a href="materials.html" target="contentFrame" data-title="निर्माण सामग्री र औजार"><i data-lucide="hammer"></i><span class="menu-label">सामग्री/औजार</span></a></li>
-          <li><a href="participation.html" target="contentFrame" data-title="जनसहभागिता विवरण"><i data-lucide="users-round"></i><span class="menu-label">जनसहभागिता</span></a></li>
-          <li><a href="attendance.html" target="contentFrame" data-title="डोर हाजिरी"><i data-lucide="clipboard-list"></i><span class="menu-label">हाजिरी</span></a></li>
-          <li><a href="notice.html" target="contentFrame" data-title="सूचना पाटी"><i data-lucide="bell"></i><span class="menu-label">सूचना</span></a></li>
-          <li><a href="transfer.html" target="contentFrame" data-title="योजना हस्तान्तरण"><i data-lucide="arrow-right-left"></i><span class="menu-label">हस्तान्तरण</span></a></li>
-          <li><a href="completion.html" target="contentFrame" data-title="योजना सम्पन्न प्रतिवेदन"><i data-lucide="flag"></i><span class="menu-label">सम्पन्न</span></a></li>
-          <li><a href="summary.html" target="contentFrame" data-title="संक्षिप्त विवरण तथा नियम"><i data-lucide="list-checks"></i><span class="menu-label">संक्षिप्त विवरण</span></a></li>
-          <li><a href="correspondence.html" target="contentFrame" data-title="पत्राचार तथा सिफारिसहरू"><i data-lucide="mail"></i><span class="menu-label">पत्राचार</span></a></li>
-        </ul>
-      </div>
-    </div>
-  </aside>
+    <div class="login-card">
+        <div class="brand-icon">ग</div>
+        <h1>गलकोट नगरपालिका</h1>
+        <p class="subtitle">योजना खाता प्रणाली · प्रवेश</p>
 
-  <!-- MAIN CONTAINER -->
-  <div class="main-container">
-
-    <!-- TOP NAV (glass) -->
-    <nav class="topnav">
-      <div class="topnav-left">
-        <span class="page-title" id="pageTitle">गृह पृष्ठ</span>
-      </div>
-      <div class="topnav-center">
-        <i data-lucide="search" size="18"></i>
-        <input type="text" placeholder="योजना खोज्नुहोस्..." aria-label="Search">
-      </div>
-      <div class="topnav-right">
-        <span class="badge-year">आ.व. २०८२/०८३</span>
-        <button class="icon-btn" aria-label="Notifications"><i data-lucide="bell"></i><span class="dot"></span></button>
-        <button class="icon-btn" aria-label="Dark mode"><i data-lucide="moon"></i></button>
-        <div class="avatar">ग</div>
-      </div>
-    </nav>
-
-    <!-- CONTENT CARD with breadcrumb & iframe -->
-    <div class="content-wrapper">
-      <div class="content-card">
-        <div class="card-header">
-          <div class="breadcrumb">
-            <i data-lucide="home" size="14"></i> / <span id="breadcrumbLabel">गृह पृष्ठ</span>
-          </div>
-          <span class="action-badge">प्रणाली संस्करण २.०</span>
+        <!-- Error message container -->
+        <div id="errorMsg" class="error-msg">
+            <i data-lucide="alert-circle" size="18"></i>
+            <span id="errorText">कृपया सही प्रमाणहरू प्रविष्ट गर्नुहोस्।</span>
         </div>
-        <iframe src="home.html" name="contentFrame" id="contentFrame" title="गलकोट नगरपालिका योजना खाता"></iframe>
-      </div>
+
+        <form id="loginForm" autocomplete="off">
+            <div class="form-group">
+                <label for="email">इमेल ठेगाना</label>
+                <div class="input-wrapper">
+                    <i data-lucide="mail" size="18"></i>
+                    <input type="email" id="email" placeholder="name@example.com" required autofocus />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">पासवर्ड</label>
+                <div class="input-wrapper">
+                    <i data-lucide="lock" size="18"></i>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                </div>
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span id="btnText">प्रवेश गर्नुहोस्</span>
+                <i data-lucide="log-in" size="20" id="btnIcon"></i>
+            </button>
+        </form>
+
+        <div class="footer-note">
+            <span>प्रणाली संस्करण २.० · </span>
+            <a href="#" onclick="event.preventDefault(); alert('सम्पर्क: प्रशासन शाखा')">सहायता</a>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
-
-    // ---- NAVIGATION LOGIC: set active, update title & breadcrumb ----
-    const links = document.querySelectorAll('.menu-list li a');
-    const pageTitle = document.getElementById('pageTitle');
-    const breadcrumbLabel = document.getElementById('breadcrumbLabel');
-    const iframe = document.getElementById('contentFrame');
-
-    function setActiveLink(activeLink) {
-      // remove active from all
-      links.forEach(link => link.classList.remove('active'));
-      // add active to clicked
-      activeLink.classList.add('active');
-      // update title & breadcrumb from data-title or text content
-      let title = activeLink.getAttribute('data-title');
-      if (!title) {
-        const labelSpan = activeLink.querySelector('.menu-label');
-        title = labelSpan ? labelSpan.textContent : activeLink.textContent.trim();
-      }
-      pageTitle.textContent = title;
-      breadcrumbLabel.textContent = title;
-    }
-
-    // click handler
-    links.forEach(link => {
-      link.addEventListener('click', function(e) {
-        setActiveLink(this);
-        // iframe src is already set via target/href, but we keep it
-      });
-    });
-
-    // set default active (home)
-    const defaultActive = document.querySelector('.menu-list li a[href="home.html"]');
-    if (defaultActive) setActiveLink(defaultActive);
-
-    // if iframe loads, ensure active link matches (optional)
-    iframe.addEventListener('load', function() {
-      // we could parse src, but we keep it simple
-    });
-
-    // ---- Dark mode toggle (demo) ----
-    document.querySelector('.icon-btn[aria-label="Dark mode"]')?.addEventListener('click', function() {
-      document.body.style.background = document.body.style.background === '#1E293B' ? '' : '#1E293B';
-      // toggle some basic dark
-      const isDark = document.body.style.background === '#1E293B';
-      document.body.style.color = isDark ? '#F1F5F9' : '';
-      document.querySelector('.main-container').style.background = isDark ? '#0F172A' : '';
-      document.querySelector('.content-card').style.background = isDark ? 'rgba(30,41,59,0.8)' : '';
-      document.querySelector('.topnav').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
-      document.querySelector('.sidebar').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
-      // simple icon swap
-      const icon = this.querySelector('i');
-      if (icon) {
-        if (isDark) {
-          icon.setAttribute('data-lucide', 'sun');
-        } else {
-          icon.setAttribute('data-lucide', 'moon');
-        }
+    <script>
+        // ---- Initialize Lucide icons ----
         lucide.createIcons();
-      }
-    });
 
-    // ---- notification bell dot demo ----
-    // no extra logic
-  </script>
+        // ---- 🔐 SUPABASE CONFIGURATION (कृपया आफ्नो कुञ्जी राख्नुहोस्) ----
+        // तपाईंको Supabase project URL र anon key तल राख्नुहोस्।
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- यहाँ URL राख्नुहोस्
+        const SUPABASE_ANON_KEY = 'your-anon-key'; // <-- यहाँ anon key राख्नुहोस्
+
+        // ---- DOM references ----
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+
+        // ---- Supabase client ----
+        let supabase;
+
+        try {
+            if (!SUPABASE_URL || SUPABASE_URL === 'https://your-project.supabase.co' ||
+                !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'your-anon-key') {
+                throw new Error('कृपया index.html मा SUPABASE_URL र SUPABASE_ANON_KEY सेट गर्नुहोस्।');
+            }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (err) {
+            console.error('Supabase init error:', err);
+            showError('Supabase कन्फिगरेसन मिलेन। कृपया प्रशासकलाई सम्पर्क गर्नुहोस्।');
+        }
+
+        // ---- Check existing session & redirect ----
+        async function checkSession() {
+            if (!supabase) return;
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (session) {
+                window.location.href = 'adminindex.html';
+            }
+        }
+        checkSession();
+
+        // ---- Show error helper ----
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorMsg.classList.add('show');
+            // Auto-hide after 5s
+            clearTimeout(window.errorTimeout);
+            window.errorTimeout = setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 5000);
+        }
+
+        // ---- Login handler ----
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Hide previous error
+            errorMsg.classList.remove('show');
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('कृपया इमेल र पासवर्ड दुवै भर्नुहोस्।');
+                return;
+            }
+
+            if (!supabase) {
+                showError('Supabase क्लाइन्ट सुरु भएन।');
+                return;
+            }
+
+            // Disable button & show spinner
+            loginBtn.disabled = true;
+            btnText.textContent = 'प्रवेश गर्दै...';
+            btnIcon.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (error) {
+                    // Handle specific errors
+                    if (error.message.includes('Invalid login credentials')) {
+                        showError('इमेल वा पासवर्ड मिलेन। कृपया पुन: प्रयास गर्नुहोस्।');
+                    } else {
+                        showError(error.message || 'लगइन असफल भयो।');
+                    }
+                    throw error; // to trigger catch
+                }
+
+                // Success: redirect to admin dashboard
+                window.location.href = 'adminindex.html';
+
+            } catch (err) {
+                // Error already shown; just re-enable button
+                console.error('Login error:', err);
+            } finally {
+                // Reset button state (only if not redirected)
+                if (!window.location.href.includes('adminindex.html')) {
+                    loginBtn.disabled = false;
+                    btnText.textContent = 'प्रवेश गर्नुहोस्';
+                    btnIcon.innerHTML = '<i data-lucide="log-in" size="20"></i>';
+                    lucide.createIcons(); // re-render icon
+                }
+            }
+        });
+
+        // ---- Optional: Enter key triggers submit (already via form) ----
+
+        // ---- Demo: prefill for testing (remove in production) ----
+        // You can fill test credentials if you want:
+        // emailInput.value = 'test@example.com';
+        // passwordInput.value = 'password123';
+    </script>
 </body>
 </html>

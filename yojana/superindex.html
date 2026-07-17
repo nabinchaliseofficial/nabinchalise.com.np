@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>गलकोट नगरपालिका · योजना खाता व्यवस्थापन</title>
+  <!-- Google Fonts: Inter + Noto Sans Devanagari -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ----- CSS Variables (Premium palette) ----- */
+    :root {
+      --primary: #0F766E;
+      --primary-light: #14B8A6;
+      --accent: #F59E0B;
+      --bg: #F8FAFC;
+      --card: #ffffff;
+      --text: #1E293B;
+      --text-muted: #475569;
+      --border: #E9ECEF;
+      --shadow: 0 20px 40px -12px rgba(0,0,0,0.08), 0 8px 24px -6px rgba(15,118,110,0.06);
+      --shadow-hover: 0 30px 50px -16px rgba(0,0,0,0.12);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --glass: rgba(255,255,255,0.55);
+      --glass-border: rgba(255,255,255,0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
+    ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 12px; }
+
+    /* ----- SIDEBAR (glass + premium) ----- */
+    .sidebar {
+      width: 270px;
+      background: rgba(255,255,255,0.70);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid var(--glass-border);
+      box-shadow: 4px 0 20px -8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      flex-shrink: 0;
+      transition: var(--transition);
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 8px 16px -6px rgba(15,118,110,0.3);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-text h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .brand-text span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .menu-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 12px 20px;
+    }
+
+    .menu-group {
+      margin-bottom: 20px;
+    }
+    .menu-group-title {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0 12px 6px;
+      opacity: 0.6;
+    }
+
+    .menu-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .menu-list li a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 16px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      transition: var(--transition);
+      position: relative;
+      background: transparent;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .menu-list li a i {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .menu-list li a .menu-label {
+      white-space: nowrap;
+    }
+
+    /* Active state: pill + gradient + vertical indicator */
+    .menu-list li a.active {
+      background: linear-gradient(135deg, rgba(15,118,110,0.10), rgba(20,184,166,0.08));
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(15,118,110,0.08);
+    }
+
+    .menu-list li a.active i {
+      color: var(--primary);
+    }
+
+    .menu-list li a.active::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 20%;
+      height: 60%;
+      width: 4px;
+      background: linear-gradient(180deg, var(--primary), var(--primary-light));
+      border-radius: 8px;
+    }
+
+    .menu-list li a:hover:not(.active) {
+      background: rgba(15,118,110,0.04);
+    }
+
+    /* ----- TOP NAV (glass + premium) ----- */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .topnav {
+      background: rgba(255,255,255,0.70);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .topnav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topnav-left .page-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .topnav-center {
+      flex: 1;
+      max-width: 380px;
+      min-width: 140px;
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 60px;
+      padding: 0 16px;
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: var(--transition);
+    }
+    .topnav-center:focus-within {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(20,184,166,0.08);
+    }
+    .topnav-center i {
+      color: var(--text-muted);
+      margin-right: 8px;
+    }
+    .topnav-center input {
+      border: none;
+      background: transparent;
+      padding: 10px 0;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      color: var(--text);
+    }
+    .topnav-center input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .topnav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .topnav-right .badge-year {
+      background: rgba(15,118,110,0.06);
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .icon-btn:hover {
+      background: rgba(0,0,0,0.04);
+      color: var(--text);
+    }
+    .icon-btn .dot {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 10px;
+      border: 2px solid white;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 8px -4px rgba(15,118,110,0.2);
+    }
+
+    /* ----- CONTENT AREA (card + glass) ----- */
+    .content-wrapper {
+      flex: 1;
+      padding: 20px 28px 28px;
+      overflow: auto;
+      background: var(--bg);
+    }
+
+    .content-card {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--glass-border);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition);
+      min-height: 480px;
+    }
+
+    .content-card iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+      border-radius: var(--radius);
+    }
+
+    /* Breadcrumb (optional inside card header) */
+    .card-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(4px);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .card-header .breadcrumb {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-header .breadcrumb span { color: var(--text); font-weight: 500; }
+    .card-header .action-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { width: 220px; }
+      .topnav { padding: 10px 16px; }
+      .content-wrapper { padding: 14px 16px 20px; }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar { width: 68px; }
+      .sidebar-brand .brand-text, 
+      .menu-group-title,
+      .menu-list li a .menu-label {
+        display: none;
+      }
+      .menu-list li a { justify-content: center; padding: 12px; }
+      .menu-list li a i { margin: 0; }
+      .menu-list li a.active::before { left: 4px; }
+      .topnav-center { max-width: 140px; }
+      .topnav .badge-year { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .sidebar { width: 56px; }
+      .topnav-left .page-title { font-size: 0.9rem; }
+      .topnav-center { max-width: 100px; }
+      .topnav-center input { font-size: 0.75rem; }
+      .icon-btn { width: 32px; height: 32px; }
+      .avatar { width: 32px; height: 32px; font-size: 0.7rem; }
+    }
+
+    /* utilities */
+    .flex { display: flex; align-items: center; gap: 8px; }
+    .text-muted { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR (glass + grouped) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">ग</div>
+      <div class="brand-text">
+        <h2>गलकोट नगरपालिका</h2>
+        <span>योजना खाता प्रणाली</span>
+      </div>
+    </div>
+    <div class="menu-container">
+      <!-- Group 1: Dashboard -->
+      <div class="menu-group">
+        <div class="menu-group-title">मुख्य</div>
+        <ul class="menu-list">
+          <li><a href="home.html" target="contentFrame" class="active" data-title="गृह पृष्ठ"><i data-lucide="layout-dashboard"></i><span class="menu-label">गृह पृष्ठ</span></a></li>
+        </ul>
+      </div>
+      <!-- Group 2: योजना व्यवस्थापन -->
+      <div class="menu-group">
+        <div class="menu-group-title">योजना व्यवस्थापन</div>
+        <ul class="menu-list">
+          <li><a href="background.html" target="contentFrame" data-title="पृष्ठभूमि, भूमिका तथा दायित्व"><i data-lucide="file-text"></i><span class="menu-label">पृष्ठभूमि</span></a></li>
+          <li><a href="user_committee.html" target="contentFrame" data-title="उपभोक्ता समिति विवरण"><i data-lucide="users"></i><span class="menu-label">उपभोक्ता समिति</span></a></li>
+          <li><a href="officials.html" target="contentFrame" data-title="पदाधिकारी/बैठक निर्णय"><i data-lucide="briefcase"></i><span class="menu-label">पदाधिकारी</span></a></li>
+        </ul>
+      </div>
+      <!-- Group 3: सम्झौता -->
+      <div class="menu-group">
+        <div class="menu-group-title">सम्झौता</div>
+        <ul class="menu-list">
+          <li><a href="aggrement.html" target="contentFrame" data-title="सम्झौताको लागि सिफारिस"><i data-lucide="file-signature"></i><span class="menu-label">सिफारिस</span></a></li>
+          <li><a href="wardaggrement.html" target="contentFrame" data-title="वडाको सिफारिस"><i data-lucide="map-pin"></i><span class="menu-label">वडा सिफारिस</span></a></li>
+          <li><a href="useraggrement.html" target="contentFrame" data-title="योजना सम्झौता (उपभोक्ता)"><i data-lucide="handshake"></i><span class="menu-label">उपभोक्ता सम्झौता</span></a></li>
+          <li><a href="finalagreement.html" target="contentFrame" data-title="योजना सम्झौता फाराम"><i data-lucide="file-check"></i><span class="menu-label">सम्झौता फाराम</span></a></li>
+        </ul>
+      </div>
+      <!-- Group 4: वित्तीय विवरण -->
+      <div class="menu-group">
+        <div class="menu-group-title">वित्तीय</div>
+        <ul class="menu-list">
+          <li><a href="ledger.html" target="contentFrame" data-title="आम्दानी र खर्च खाता"><i data-lucide="wallet"></i><span class="menu-label">आम्दानी/खर्च</span></a></li>
+          <li><a href="receipt.html" target="contentFrame" data-title="रकम बुझेको भरपाई"><i data-lucide="receipt"></i><span class="menu-label">भरपाई</span></a></li>
+          <li><a href="audit.html" target="contentFrame" data-title="सार्वजनिक लेखा परीक्षण"><i data-lucide="clipboard-check"></i><span class="menu-label">लेखा परीक्षण</span></a></li>
+        </ul>
+      </div>
+      <!-- Group 5: प्रतिवेदन / अन्य -->
+      <div class="menu-group">
+        <div class="menu-group-title">प्रतिवेदन</div>
+        <ul class="menu-list">
+          <li><a href="materials.html" target="contentFrame" data-title="निर्माण सामग्री र औजार"><i data-lucide="hammer"></i><span class="menu-label">सामग्री/औजार</span></a></li>
+          <li><a href="participation.html" target="contentFrame" data-title="जनसहभागिता विवरण"><i data-lucide="users-round"></i><span class="menu-label">जनसहभागिता</span></a></li>
+          <li><a href="attendance.html" target="contentFrame" data-title="डोर हाजिरी"><i data-lucide="clipboard-list"></i><span class="menu-label">हाजिरी</span></a></li>
+          <li><a href="notice.html" target="contentFrame" data-title="सूचना पाटी"><i data-lucide="bell"></i><span class="menu-label">सूचना</span></a></li>
+          <li><a href="transfer.html" target="contentFrame" data-title="योजना हस्तान्तरण"><i data-lucide="arrow-right-left"></i><span class="menu-label">हस्तान्तरण</span></a></li>
+          <li><a href="completion.html" target="contentFrame" data-title="योजना सम्पन्न प्रतिवेदन"><i data-lucide="flag"></i><span class="menu-label">सम्पन्न</span></a></li>
+          <li><a href="summary.html" target="contentFrame" data-title="संक्षिप्त विवरण तथा नियम"><i data-lucide="list-checks"></i><span class="menu-label">संक्षिप्त विवरण</span></a></li>
+          <li><a href="correspondence.html" target="contentFrame" data-title="पत्राचार तथा सिफारिसहरू"><i data-lucide="mail"></i><span class="menu-label">पत्राचार</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTAINER -->
+  <div class="main-container">
+
+    <!-- TOP NAV (glass) -->
+    <nav class="topnav">
+      <div class="topnav-left">
+        <span class="page-title" id="pageTitle">गृह पृष्ठ</span>
+      </div>
+      <div class="topnav-center">
+        <i data-lucide="search" size="18"></i>
+        <input type="text" placeholder="योजना खोज्नुहोस्..." aria-label="Search">
+      </div>
+      <div class="topnav-right">
+        <span class="badge-year">आ.व. २०८२/०८३</span>
+        <button class="icon-btn" aria-label="Notifications"><i data-lucide="bell"></i><span class="dot"></span></button>
+        <button class="icon-btn" aria-label="Dark mode"><i data-lucide="moon"></i></button>
+        <div class="avatar">ग</div>
+      </div>
+    </nav>
+
+    <!-- CONTENT CARD with breadcrumb & iframe -->
+    <div class="content-wrapper">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="breadcrumb">
+            <i data-lucide="home" size="14"></i> / <span id="breadcrumbLabel">गृह पृष्ठ</span>
+          </div>
+          <span class="action-badge">प्रणाली संस्करण २.०</span>
+        </div>
+        <iframe src="home.html" name="contentFrame" id="contentFrame" title="गलकोट नगरपालिका योजना खाता"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // ---- NAVIGATION LOGIC: set active, update title & breadcrumb ----
+    const links = document.querySelectorAll('.menu-list li a');
+    const pageTitle = document.getElementById('pageTitle');
+    const breadcrumbLabel = document.getElementById('breadcrumbLabel');
+    const iframe = document.getElementById('contentFrame');
+
+    function setActiveLink(activeLink) {
+      // remove active from all
+      links.forEach(link => link.classList.remove('active'));
+      // add active to clicked
+      activeLink.classList.add('active');
+      // update title & breadcrumb from data-title or text content
+      let title = activeLink.getAttribute('data-title');
+      if (!title) {
+        const labelSpan = activeLink.querySelector('.menu-label');
+        title = labelSpan ? labelSpan.textContent : activeLink.textContent.trim();
+      }
+      pageTitle.textContent = title;
+      breadcrumbLabel.textContent = title;
+    }
+
+    // click handler
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        setActiveLink(this);
+        // iframe src is already set via target/href, but we keep it
+      });
+    });
+
+    // set default active (home)
+    const defaultActive = document.querySelector('.menu-list li a[href="home.html"]');
+    if (defaultActive) setActiveLink(defaultActive);
+
+    // if iframe loads, ensure active link matches (optional)
+    iframe.addEventListener('load', function() {
+      // we could parse src, but we keep it simple
+    });
+
+    // ---- Dark mode toggle (demo) ----
+    document.querySelector('.icon-btn[aria-label="Dark mode"]')?.addEventListener('click', function() {
+      document.body.style.background = document.body.style.background === '#1E293B' ? '' : '#1E293B';
+      // toggle some basic dark
+      const isDark = document.body.style.background === '#1E293B';
+      document.body.style.color = isDark ? '#F1F5F9' : '';
+      document.querySelector('.main-container').style.background = isDark ? '#0F172A' : '';
+      document.querySelector('.content-card').style.background = isDark ? 'rgba(30,41,59,0.8)' : '';
+      document.querySelector('.topnav').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
+      document.querySelector('.sidebar').style.background = isDark ? 'rgba(30,41,59,0.7)' : '';
+      // simple icon swap
+      const icon = this.querySelector('i');
+      if (icon) {
+        if (isDark) {
+          icon.setAttribute('data-lucide', 'sun');
+        } else {
+          icon.setAttribute('data-lucide', 'moon');
+        }
+        lucide.createIcons();
+      }
+    });
+
+    // ---- notification bell dot demo ----
+    // no extra logic
+  </script>
+</body>
+</html>
