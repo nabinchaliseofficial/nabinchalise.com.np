@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galkot Tech Computer Institute — Professional IT Training & Certifications | Baglung, Nepal</title>
+<meta name="description" content="Galkot Tech Computer Institute in Baglung, Nepal — Professional computer training courses, Web Development, Python, Computer Operator, MS Office, and Student Certificate Verification.">
+<meta name="keywords" content="Galkot Tech, computer training Baglung, computer institute Galkot, diploma courses, student verify, courseverify">
+<meta name="author" content="Galkot Tech">
+<link rel="canonical" href="https://galkottech.com/">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: { DEFAULT: '#2563EB', 50:'#eff6ff',100:'#dbeafe',400:'#60a5fa',500:'#3b82f6',600:'#2563EB',700:'#1d4ed8' },
+          ink: '#0F172A',
+          accent: '#06B6D4',
+          success: '#10B981',
+          danger: '#EF4444',
+          warning: '#F59E0B',
+          surface: { dark: '#0B1220', dark2:'#0F172A', dark3:'#111C33' }
+        },
+        fontFamily: {
+          display: ['Manrope','sans-serif'],
+          body: ['Inter','sans-serif'],
+        },
+        boxShadow: {
+          glow: '0 0 0 1px rgba(37,99,235,0.15), 0 8px 40px -8px rgba(37,99,235,0.35)',
+          'glow-cyan': '0 0 0 1px rgba(6,182,212,0.15), 0 8px 40px -8px rgba(6,182,212,0.35)',
+        }
+      }
+    }
+  }
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root{ --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); }
+  html{ scrollbar-gutter: stable; }
+  body{ font-family:'Inter',sans-serif; background:#080D18; color:#E6EAF2; overflow-x:hidden; }
+  html.light body{ background:#FAFBFF; color:#0F172A; }
+  .font-display{ font-family:'Manrope',sans-serif; }
+  ::selection{ background:#06B6D4; color:#04101c; }
+
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:#1e2b45; border-radius:8px; }
+
+  #loader{ position:fixed; inset:0; z-index:9999; background:#080D18; display:flex; align-items:center; justify-content:center; transition:opacity .7s var(--ease-out-expo), visibility .7s; }
+  #loader.hide{ opacity:0; visibility:hidden; }
+  .ridge-mark{ stroke-dasharray:600; stroke-dashoffset:600; animation:draw 1.6s var(--ease-out-expo) forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  .glass{ background:rgba(15,23,42,0.55); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid rgba(148,163,184,0.12); }
+  html.light .glass{ background:rgba(255,255,255,0.65); border:1px solid rgba(15,23,42,0.06); }
+
+  .card{ background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border:1px solid rgba(148,163,184,0.10); }
+  html.light .card{ background:#fff; border:1px solid rgba(15,23,42,0.06); box-shadow:0 1px 2px rgba(15,23,42,0.04); }
+
+  .grad-text{ background:linear-gradient(90deg,#60A5FA,#06B6D4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .nav-link{ position:relative; }
+  .nav-link::after{ content:''; position:absolute; left:0; bottom:-4px; width:0; height:2px; background:linear-gradient(90deg,#2563EB,#06B6D4); transition:width .35s var(--ease-out-expo); }
+  .nav-link:hover::after{ width:100%; }
+
+  .btn-primary{ background:linear-gradient(135deg,#2563EB,#06B6D4); }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  #scroll-progress{ position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,#2563EB,#06B6D4); z-index:9998; width:0%; }
+
+  /* Security: prevent right-click context menu */
+  body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Notification Toast */
+  #notif {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    padding: 14px 22px;
+    border-radius: 14px;
+    background: #1a2332;
+    border: 1px solid rgba(148,163,184,0.12);
+    color: #E6EAF2;
+    font-size: 14px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 420px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+  }
+  #notif.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  #notif.success { border-color: #10B981; border-left: 4px solid #10B981; }
+  #notif.error { border-color: #EF4444; border-left: 4px solid #EF4444; }
+  #notif.info { border-color: #2563EB; border-left: 4px solid #2563EB; }
+
+  /* Disable text selection on all interactive elements */
+  button, a, input, select, textarea {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Security: prevent image dragging */
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<body class="antialiased selection:bg-accent" oncontextmenu="return false;" onkeydown="return disableKeys(event);">
+
+<div id="loader" aria-hidden="true">
+  <svg width="140" height="100" viewBox="0 0 140 100" fill="none">
+    <path class="ridge-mark" d="M2 80 L28 40 L42 58 L60 20 L78 52 L94 30 L112 62 L138 24" stroke="#06B6D4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="60" cy="20" r="3.5" fill="#2563EB"/>
+    <circle cx="112" cy="62" r="3.5" fill="#2563EB"/>
+  </svg>
+</div>
+
+<div id="scroll-progress"></div>
+
+<!-- NOTIFICATION TOAST -->
+<div id="notif"></div>
+
+<header id="navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <div class="glass mx-auto mt-3 max-w-7xl rounded-2xl px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16">
+      <a href="#home" class="flex items-center gap-2 font-display font-extrabold text-lg">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-sm">GT</span>
+        <span>Galkot Tech <span class="grad-text">Institute</span></span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#about" class="nav-link hover:text-white">About</a>
+        <a href="#courses" class="nav-link hover:text-white">Courses</a>
+        <a href="enrollmentverify.html" class="nav-link hover:text-white text-accent font-semibold">Student Verify</a>
+        <a href="#facilities" class="nav-link hover:text-white">Lab & Facilities</a>
+        <a href="#testimonials" class="nav-link hover:text-white">Success Stories</a>
+        <a href="#contact" class="nav-link hover:text-white">Contact</a>
+      </nav>
+
+      <div class="hidden lg:flex items-center gap-3">
+        <button id="login-btn" class="border border-white/20 hover:border-accent text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+          <span>🔒</span> Admin/Student Login
+        </button>
+        <a href="/gt/courseverify.html" class="btn-primary text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-glow">Verify Course</a>
+      </div>
+
+      <button id="mobile-toggle" class="lg:hidden w-9 h-9 flex items-center justify-center" aria-label="Open menu">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="lg:hidden hidden mx-3 mt-2 glass rounded-2xl p-5 space-y-2 text-sm font-medium">
+    <a href="#about" class="block py-2 border-b border-white/5">About</a>
+    <a href="#courses" class="block py-2 border-b border-white/5">Courses</a>
+    <a href="courseverify.html" class="block py-2 border-b border-white/5 text-accent font-semibold">Student Verify</a>
+    <a href="#facilities" class="block py-2 border-b border-white/5">Lab & Facilities</a>
+    <a href="#testimonials" class="block py-2 border-b border-white/5">Success Stories</a>
+    <a href="#contact" class="block py-2">Contact</a>
+    <button id="mobile-login-btn" class="w-full mt-2 border border-white/20 text-white font-semibold py-2.5 rounded-xl text-center">Login</button>
+    <a href="courseverify.html" class="btn-primary text-white text-center block mt-2 font-semibold px-5 py-3 rounded-xl">Verify Certificate</a>
+  </div>
+</header>
+
+<!-- ========== LOGIN MODAL ========== -->
+<div id="login-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+  <div class="glass max-w-md w-full rounded-3xl p-8 relative shadow-2xl border border-white/10" data-aos="zoom-in" data-aos-duration="300">
+    <button id="modal-close" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    
+    <div class="text-center mb-6">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent mx-auto flex items-center justify-center text-white text-lg mb-3 shadow-glow">🔐</div>
+      <h3 class="font-display font-extrabold text-2xl text-white">Institute Portal Login</h3>
+      <p class="text-xs text-slate-400 mt-1">Authenticate via Supabase to access student administration panel</p>
+    </div>
+
+    <form id="supabase-login-form" class="space-y-4">
+      <div>
+        <label class="text-xs font-semibold text-slate-300 mb-1.5 block">Email Address</label>
+        <input required type="email" id="login-email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white" placeholder="admin@galkottech.com">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-300 mb-1.5 block">Password</label>
+        <input required type="password" id="login-password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white" placeholder="••••••••">
+      </div>
+      
+      <div id="login-error" class="text-xs text-danger hidden text-center bg-danger/10 py-2 rounded-lg"></div>
+
+      <button type="submit" id="login-submit-btn" class="w-full btn-primary text-white font-semibold py-3 rounded-xl shadow-glow transition mt-2">
+        Login & Access Admin Panel
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ========== SESSION EXPIRED OVERLAY ========== -->
+<div id="session-expired-overlay" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center">
+  <div class="glass max-w-md w-full rounded-3xl p-8 text-center">
+    <div class="text-6xl mb-4">⏰</div>
+    <h3 class="font-display font-bold text-2xl text-white mb-2">Session Expired</h3>
+    <p class="text-slate-400 text-sm mb-6">Your admin session has expired. Please login again.</p>
+    <button onclick="location.reload()" class="btn-primary text-white font-semibold px-6 py-3 rounded-xl">Login Again</button>
+  </div>
+</div>
+
+<!-- ========== HOME SECTION ========== -->
+<section id="home" class="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(37,99,235,0.25),transparent)]"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center w-full">
+    <div>
+      <div data-aos="fade-up" class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide px-3 py-1.5 rounded-full glass text-accent mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+        GALKOT, BAGLUNG — PREMIER COMPUTER TRAINING INSTITUTE
+      </div>
+
+      <h1 data-aos="fade-up" data-aos-delay="80" class="font-display font-extrabold text-[2.6rem] sm:text-6xl leading-[1.05] tracking-tight text-white">
+        Master IT skills,
+        <br class="hidden sm:block">
+        build your <span class="grad-text">future.</span>
+      </h1>
+
+      <p data-aos="fade-up" data-aos-delay="160" class="mt-6 text-lg text-slate-300 max-w-xl">
+        Professional computer training courses from basic MS Office to advanced Web Development, Python, and Graphic Design. Certified diploma programs with practical hands-on lab sessions in Baglung.
+      </p>
+
+      <div data-aos="fade-up" data-aos-delay="240" class="mt-8 flex flex-wrap gap-4">
+        <a href="#courses" class="btn-primary text-white font-semibold px-7 py-3.5 rounded-xl shadow-glow inline-flex items-center gap-2">
+          Explore Courses
+          <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </a>
+        <a href="courseverify.html" class="font-semibold px-7 py-3.5 rounded-xl glass hover:border-white/25 border border-white/10 transition text-accent">Verify Student Certificate</a>
+      </div>
+
+      <div data-aos="fade-up" data-aos-delay="320" class="mt-12 grid grid-cols-3 gap-6 max-w-md">
+        <div><p class="font-display font-extrabold text-3xl text-white">1,500+</p><p class="text-xs text-slate-400 mt-1">Students Trained</p></div>
+        <div><p class="font-display font-extrabold text-3xl text-white">12+</p><p class="text-xs text-slate-400 mt-1">Professional Courses</p></div>
+        <div><p class="font-display font-extrabold text-3xl text-white">100%</p><p class="text-xs text-slate-400 mt-1">Practical Lab Training</p></div>
+      </div>
+    </div>
+
+    <div class="relative hidden lg:block" data-aos="fade-left" data-aos-delay="200">
+      <div class="relative rounded-3xl overflow-hidden glass p-3 shadow-glow">
+        <div class="rounded-2xl bg-gradient-to-br from-surface-dark3 to-surface-dark aspect-[4/5] flex flex-col justify-center items-center p-8 text-center relative overflow-hidden">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-4xl mb-6 shadow-glow">💻</div>
+          <h3 class="font-display font-bold text-xl text-white mb-2">Advanced Computer Lab</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">High-speed internet, dedicated work stations, latest software, and expert mentorship by Nabin Chalise & team.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section id="about" class="py-28 px-6 max-w-7xl mx-auto">
+  <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <div data-aos="fade-right">
+      <span class="text-accent text-xs font-bold tracking-widest">ABOUT THE INSTITUTE</span>
+      <h2 class="font-display font-extrabold text-4xl mt-3 mb-6 text-white">Empowering Baglung with professional computer education.</h2>
+      <p class="text-slate-300 leading-relaxed mb-4">
+        Galkot Tech Computer Institute provides rigorous, career-focused technical training. Whether you are starting with computer basics or want to master software programming and graphic design, our courses are structured for real-world job readiness.
+      </p>
+      <p class="text-slate-300 leading-relaxed mb-8">
+        Every enrolled student receives a verified certificate upon completion, with records securely logged and verifiable online through our <a href="courseverify.html" class="text-accent underline font-semibold">Student Verify</a> portal.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="card rounded-2xl p-5">
+          <p class="text-2xl mb-2">📜</p>
+          <p class="font-display font-bold text-white text-sm mb-1">Certified</p>
+          <p class="text-xs text-slate-400">Government registered & recognized certificates.</p>
+        </div>
+        <div class="card rounded-2xl p-5">
+          <p class="text-2xl mb-2">👨‍🏫</p>
+          <p class="font-display font-bold text-white text-sm mb-1">Expert Mentors</p>
+          <p class="text-xs text-slate-400">Learn directly from professional software developers.</p>
+        </div>
+        <div class="card rounded-2xl p-5">
+          <p class="text-2xl mb-2">💼</p>
+          <p class="font-display font-bold text-white text-sm mb-1">Job Ready</p>
+          <p class="text-xs text-slate-400">Practical portfolio projects & career guidance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div data-aos="fade-left" class="card rounded-3xl p-8">
+      <p class="font-display text-lg text-white leading-relaxed mb-6">
+        "Our mission is to bridge the digital divide in Baglung by giving students practical coding, office administration, and design skills that match market demands."
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-display font-bold text-white">NC</div>
+        <div>
+          <p class="font-semibold text-white text-sm">Nabin Chalise</p>
+          <p class="text-xs text-slate-400">Lead Trainer & Instructor</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== COURSES ========== -->
+<section id="courses" class="py-28 px-6 bg-white/[0.02]">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+      <span class="text-accent text-xs font-bold tracking-widest">TRAINING PROGRAMS</span>
+      <h2 class="font-display font-extrabold text-4xl mt-3 text-white">Professional Computer Courses</h2>
+      <p class="text-slate-400 mt-4">Choose from basic office packages to advanced software engineering diplomas.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Course cards (same as before, kept brief) -->
+      <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center text-xl mb-4">🖥️</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">BEGINNER</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Basic Computer & MS Office</h3>
+          <p class="text-sm text-slate-400 mb-6">Windows, Word, Excel, PowerPoint, Internet browsing, Nepali/English typing and printer setup.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 6 Weeks</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+
+      <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="60">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center text-xl mb-4">⚡</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">CAREER DIPLOMA</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Computer Operator Preparation</h3>
+          <p class="text-sm text-slate-400 mb-6">Designed for Lok Sewa & public sector computer operator exams. Advanced office systems and database basics.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 3 Months</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+
+      <div class="card rounded-2xl p-7 flex flex-col justify-between ring-1 ring-primary/40 relative" data-aos="fade-up" data-aos-delay="120">
+        <span class="absolute -top-3 right-5 bg-gradient-to-r from-primary to-accent text-white text-[10px] font-bold px-3 py-1 rounded-full">POPULAR</span>
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-success/15 text-success flex items-center justify-center text-xl mb-4">🌐</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">PROGRAMMING</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Web Design & Development</h3>
+          <p class="text-sm text-slate-400 mb-6">HTML5, CSS3, Tailwind, JavaScript, Responsive design, and live project deployment.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 4 Months</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+
+      <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-warning/15 text-warning flex items-center justify-center text-xl mb-4">🐍</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">PROGRAMMING</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Python Programming & DB</h3>
+          <p class="text-sm text-slate-400 mb-6">Learn core Python, logic building, object-oriented programming, and SQL database management.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 3 Months</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+
+      <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="60">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center text-xl mb-4">🎨</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">CREATIVE DESIGN</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Graphic Design & Editing</h3>
+          <p class="text-sm text-slate-400 mb-6">Adobe Photoshop, Illustrator, logo creation, flex banner design, social media posts, and branding.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 2 Months</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+
+      <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="120">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center text-xl mb-4">⚙️</div>
+          <span class="text-xs font-semibold text-accent mb-2 block">HARDWARE & NETWORKING</span>
+          <h3 class="font-display font-bold text-white text-lg mb-2">Hardware, CCTV & Networking</h3>
+          <p class="text-sm text-slate-400 mb-6">PC assembling, troubleshooting, OS installation, router setup, LAN/WAN configuration, and CCTV installation.</p>
+        </div>
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+          <span>⏱️ 3 Months</span>
+          <a href="/gt/gtregister.html" class="text-primary font-semibold hover:text-accent">Enroll Now →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FACILITIES ========== -->
+<section id="facilities" class="py-28 px-6 max-w-7xl mx-auto">
+  <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+    <span class="text-accent text-xs font-bold tracking-widest">INFRASTRUCTURE</span>
+    <h2 class="font-display font-extrabold text-4xl mt-3 text-white">Our Institute Lab & Facilities</h2>
+    <p class="text-slate-400 mt-4">Equipped for comfortable, distraction-free technical learning.</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="card rounded-2xl p-7" data-aos="fade-up">
+      <div class="text-3xl mb-4">🖥️</div>
+      <h3 class="font-display font-bold text-white mb-2">Dedicated Workstations</h3>
+      <p class="text-sm text-slate-400">One computer per student with dual-boot systems and high specifications for smooth coding and design practice.</p>
+    </div>
+    <div class="card rounded-2xl p-7" data-aos="fade-up" data-aos-delay="60">
+      <div class="text-3xl mb-4">🚀</div>
+      <h3 class="font-display font-bold text-white mb-2">High-Speed Internet</h3>
+      <p class="text-sm text-slate-400">Uninterrupted fiber optic internet connection for live coding, research, and software package downloads.</p>
+    </div>
+    <div class="card rounded-2xl p-7" data-aos="fade-up" data-aos-delay="120">
+      <div class="text-3xl mb-4">📚</div>
+      <h3 class="font-display font-bold text-white mb-2">Resource Library & Notes</h3>
+      <p class="text-sm text-slate-400">Comprehensive printed manuals, assignment sheets, video tutorials, and reference books for all enrolled students.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section id="testimonials" class="py-28 px-6 bg-white/[0.02]">
+  <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+    <span class="text-accent text-xs font-bold tracking-widest">SUCCESS STORIES</span>
+    <h2 class="font-display font-extrabold text-4xl mt-3 mb-12 text-white">What Our Graduates Say</h2>
+    
+    <div class="swiper testimonials-swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="card rounded-2xl p-8 max-w-2xl mx-auto">
+            <p class="text-lg text-slate-200 leading-relaxed mb-6">"I completed the Web Development course at Galkot Tech Institute. The practical sessions were amazing, and now I work as a freelance web developer."</p>
+            <p class="font-semibold text-white">Sabina Thapa</p>
+            <p class="text-xs text-slate-400">Web Development Graduate</p>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="card rounded-2xl p-8 max-w-2xl mx-auto">
+            <p class="text-lg text-slate-200 leading-relaxed mb-6">"The Computer Operator preparation class gave me the exact knowledge and confidence required to crack public service exams."</p>
+            <p class="font-semibold text-white">Ramesh K.C.</p>
+            <p class="text-xs text-slate-400">Computer Operator Graduate</p>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-pagination mt-6"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONTACT / INQUIRY FORM ========== -->
+<section id="contact" class="py-28 px-6 max-w-7xl mx-auto">
+  <div class="grid lg:grid-cols-2 gap-16">
+    <div data-aos="fade-right">
+      <span class="text-accent text-xs font-bold tracking-widest">GET IN TOUCH</span>
+      <h2 class="font-display font-extrabold text-4xl mt-3 mb-6 text-white">Visit Our Training Center</h2>
+      <p class="text-slate-300 mb-8">Drop by our institute in Galkot, Baglung or reach out via phone or email to inquire about upcoming batch schedules and fees.</p>
+      
+      <div class="space-y-4 mb-8">
+        <div class="flex items-center gap-4 card rounded-xl p-4">
+          <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center text-primary">📍</div>
+          <p class="text-sm text-slate-300">Galkot, Baglung, Nepal</p>
+        </div>
+        <div class="flex items-center gap-4 card rounded-xl p-4">
+          <div class="w-10 h-10 rounded-lg bg-accent/15 flex items-center justify-center text-accent">📞</div>
+          <p class="text-sm text-slate-300">+977-9851338747</p>
+        </div>
+        <div class="flex items-center gap-4 card rounded-xl p-4">
+          <div class="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center text-success">✉️</div>
+          <p class="text-sm text-slate-300">pilotprosoft@gmail.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INQUIRY FORM (NOW FUNCTIONAL) ===== -->
+    <form id="inquiry-form" class="card rounded-2xl p-8" data-aos="fade-left">
+      <h3 class="font-display font-bold text-xl text-white mb-6">Course Inquiry Form</h3>
+      
+      <div id="inquiry-error" class="hidden text-xs text-danger text-center bg-danger/10 py-2 rounded-lg mb-4"></div>
+      <div id="inquiry-success" class="hidden text-xs text-success text-center bg-success/10 py-2.5 rounded-lg font-semibold mb-4">
+        ✅ Thank you! Your inquiry has been submitted. We will contact you shortly.
+      </div>
+
+      <div class="space-y-4 mb-4">
+        <div>
+          <label class="text-xs font-semibold text-slate-400 mb-1.5 block">Full Name <span class="text-danger">*</span></label>
+          <input required type="text" id="inq-name" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white" placeholder="Your name">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-400 mb-1.5 block">Phone Number <span class="text-danger">*</span></label>
+          <input required type="tel" id="inq-phone" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white" placeholder="98XXXXXXXX">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-400 mb-1.5 block">Select Course <span class="text-danger">*</span></label>
+          <select id="inq-course" class="w-full bg-surface-dark border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white">
+            <option value="">— Select a Course —</option>
+            <option value="Basic Computer & MS Office">Basic Computer & MS Office</option>
+            <option value="Computer Operator Preparation">Computer Operator Preparation</option>
+            <option value="Web Design & Development">Web Design & Development</option>
+            <option value="Python Programming & DB">Python Programming & DB</option>
+            <option value="Graphic Design & Editing">Graphic Design & Editing</option>
+            <option value="Hardware, CCTV & Networking">Hardware, CCTV & Networking</option>
+            <option value="Advanced Web Development (Full Stack)">Advanced Web Development (Full Stack)</option>
+            <option value="Data Science & AI Fundamentals">Data Science & AI Fundamentals</option>
+            <option value="Digital Marketing & SEO">Digital Marketing & SEO</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-400 mb-1.5 block">Message / Questions</label>
+          <textarea rows="3" id="inq-message" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 text-white" placeholder="Any specific questions about batch time or fees..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" id="inq-submit-btn" class="w-full btn-primary text-white font-semibold py-3.5 rounded-xl shadow-glow transition flex items-center justify-center gap-2">
+        <i class="fas fa-paper-plane"></i>
+        <span>Submit Inquiry</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<footer class="py-12 border-t border-white/5 text-center text-xs text-slate-500">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p>© 2026 Galkot Tech Computer Institute, Baglung, Nepal. All rights reserved.</p>
+    <div class="flex gap-4">
+      <a href="enrollmentverify.html" class="text-accent font-semibold hover:underline">Student Verify</a>
+      <a href="#home" class="hover:text-white">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+// =============================================
+// SECURITY — ENHANCED
+// =============================================
+
+// 1. Disable keyboard shortcuts for dev tools
+function disableKeys(e) {
+  const key = e.keyCode || e.which;
+  // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S, Ctrl+Shift+C
+  if (key === 123 || 
+      (e.ctrlKey && e.shiftKey && (key === 73 || key === 74 || key === 67)) ||
+      (e.ctrlKey && key === 85) ||
+      (e.ctrlKey && key === 83) ||
+      (e.ctrlKey && key === 72)) {
+    e.preventDefault();
+    return false;
+  }
+  return true;
+}
+document.addEventListener('keydown', disableKeys);
+
+// 2. Disable right-click
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 3. Prevent copying, cutting, pasting
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('paste', e => e.preventDefault());
+document.addEventListener('selectstart', e => e.preventDefault());
+
+// 4. Prevent drag and drop
+document.addEventListener('dragstart', e => e.preventDefault());
+document.addEventListener('drop', e => e.preventDefault());
+
+// 5. Disable print screen (keyboard)
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'PrintScreen') {
+    navigator.clipboard.writeText('').catch(() => {});
+    e.preventDefault();
+  }
+});
+
+// 6. Prevent view source via context menu
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 7. Block developer tools detection (console clear)
+console.clear = function() {};
+console.log = function() {};
+console.warn = function() {};
+console.error = function() {};
+console.info = function() {};
+
+// 8. Prevent page from being framed (clickjacking)
+if (window.top !== window.self) {
+  document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">🔒 Security: This page cannot be loaded in an iframe.</h1>';
+  throw new Error('Framing blocked.');
+}
+
+// 9. Disable accessibility inspector (Chrome)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && e.key === 'J') e.preventDefault();
+  if (e.ctrlKey && e.key === 'U') e.preventDefault();
+  if (e.ctrlKey && e.key === 'S') e.preventDefault();
+});
+
+// =============================================
+// SUPABASE — INQUIRY FORM
+// =============================================
+
+const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// DOM refs
+const inquiryForm = document.getElementById('inquiry-form');
+const inqName = document.getElementById('inq-name');
+const inqPhone = document.getElementById('inq-phone');
+const inqCourse = document.getElementById('inq-course');
+const inqMessage = document.getElementById('inq-message');
+const inqSubmitBtn = document.getElementById('inq-submit-btn');
+const inqError = document.getElementById('inquiry-error');
+const inqSuccess = document.getElementById('inquiry-success');
+
+// Notification toast
+const notif = document.getElementById('notif');
+let notifTimeout = null;
+
+function showNotif(msg, type = 'info', duration = 4000) {
+  notif.textContent = msg;
+  notif.className = type;
+  notif.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => {
+    notif.classList.remove('show');
+  }, duration);
+}
+
+// ===== FORM SUBMISSION =====
+inquiryForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Hide previous messages
+  inqError.classList.add('hidden');
+  inqSuccess.classList.add('hidden');
+
+  // Validate
+  const name = inqName.value.trim();
+  const phone = inqPhone.value.trim();
+  const course = inqCourse.value;
+
+  if (!name || name.length < 2) {
+    inqError.textContent = '⚠️ Please enter your full name.';
+    inqError.classList.remove('hidden');
+    return;
+  }
+  if (!phone || phone.length < 7) {
+    inqError.textContent = '⚠️ Please enter a valid phone number.';
+    inqError.classList.remove('hidden');
+    return;
+  }
+  if (!course) {
+    inqError.textContent = '⚠️ Please select a course.';
+    inqError.classList.remove('hidden');
+    return;
+  }
+
+  // Disable button
+  inqSubmitBtn.disabled = true;
+  inqSubmitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+  try {
+    const payload = {
+      full_name: name,
+      phone: phone,
+      course: course,
+      message: inqMessage.value.trim() || null,
+      status: 'pending'
+    };
+
+    const { data, error } = await supabaseClient
+      .from('course_inquiries')
+      .insert([payload])
+      .select();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      inqError.textContent = '❌ Failed to submit. Please try again.';
+      inqError.classList.remove('hidden');
+      showNotif('❌ Submission failed: ' + error.message, 'error');
+      return;
+    }
+
+    // Success
+    inqSuccess.classList.remove('hidden');
+    showNotif('✅ Inquiry submitted successfully!', 'success');
+    inquiryForm.reset();
+
+    // Auto-hide success after 8 seconds
+    setTimeout(() => {
+      inqSuccess.classList.add('hidden');
+    }, 8000);
+
+  } catch (err) {
+    console.error('Submission error:', err);
+    inqError.textContent = '❌ Something went wrong. Please try again.';
+    inqError.classList.remove('hidden');
+    showNotif('❌ Submission error', 'error');
+  } finally {
+    inqSubmitBtn.disabled = false;
+    inqSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Inquiry';
+  }
+});
+
+// =============================================
+// AUTHENTICATION & SESSION MANAGEMENT
+// =============================================
+
+const loginModal = document.getElementById('login-modal');
+const loginBtn = document.getElementById('login-btn');
+const mobileLoginBtn = document.getElementById('mobile-login-btn');
+const modalClose = document.getElementById('modal-close');
+const loginForm = document.getElementById('supabase-login-form');
+const loginError = document.getElementById('login-error');
+const sessionExpiredOverlay = document.getElementById('session-expired-overlay');
+
+function checkExistingSession() {
+  const session = sessionStorage.getItem('adminSession');
+  const sessionTime = sessionStorage.getItem('adminSessionTime');
+  if (session === 'active' && sessionTime) {
+    const elapsed = (Date.now() - parseInt(sessionTime)) / 1000;
+    if (elapsed < 300) {
+      window.location.href = 'stuadmin.html';
+      return true;
+    } else {
+      sessionStorage.removeItem('adminSession');
+      sessionStorage.removeItem('adminSessionTime');
+      showSessionExpired();
+      return false;
+    }
+  }
+  return false;
+}
+
+function showSessionExpired() {
+  sessionExpiredOverlay.classList.remove('hidden');
+  setTimeout(() => sessionExpiredOverlay.classList.add('hidden'), 5000);
+}
+
+function openModal() { loginModal.classList.remove('hidden'); loginError.classList.add('hidden'); }
+function closeModal() { loginModal.classList.add('hidden'); loginError.classList.add('hidden'); }
+
+loginBtn.addEventListener('click', openModal);
+if(mobileLoginBtn) mobileLoginBtn.addEventListener('click', openModal);
+modalClose.addEventListener('click', closeModal);
+loginModal.addEventListener('click', (e) => { if(e.target === loginModal) closeModal(); });
+
+loginForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  loginError.classList.add('hidden');
+  document.getElementById('login-submit-btn').disabled = true;
+  document.getElementById('login-submit-btn').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    sessionStorage.setItem('adminSession', 'active');
+    sessionStorage.setItem('adminSessionTime', Date.now().toString());
+    closeModal();
+    window.location.href = 'stuadmin.html';
+  } catch (err) {
+    loginError.textContent = err.message || 'Login failed. Please check credentials.';
+    loginError.classList.remove('hidden');
+    document.getElementById('login-submit-btn').disabled = false;
+    document.getElementById('login-submit-btn').innerHTML = 'Login & Access Admin Panel';
+  }
+});
+
+// =============================================
+// PAGE INITIALIZATION
+// =============================================
+
+AOS.init({ duration: 800, once: true });
+
+window.addEventListener('load', () => {
+  document.getElementById('loader').classList.add('hide');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('session') === 'expired') {
+    showSessionExpired();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  checkExistingSession();
+});
+
+// Scroll Progress
+window.addEventListener('scroll', () => {
+  const progress = document.getElementById('scroll-progress');
+  const y = window.scrollY;
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+}, { passive: true });
+
+// Mobile menu toggle
+const mobileToggle = document.getElementById('mobile-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+mobileToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('hidden');
+});
+
+// Swiper Init
+new Swiper('.testimonials-swiper', {
+  loop: true,
+  pagination: { el: '.swiper-pagination', clickable: true },
+  autoplay: { delay: 5000 }
+});
+
+console.log('%c🔒 SECURITY ACTIVE', 'font-size:20px;font-weight:bold;color:#10B981;');
+console.log('%cDev tools, right-click, copy, paste, drag, and framing are disabled.', 'font-size:12px;color:#94a3b8;');
+console.log('%c📝 Course Inquiry Form → Supabase: course_inquiries', 'font-size:12px;color:#06B6D4;');
+</script>
+</body>
+</html>

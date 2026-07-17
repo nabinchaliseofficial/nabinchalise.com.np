@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Nepal Share Portal · Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #050816;
+      --bg-secondary: #0F172A;
+      --bg-card: rgba(15, 23, 42, 0.55);
+      --border-glass: rgba(255, 255, 255, 0.06);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --primary: #00E676;
+      --primary-glow: rgba(0, 230, 118, 0.25);
+      --secondary: #2979FF;
+      --accent: #FFD54F;
+      --success: #22C55E;
+      --error: #FF5252;
+      --shadow-soft: 0 20px 60px -15px rgba(0, 0, 0, 0.7);
+      --radius-card: 28px;
+      --radius-input: 16px;
+      --radius-btn: 40px;
+      --transition-smooth: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin: 0;
+      color: var(--text-primary);
+      position: relative;
+      overflow-x: hidden;
+      transition: background 0.3s;
+    }
+
+    body.light {
+      --bg-primary: #f1f5f9;
+      --bg-secondary: #e2e8f0;
+      --bg-card: rgba(255, 255, 255, 0.60);
+      --border-glass: rgba(0, 0, 0, 0.05);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --shadow-soft: 0 20px 60px -15px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ---- animated mesh background ---- */
+    .mesh-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(0, 230, 118, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(41, 121, 255, 0.10) 0%, transparent 45%),
+                  radial-gradient(circle at 40% 80%, rgba(255, 213, 79, 0.06) 0%, transparent 40%),
+                  var(--bg-primary);
+      background-blend-mode: overlay;
+    }
+
+    .floating-blur {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.4;
+      transition: transform 0.2s ease-out;
+    }
+    .blur-1 { width: 500px; height: 500px; background: #00E676; top: -12%; left: -8%; opacity: 0.15; }
+    .blur-2 { width: 450px; height: 450px; background: #2979FF; bottom: -10%; right: -5%; opacity: 0.12; }
+    .blur-3 { width: 300px; height: 300px; background: #FFD54F; top: 40%; left: 60%; opacity: 0.08; }
+
+    /* ---- particles (floating) ---- */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      background: rgba(0, 230, 118, 0.05);
+      pointer-events: none;
+      z-index: 1;
+      animation: floatParticle 18s infinite alternate ease-in-out;
+    }
+    .p1 { width: 12px; height: 12px; top: 15%; left: 10%; animation-duration: 22s; }
+    .p2 { width: 20px; height: 20px; bottom: 20%; right: 15%; animation-duration: 26s; }
+    .p3 { width: 8px; height: 8px; top: 60%; left: 85%; animation-duration: 20s; }
+    .p4 { width: 16px; height: 16px; top: 30%; right: 5%; animation-duration: 24s; }
+
+    @keyframes floatParticle {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+      100% { transform: translate(40px, -60px) scale(1.8); opacity: 0.5; }
+    }
+
+    /* ---- main wrapper ---- */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1280px;
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 30px;
+      align-items: stretch;
+      backdrop-filter: blur(2px);
+    }
+
+    /* ---- left hero ---- */
+    .hero-side {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 40px 36px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-smooth);
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-badge .logo-icon {
+      font-size: 2.2rem;
+      color: var(--primary);
+      background: rgba(0, 230, 118, 0.12);
+      padding: 10px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(0, 230, 118, 0.15);
+    }
+    .brand-badge span {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #00E676, #2979FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-top: 12px;
+    }
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 400px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 36px;
+      margin-top: 18px;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .trust-item i {
+      color: var(--success);
+      font-size: 0.9rem;
+    }
+
+    .hero-footer {
+      margin-top: 30px;
+      border-top: 1px solid var(--border-glass);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .hero-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .hero-footer a:hover { color: var(--text-primary); }
+
+    /* ---- right card ---- */
+    .login-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 40px 34px;
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .card-header .welcome {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .card-header .welcome h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+    }
+    .card-header .welcome p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 40px;
+      padding: 8px 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+      font-family: var(--font-sans);
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.08); }
+
+    .lang-selector {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 40px;
+      padding: 4px;
+      border: 1px solid var(--border-glass);
+    }
+    .lang-selector button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: var(--font-sans);
+    }
+    .lang-selector button.active {
+      background: var(--primary);
+      color: #050816;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    /* ---- form ---- */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .form-group .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .form-group .form-input {
+      width: 100%;
+      padding: 18px 16px 18px 48px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-input);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      transition: var(--transition-smooth);
+      outline: none;
+      font-family: var(--font-sans);
+      backdrop-filter: blur(4px);
+    }
+    .form-group .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-glow);
+      background: rgba(255,255,255,0.06);
+    }
+    .form-group .form-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+    .form-group .form-input.error { border-color: var(--error); }
+    .form-group .form-input.success { border-color: var(--success); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.6;
+    }
+
+    .row-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 6px 0 22px;
+    }
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+    .remember-me input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 16px; height: 16px;
+      border-radius: 4px;
+    }
+    .forgot-link {
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--secondary); }
+
+    .btn-login {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: var(--radius-btn);
+      font-size: 1rem;
+      font-weight: 600;
+      color: #050816;
+      cursor: pointer;
+      box-shadow: 0 8px 28px var(--primary-glow);
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font-sans);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-login:hover { transform: scale(1.02); box-shadow: 0 12px 40px var(--primary-glow); }
+    .btn-login:active { transform: scale(0.97); }
+    .btn-login:disabled { opacity: 0.6; pointer-events: none; }
+    .btn-login .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(0,0,0,0.15);
+      border-top-color: #050816;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-login .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: scale(0);
+      animation: rippleAnim 0.6s ease-out;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 22px 0 18px;
+    }
+    .divider hr { flex: 1; border: none; border-top: 1px solid var(--border-glass); }
+    .divider span { color: var(--text-muted); font-size: 0.7rem; font-weight: 500; }
+
+    .social-login {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .social-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-input);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      font-family: var(--font-sans);
+    }
+    .social-btn:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+    .social-btn i { font-size: 1.1rem; }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .signup-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .signup-link a:hover { color: var(--secondary); }
+
+    .ssl-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid var(--border-glass);
+      background: rgba(255,255,255,0.02);
+      align-self: flex-start;
+    }
+    .ssl-badge i { color: var(--success); }
+
+    /* ---- toast ---- */
+    .toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #0f172a;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ---- responsive ---- */
+    @media (max-width: 1024px) {
+      .login-wrapper { grid-template-columns: 1fr; }
+      .hero-side { order: -1; }
+      .hero-title { font-size: 2.4rem; }
+    }
+    @media (max-width: 640px) {
+      .login-card { padding: 28px 18px; }
+      .hero-side { padding: 28px 18px; }
+      .card-header { flex-direction: column; gap: 12px; }
+      .social-btn { min-width: 60px; padding: 12px 8px; font-size: 0.7rem; }
+      .brand-badge span { font-size: 1.2rem; }
+    }
+
+    /* ---- utilities ---- */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 8px; }
+    .gap-1 { gap: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- mesh bg -->
+  <div class="mesh-bg"></div>
+  <div class="floating-blur blur-1"></div>
+  <div class="floating-blur blur-2"></div>
+  <div class="floating-blur blur-3"></div>
+
+  <!-- particles -->
+  <div class="particle p1"></div>
+  <div class="particle p2"></div>
+  <div class="particle p3"></div>
+  <div class="particle p4"></div>
+
+  <!-- toast -->
+  <div id="toast" class="toast"><i class="fas fa-check-circle" style="color:#00E676;"></i> <span id="toastMsg">Login successful</span></div>
+
+  <!-- main -->
+  <div class="login-wrapper">
+
+    <!-- LEFT HERO -->
+    <div class="hero-side">
+      <div class="hero-content">
+        <div class="brand-badge">
+          <span class="logo-icon"><i class="fas fa-chart-line"></i></span>
+          <span>Nepal Share Portal</span>
+        </div>
+        <h1 class="hero-title">
+          Your Gateway to <br /><span class="highlight">NEPSE</span> &amp; <br />Smart Investing
+        </h1>
+        <p class="hero-sub">Access real-time market data, IPO alerts, portfolio tools, and AI insights — all in one premium dashboard.</p>
+        <div class="trust-row">
+          <span class="trust-item"><i class="fas fa-shield-alt"></i> Secure &amp; Trusted</span>
+          <span class="trust-item"><i class="fas fa-chart-bar"></i> Live NEPSE</span>
+          <span class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</span>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <span>© 2026 Nepal Share Portal · All rights reserved</span>
+        <div style="display:flex; gap:16px;">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Help</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT CARD -->
+    <div class="login-card">
+      <div class="card-header">
+        <div class="welcome">
+          <h2>Welcome back</h2>
+          <p>Sign in to your portfolio</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="lang-selector">
+            <button class="active" data-lang="en">EN</button>
+            <button data-lang="ne">ने</button>
+          </div>
+          <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> <span id="themeLabel">Dark</span></button>
+        </div>
+      </div>
+
+      <!-- form -->
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="email" class="form-input" placeholder="Email address" required />
+        </div>
+        <div class="form-group">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="password" class="form-input" placeholder="Password" required />
+          <button type="button" class="toggle-pw" id="togglePw"><i class="fas fa-eye"></i></button>
+        </div>
+
+        <div class="row-flex">
+          <label class="remember-me"><input type="checkbox" checked /> Remember me</label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span id="btnText">Sign In</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Demo credentials quick fill -->
+      <div style="margin-top: 14px; background: rgba(0,230,118,0.06); border-radius: 12px; padding: 10px 14px; border: 1px dashed rgba(0,230,118,0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 0.65rem; color: var(--text-muted);">Demo: <code style="color:var(--primary);">demo@nepalshare.com</code> / <code style="color:var(--primary);">Demo@123</code></span>
+        <button type="button" id="autoFillBtn" style="background: var(--primary); border: none; color: #050816; padding: 4px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s;">Auto Fill</button>
+      </div>
+
+      <div class="divider"><hr /><span>OR</span><hr /></div>
+
+      <div class="social-login">
+        <button class="social-btn"><i class="fab fa-google"></i> Google</button>
+        <button class="social-btn"><i class="fab fa-microsoft"></i> Microsoft</button>
+        <button class="social-btn"><i class="fab fa-github"></i> GitHub</button>
+      </div>
+
+      <div class="signup-link">
+        Don't have an account? <a href="#">Create one</a>
+      </div>
+
+      <div class="ssl-badge">
+        <i class="fas fa-lock"></i> Secured · 256-bit encryption
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================================================
+      // SUPABASE CONFIG
+      // ============================================================
+      const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // DOM refs
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('spinner');
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const togglePw = document.getElementById('togglePw');
+      const themeToggle = document.getElementById('themeToggle');
+      const themeLabel = document.getElementById('themeLabel');
+      const langBtns = document.querySelectorAll('.lang-selector button');
+      const autoFillBtn = document.getElementById('autoFillBtn');
+
+      // Demo credentials
+      const DEMO_EMAIL = 'demo@nepalshare.com';
+      const DEMO_PASSWORD = 'Demo@123';
+
+      // ---- auto fill demo ----
+      autoFillBtn.addEventListener('click', function() {
+        email.value = DEMO_EMAIL;
+        password.value = DEMO_PASSWORD;
+        email.classList.remove('error');
+        password.classList.remove('error');
+      });
+
+      // ---- ripple effect ----
+      loginBtn.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+
+      // ---- toggle password ----
+      togglePw.addEventListener('click', function() {
+        const type = password.type === 'password' ? 'text' : 'password';
+        password.type = type;
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+      });
+
+      // ---- theme toggle ----
+      let darkMode = true;
+      themeToggle.addEventListener('click', function() {
+        darkMode = !darkMode;
+        document.body.classList.toggle('light', !darkMode);
+        themeLabel.textContent = darkMode ? 'Dark' : 'Light';
+        this.innerHTML = darkMode ? '<i class="fas fa-moon"></i> <span id="themeLabel">Dark</span>' : '<i class="fas fa-sun"></i> <span id="themeLabel">Light</span>';
+      });
+
+      // ---- lang switch (demo) ----
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          langBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const isNe = this.dataset.lang === 'ne';
+          document.querySelector('.welcome h2').textContent = isNe ? 'फेरि स्वागत छ' : 'Welcome back';
+          document.querySelector('.welcome p').textContent = isNe ? 'आफ्नो खातामा प्रवेश गर्नुहोस्' : 'Sign in to your portfolio';
+          document.querySelector('.form-group input[type="email"]').placeholder = isNe ? 'इमेल ठेगाना' : 'Email address';
+          document.querySelector('.form-group input[type="password"]').placeholder = isNe ? 'पासवर्ड' : 'Password';
+          document.querySelector('.remember-me').innerHTML = `<input type="checkbox" checked /> ${isNe ? 'मलाई सम्झनुहोस्' : 'Remember me'}`;
+          document.querySelector('.forgot-link').textContent = isNe ? 'पासवर्ड बिर्सनुभयो?' : 'Forgot password?';
+          document.getElementById('btnText').textContent = isNe ? 'लगइन गर्नुहोस्' : 'Sign In';
+          document.querySelector('.signup-link').innerHTML = isNe ? 'खाता छैन? <a href="#">एउटा बनाउनुहोस्</a>' : 'Don\'t have an account? <a href="#">Create one</a>';
+          document.querySelector('.ssl-badge').innerHTML = `<i class="fas fa-lock"></i> ${isNe ? 'सुरक्षित · २५६-बिट इन्क्रिप्सन' : 'Secured · 256-bit encryption'}`;
+        });
+      });
+
+      // ============================================================
+      // FORM SUBMIT — Supabase login + redirect to planningindex.html
+      // ============================================================
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // basic validation
+        let valid = true;
+        if (!email.value.trim()) { email.classList.add('error'); valid = false; } else { email.classList.remove('error'); }
+        if (!password.value) { password.classList.add('error'); valid = false; } else { password.classList.remove('error'); }
+
+        if (!valid) {
+          toastMsg.textContent = 'Please fill in all fields';
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+          return;
+        }
+
+        // loading state
+        loginBtn.disabled = true;
+        btnText.textContent = 'Signing in...';
+        spinner.style.display = 'block';
+
+        try {
+          // Attempt real Supabase login
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email.value.trim(),
+            password: password.value
+          });
+
+          if (error) throw error;
+
+          // Success — show toast and redirect
+          toastMsg.textContent = 'Welcome to Nepal Share Portal! Redirecting...';
+          toast.classList.add('show');
+          loginBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'Sign In';
+
+          setTimeout(() => {
+            window.location.href = 'planningindex.html';
+          }, 1200);
+
+        } catch (err) {
+          // Show error
+          let msg = err.message;
+          if (err.message.includes('Invalid login')) msg = '❌ Invalid email or password.';
+          else if (err.message.includes('Email not confirmed')) msg = '📧 Please confirm your email.';
+          else if (err.message.includes('fetch')) msg = '🌐 Network error. Check your connection.';
+          toastMsg.textContent = msg;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 3000);
+
+          loginBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'Sign In';
+        }
+      });
+
+      // ---- live input validation ----
+      email.addEventListener('input', function() {
+        if (this.value.trim()) this.classList.remove('error');
+        else this.classList.add('error');
+      });
+      password.addEventListener('input', function() {
+        if (this.value) this.classList.remove('error');
+        else this.classList.add('error');
+      });
+
+      // ---- mouse parallax for blurs ----
+      document.addEventListener('mousemove', function(e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        const blurs = document.querySelectorAll('.floating-blur');
+        blurs.forEach((el, i) => {
+          const speed = 10 + i * 5;
+          const moveX = (x - 0.5) * speed;
+          const moveY = (y - 0.5) * speed;
+          el.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+      });
+
+      // ============================================================
+      // REMOVED: Automatic session redirect
+      // Now user must click Login button to sign in
+      // ============================================================
+
+      console.log('📈 Nepal Share Portal login ready');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nepal Share Portal · News</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #050816;
+      --bg-surface: #0F172A;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --primary: #00E676;
+      --secondary: #2979FF;
+      --accent: #FFD54F;
+      --danger: #FF5252;
+      --text: #FFFFFF;
+      --muted: #94A3B8;
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0e1a; }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 12px; box-shadow: 0 0 12px rgba(0,230,118,0.3); }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-ring {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      border-top: 4px solid var(--primary);
+      border-right: 4px solid var(--secondary);
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 30px rgba(0,230,118,0.2);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
+
+    #mouse-glow {
+      position: fixed;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,230,118,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      transition: left 0.1s, top 0.1s;
+    }
+
+    /* Ticker */
+    .ticker-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(5,8,22,0.9);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 10px 0;
+      z-index: 100;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker {
+      display: inline-block;
+      animation: tickerScroll 28s linear infinite;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+    .ticker span { margin: 0 24px; color: var(--text); }
+    .ticker .up { color: var(--primary); }
+    .ticker .down { color: var(--danger); }
+    @keyframes tickerScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      width: 100%;
+      padding: 12px 0;
+      z-index: 99;
+      background: rgba(5,8,22,0.7);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .btn {
+      padding: 6px 18px;
+      border-radius: 40px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(4px);
+      font-size: 0.85rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #050816;
+      border: none;
+      box-shadow: 0 0 20px rgba(0,230,118,0.25);
+    }
+    .btn-primary:hover { transform: scale(1.04); box-shadow: 0 0 30px rgba(0,230,118,0.4); }
+    .btn-outline { border-color: var(--secondary); color: var(--secondary); }
+    .btn-outline:hover { background: var(--secondary); color: #fff; }
+    .btn-danger { border-color: var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    /* Page */
+    .page {
+      margin-top: 140px;
+      padding: 20px 0 60px;
+      animation: fadeUp 0.5s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-size: 2.6rem;
+      font-weight: 600;
+      margin-bottom: 32px;
+      background: linear-gradient(135deg, #fff, var(--muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* News Layout: Left list + Right detail */
+    .news-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .news-list::-webkit-scrollbar { width: 4px; }
+    .news-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 12px; }
+
+    .news-item {
+      padding: 16px 20px;
+      background: var(--glass);
+      backdrop-filter: blur(6px);
+      border-radius: 16px;
+      border-left: 4px solid var(--primary);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .news-item:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+    }
+    .news-item.active {
+      border-left-color: var(--accent);
+      background: rgba(255,213,79,0.08);
+    }
+    .news-item .title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .news-item .meta {
+      display: flex;
+      gap: 12px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .news-item .source {
+      color: var(--primary);
+      background: rgba(0,230,118,0.1);
+      padding: 0 10px;
+      border-radius: 12px;
+    }
+
+    /* News Detail Panel */
+    .news-detail {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 30px;
+      border: 1px solid var(--glass-border);
+      min-height: 300px;
+      position: sticky;
+      top: 160px;
+    }
+    .news-detail .detail-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .news-detail .detail-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .news-detail .detail-body {
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+    .news-detail .detail-body p { margin-bottom: 12px; }
+    .news-detail .detail-link {
+      display: inline-block;
+      margin-top: 16px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid transparent;
+      transition: 0.2s;
+    }
+    .news-detail .detail-link:hover { border-bottom-color: var(--primary); }
+
+    .empty-detail {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .empty-detail span { font-size: 2.5rem; }
+
+    /* Footer */
+    footer {
+      padding: 30px 0 20px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 40px;
+    }
+
+    #back-top {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      background: var(--primary);
+      color: #050816;
+      width: 48px; height: 48px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(0,230,118,0.2);
+      transition: 0.2s;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #back-top:hover { transform: scale(1.08); }
+
+    .toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15,23,42,0.95);
+      backdrop-filter: blur(12px);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+      pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 1024px) {
+      .news-layout { grid-template-columns: 1fr; }
+      .news-detail { position: relative; top: 0; }
+      .news-list { max-height: 400px; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { gap: 8px; justify-content: center; }
+      .page { margin-top: 180px; }
+      .page-title { font-size: 2rem; }
+      .news-detail { padding: 20px; }
+      .news-detail .detail-title { font-size: 1.3rem; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 12px; }
+      .news-item { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader"><div class="loader-ring"></div></div>
+  <div id="mouse-glow"></div>
+  <div id="toast" class="toast"><span id="toastMsg">✅ Loaded</span></div>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+      <span>NEPSE 2742.16 <span class="up">▲ +0.68%</span></span>
+      <span>BANK 187.3 <span class="up">▲ +1.2%</span></span>
+      <span>HYDRO 112.9 <span class="down">▼ -0.4%</span></span>
+      <span>FINANCE 89.2 <span class="up">▲ +0.9%</span></span>
+      <span>HOTEL 56.7 <span class="down">▼ -0.2%</span></span>
+      <span>MANUFACTURING 134.5 <span class="up">▲ +0.5%</span></span>
+      <span>MICROFINANCE 201.3 <span class="up">▲ +1.8%</span></span>
+      <span>NEPSE 2742.16 <span class="up">▲ +0.68%</span></span>
+      <span>BANK 187.3 <span class="up">▲ +1.2%</span></span>
+      <span>HYDRO 112.9 <span class="down">▼ -0.4%</span></span>
+      <span>FINANCE 89.2 <span class="up">▲ +0.9%</span></span>
+      <span>HOTEL 56.7 <span class="down">▼ -0.2%</span></span>
+      <span>MANUFACTURING 134.5 <span class="up">▲ +0.5%</span></span>
+      <span>MICROFINANCE 201.3 <span class="up">▲ +1.8%</span></span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="container nav-container">
+      <div class="logo">🇳🇵 Nepal Share Portal</div>
+      <div class="nav-links">
+        <a href="#">News</a>
+        <button class="btn btn-outline" onclick="window.location.href='index.html'">Login</button>
+        <button class="btn btn-primary">Register</button>
+        <button id="logoutBtn" class="btn btn-danger">🚪 Logout</button>
+        <button id="themeToggle" style="background:transparent;border:none;color:var(--muted);font-size:1.2rem;">🌙</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+        <h2 class="page-title" style="margin-bottom:0;">📰 Latest Market News</h2>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="fetchNewsBtn" style="padding:8px 24px;">🔄 Refresh</button>
+          <span style="color:var(--muted);font-size:0.8rem;">Last: <span id="newsTimestamp">Just now</span></span>
+        </div>
+      </div>
+
+      <div class="news-layout">
+        <!-- Left: News List -->
+        <div class="news-list" id="newsList">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Right: News Detail -->
+        <div class="news-detail" id="newsDetail">
+          <div class="empty-detail">
+            <span>📰</span>
+            <p>Select a news to read full story</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resource links -->
+      <div style="margin-top:50px;background:var(--glass);padding:24px;border-radius:16px;border-left:4px solid var(--accent);">
+        <h4 style="margin-bottom:12px;">🔗 Nepal Stock Market Resources</h4>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">ShareSansar</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">MeroLagani</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Nepali Paisa</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">NEPSE Alpha</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Bizshala</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Bizmandu</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Artha Sarokar</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Aarthik News</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">NEPSE Khabar</a>
+          <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Nepse.link</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      © 2026 Nepal Share Portal. All rights reserved.
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="Back to top">↑</button>
+
+  <script>
+    (function() {
+      // Loader
+      window.addEventListener('load', () => {
+        document.getElementById('loader').classList.add('hide');
+        renderNews();
+        // Select first news by default
+        setTimeout(() => {
+          const firstItem = document.querySelector('.news-item');
+          if (firstItem) firstItem.click();
+        }, 300);
+      });
+
+      // Mouse glow
+      const glow = document.getElementById('mouse-glow');
+      document.addEventListener('mousemove', (e) => {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+
+      // Back to top
+      const backBtn = document.getElementById('back-top');
+      window.addEventListener('scroll', () => {
+        backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+      });
+      backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+      // Theme toggle
+      let dark = true;
+      document.getElementById('themeToggle').addEventListener('click', function() {
+        dark = !dark;
+        document.documentElement.style.setProperty('--bg-primary', dark ? '#050816' : '#f5f5f5');
+        document.documentElement.style.setProperty('--bg-surface', dark ? '#0F172A' : '#eaeef2');
+        document.documentElement.style.setProperty('--text', dark ? '#FFFFFF' : '#0a0a0a');
+        document.documentElement.style.setProperty('--muted', dark ? '#94A3B8' : '#3a4a5a');
+        this.textContent = dark ? '🌙' : '☀️';
+      });
+
+      // ============================================================
+      // NEWS DATA with full details & real links
+      // ============================================================
+      const newsData = [
+        {
+          id: 1,
+          title: 'NEPSE to launch new Sensitive Index revision next week',
+          time: '2 min ago',
+          source: 'ShareSansar',
+          link: 'https://sharesansar.com/nepse-index-revision-2026/',
+          body: '<p>The Nepal Stock Exchange (NEPSE) is set to revise its Sensitive Index next week, incorporating new liquidity and market capitalization criteria. The new index will better reflect the true performance of the market.</p><p>Investors are advised to review their portfolio allocations as sector weightings may change significantly. The revision is part of NEPSE\'s broader effort to modernize market benchmarks.</p>'
+        },
+        {
+          id: 2,
+          title: 'IPO of Nepal Life Insurance opens July 20, 2026',
+          time: '15 min ago',
+          source: 'MeroLagani',
+          link: 'https://merolagani.com/ipo-nepal-life-2026/',
+          body: '<p>Nepal Life Insurance Company Limited has announced its initial public offering (IPO) opening on July 20, 2026. The company is issuing 4.5 million units at a face value of Rs. 100 each.</p><p>Interested investors can apply through Mero Share or their broker\'s C-ASBA system. The issue closes on July 24, 2026.</p>'
+        },
+        {
+          id: 3,
+          title: 'Nabil Bank declares 15% bonus share dividend',
+          time: '32 min ago',
+          source: 'Nepali Paisa',
+          link: 'https://nepalipaisa.com/nabil-bonus-share-2026/',
+          body: '<p>Nabil Bank Limited has announced a 15% bonus share dividend for the fiscal year 2025/26. The bank\'s board of directors approved the proposal during its recent meeting.</p><p>The bonus shares will be distributed to shareholders after the approval from Nepal Rastra Bank and the company\'s upcoming AGM.</p>'
+        },
+        {
+          id: 4,
+          title: 'Market trading hours extended to 10am–4pm',
+          time: '1 hour ago',
+          source: 'Bizshala',
+          link: 'https://bizshala.com/market-hours-extended-2026/',
+          body: '<p>NEPSE has extended its trading hours from 10:00 AM to 4:00 PM starting next week. The new schedule adds an additional hour of trading to accommodate increasing investor participation.</p><p>The pre-opening session will remain from 9:30 AM to 10:00 AM. Settlement procedures will be adjusted accordingly.</p>'
+        },
+        {
+          id: 5,
+          title: 'Hydropower sector sees decline of 0.4% today',
+          time: '1.5 hours ago',
+          source: 'NEPSE Alpha',
+          link: 'https://nepsealpha.com/hydropower-decline-2026/',
+          body: '<p>The hydropower sector index declined by 0.4% today amid profit booking and concerns over monsoon impact on generation. Major hydropower companies like NHPC and CHCL saw selling pressure.</p><p>Analysts suggest the decline is temporary and recommend accumulating quality hydropower stocks for long-term gains.</p>'
+        },
+        {
+          id: 6,
+          title: 'New AI investment assistant launched for Nepali market',
+          time: '2 hours ago',
+          source: 'Artha Sarokar',
+          link: 'https://arthasarokar.com/ai-assistant-nepal-2026/',
+          body: '<p>Nepal Share Portal has launched an AI-powered investment assistant to help investors make data-driven decisions. The tool analyzes market trends, company financials, and technical indicators.</p><p>The AI assistant is available as a web-based tool and will soon be integrated with mobile apps for on-the-go access.</p>'
+        },
+        {
+          id: 7,
+          title: 'NEPSE closes at 2742.16, up 0.68%',
+          time: '3 hours ago',
+          source: 'NEPSE Khabar',
+          link: 'https://nepsekhabar.com/nepse-closes-2742-2026/',
+          body: '<p>NEPSE closed today at 2742.16 points, gaining 0.68% with increased trading volume. Banking and microfinance sectors led the gains while hydropower and hotels faced selling pressure.</p><p>Turnover reached Rs. 4.2 billion with 186 companies advancing and 112 declining.</p>'
+        },
+        {
+          id: 8,
+          title: 'Global IME Bank announces IPO date: August 5',
+          time: '4 hours ago',
+          source: 'Aarthik News',
+          link: 'https://aarthiknews.com/global-ime-ipo-2026/',
+          body: '<p>Global IME Bank Limited has announced its IPO opening on August 5, 2026. The bank will issue 5 million units at Rs. 100 per share.</p><p>The issue includes a 10% quota for mutual funds and 5% for employees. Applications will be accepted through all C-ASBA member banks.</p>'
+        },
+        {
+          id: 9,
+          title: 'Nepal Infrastructure Bank files for IPO',
+          time: '5 hours ago',
+          source: 'Bizmandu',
+          link: 'https://bizmandu.com/infrastructure-bank-ipo-2026/',
+          body: '<p>Nepal Infrastructure Bank Limited has filed its IPO application with SEBON. The bank plans to issue 3.2 million units of shares to the public.</p><p>The IPO is expected to open in September 2026. The bank focuses on funding infrastructure projects including roads, bridges, and renewable energy.</p>'
+        },
+        {
+          id: 10,
+          title: 'Banking sector shows strong performance this week',
+          time: '6 hours ago',
+          source: 'ShareSansar',
+          link: 'https://sharesansar.com/banking-performance-2026/',
+          body: '<p>The banking sector index gained 1.8% this week, driven by positive earnings reports and increased loan disbursement. Major banks like NABIL, NIBL, and MBL reported strong quarterly results.</p><p>Analysts expect the banking sector to continue its upward trend with improving net interest margins and declining NPL ratios.</p>'
+        }
+      ];
+
+      // ============================================================
+      // RENDER NEWS
+      // ============================================================
+      function renderNews() {
+        const list = document.getElementById('newsList');
+        list.innerHTML = newsData.map(item => `
+          <div class="news-item" data-id="${item.id}" onclick="selectNews(${item.id})">
+            <span class="title">${item.title}</span>
+            <div class="meta">
+              <span class="source">${item.source}</span>
+              <span>${item.time}</span>
+            </div>
+          </div>
+        `).join('');
+        document.getElementById('newsTimestamp').textContent = new Date().toLocaleTimeString();
+      }
+
+      // ============================================================
+      // SELECT NEWS & SHOW DETAIL
+      // ============================================================
+      function selectNews(id) {
+        const item = newsData.find(n => n.id === id);
+        if (!item) return;
+
+        // Update active state
+        document.querySelectorAll('.news-item').forEach(el => el.classList.remove('active'));
+        const activeEl = document.querySelector(`.news-item[data-id="${id}"]`);
+        if (activeEl) activeEl.classList.add('active');
+
+        // Render detail
+        const detail = document.getElementById('newsDetail');
+        detail.innerHTML = `
+          <div class="detail-title">${item.title}</div>
+          <div class="detail-meta">
+            <span>📌 ${item.source}</span>
+            <span>🕒 ${item.time}</span>
+          </div>
+          <div class="detail-body">${item.body}</div>
+          <a href="${item.link}" target="_blank" class="detail-link">🔗 Read full article →</a>
+        `;
+      }
+      window.selectNews = selectNews;
+
+      // ============================================================
+      // REFRESH (simulate realtime new news)
+      // ============================================================
+      document.getElementById('fetchNewsBtn').addEventListener('click', function() {
+        const sources = ['ShareSansar', 'MeroLagani', 'Nepali Paisa', 'NEPSE Alpha', 'Bizshala', 'Artha Sarokar', 'Aarthik News', 'NEPSE Khabar', 'Bizmandu'];
+        const topics = [
+          'NEPSE index update', 'IPO announcement', 'Dividend declared', 'Market analysis',
+          'Sector performance', 'Regulatory news', 'Company financials', 'Trading volume surge',
+          'New listing approved', 'Foreign investment inflow', 'Government policy update'
+        ];
+        const newId = Date.now();
+        const newItem = {
+          id: newId,
+          title: `📌 ${topics[Math.floor(Math.random() * topics.length)]} — ${sources[Math.floor(Math.random() * sources.length)]}`,
+          time: 'Just now',
+          source: sources[Math.floor(Math.random() * sources.length)],
+          link: '#',
+          body: `<p>This is a fresh news update from ${sources[Math.floor(Math.random() * sources.length)]}. Market participants are closely watching this development.</p><p>Stay tuned for more updates as the story unfolds. Detailed analysis will be available shortly.</p>`
+        };
+        newsData.unshift(newItem);
+        if (newsData.length > 20) newsData.pop();
+        renderNews();
+        // Auto-select the new item
+        setTimeout(() => selectNews(newId), 100);
+        showToast('🔄 News refreshed! New update added.');
+      });
+
+      // ============================================================
+      // AUTO-REFRESH every 30 seconds (simulate realtime)
+      // ============================================================
+      setInterval(() => {
+        const sources = ['ShareSansar', 'MeroLagani', 'Nepali Paisa', 'NEPSE Alpha', 'Bizshala', 'Artha Sarokar', 'Aarthik News', 'NEPSE Khabar'];
+        const topics = ['Market update', 'IPO news', 'Dividend announcement', 'Sector analysis', 'Trading alert', 'Company results'];
+        const newId = Date.now() + Math.random();
+        const newItem = {
+          id: newId,
+          title: `🔴 ${topics[Math.floor(Math.random() * topics.length)]} — ${sources[Math.floor(Math.random() * sources.length)]}`,
+          time: 'Just now',
+          source: sources[Math.floor(Math.random() * sources.length)],
+          link: '#',
+          body: `<p>Auto-refresh: ${topics[Math.floor(Math.random() * topics.length)]} update from ${sources[Math.floor(Math.random() * sources.length)]}.</p><p>Real-time market data is being streamed. Check back for more details.</p>`
+        };
+        newsData.unshift(newItem);
+        if (newsData.length > 20) newsData.pop();
+        renderNews();
+        // Update timestamp only, don't auto-select to avoid distracting user
+      }, 30000);
+
+      // ============================================================
+      // TOAST
+      // ============================================================
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      // ============================================================
+      // LOGOUT
+      // ============================================================
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        showToast('🚪 Logging out...');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      });
+
+      console.log('📈 Nepal Share Portal · Real-time news dashboard with detail panel');
+    })();
+  </script>
+</body>
+</html>
