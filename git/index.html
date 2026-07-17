@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitCheat · Interactive Cheat Sheet</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --surface-hover: #f0f2f5;
+            --border: #e1e4e8;
+            --text: #1f2328;
+            --text-secondary: #57606a;
+            --text-muted: #8b949e;
+            --accent: #6e40c9;
+            --accent-light: #8b6fe0;
+            --accent-dark: #5430a8;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+            --transition: 0.25s ease;
+            --header-gradient: linear-gradient(135deg, #6e40c9 0%, #a855f7 100%);
+            --tag-bg: #eef2ff;
+            --tag-text: #4338ca;
+            --code-bg: #f1f3f5;
+            --card-border: #e9ecf0;
+            --scrollbar: #d0d7de;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface-hover: #1c2333;
+            --border: #30363d;
+            --text: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent: #a855f7;
+            --accent-light: #c084fc;
+            --accent-dark: #7c3aed;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --tag-bg: #2d1b4e;
+            --tag-text: #c084fc;
+            --code-bg: #1c2333;
+            --card-border: #30363d;
+            --scrollbar: #30363d;
+        }
+
+        html {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background var(--transition), color var(--transition);
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            display: flex;
+            justify-content: center;
+            transition: background var(--transition);
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar);
+            border-radius: 8px;
+        }
+
+        /* ── Container ── */
+        .app {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding: 20px 28px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--header-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h1 span {
+            font-weight: 400;
+            opacity: 0.6;
+            -webkit-text-fill-color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Theme Toggle ── */
+        .theme-toggle {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .theme-toggle .icon-sun {
+            display: inline;
+        }
+        .theme-toggle .icon-moon {
+            display: none;
+        }
+        [data-theme="dark"] .theme-toggle .icon-sun {
+            display: none;
+        }
+        [data-theme="dark"] .theme-toggle .icon-moon {
+            display: inline;
+        }
+
+        /* ── Stats ── */
+        .stats {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        /* ── Search ── */
+        .search-section {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all var(--transition);
+            outline: none;
+        }
+
+        .search-wrapper input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(110, 64, 201, 0.15);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            gap: 6px;
+        }
+
+        .search-hint kbd {
+            background: var(--bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        /* ── Category Tabs ── */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 28px;
+            padding: 4px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+        }
+
+        .tab-btn i {
+            font-size: 14px;
+        }
+
+        .tab-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(110, 64, 201, 0.3);
+        }
+
+        .tab-btn .count {
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg);
+            color: var(--text-secondary);
+            padding: 1px 10px;
+            border-radius: 12px;
+            margin-left: 2px;
+            transition: all var(--transition);
+        }
+
+        .tab-btn.active .count {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* ── Command Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        /* ── Command Card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 18px 20px 16px;
+            transition: all var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .card:hover {
+            border-color: var(--accent-light);
+            box-shadow: 0 8px 28px rgba(110, 64, 201, 0.10);
+            transform: translateY(-2px);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .card-command {
+            font-family: 'Inter', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            color: var(--accent);
+            background: var(--tag-bg);
+            padding: 2px 12px 2px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .card-command .prefix {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .card-copy {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all var(--transition);
+            line-height: 1;
+        }
+
+        .card-copy:hover {
+            background: var(--surface-hover);
+            color: var(--accent);
+        }
+
+        .card-copy.copied {
+            color: #22c55e;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            padding-right: 4px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .card-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            letter-spacing: 0.2px;
+        }
+
+        .card-tag.primary {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border-color: transparent;
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty i {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.4;
+        }
+
+        .empty h3 {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast i {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+            letter-spacing: 0.3px;
+        }
+
+        .footer i {
+            color: var(--accent-light);
+            margin: 0 4px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 700px) {
+            body {
+                padding: 12px 10px 40px;
+            }
+            .header {
+                padding: 16px 18px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .header-left {
+                gap: 10px;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .header-actions {
+                justify-content: space-between;
+            }
+            .stats {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .tab-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+                flex: 1 0 auto;
+                justify-content: center;
+            }
+            .tabs {
+                gap: 4px;
+                padding: 4px;
+            }
+            .card-command {
+                font-size: 14px;
+            }
+            .search-wrapper input {
+                font-size: 14px;
+                padding: 10px 14px 10px 38px;
+            }
+            .search-hint {
+                display: none;
+            }
+            .toast {
+                width: calc(100% - 32px);
+                font-size: 13px;
+                padding: 10px 18px;
+                bottom: 16px;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .header-actions {
+                flex-wrap: wrap;
+            }
+            .theme-toggle {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+            .stats {
+                font-size: 11px;
+            }
+            .tab-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .tab-btn .count {
+                font-size: 10px;
+                padding: 0 8px;
+            }
+            .card {
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+
+        <!-- ═══ HEADER ═══ -->
+        <header class="header">
+            <div class="header-left">
+                <div class="header-icon"><i class="fab fa-git-alt"></i></div>
+                <h1>Git<span>Cheat</span></h1>
+            </div>
+            <div class="header-actions">
+                <span class="stats" id="stats">0 commands</span>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="icon-sun"><i class="fas fa-sun"></i></span>
+                    <span class="icon-moon"><i class="fas fa-moon"></i></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ SEARCH ═══ -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search commands, descriptions, or tags…" autocomplete="off" />
+            </div>
+            <div class="search-hint">
+                <kbd>⌘K</kbd> <span>quick search</span>
+            </div>
+        </div>
+
+        <!-- ═══ TABS ═══ -->
+        <div class="tabs" id="tabsContainer" role="tablist">
+            <!-- rendered by JavaScript -->
+        </div>
+
+        <!-- ═══ GRID ═══ -->
+        <div class="grid" id="gridContainer">
+            <!-- rendered by JavaScript -->
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="footer">
+            <i class="fas fa-terminal"></i> GitCheat · Master Git commands · Press <kbd style="background:var(--bg);padding:2px 8px;border-radius:4px;border:1px solid var(--border);font-size:12px;">⌘K</kbd> to search
+        </div>
+
+        <!-- ═══ TOAST ═══ -->
+        <div class="toast" id="toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="toastMessage">Copied!</span>
+        </div>
+
+    </div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DATA – all commands in English
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const commands = [{
+            category: 'basic',
+            command: 'git status',
+            description: 'Shows the current state – staged, unstaged, and untracked files.',
+            tags: ['status', 'state']
+        }, {
+            category: 'basic',
+            command: 'git add <file>',
+            description: 'Stages changes (tells Git you want to include them in the next commit).',
+            tags: ['stage', 'add']
+        }, {
+            category: 'basic',
+            command: 'git add .',
+            description: 'Stages all changes (new, modified, deleted) in the current folder.',
+            tags: ['stage', 'all']
+        }, {
+            category: 'basic',
+            command: 'git commit -m "message"',
+            description: 'Creates a commit with the staged changes.',
+            tags: ['commit', 'save']
+        }, {
+            category: 'basic',
+            command: 'git commit -am "message"',
+            description: 'Stages and commits all tracked files in one step (skips git add for modified files).',
+            tags: ['commit', 'stage', 'fast']
+        }, {
+            category: 'basic',
+            command: 'git diff',
+            description: 'Shows unstaged changes (what you haven\'t added yet).',
+            tags: ['diff', 'changes', 'unstaged']
+        }, {
+            category: 'basic',
+            command: 'git diff --staged',
+            description: 'Shows changes that are staged but not yet committed.',
+            tags: ['diff', 'staged']
+        }, {
+            category: 'basic',
+            command: 'git log',
+            description: 'Shows the commit history.',
+            tags: ['log', 'history']
+        }, {
+            category: 'basic',
+            command: 'git log --oneline',
+            description: 'Compact one-line log.',
+            tags: ['log', 'compact']
+        }, {
+            category: 'basic',
+            command: 'git log --graph',
+            description: 'Shows history with a visual branch graph.',
+            tags: ['log', 'graph', 'visual']
+        }, {
+            category: 'basic',
+            command: 'git rm <file>',
+            description: 'Removes the file from the working tree and the index.',
+            tags: ['remove', 'delete', 'file']
+        }, {
+            category: 'branching',
+            command: 'git branch',
+            description: 'Lists all local branches (current one highlighted).',
+            tags: ['branch', 'list']
+        }, {
+            category: 'branching',
+            command: 'git branch <name>',
+            description: 'Creates a new branch.',
+            tags: ['branch', 'create']
+        }, {
+            category: 'branching',
+            command: 'git checkout <branch>',
+            description: 'Switches to that branch (older style).',
+            tags: ['checkout', 'switch']
+        }, {
+            category: 'branching',
+            command: 'git switch <branch>',
+            description: 'Newer, safer way to switch branches.',
+            tags: ['switch', 'branch']
+        }, {
+            category: 'branching',
+            command: 'git switch -c <new-branch>',
+            description: 'Creates and switches to a new branch in one step.',
+            tags: ['switch', 'create', 'branch']
+        }, {
+            category: 'branching',
+            command: 'git merge <branch>',
+            description: 'Merges the given branch into your current branch.',
+            tags: ['merge', 'combine']
+        }, {
+            category: 'branching',
+            command: 'git merge --abort',
+            description: 'Cancels a merge that has conflicts.',
+            tags: ['merge', 'abort', 'conflict']
+        }, {
+            category: 'branching',
+            command: 'git rebase <branch>',
+            description: 'Reapplies your commits on top of another branch (alternative to merge).',
+            tags: ['rebase', 'reapply']
+        }, {
+            category: 'branching',
+            command: 'git branch -d <branch>',
+            description: 'Deletes a local branch (only if merged).',
+            tags: ['branch', 'delete', 'safe']
+        }, {
+            category: 'branching',
+            command: 'git branch -D <branch>',
+            description: 'Force-deletes a branch (even if not merged).',
+            tags: ['branch', 'delete', 'force']
+        }, {
+            category: 'remote',
+            command: 'git clone <url>',
+            description: 'Downloads a full repository for the first time.',
+            tags: ['clone', 'download']
+        }, {
+            category: 'remote',
+            command: 'git fetch',
+            description: 'Downloads remote changes without merging them (safe to inspect).',
+            tags: ['fetch', 'remote', 'inspect']
+        }, {
+            category: 'remote',
+            command: 'git pull',
+            description: 'Downloads and merges remote changes into your current branch (git fetch + git merge).',
+            tags: ['pull', 'fetch', 'merge']
+        }, {
+            category: 'remote',
+            command: 'git push',
+            description: 'Uploads your local commits to the remote.',
+            tags: ['push', 'upload']
+        }, {
+            category: 'remote',
+            command: 'git push -u origin <branch>',
+            description: 'Sets upstream tracking and pushes the first time for a new branch.',
+            tags: ['push', 'upstream', 'first']
+        }, {
+            category: 'remote',
+            command: 'git remote -v',
+            description: 'Shows the URLs of your configured remotes.',
+            tags: ['remote', 'url']
+        }, {
+            category: 'remote',
+            command: 'git remote add <name> <url>',
+            description: 'Adds a new remote repository.',
+            tags: ['remote', 'add']
+        }, {
+            category: 'undoing',
+            command: 'git restore <file>',
+            description: 'Discards unstaged changes in a file (reverts to last commit).',
+            tags: ['restore', 'discard', 'unstaged']
+        }, {
+            category: 'undoing',
+            command: 'git restore --staged <file>',
+            description: 'Unstages a file (keeps changes, but moves out of staging).',
+            tags: ['restore', 'unstage']
+        }, {
+            category: 'undoing',
+            command: 'git reset HEAD~1',
+            description: 'Undo the last commit, keeping the changes in your working directory.',
+            tags: ['reset', 'undo', 'keep']
+        }, {
+            category: 'undoing',
+            command: 'git reset --hard HEAD~1',
+            description: 'Undo the last commit and discard all changes (⚠️ dangerous).',
+            tags: ['reset', 'undo', 'hard', 'danger']
+        }, {
+            category: 'undoing',
+            command: 'git revert <commit-hash>',
+            description: 'Creates a new commit that undoes a previous commit (safe for shared branches).',
+            tags: ['revert', 'undo', 'safe']
+        }, {
+            category: 'undoing',
+            command: 'git stash',
+            description: 'Temporarily saves uncommitted changes to clean your working directory.',
+            tags: ['stash', 'save', 'temporary']
+        }, {
+            category: 'undoing',
+            command: 'git stash pop',
+            description: 'Restores the last stashed changes.',
+            tags: ['stash', 'pop', 'restore']
+        }, {
+            category: 'undoing',
+            command: 'git stash list',
+            description: 'Shows all stashes.',
+            tags: ['stash', 'list']
+        }, {
+            category: 'inspecting',
+            command: 'git show <commit>',
+            description: 'Displays details (changes) of a specific commit.',
+            tags: ['show', 'commit', 'details']
+        }, {
+            category: 'inspecting',
+            command: 'git blame <file>',
+            description: 'Shows who changed which line last in a file (great for tracking).',
+            tags: ['blame', 'track', 'author']
+        }, {
+            category: 'inspecting',
+            command: 'git shortlog',
+            description: 'Summarises commits by author.',
+            tags: ['shortlog', 'author', 'summary']
+        }, {
+            category: 'inspecting',
+            command: 'git reflog',
+            description: 'Shows a log of all your local operations (even reset/commit that you "lost").',
+            tags: ['reflog', 'recover', 'lost']
+        }, {
+            category: 'tagging',
+            command: 'git tag',
+            description: 'Lists tags.',
+            tags: ['tag', 'list']
+        }, {
+            category: 'tagging',
+            command: 'git tag <name>',
+            description: 'Creates a lightweight tag (e.g., v1.0).',
+            tags: ['tag', 'create', 'lightweight']
+        }, {
+            category: 'tagging',
+            command: 'git tag -a <name> -m "msg"',
+            description: 'Creates an annotated tag with a message.',
+            tags: ['tag', 'annotated', 'message']
+        }, {
+            category: 'tagging',
+            command: 'git push --tags',
+            description: 'Pushes tags to the remote.',
+            tags: ['push', 'tags', 'remote']
+        }];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const state = {
+            activeCategory: 'all',
+            searchQuery: '',
+            theme: 'light',
+        };
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DOM REFS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const grid = document.getElementById('gridContainer');
+        const tabsContainer = document.getElementById('tabsContainer');
+        const searchInput = document.getElementById('searchInput');
+        const statsEl = document.getElementById('stats');
+        const themeToggle = document.getElementById('themeToggle');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getCategories() {
+            const cats = new Set(commands.map(c => c.category));
+            return ['all', ...Array.from(cats)];
+        }
+
+        function getCategoryLabel(cat) {
+            const map = {
+                all: '📋 All',
+                basic: '📁 Basic',
+                branching: '🌿 Branching',
+                remote: '🌐 Remote',
+                undoing: '🧹 Undoing',
+                inspecting: '🔍 Inspecting',
+                tagging: '📦 Tagging',
+            };
+            return map[cat] || cat;
+        }
+
+        function getCategoryIcon(cat) {
+            const map = {
+                all: 'fa-th-large',
+                basic: 'fa-folder',
+                branching: 'fa-code-branch',
+                remote: 'fa-globe',
+                undoing: 'fa-undo-alt',
+                inspecting: 'fa-search',
+                tagging: 'fa-tag',
+            };
+            return map[cat] || 'fa-circle';
+        }
+
+        function filterCommands() {
+            const q = state.searchQuery.toLowerCase().trim();
+            const cat = state.activeCategory;
+
+            return commands.filter(cmd => {
+                if (cat !== 'all' && cmd.category !== cat) return false;
+
+                if (q) {
+                    const searchable = [
+                        cmd.command,
+                        cmd.description,
+                        ...cmd.tags
+                    ].join(' ').toLowerCase();
+                    if (!searchable.includes(q)) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function highlightText(text, query) {
+            if (!query || query.length < 1) return text;
+            const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${q})`, 'gi');
+            return text.replace(regex, '<mark style="background:rgba(110,64,201,0.18);border-radius:2px;padding:0 2px;">$1</mark>');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function renderTabs() {
+            const categories = getCategories();
+            const counts = {};
+            commands.forEach(c => {
+                counts[c.category] = (counts[c.category] || 0) + 1;
+            });
+            counts.all = commands.length;
+
+            tabsContainer.innerHTML = categories.map(cat => {
+                const isActive = state.activeCategory === cat;
+                const label = getCategoryLabel(cat);
+                const icon = getCategoryIcon(cat);
+                const count = counts[cat] || 0;
+                return `
+                    <button class="tab-btn ${isActive ? 'active' : ''}" 
+                            data-category="${cat}" 
+                            role="tab"
+                            aria-selected="${isActive}">
+                        <i class="fas ${icon}"></i>
+                        ${label}
+                        <span class="count">${count}</span>
+                    </button>
+                `;
+            }).join('');
+
+            tabsContainer.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.activeCategory = btn.dataset.category;
+                    renderTabs();
+                    renderGrid();
+                    window.location.hash = state.activeCategory === 'all' ? '' : state.activeCategory;
+                });
+            });
+        }
+
+        function renderGrid() {
+            const filtered = filterCommands();
+            const q = state.searchQuery.trim();
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No commands found</h3>
+                        <p>Try adjusting your search or filter.</p>
+                    </div>
+                `;
+                statsEl.textContent = `0 commands`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(cmd => {
+                const displayCmd = highlightText(cmd.command, q);
+                const displayDesc = highlightText(cmd.description, q);
+
+                const tagsHtml = cmd.tags.map(t => {
+                    const highlighted = highlightText(t, q);
+                    return `<span class="card-tag">${highlighted}</span>`;
+                }).join('');
+
+                const catLabel = getCategoryLabel(cmd.category).replace(/^[^\s]+\s/, '');
+
+                return `
+                    <div class="card" data-command="${cmd.command}">
+                        <div class="card-top">
+                            <span class="card-command">${displayCmd}</span>
+                            <button class="card-copy" data-command="${cmd.command}" aria-label="Copy command">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="card-desc">${displayDesc}</div>
+                        <div class="card-tags">
+                            <span class="card-tag primary">${catLabel}</span>
+                            ${tagsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            statsEl.textContent = `${filtered.length} command${filtered.length !== 1 ? 's' : ''}`;
+
+            grid.querySelectorAll('.card-copy').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cmd = btn.dataset.command;
+                    copyToClipboard(cmd, btn);
+                });
+            });
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  COPY
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function copyToClipboard(text, btn) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(`Copied: ${text}`);
+                    flashCopyBtn(btn);
+                }).catch(() => {
+                    fallbackCopy(text, btn);
+                });
+            } else {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        function fallbackCopy(text, btn) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Copied: ${text}`);
+                flashCopyBtn(btn);
+            } catch (_) {
+                showToast('Could not copy. Please copy manually.');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function flashCopyBtn(btn) {
+            btn.classList.add('copied');
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-check';
+            }
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                if (icon) {
+                    icon.className = 'fas fa-copy';
+                }
+            }, 1600);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  TOAST
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        let toastTimer = null;
+
+        function showToast(msg) {
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  THEME
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function setTheme(theme) {
+            state.theme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('git-cheat-theme', theme);
+        }
+
+        function toggleTheme() {
+            setTheme(state.theme === 'light' ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('git-cheat-theme');
+            if (saved === 'dark' || saved === 'light') {
+                setTheme(saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function init() {
+            loadTheme();
+            renderTabs();
+            renderGrid();
+
+            searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                renderGrid();
+            });
+
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                if (e.key === 'Escape') {
+                    searchInput.blur();
+                    if (state.searchQuery) {
+                        state.searchQuery = '';
+                        searchInput.value = '';
+                        renderGrid();
+                    }
+                }
+            });
+
+            toast.addEventListener('click', () => {
+                toast.classList.remove('show');
+            });
+
+            // Hash-based routing
+            if (window.location.hash) {
+                const hashCat = window.location.hash.replace('#', '');
+                const categories = getCategories();
+                if (categories.includes(hashCat)) {
+                    state.activeCategory = hashCat;
+                    renderTabs();
+                    renderGrid();
+                }
+            }
+
+            console.log('🚀 GitCheat loaded — press ⌘K to search');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
