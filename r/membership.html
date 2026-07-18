@@ -332,6 +332,43 @@
       font-size: 1.2rem;
       color: #d4af37;
     }
+
+    /* Image preview */
+    .image-preview {
+      margin-top: 8px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+    .image-preview.show {
+      display: flex;
+    }
+    .image-preview img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #d4af37;
+      background: #f4f1eb;
+    }
+    .image-preview .file-name {
+      font-size: 0.8rem;
+      color: #2c3e4e;
+      font-weight: 500;
+    }
+    .image-preview .remove-image {
+      background: none;
+      border: none;
+      color: #a12b2b;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px 8px;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .image-preview .remove-image:hover {
+      background: #fce9e9;
+    }
   </style>
 </head>
 <body>
@@ -416,7 +453,12 @@
         <div class="form-group">
           <label><i class="fas fa-image"></i> PP size photo / profile image</label>
           <input type="file" id="profileImage" accept="image/*">
-          <span class="inline-hint">optional, upload image (max 5MB)</span>
+          <span class="inline-hint">Upload to Supabase Storage (max 2MB)</span>
+          <div class="image-preview" id="imagePreview">
+            <img id="previewImg" src="#" alt="Preview">
+            <span class="file-name" id="fileName">file.jpg</span>
+            <button type="button" class="remove-image" id="removeImageBtn"><i class="fas fa-times-circle"></i></button>
+          </div>
         </div>
       </div>
 
@@ -441,6 +483,7 @@
 
     <div class="footnote">
       <i class="fas fa-database" style="margin-right: 6px;"></i> Data stored securely in Database
+      <i class="fas fa-cloud" style="margin-left: 12px;"></i> Images stored in Supabase Storage
     </div>
   </div>
 
@@ -465,15 +508,17 @@
 
 <script>
   (function() {
+    "use strict";
+
     // ============================================================
-    // ✅ YOUR SUPABASE CREDENTIALS
+    // ✅ SUPABASE CREDENTIALS
     // ============================================================
     const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
-    // ============================================================
-
-    // TABLE NAME - using UUID primary key (no sequence issues)
-    const TABLE_NAME = 'member_registrations';
+    
+    // Storage bucket name
+    const STORAGE_BUCKET = "members-profile";
+    const TABLE_NAME = "member_registrations";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
@@ -481,7 +526,63 @@
     const statusMsg = document.getElementById('statusMessage');
     const statusText = document.getElementById('statusText');
     const submitBtn = document.getElementById('submitBtn');
+    const fileInput = document.getElementById('profileImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const fileName = document.getElementById('fileName');
+    const removeImageBtn = document.getElementById('removeImageBtn');
 
+    let selectedFile = null;
+
+    // ===== IMAGE PREVIEW =====
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) {
+        hidePreview();
+        return;
+      }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setStatus('Image size exceeds 2MB limit. Please choose a smaller image.', true);
+        fileInput.value = '';
+        hidePreview();
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+      if (!validTypes.includes(file.type)) {
+        setStatus('Please upload a valid image (JPEG, PNG, GIF, WEBP, SVG).', true);
+        fileInput.value = '';
+        hidePreview();
+        return;
+      }
+
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        previewImg.src = ev.target.result;
+        fileName.textContent = file.name;
+        imagePreview.classList.add('show');
+      };
+      reader.readAsDataURL(file);
+      hideStatus();
+    });
+
+    function hidePreview() {
+      imagePreview.classList.remove('show');
+      previewImg.src = '#';
+      fileName.textContent = '';
+      selectedFile = null;
+    }
+
+    removeImageBtn.addEventListener('click', function() {
+      fileInput.value = '';
+      hidePreview();
+    });
+
+    // ===== STATUS FUNCTIONS =====
     function setStatus(message, isError = false) {
       statusText.innerText = message;
       statusMsg.className = 'status-msg show';
@@ -506,21 +607,69 @@
       }
     }
 
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        if (!file) resolve(null);
-        if (file.size > 5 * 1024 * 1024) {
-          reject(new Error('File size exceeds 5MB limit'));
-          return;
+    // ===== UPLOAD IMAGE TO SUPABASE STORAGE =====
+    async function uploadImage(file, memberId) {
+      if (!file) return null;
+      
+      const ext = file.name.split('.').pop() || 'jpg';
+      const fileName = `member_${memberId}_${Date.now()}.${ext}`;
+
+      try {
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+          });
+
+        if (error) {
+          console.error('Storage upload error:', error);
+          throw new Error('Image upload failed: ' + error.message);
         }
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-        reader.readAsDataURL(file);
-      });
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(fileName);
+
+        return urlData.publicUrl;
+      } catch (err) {
+        console.error('Upload error:', err);
+        throw new Error('Image upload failed: ' + err.message);
+      }
     }
 
-    // Test connection on page load
+    // ===== CHECK IF BUCKET EXISTS =====
+    async function ensureBucketExists() {
+      try {
+        const { data, error } = await supabase.storage.from(STORAGE_BUCKET).list('public', { limit: 1 });
+        if (error && error.message.includes('Bucket not found')) {
+          console.warn('⚠️ Bucket not found. Creating...');
+          const { error: createError } = await supabase.storage.createBucket(STORAGE_BUCKET, {
+            public: true,
+            file_size_limit: 2097152,
+            allowed_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+          });
+          if (createError) {
+            console.warn('Could not create bucket:', createError.message);
+            return false;
+          }
+          console.log('✅ Bucket created:', STORAGE_BUCKET);
+          return true;
+        }
+        if (error) {
+          console.warn('Bucket check error:', error.message);
+          return false;
+        }
+        console.log('✅ Bucket exists:', STORAGE_BUCKET);
+        return true;
+      } catch (err) {
+        console.warn('Bucket check failed:', err.message);
+        return false;
+      }
+    }
+
+    // ===== TEST CONNECTION =====
     async function testConnection() {
       try {
         const { data, error } = await supabase.from(TABLE_NAME).select('count').limit(1);
@@ -529,14 +678,15 @@
         } else {
           console.log('✅ Connected to table:', TABLE_NAME);
         }
+        await ensureBucketExists();
       } catch (err) {
         console.warn('⚠️ Connection test failed:', err.message);
       }
     }
 
-    // Run connection test
     testConnection();
 
+    // ===== FORM SUBMIT =====
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideStatus();
@@ -554,8 +704,6 @@
         const designation = document.getElementById('designation').value.trim();
         const profession = document.getElementById('profession').value.trim();
         const mentor = document.getElementById('mentor').value.trim();
-        const fileInput = document.getElementById('profileImage');
-        const profileFile = fileInput.files[0];
 
         // Validation
         if (!name || !address || !phone || !email || !dob) {
@@ -564,7 +712,6 @@
           return;
         }
 
-        // Email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           setStatus('Please enter a valid email address.', true);
@@ -572,7 +719,6 @@
           return;
         }
 
-        // Phone validation (10 digits)
         const phoneRegex = /^[0-9]{10}$/;
         if (!phoneRegex.test(phone)) {
           setStatus('Please enter a valid 10-digit phone number.', true);
@@ -580,53 +726,70 @@
           return;
         }
 
-        // Process profile image
-        let profileImageBase64 = null;
-        if (profileFile) {
-          try {
-            profileImageBase64 = await fileToBase64(profileFile);
-          } catch (err) {
-            setStatus('Error reading profile image: ' + err.message, true);
-            setLoading(false);
-            return;
-          }
-        }
-
-        // Build record - CORRECTED FIELD MAPPING
+        // Build record - matching your table schema exactly
         const record = {
-          timestamp: new Date().toISOString(),
-          full_name: name,              // Changed from 'name' to 'full_name'
+          full_name: name,
           address: address,
-          phone: phone,                 // Changed from 'phone_number' to 'phone'
+          phone: phone,
           blood_group: bloodGroup || null,
           gender: gender,
           email: email,
-          birth_date: dob,              // Changed from 'date_of_birth' to 'birth_date'
-          position: designation || null, // Changed from 'designation' to 'position'
+          birth_date: dob,
+          position: designation || null,
           profession: profession || null,
-          profile_image: profileImageBase64,
-          mentor: mentor || null
+          mentor: mentor || null,
+          // timestamp and created_at will use default values (now())
+          // phone_number is the same as phone, but we already have phone column
         };
 
-        console.log('📤 Sending data to Supabase:', record);
-
-        // Insert into Supabase
-        const { data, error } = await supabase
+        console.log('📤 Inserting member data:', record);
+        const { data: insertData, error: insertError } = await supabase
           .from(TABLE_NAME)
           .insert([record])
           .select();
 
-        if (error) {
-          console.error('❌ Supabase insert error:', error);
-          setStatus('❌ Error saving to Supabase: ' + error.message, true);
+        if (insertError) {
+          console.error('❌ Insert error:', insertError);
+          setStatus('❌ Error saving to database: ' + insertError.message, true);
           setLoading(false);
           return;
         }
 
-        console.log('✅ Member registered successfully:', data);
-        setStatus('🎉 Registration successful! Welcome to Rotaract Club of Galkot Baglung!', false);
+        const memberId = insertData[0]?.id;
+        if (!memberId) {
+          throw new Error('Failed to get member ID after insert');
+        }
+
+        console.log('✅ Member inserted with ID:', memberId);
+
+        // Upload image if selected
+        let imageUrl = null;
+        if (selectedFile) {
+          try {
+            console.log('📤 Uploading image to storage...');
+            imageUrl = await uploadImage(selectedFile, memberId);
+            console.log('✅ Image uploaded:', imageUrl);
+
+            // Update the record with the image URL
+            if (imageUrl) {
+              const { error: updateError } = await supabase
+                .from(TABLE_NAME)
+                .update({ profile_image: imageUrl })
+                .eq('id', memberId);
+
+              if (updateError) {
+                console.warn('⚠️ Could not update image URL:', updateError.message);
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('⚠️ Image upload failed but member was saved:', uploadErr.message);
+          }
+        }
+
+        setStatus('🎉 Registration successful! Welcome to Rotaract Club of Galkot Baglung! Your application has been submitted.', false);
         form.reset();
         fileInput.value = '';
+        hidePreview();
         setLoading(false);
 
       } catch (err) {
@@ -637,9 +800,10 @@
     });
 
     console.log('📋 Rotaract Club Membership Form ready.');
-    console.log(`📊 Using table: "${TABLE_NAME}" (UUID primary key)`);
+    console.log(`📊 Using table: "${TABLE_NAME}"`);
+    console.log(`📦 Storage bucket: "${STORAGE_BUCKET}"`);
     console.log('🔗 Connected to Supabase project:', SUPABASE_URL);
-    console.log('✅ Ready to save member registrations!');
+    console.log('✅ Ready to save member registrations with image upload!');
   })();
 </script>
 

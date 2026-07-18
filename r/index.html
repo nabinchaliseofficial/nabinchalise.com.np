@@ -366,14 +366,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentIndex = 0;
     let cardsPerView = 5;
 
-    // Board positions to exclude
+    // Board positions to exclude (based on BOARD OF DIRECTORS R.Y. 2026/27)
     const boardPositions = [
-        'president', 'secretary', 'treasurer', 'vice president', 'joint secretary',
-        'ipp', 'mentor', 'president elect', 'membership chair', 'public image chair',
-        'service projects chair', 'health program chair', 'rotary foundation chair',
-        'sergeant at arms', 'it officer', 'young leaders contact', 'pp/learning facilitator',
-        'pp/isd/advisor', 'pp/club advisor'
-    ];
+    // Core Executive
+    'president', 'secretary', 'treasurer',
+    // Vice Presidents / Mentors
+    'vice president', 'joint secretary',
+    'ipp', 'mentor', 'president elect',
+    // Action Chairs
+    'membership chair', 'public image chair',
+    'service projects chair', 'health program chair',
+    'rotary foundation chair',
+    // Officers
+    'sergeant at arms', 'it officer', 'young leaders contact',
+    // Past Presidents / Advisors
+    'pp/learning facilitator',
+    'pp/rotaract learning facilitator',  // ✅ ADD THIS for Laxmi Pun
+    'pp/isd/advisor',
+    'pp/club advisor'
+];
 
     function renderSlider() {
         if (!members.length) {
@@ -422,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             counter.textContent = 'Loading members...';
             
-            // Fetch all members from Supabase
+            // Fetch all active members from Supabase
             const { data, error } = await supabase
                 .from('members')
                 .select('*')
@@ -452,9 +463,9 @@ document.addEventListener("DOMContentLoaded", () => {
             currentIndex = 0;
             renderSlider();
             
-            console.log(`Loaded ${members.length} active members from Supabase`);
+            console.log(`✅ Loaded ${members.length} active members from Supabase`);
         } catch (err) {
-            console.error('Failed to fetch members:', err);
+            console.error('❌ Failed to fetch members:', err);
             counter.textContent = 'Error loading members';
             track.innerHTML = `<div class="text-center w-full text-red-500 py-8">Failed to load members. Please check console.</div>`;
         }
