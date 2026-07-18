@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minutes Builder | Rotaract Club of Galkot Baglung</title>
-
-    <!-- SEO & Meta -->
-    <meta name="description" content="Official Meeting Minutes Writer Engine for Rotaract Club of Galkot Baglung, Rotary International District 3292 Nepal-Bhutan." />
+    <title>Minutes Builder · RAC Galkot</title>
+    <!-- SEO -->
+    <meta name="description" content="Meeting Minutes Writer with versioned save, Supabase, autocomplete, and print preview." />
     <meta name="author" content="Rotaract Club of Galkot Baglung" />
 
-    <!-- Google Fonts -->
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Supabase JS Client -->
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
     </script>
 
     <style>
-        /* ===== CSS VARIABLES ===== */
+        /* ── variables ── */
         :root {
             --primary: #D70060;
             --primary-hover: #B50051;
@@ -39,14 +38,11 @@
             --shadow-lg: 0 20px 25px -5px rgba(215, 0, 96, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* ===== RESET & BASE ===== */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
             background-color: var(--light-bg);
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
@@ -58,7 +54,7 @@
             min-height: 100vh;
         }
 
-        /* ===== NAVIGATION ===== */
+        /* ── navbar ── */
         .navbar {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -75,7 +71,6 @@
             flex-wrap: wrap;
             gap: 12px;
         }
-
         .nav-brand {
             display: flex;
             align-items: center;
@@ -83,34 +78,27 @@
             text-decoration: none;
             color: var(--dark);
         }
-
         .nav-logo-marker {
             width: 8px;
             height: 24px;
             background: var(--primary);
             border-radius: 4px;
         }
-
         .nav-brand-text {
             font-weight: 700;
             font-size: 1.1rem;
             letter-spacing: -0.5px;
         }
-
         .nav-brand-text span {
             color: var(--primary);
         }
-
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .home-btn {
-            position: relative;
-            overflow: hidden;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -121,60 +109,17 @@
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
             border: none;
+            transition: var(--transition);
+            cursor: pointer;
         }
-
-        .home-btn svg {
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
         .home-btn:hover {
             background-color: var(--primary);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(215, 0, 96, 0.3);
         }
 
-        .home-btn:hover svg {
-            transform: scale(1.15) rotate(-8deg);
-        }
-
-        .home-btn .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0);
-            animation: ripple-effect 0.45s linear;
-            pointer-events: none;
-        }
-
-        .home-btn.clicked-exit {
-            animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes ripple-effect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        @keyframes exit-bounce {
-            0% {
-                transform: scale(1);
-            }
-            20% {
-                transform: scale(0.92);
-                background-color: var(--primary);
-            }
-            100% {
-                transform: translateY(-15px) scale(0.8);
-                opacity: 0;
-            }
-        }
-
-        /* ===== TOAST NOTIFICATION ===== */
+        /* ── toast ── */
         .toast-container {
             position: fixed;
             bottom: 24px;
@@ -186,7 +131,6 @@
             max-width: 380px;
             width: 100%;
         }
-
         .toast {
             background: var(--white);
             border-radius: var(--radius-md);
@@ -197,17 +141,13 @@
             align-items: flex-start;
             gap: 12px;
             animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: bottom right;
         }
-
         .toast.error {
             border-left-color: #EF4444;
         }
-
         .toast.loading {
             border-left-color: #F59E0B;
         }
-
         .toast-icon {
             flex-shrink: 0;
             width: 28px;
@@ -219,39 +159,31 @@
             font-size: 16px;
             font-weight: 700;
         }
-
         .toast.success .toast-icon {
             background: #D1FAE5;
             color: #065F46;
         }
-
         .toast.error .toast-icon {
             background: #FEE2E2;
             color: #991B1B;
         }
-
         .toast.loading .toast-icon {
             background: #FEF3C7;
             color: #92400E;
             animation: spin 1s linear infinite;
         }
-
         .toast-content {
             flex: 1;
         }
-
         .toast-title {
             font-weight: 700;
             font-size: 0.95rem;
-            color: var(--dark);
         }
-
         .toast-message {
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-top: 2px;
         }
-
         .toast-close {
             background: none;
             border: none;
@@ -259,9 +191,7 @@
             cursor: pointer;
             font-size: 1.2rem;
             padding: 0 4px;
-            transition: var(--transition);
         }
-
         .toast-close:hover {
             color: var(--dark);
         }
@@ -276,14 +206,13 @@
                 transform: translateY(0) scale(1);
             }
         }
-
         @keyframes spin {
             to {
                 transform: rotate(360deg);
             }
         }
 
-        /* ===== HERO ===== */
+        /* ── hero ── */
         .hero {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
@@ -294,8 +223,6 @@
             margin-bottom: 40px;
             border-bottom: 4px solid var(--primary);
         }
-
-        /* Meeting Mode Status Badge */
         .mode-status-badge {
             display: inline-block;
             padding: 6px 18px;
@@ -306,30 +233,16 @@
             text-transform: uppercase;
             margin-top: 12px;
         }
-
         .mode-status-badge.enabled {
             background: rgba(16, 185, 129, 0.15);
             color: #34d399;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-
         .mode-status-badge.disabled {
             background: rgba(239, 68, 68, 0.15);
             color: #f87171;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 70% 30%, rgba(217, 0, 96, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
         .hero-tag {
             background: rgba(215, 0, 96, 0.15);
             color: #f472b6;
@@ -343,7 +256,6 @@
             display: inline-block;
             margin-bottom: 16px;
         }
-
         .hero h1 {
             font-size: 2.5rem;
             font-weight: 800;
@@ -351,7 +263,6 @@
             margin-bottom: 12px;
             line-height: 1.2;
         }
-
         .hero p {
             color: #94a3b8;
             max-width: 600px;
@@ -359,14 +270,12 @@
             font-size: 1.05rem;
         }
 
-        /* ===== CONTAINER ===== */
+        /* ── container / cards ── */
         .container {
             max-width: 960px;
             margin: 0 auto;
             padding: 0 24px 80px 24px;
         }
-
-        /* ===== FORM CARDS ===== */
         .form-card {
             background: var(--white);
             border: 1px solid var(--border);
@@ -376,12 +285,10 @@
             box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
-
         .form-card:hover {
             box-shadow: var(--shadow-md);
             border-color: #cbd5e1;
         }
-
         .card-header-wrapper {
             display: flex;
             justify-content: space-between;
@@ -392,13 +299,11 @@
             gap: 16px;
             flex-wrap: wrap;
         }
-
         .card-title-group {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .card-icon {
             display: flex;
             align-items: center;
@@ -410,7 +315,6 @@
             border-radius: var(--radius-sm);
             flex-shrink: 0;
         }
-
         .form-card:nth-of-type(2) .card-icon {
             background: #fdf2f8;
             color: var(--primary);
@@ -419,7 +323,18 @@
             background: #ecfdf5;
             color: var(--success);
         }
-
+        .form-card:nth-of-type(4) .card-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        .form-card:nth-of-type(5) .card-icon {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        .form-card:nth-of-type(6) .card-icon {
+            background: #fce4ec;
+            color: var(--primary);
+        }
         .form-card h2 {
             color: var(--dark);
             font-size: 1.25rem;
@@ -427,21 +342,118 @@
             letter-spacing: -0.3px;
         }
 
-        /* ===== INPUTS ===== */
+        /* ── search / autocomplete ── */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+        .search-bar input:focus {
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
+        }
+        .search-bar .btn-search {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        .search-bar .btn-search:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-2px);
+        }
+        .search-result-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: var(--radius-lg);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .search-result-badge.found {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .search-result-badge.not-found {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-md);
+            margin-top: 4px;
+        }
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .autocomplete-item:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+        }
+        .autocomplete-item .meeting-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .autocomplete-item .meeting-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ── inputs ── */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group:last-child {
             margin-bottom: 0;
         }
-
         label {
             display: block;
             font-weight: 600;
@@ -449,7 +461,6 @@
             font-size: 0.88rem;
             color: #475569;
         }
-
         input,
         textarea,
         select {
@@ -464,7 +475,6 @@
             background-color: #f8fafc;
             transition: var(--transition);
         }
-
         input:focus,
         textarea:focus,
         select:focus {
@@ -472,7 +482,6 @@
             background-color: var(--white);
             box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
         }
-
         .readonly-input {
             background-color: #e2e8f0;
             font-weight: 700;
@@ -480,15 +489,14 @@
             cursor: not-allowed;
             border-color: var(--border);
         }
-
         .dynamic-row {
             display: flex;
             gap: 12px;
             margin-bottom: 12px;
             align-items: flex-start;
             animation: fadeIn 0.3s ease;
+            flex-wrap: wrap;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -499,7 +507,6 @@
                 transform: translateY(0);
             }
         }
-
         .agenda-width-title {
             width: 35%;
         }
@@ -508,7 +515,19 @@
             resize: vertical;
         }
 
-        /* ===== CHECKLIST ===== */
+        /* ── checklist ── */
+        .checklist-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .checklist-search input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
         .checklist-container {
             max-height: 320px;
             overflow-y: auto;
@@ -518,7 +537,6 @@
             border-radius: var(--radius-sm);
             margin-bottom: 20px;
         }
-
         .checklist-item {
             display: flex;
             align-items: center;
@@ -529,16 +547,10 @@
             background: var(--white);
             border: 1px solid transparent;
         }
-
-        .checklist-item:last-child {
-            margin-bottom: 0;
-        }
-
         .checklist-item:hover {
             background: #fff1f2;
             border-color: rgba(215, 0, 96, 0.15);
         }
-
         .checklist-item input[type="checkbox"] {
             width: auto;
             margin-right: 14px;
@@ -547,7 +559,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
         .checklist-item label {
             margin-bottom: 0;
             cursor: pointer;
@@ -558,7 +569,6 @@
             font-weight: 500;
             color: var(--dark);
         }
-
         .member-role {
             color: var(--text-muted);
             font-size: 0.78rem;
@@ -571,14 +581,11 @@
             flex-shrink: 0;
             margin-left: 8px;
         }
-
-        /* ===== BUTTONS ===== */
-        button {
-            cursor: pointer;
-            font-family: inherit;
-            transition: var(--transition);
+        .checklist-item.hidden {
+            display: none;
         }
 
+        /* ── buttons ── */
         .btn-add {
             background: var(--secondary);
             color: var(--white);
@@ -591,17 +598,16 @@
             align-items: center;
             gap: 6px;
             white-space: nowrap;
+            transition: var(--transition);
+            cursor: pointer;
         }
-
         .btn-add:hover {
             background: var(--secondary-hover);
             transform: translateY(-1px);
         }
-
         .action-buttons-group {
             margin-top: 40px;
         }
-
         .btn-submit {
             background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
             color: var(--white);
@@ -617,22 +623,19 @@
             justify-content: center;
             gap: 10px;
             letter-spacing: -0.2px;
-            position: relative;
-            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
         }
-
         .btn-submit:hover {
             background: linear-gradient(135deg, #be0055 0%, #910040 100%);
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(215, 0, 96, 0.25);
         }
-
         .btn-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
         .btn-submit .spinner {
             display: none;
             width: 20px;
@@ -642,11 +645,9 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-
         .btn-submit.loading .spinner {
             display: inline-block;
         }
-
         .btn-submit.loading .btn-text {
             opacity: 0.7;
         }
@@ -661,12 +662,7 @@
             margin-top: 24px;
         }
 
-        /* ===== HIDDEN ===== */
-        #print-preview {
-            display: none;
-        }
-
-        /* ===== MODE OFF OVERLAY - Redirect to index.html ===== */
+        /* ── overlay (mode off) ── */
         .mode-off-overlay {
             display: none;
             position: fixed;
@@ -683,11 +679,9 @@
             padding: 20px;
             animation: fadeInOverlay 0.5s ease;
         }
-
         .mode-off-overlay.active {
             display: flex;
         }
-
         @keyframes fadeInOverlay {
             from {
                 opacity: 0;
@@ -698,7 +692,6 @@
                 transform: scale(1);
             }
         }
-
         .mode-off-card {
             background: var(--white);
             border-radius: var(--radius-lg);
@@ -709,27 +702,23 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .mode-off-card .icon-big {
             font-size: 4rem;
             margin-bottom: 16px;
             display: block;
         }
-
         .mode-off-card h2 {
             color: var(--dark);
             font-size: 1.8rem;
             font-weight: 800;
             margin-bottom: 12px;
         }
-
         .mode-off-card p {
             color: var(--text-muted);
             font-size: 1rem;
             margin-bottom: 24px;
             line-height: 1.6;
         }
-
         .mode-off-card .btn-redirect {
             display: inline-block;
             background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
@@ -743,29 +732,276 @@
             border: none;
             cursor: pointer;
         }
-
         .mode-off-card .btn-redirect:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(215, 0, 96, 0.3);
         }
-
-        .mode-off-card .btn-redirect i {
-            margin-right: 8px;
-        }
-
         .countdown-timer {
             color: var(--text-muted);
             font-size: 0.9rem;
             margin-top: 16px;
         }
-
         .countdown-timer span {
             font-weight: 700;
             color: var(--primary);
             font-size: 1.2rem;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ── action items ── */
+        .action-item-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            align-items: center;
+        }
+        .action-item-row .ai-task {
+            flex: 2;
+            min-width: 140px;
+        }
+        .action-item-row .ai-person {
+            flex: 1;
+            min-width: 100px;
+        }
+        .action-item-row .ai-deadline {
+            flex: 0.8;
+            min-width: 100px;
+        }
+        .action-item-row .ai-status {
+            flex: 0.8;
+            min-width: 100px;
+        }
+        .action-item-row .ai-remove {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .action-item-row .ai-remove:hover {
+            background: #fecaca;
+        }
+
+        /* ── signatures ── */
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 12px;
+        }
+        .signature-field {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+        .signature-field label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .signature-field input[type="text"] {
+            background: var(--white);
+            margin-bottom: 10px;
+        }
+        .auto-signature-preview {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .auto-signature-preview .label {
+            font-size: 0.75rem;
+            color: #166534;
+            font-weight: 600;
+        }
+        .auto-signature-preview img {
+            max-height: 50px;
+            width: auto;
+            border: 1px solid #86efac;
+            border-radius: 4px;
+            padding: 2px;
+            background: white;
+        }
+        .auto-signature-preview .status {
+            font-size: 0.7rem;
+            color: #166534;
+        }
+
+        /* ── print preview ── */
+        #print-preview {
+            display: none;
+            position: relative;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 40px 50px;
+            background: white;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .navbar,
+            .hero,
+            .container,
+            .form-card,
+            .action-buttons-group,
+            .toast-container,
+            .mode-off-overlay,
+            #toastContainer {
+                display: none !important;
+            }
+            #print-preview {
+                display: block !important;
+                position: relative;
+                min-height: 100vh;
+                padding: 40px 50px;
+                background: white;
+            }
+            #print-preview::before {
+                content: "";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 480px;
+                height: 480px;
+                background-image: url('rotaract.jpg');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                opacity: 0.06;
+                pointer-events: none;
+                z-index: -1;
+            }
+            .letterhead {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 3px double var(--primary);
+                padding-bottom: 15px;
+                margin-bottom: 25px;
+            }
+            .letterhead-logo {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 75px;
+                width: auto;
+            }
+            .letterhead-text {
+                text-align: center;
+                width: 100%;
+            }
+            .letterhead h1 {
+                color: var(--primary);
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            .letterhead h2 {
+                color: var(--secondary);
+                font-size: 15px;
+                display: block !important;
+                margin-bottom: 2px;
+            }
+            .letterhead-subtext {
+                font-size: 12px;
+                color: #444;
+            }
+            #outTitle {
+                text-align: center;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                letter-spacing: 1px;
+                font-size: 18px;
+                font-weight: bold;
+                color: var(--dark);
+            }
+            .meta-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25px;
+            }
+            .meta-table td {
+                padding: 8px 12px;
+                border: 1px solid #cbd5e1;
+                font-size: 13px;
+            }
+            .meta-title {
+                font-weight: bold;
+                background: #f8fafc;
+                width: 22%;
+            }
+            .width-30 {
+                width: 28%;
+            }
+            .content-section {
+                margin-bottom: 24px;
+                page-break-inside: avoid;
+            }
+            .content-section h4 {
+                color: var(--secondary);
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 5px;
+                margin-bottom: 12px;
+                font-size: 14px;
+                text-align: center;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .agenda-item {
+                margin-bottom: 14px;
+                font-size: 13.5px;
+            }
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .print-table th,
+            .print-table td {
+                border: 1px solid #cbd5e1;
+                padding: 6px 12px;
+                font-size: 12.5px;
+                text-align: left;
+            }
+            .print-table th {
+                background-color: #f8fafc;
+                font-weight: bold;
+            }
+            .col-sn {
+                width: 8%;
+                text-align: center;
+            }
+            .col-name {
+                width: 52%;
+            }
+            .col-role {
+                width: 40%;
+            }
+        }
+
+        /* ── responsive ── */
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -812,199 +1048,37 @@
             .mode-off-card h2 {
                 font-size: 1.4rem;
             }
-            .mode-off-card .icon-big {
-                font-size: 3rem;
+            .signature-grid {
+                grid-template-columns: 1fr;
             }
-        }
-
-        /* ===== PRINT ===== */
-        @media print {
-            body {
-                background: var(--white);
-                padding: 0;
-                color: #000000;
+            .action-item-row {
+                flex-direction: column;
+                align-items: stretch;
             }
-            .navbar,
-            .hero,
-            .container,
-            .form-card,
-            input,
-            button,
-            .action-buttons-group,
-            label,
-            .toast-container,
-            .mode-off-overlay {
-                display: none !important;
+            .search-bar {
+                flex-direction: column;
             }
-            #print-preview {
-                display: block !important;
-                position: relative;
-                min-height: 100vh;
-                font-family: 'Segoe UI', Arial, sans-serif;
-                padding: 40px 50px;
+            .search-bar input {
+                width: 100%;
             }
-
-            #print-preview::before {
-                content: "";
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 480px;
-                height: 480px;
-                background-image: url('rotaract.jpg');
-                background-repeat: no-repeat;
-                background-position: center;
-                background-size: contain;
-                opacity: 0.06;
-                pointer-events: none;
-                z-index: -1;
-            }
-
-            .letterhead {
-                position: relative;
-                display: flex;
-                align-items: center;
+            .search-bar .btn-search {
+                width: 100%;
                 justify-content: center;
-                border-bottom: 3px double var(--primary);
-                padding-bottom: 15px;
-                margin-bottom: 25px;
-            }
-            .letterhead-logo {
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                height: 75px;
-                width: auto;
-            }
-            .letterhead-text {
-                text-align: center;
-                width: 100%;
-            }
-            .letterhead h1 {
-                color: var(--primary);
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 2px;
-            }
-            .letterhead h2 {
-                color: var(--secondary);
-                font-size: 15px;
-                display: block !important;
-                margin-bottom: 2px;
-            }
-            .letterhead-subtext {
-                font-size: 12px;
-                color: #444;
-            }
-
-            #outTitle {
-                text-align: center;
-                text-transform: uppercase;
-                margin-bottom: 20px;
-                letter-spacing: 1px;
-                font-size: 18px;
-                font-weight: bold;
-                color: var(--dark);
-            }
-
-            .meta-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 25px;
-            }
-            .meta-table td {
-                padding: 8px;
-                border: 1px solid #cbd5e1;
-                font-size: 13px;
-            }
-            .meta-title {
-                font-weight: bold;
-                background: #f8fafc;
-                width: 22%;
-            }
-            .width-30 {
-                width: 28%;
-            }
-
-            .content-section {
-                margin-bottom: 24px;
-            }
-            .content-section h4 {
-                color: var(--secondary);
-                border-bottom: 1px solid #cbd5e1;
-                padding-bottom: 5px;
-                margin-bottom: 12px;
-                font-size: 14px;
-                text-align: center;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            .agenda-item {
-                margin-bottom: 14px;
-                font-size: 13.5px;
-            }
-            .footer-sign {
-                margin-top: 55px;
-                display: flex;
-                justify-content: space-between;
-                page-break-inside: avoid;
-            }
-            .sign-line {
-                border-top: 1px solid #000000;
-                width: 210px;
-                text-align: center;
-                padding-top: 6px;
-                font-size: 13px;
-            }
-
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 8px;
-            }
-            .print-table th,
-            .print-table td {
-                border: 1px solid #cbd5e1;
-                padding: 6px 12px;
-                font-size: 12.5px;
-                text-align: left;
-            }
-            .print-table th {
-                background-color: #f8fafc;
-                font-weight: bold;
-            }
-            .col-sn {
-                width: 8%;
-                text-align: center;
-            }
-            .col-name {
-                width: 52%;
-            }
-            .col-role {
-                width: 40%;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== MEETING MODE OFF OVERLAY ===== -->
+    <!-- ===== MODE OFF OVERLAY ===== -->
     <div class="mode-off-overlay" id="modeOffOverlay">
         <div class="mode-off-card">
             <span class="icon-big">🔒</span>
             <h2>Meeting Mode is Off</h2>
             <p>The admin has disabled meeting mode. You cannot access the minutes builder at this time.</p>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
-                Please contact the admin to enable meeting mode.
-            </p>
-            <a href="index.html" class="btn-redirect" id="redirectBtn">
-                🏠 Go to Homepage
-            </a>
-            <div class="countdown-timer">
-                Redirecting in <span id="countdownNum">5</span> seconds...
-            </div>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Please contact the admin to enable meeting mode.</p>
+            <a href="index.html" class="btn-redirect" id="redirectBtn">🏠 Go to Homepage</a>
+            <div class="countdown-timer">Redirecting in <span id="countdownNum">5</span> seconds...</div>
         </div>
     </div>
 
@@ -1015,10 +1089,7 @@
             <div class="nav-brand-text">Rotaract<span>Galkot</span></div>
         </a>
         <div class="nav-actions">
-            <a href="index.html" class="home-btn" id="interactiveHomeBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                HOME
-            </a>
+            <a href="index.html" class="home-btn">🏠 HOME</a>
         </div>
     </nav>
 
@@ -1026,113 +1097,167 @@
     <header class="hero">
         <div class="hero-tag">R.Y. 2026-27 Console</div>
         <h1>Minutes Writer Engine</h1>
-        <p>Compile official internal records, automatically aggregate attendance sheets, generate structured configurations, and dispatch logging parameters.</p>
+        <p>Compile official records · versioned save with date/time · Supabase + autocomplete</p>
         <div id="modeStatusBadge" class="mode-status-badge enabled">🟢 Meeting Mode: ON</div>
     </header>
 
     <!-- ===== MAIN ===== -->
     <main class="container">
 
-        <!-- CARD 1: MEETING COORDINATES -->
+        <!-- CARD 1: MEETING COORDINATES + SEARCH -->
         <div class="form-card">
             <div class="card-header-wrapper">
                 <div class="card-title-group">
-                    <div class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                    </div>
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></div>
                     <h2>1. Meeting Coordinates</h2>
                 </div>
             </div>
 
+            <!-- SEARCH + autocomplete -->
+            <div class="search-wrapper">
+                <div class="search-bar">
+                    <input type="text" id="searchMeetingNo" placeholder="🔍 Type to search meetings..." autocomplete="off" />
+                    <button class="btn-search" id="searchBtn" onclick="searchMeeting()">🔍 Search</button>
+                    <span id="searchResultBadge" class="search-result-badge" style="display:none;"></span>
+                </div>
+                <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+            </div>
+
+            <!-- Version info: shows when the meeting was saved -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; background:#f1f5f9; padding:12px 16px; border-radius:var(--radius-sm);">
+                <span style="font-weight:600;">📌 Version:</span>
+                <span id="versionDisplay" style="color:var(--text-muted);">—</span>
+                <span style="font-weight:600; margin-left:auto;">🕒 Saved:</span>
+                <span id="savedAtDisplay" style="color:var(--text-muted);">—</span>
+            </div>
+
             <div class="grid-2">
-                <div class="form-group">
-                    <label for="meetNo">Meeting Number</label>
-                    <input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting" />
-                </div>
-                <div class="form-group">
-                    <label for="meetDate">Date &amp; Time</label>
-                    <input type="datetime-local" id="meetDate" />
-                </div>
+                <div class="form-group"><label for="meetNo">Meeting Number</label><input type="text" id="meetNo" placeholder="e.g., 125th Regular Meeting" /></div>
+                <div class="form-group"><label for="meetDate">Date &amp; Time</label><input type="datetime-local" id="meetDate" /></div>
             </div>
             <div class="grid-2">
-                <div class="form-group">
-                    <label for="meetVenue">Venue Location</label>
-                    <input type="text" id="meetVenue" value="Club Office, Galkot" placeholder="e.g., Club Office, Galkot" />
-                </div>
-                <div class="form-group">
-                    <label for="meetChair">Meeting Chairperson</label>
-                    <input type="text" id="meetChair" value="Rtr. Nabin Chalise" placeholder="President Name" />
-                </div>
+                <div class="form-group"><label for="meetVenue">Venue Location</label><input type="text" id="meetVenue" value="Club Office, Galkot" /></div>
+                <div class="form-group"><label for="meetChair">Meeting Chairperson</label><input type="text" id="meetChair" value="Rtr. Nabin Chalise" /></div>
             </div>
         </div>
 
-        <!-- CARD 2: ROSTER & ATTENDANCE -->
+        <!-- CARD 2: ROSTER -->
         <div class="form-card">
             <div class="card-header-wrapper">
                 <div class="card-title-group">
-                    <div class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </div>
-                    <h2>2. Attendance Checklist (Official Members)</h2>
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <h2>2. Attendance Checklist</h2>
                 </div>
-                <button class="btn-add" onclick="addNewMemberRow()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-                    Add Rotaractor
-                </button>
+                <button class="btn-add" onclick="addNewMemberRow()">➕ Add Rotaractor</button>
             </div>
-
-            <div class="checklist-container" id="members-checklist">
-                <!-- Roster dynamically mounted -->
+            <div class="checklist-search">
+                <input type="text" id="memberSearch" placeholder="🔍 Search members..." oninput="filterMembers()" />
             </div>
-
+            <div class="checklist-container" id="members-checklist"></div>
             <div id="additional-members-container" class="additional-members-margin"></div>
 
             <div class="card-header-wrapper guest-header-margin">
                 <div class="card-title-group">
-                    <div class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <h2>3. Special Guests (Outside of Club)</h2>
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <h2>3. Special Guests</h2>
                 </div>
-                <button class="btn-add" onclick="addGuestRow()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-                    Add Special Guest
-                </button>
+                <button class="btn-add" onclick="addGuestRow()">➕ Add Guest</button>
             </div>
-
             <div id="guests-container"></div>
 
             <div class="grid-2 guest-count-margin">
-                <div class="form-group">
-                    <label>Members Present Count (Auto)</label>
-                    <input type="number" id="countPresent" value="0" readonly class="readonly-input" />
+                <div class="form-group"><label>Members Present (auto)</label><input type="number" id="countPresent" value="0" readonly class="readonly-input" /></div>
+                <div class="form-group"><label>Guests Count (auto)</label><input type="number" id="countGuests" value="0" readonly class="readonly-input" /></div>
+            </div>
+        </div>
+
+        <!-- CARD 3: DISCUSSIONS -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <h2>4. Discussions &amp; Remarks</h2>
                 </div>
-                <div class="form-group">
-                    <label>Guests Count (Auto)</label>
-                    <input type="number" id="countGuests" value="0" readonly class="readonly-input" />
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Sergeant-at-Arms</label><textarea id="saaReport" rows="2" placeholder="Attendance, discipline..."></textarea></div>
+                <div class="form-group"><label>Happy Moments</label><textarea id="happyMoments" rows="2" placeholder="Good news, celebrations..."></textarea></div>
+                <div class="form-group"><label>President's Remarks</label><textarea id="presidentRemarks" rows="2" placeholder="Opening remarks..."></textarea></div>
+                <div class="form-group"><label>Committee Updates</label><textarea id="committeeUpdates" rows="2" placeholder="Updates from committees..."></textarea></div>
+                <div class="form-group"><label>Announcements</label><textarea id="announcements" rows="2" placeholder="Upcoming events..."></textarea></div>
+                <div class="form-group"><label>Open Floor</label><textarea id="openFloor" rows="2" placeholder="General discussion..."></textarea></div>
+            </div>
+        </div>
+
+        <!-- CARD 4: AGENDAS -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+                    <h2>5. Agendas &amp; Resolutions</h2>
+                </div>
+                <button class="btn-add" onclick="addAgendaRow()">➕ Add Agenda</button>
+            </div>
+            <div id="agenda-container">
+                <div class="dynamic-row agenda-group">
+                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title" />
+                    <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution / Action points..." rows="1"></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- CARD 3: AGENDAS -->
+        <!-- CARD 5: ACTION ITEMS -->
         <div class="form-card">
             <div class="card-header-wrapper">
                 <div class="card-title-group">
-                    <div class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                    </div>
-                    <h2>4. Agendas &amp; Resolutions Log</h2>
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                    <h2>6. Action Items</h2>
                 </div>
-                <button class="btn-add" onclick="addAgendaRow()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-                    Add Agenda
-                </button>
+                <button class="btn-add" onclick="addActionItem()">➕ Add Action</button>
             </div>
+            <div id="action-items-container">
+                <div class="action-item-row">
+                    <input class="ai-task" placeholder="Task" />
+                    <input class="ai-person" placeholder="Responsible" />
+                    <input class="ai-deadline" type="date" />
+                    <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
+                    <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
+                </div>
+            </div>
+        </div>
 
-            <div id="agenda-container">
-                <div class="dynamic-row agenda-group">
-                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title (e.g., Blood Donation)" />
-                    <textarea class="agenda-desc agenda-width-desc" placeholder="Decisions / Action points resolved..." rows="1"></textarea>
+        <!-- CARD 6: SIGNATURES -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    <h2>7. Digital Signatures</h2>
+                </div>
+            </div>
+            <div class="signature-grid">
+                <div class="signature-field">
+                    <label>Prepared By</label>
+                    <input type="text" id="sigPrepared" value="Rtr. Madan Subedi" />
+                    <div class="auto-signature-preview">
+                        <span class="label">📄 Signature:</span>
+                        <img id="autoPreparedImg" src="secretarysign.png" alt="Secretary Signature" onerror="this.style.display='none'" />
+                        <span class="status">secretarysign.png</span>
+                    </div>
+                </div>
+                <div class="signature-field">
+                    <label>Reviewed By</label>
+                    <input type="text" id="sigReviewed" value="Rtr. Anil Shrestha" />
+                </div>
+            </div>
+            <div style="margin-top:16px;">
+                <div class="signature-field">
+                    <label>Approved By</label>
+                    <input type="text" id="sigApproved" value="Rtr. Nabin Chalise" />
+                    <div class="auto-signature-preview">
+                        <span class="label">📄 Signature:</span>
+                        <img id="autoApprovedImg" src="presidentsign.png" alt="President Signature" onerror="this.style.display='none'" />
+                        <span class="status">presidentsign.png</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1141,10 +1266,7 @@
         <div class="action-buttons-group">
             <button class="btn-submit" id="saveBtn" onclick="compileSaveAndEmail()">
                 <span class="spinner"></span>
-                <span class="btn-text">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><line x1="22" x2="11" y1="2" y2="13"/></svg>
-                    Save to Dashboard
-                </span>
+                <span class="btn-text">💾 Save to Dashboard</span>
             </button>
         </div>
     </main>
@@ -1160,70 +1282,47 @@
                 <p class="letterhead-subtext">Charter Day: April 23<sup>rd</sup> 2021</p>
             </div>
         </div>
-
         <h3 id="outTitle">MINUTES OF MEETING</h3>
-
         <table class="meta-table">
-            <tr>
-                <td class="meta-title">Meeting Title</td>
-                <td id="outMeetNo" class="width-30"></td>
-                <td class="meta-title">Date / Time</td>
-                <td id="outDate"></td>
-            </tr>
-            <tr>
-                <td class="meta-title">Venue</td>
-                <td id="outVenue"></td>
-                <td class="meta-title">Chairperson</td>
-                <td id="outChair"></td>
-            </tr>
-            <tr>
-                <td class="meta-title">Attendance Summary</td>
-                <td colspan="3">Total Present Members: <span id="outPres"></span> | Invited Guests: <span id="outGst"></span></td>
-            </tr>
+            <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
+            <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
-
-        <div class="content-section" id="print-section-members">
-            <h4>Attended Members</h4>
-            <div id="outPresentMembersNames"></div>
-        </div>
-
-        <div class="content-section" id="print-section-guests" style="display: none;">
-            <h4>Special Guests / Observers</h4>
-            <div id="outGuestsNames"></div>
-        </div>
-
-        <div class="content-section">
-            <h4>Agendas &amp; Key Resolutions</h4>
-            <div id="outAgendas"></div>
-        </div>
-
-        <div class="footer-sign">
-            <div class="sign-line">
-                <p id="outChairSign">Rtr. Nabin Chalise</p>
-                <p>Meeting Chairperson</p>
-            </div>
-            <div class="sign-line">
-                <p id="outSecretarySign">Rtr. Madan Subedi</p>
-                <p>Club Secretary</p>
-            </div>
+        <div class="content-section" id="print-section-members"><h4>Attended Members</h4><div id="outPresentMembersNames"></div></div>
+        <div class="content-section" id="print-section-guests" style="display:none;"><h4>Special Guests</h4><div id="outGuestsNames"></div></div>
+        <div class="content-section"><h4>Meeting Discussions</h4><div id="outDiscussions"></div></div>
+        <div class="content-section"><h4>Agendas &amp; Resolutions</h4><div id="outAgendas"></div></div>
+        <div class="content-section"><h4>Action Items</h4><div id="outActionItems"></div></div>
+        <div class="content-section"><h4>Approval &amp; Signatures</h4>
+            <table class="print-table" style="width:100%;">
+                <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
+                <tr>
+                    <td style="text-align:center;"><div id="outSigPrepared">Rtr. Madan Subedi</div>
+                        <img id="outSigPreparedImg" src="secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                    </td>
+                    <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
+                    <td style="text-align:center;"><div id="outSigApproved">Rtr. Nabin Chalise</div>
+                        <img id="outSigApprovedImg" src="presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
-    <!-- ===== TOAST CONTAINER ===== -->
+    <!-- ===== TOAST ===== -->
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
-    <!-- ===== BUSINESS LOGIC ===== -->
-    <!-- ============================================================ -->
+    <!-- ===== SCRIPT ===== -->
     <script>
         // ============================================================
-        //  1.  SUPABASE CONFIGURATION
+        //  SUPABASE CONFIG
         // ============================================================
         const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
 
         // ============================================================
-        //  2.  ROSTER DATABASE
+        //  ROSTER DATA
         // ============================================================
         const rosterData = [
             { role: "CHARTERED PRESIDENT", name: "RTR. NEETU KHADKA" },
@@ -1277,12 +1376,13 @@
         ];
 
         // ============================================================
-        //  3.  MOUNT CHECKLIST
+        //  MOUNT CHECKLIST
         // ============================================================
         const checklistContainer = document.getElementById('members-checklist');
         rosterData.forEach((member, i) => {
             const div = document.createElement('div');
             div.className = 'checklist-item';
+            div.dataset.name = member.name.toLowerCase();
             div.innerHTML = `
                 <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
                 <label for="memb_${i}">
@@ -1294,36 +1394,14 @@
         });
 
         // ============================================================
-        //  4.  INIT DATE / TIME
+        //  DATE INIT
         // ============================================================
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
-        document.getElementById('meetDate').value = localISOTime;
+        document.getElementById('meetDate').value = (new Date(now - offset)).toISOString().slice(0, 16);
 
         // ============================================================
-        //  5.  NAVIGATION RIPPLE
-        // ============================================================
-        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetUrl = this.getAttribute('href');
-            const button = this;
-
-            const ripple = document.createElement('span');
-            ripple.classList.add('ripple');
-            const rect = button.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-            button.appendChild(ripple);
-            button.classList.add('clicked-exit');
-
-            setTimeout(() => { window.location.href = targetUrl; }, 450);
-        });
-
-        // ============================================================
-        //  6.  ATTENDANCE COUNTS
+        //  UTILITY FUNCTIONS
         // ============================================================
         function calculateAttendanceCounts() {
             const checkedOfficial = document.querySelectorAll('.member-checkbox:checked').length;
@@ -1332,9 +1410,14 @@
             document.getElementById('countGuests').value = document.querySelectorAll('.guest-input-name').length;
         }
 
-        // ============================================================
-        //  7.  DYNAMIC ROW ADDERS
-        // ============================================================
+        function filterMembers() {
+            const query = document.getElementById('memberSearch').value.toLowerCase().trim();
+            document.querySelectorAll('#members-checklist .checklist-item').forEach(el => {
+                const name = el.dataset.name || '';
+                el.classList.toggle('hidden', !name.includes(query));
+            });
+        }
+
         function addNewMemberRow() {
             const container = document.getElementById('additional-members-container');
             const row = document.createElement('div');
@@ -1352,9 +1435,8 @@
             const container = document.getElementById('guests-container');
             const row = document.createElement('div');
             row.className = 'dynamic-row';
-            row.innerHTML = `
-                <input type="text" class="guest-input-name" placeholder="Guest Full Name &amp; Club/Designation Details" style="width:100%;" oninput="calculateAttendanceCounts()">
-            `;
+            row.innerHTML =
+                `<input type="text" class="guest-input-name" placeholder="Guest full name & club" style="width:100%;" oninput="calculateAttendanceCounts()">`;
             container.appendChild(row);
             calculateAttendanceCounts();
         }
@@ -1365,128 +1447,86 @@
             row.className = 'dynamic-row agenda-group';
             row.innerHTML = `
                 <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title">
-                <textarea class="agenda-desc agenda-width-desc" placeholder="Decisions / Action points resolved..." rows="1"></textarea>
+                <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution / Action points..." rows="1"></textarea>
+            `;
+            container.appendChild(row);
+        }
+
+        function addActionItem() {
+            const container = document.getElementById('action-items-container');
+            const row = document.createElement('div');
+            row.className = 'action-item-row';
+            row.innerHTML = `
+                <input class="ai-task" placeholder="Task" />
+                <input class="ai-person" placeholder="Responsible" />
+                <input class="ai-deadline" type="date" />
+                <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
+                <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
             `;
             container.appendChild(row);
         }
 
         // ============================================================
-        //  8.  TOAST SYSTEM
+        //  TOAST SYSTEM
         // ============================================================
         function showToast(title, message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-
-            const icons = {
-                success: '✓',
-                error: '✕',
-                loading: '⟳'
-            };
-
+            const icons = { success: '✓', error: '✕', loading: '⟳' };
             toast.innerHTML = `
                 <div class="toast-icon">${icons[type] || '✓'}</div>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
+                <div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div>
                 <button class="toast-close" onclick="this.parentElement.remove()">×</button>
             `;
-
             container.appendChild(toast);
-
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    if (toast.parentElement) toast.remove();
-                }, 5000);
-            }
-
+            if (type !== 'loading') setTimeout(() => { if (toast.parentElement) toast.remove(); }, 5000);
             return toast;
         }
 
-        function dismissAllToasts() {
-            document.getElementById('toastContainer').innerHTML = '';
-        }
+        function dismissAllToasts() { document.getElementById('toastContainer').innerHTML = ''; }
 
         // ============================================================
-        //  9.  SUPABASE CLIENT
+        //  SUPABASE CLIENT
         // ============================================================
         let supabaseClient = null;
         try {
-            if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co') {
+            if (typeof supabase !== 'undefined' && supabase.createClient && SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('✅ Supabase client initialized.');
             } else {
-                console.warn('⚠️ Supabase not configured. Data will not be persisted.');
+                console.warn('⚠️ Supabase library not loaded.');
             }
-        } catch (_) {
-            console.warn('⚠️ Supabase client initialization failed.');
+        } catch (e) {
+            console.warn('⚠️ Supabase init error:', e.message);
         }
 
         // ============================================================
-        //  10. CHECK MEETING MODE STATUS
+        //  MEETING MODE
         // ============================================================
+        let meetingModeEnabled = true;
+
         async function checkMeetingMode() {
             try {
-                if (!supabaseClient) {
-                    console.warn('⚠️ Supabase client not available. Meeting mode check skipped.');
-                    return true;
-                }
-
-                // Try to call the RPC function
+                if (!supabaseClient) return true;
                 const { data, error } = await supabaseClient
-                    .rpc('is_meeting_mode_enabled');
-
-                if (error) {
-                    console.error('Error checking meeting mode (RPC):', error);
-
-                    // Fallback: Try to read from app_settings directly
-                    try {
-                        const { data: settingsData, error: settingsError } = await supabaseClient
-                            .from('app_settings')
-                            .select('setting_value')
-                            .eq('setting_key', 'meeting_mode')
-                            .maybeSingle();
-
-                        if (settingsError) {
-                            console.error('Error checking meeting mode (table):', settingsError);
-                            return true;
-                        }
-
-                        if (settingsData) {
-                            return settingsData.setting_value === 'true' || settingsData.setting_value === true;
-                        }
-
-                        return true;
-                    } catch (fallbackErr) {
-                        console.error('Fallback meeting mode check failed:', fallbackErr);
-                        return true;
-                    }
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'meeting_mode')
+                    .maybeSingle();
+                if (error) return true;
+                if (data) {
+                    meetingModeEnabled = data.setting_value === 'true' || data.setting_value === 'TRUE' || data.setting_value ===
+                        '1' || data.setting_value === true;
+                    return meetingModeEnabled;
                 }
-
-                if (typeof data === 'boolean') {
-                    return data;
-                }
-
-                if (typeof data === 'string') {
-                    return data === 'true' || data === 'TRUE' || data === '1';
-                }
-
                 return true;
-
-            } catch (err) {
-                console.error('Meeting mode check error:', err);
-                return true;
-            }
+            } catch (_) { return true; }
         }
 
-        // ============================================================
-        //  11. UPDATE MEETING MODE STATUS BADGE
-        // ============================================================
         async function updateMeetingModeBadge() {
             const badge = document.getElementById('modeStatusBadge');
             const modeEnabled = await checkMeetingMode();
-
             if (modeEnabled) {
                 badge.className = 'mode-status-badge enabled';
                 badge.textContent = '🟢 Meeting Mode: ON';
@@ -1494,46 +1534,273 @@
                 badge.className = 'mode-status-badge disabled';
                 badge.textContent = '🔴 Meeting Mode: OFF';
             }
-
             return modeEnabled;
         }
 
-        // ============================================================
-        //  12. SHOW MEETING MODE OFF OVERLAY - Redirect to index.html
-        // ============================================================
         function showModeOffOverlay() {
             const overlay = document.getElementById('modeOffOverlay');
             overlay.classList.add('active');
-
-            // Start countdown
             let countdown = 5;
             const countdownEl = document.getElementById('countdownNum');
-
             const timer = setInterval(() => {
                 countdown--;
                 countdownEl.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    window.location.href = 'index.html';
-                }
+                if (countdown <= 0) { clearInterval(timer);
+                    window.location.href = 'index.html'; }
             }, 1000);
         }
 
         // ============================================================
-        //  13. CORE: COMPILE, SAVE & EMAIL
+        //  SEARCH / AUTOCOMPLETE
+        // ============================================================
+        let allMeetings = [];
+        let searchTimeout = null;
+
+        async function fetchAllMeetings() {
+            if (!supabaseClient) return [];
+            try {
+                const { data, error } = await supabaseClient
+                    .from('meeting_minutes')
+                    .select('id, data, created_at')
+                    .order('created_at', { ascending: false });
+                if (error) {
+                    // fallback without ordering
+                    const { data: fallback, error: fallbackError } = await supabaseClient
+                        .from('meeting_minutes')
+                        .select('id, data');
+                    if (fallbackError) throw fallbackError;
+                    allMeetings = fallback || [];
+                    return allMeetings;
+                }
+                allMeetings = data || [];
+                return allMeetings;
+            } catch (err) {
+                console.error('❌ fetch meetings error:', err);
+                return [];
+            }
+        }
+
+        function showAutocomplete(searchTerm) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            if (!searchTerm || searchTerm.length < 1) {
+                dropdown.classList.remove('active');
+                return;
+            }
+            const filtered = allMeetings.filter(item => {
+                const title = (item.data?.meeting_number || '').toLowerCase();
+                return title.includes(searchTerm.toLowerCase());
+            });
+            if (filtered.length === 0) {
+                dropdown.innerHTML =
+                    `<div class="autocomplete-empty">No meetings found matching "${searchTerm}"</div>`;
+                dropdown.classList.add('active');
+                return;
+            }
+            let html = '';
+            filtered.slice(0, 10).forEach(item => {
+                const meeting = item.data || {};
+                const title = meeting.meeting_number || 'Untitled';
+                const date = meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString() : 'No date';
+                html += `
+                    <div class="autocomplete-item" onclick="selectMeeting(${item.id})">
+                        <span class="meeting-title">${title}</span>
+                        <span class="meeting-date">${date}</span>
+                    </div>
+                `;
+            });
+            dropdown.innerHTML = html;
+            dropdown.classList.add('active');
+        }
+
+        function selectMeeting(meetingId) {
+            document.getElementById('autocompleteDropdown').classList.remove('active');
+            const item = allMeetings.find(m => m.id === meetingId);
+            if (!item || !item.data) {
+                showToast('❌ Error', 'Meeting data not found.', 'error');
+                return;
+            }
+            const payload = item.data;
+            document.getElementById('searchMeetingNo').value = payload.meeting_number || '';
+            populateFormFromData(payload);
+            // Display version info
+            if (payload._version) {
+                document.getElementById('versionDisplay').textContent = payload._version;
+            } else {
+                document.getElementById('versionDisplay').textContent = 'v1.0';
+            }
+            if (payload._savedAt) {
+                document.getElementById('savedAtDisplay').textContent = new Date(payload._savedAt).toLocaleString();
+            } else {
+                document.getElementById('savedAtDisplay').textContent = '—';
+            }
+            document.getElementById('searchResultBadge').className = 'search-result-badge found';
+            document.getElementById('searchResultBadge').textContent = '✅ Loaded';
+            document.getElementById('searchResultBadge').style.display = 'inline-block';
+            showToast('✅ Loaded', 'Meeting data loaded successfully!', 'success');
+        }
+
+        async function searchMeeting() {
+            const searchInput = document.getElementById('searchMeetingNo');
+            const badge = document.getElementById('searchResultBadge');
+            const meetingNo = searchInput.value.trim();
+            if (!meetingNo) { showToast('⚠️ Error', 'Enter a meeting number.', 'error'); return; }
+            if (!supabaseClient) { showToast('⚠️ Error', 'Supabase not configured.', 'error'); return; }
+            badge.style.display = 'none';
+            if (allMeetings.length === 0) await fetchAllMeetings();
+            let found = allMeetings.find(item => {
+                const title = (item.data?.meeting_number || '').toLowerCase();
+                return title === meetingNo.toLowerCase();
+            });
+            if (!found) {
+                found = allMeetings.find(item => {
+                    const title = (item.data?.meeting_number || '').toLowerCase();
+                    return title.includes(meetingNo.toLowerCase());
+                });
+            }
+            if (found && found.data) {
+                populateFormFromData(found.data);
+                if (found.data._version) document.getElementById('versionDisplay').textContent = found.data._version;
+                if (found.data._savedAt) document.getElementById('savedAtDisplay').textContent = new Date(found.data
+                    ._savedAt).toLocaleString();
+                badge.className = 'search-result-badge found';
+                badge.textContent = '✅ Found!';
+                badge.style.display = 'inline-block';
+                showToast('✅ Found', 'Meeting loaded.', 'success');
+            } else {
+                badge.className = 'search-result-badge not-found';
+                badge.textContent = '❌ Not Found';
+                badge.style.display = 'inline-block';
+                showToast('ℹ️ Not Found', 'No meeting with that number.', 'error');
+            }
+        }
+
+        // ============================================================
+        //  POPULATE FORM FROM DATA
+        // ============================================================
+        function populateFormFromData(payload) {
+            document.getElementById('meetNo').value = payload.meeting_number || '';
+            if (payload.meeting_date) {
+                const date = new Date(payload.meeting_date);
+                const off = date.getTimezoneOffset() * 60000;
+                document.getElementById('meetDate').value = (new Date(date - off)).toISOString().slice(0, 16);
+            }
+            document.getElementById('meetVenue').value = payload.venue || 'Club Office, Galkot';
+            document.getElementById('meetChair').value = payload.chairperson || 'Rtr. Nabin Chalise';
+
+            // clear checkboxes
+            document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.add-member-checkbox').forEach(cb => {
+                const row = cb.parentElement;
+                if (row.querySelector('.add-member-name')) row.remove();
+            });
+
+            if (payload.members && payload.members.length) {
+                payload.members.forEach(member => {
+                    const found = document.querySelector(`.member-checkbox[data-name="${member.name}"]`);
+                    if (found) { found.checked = true; } else {
+                        const container = document.getElementById('additional-members-container');
+                        const row = document.createElement('div');
+                        row.className = 'dynamic-row';
+                        row.innerHTML = `
+                            <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
+                            <input type="text" class="add-member-name" value="${member.name}" style="flex:1;" oninput="calculateAttendanceCounts()">
+                            <input type="text" class="add-member-role" value="${member.role || 'CLUB MEMBER'}" style="flex:1;">
+                        `;
+                        container.appendChild(row);
+                    }
+                });
+            }
+
+            document.getElementById('guests-container').innerHTML = '';
+            if (payload.guests && payload.guests.length) {
+                payload.guests.forEach(guest => {
+                    const container = document.getElementById('guests-container');
+                    const row = document.createElement('div');
+                    row.className = 'dynamic-row';
+                    row.innerHTML =
+                        `<input type="text" class="guest-input-name" value="${guest}" style="width:100%;" oninput="calculateAttendanceCounts()">`;
+                    container.appendChild(row);
+                });
+            }
+
+            document.getElementById('agenda-container').innerHTML = '';
+            if (payload.agendas && payload.agendas.length) {
+                payload.agendas.forEach(a => {
+                    const container = document.getElementById('agenda-container');
+                    const row = document.createElement('div');
+                    row.className = 'dynamic-row agenda-group';
+                    row.innerHTML = `
+                        <input type="text" class="agenda-title agenda-width-title" value="${a.title || ''}">
+                        <textarea class="agenda-desc agenda-width-desc" rows="1">${a.description || ''}</textarea>
+                    `;
+                    container.appendChild(row);
+                });
+            } else {
+                const container = document.getElementById('agenda-container');
+                const row = document.createElement('div');
+                row.className = 'dynamic-row agenda-group';
+                row.innerHTML = `
+                    <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title">
+                    <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution..." rows="1"></textarea>
+                `;
+                container.appendChild(row);
+            }
+
+            const d = payload.discussions || {};
+            document.getElementById('saaReport').value = d.saa || '';
+            document.getElementById('happyMoments').value = d.happy || '';
+            document.getElementById('presidentRemarks').value = d.president || '';
+            document.getElementById('committeeUpdates').value = d.committee || '';
+            document.getElementById('announcements').value = d.announcements || '';
+            document.getElementById('openFloor').value = d.openFloor || '';
+
+            document.getElementById('action-items-container').innerHTML = '';
+            if (payload.actionItems && payload.actionItems.length) {
+                payload.actionItems.forEach(item => {
+                    const container = document.getElementById('action-items-container');
+                    const row = document.createElement('div');
+                    row.className = 'action-item-row';
+                    row.innerHTML = `
+                        <input class="ai-task" value="${item.task || ''}" placeholder="Task" />
+                        <input class="ai-person" value="${item.person || ''}" placeholder="Responsible" />
+                        <input class="ai-deadline" type="date" value="${item.deadline || ''}" />
+                        <select class="ai-status"><option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option></select>
+                        <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
+                    `;
+                    container.appendChild(row);
+                });
+            } else {
+                const container = document.getElementById('action-items-container');
+                const row = document.createElement('div');
+                row.className = 'action-item-row';
+                row.innerHTML = `
+                    <input class="ai-task" placeholder="Task" />
+                    <input class="ai-person" placeholder="Responsible" />
+                    <input class="ai-deadline" type="date" />
+                    <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
+                    <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
+                `;
+                container.appendChild(row);
+            }
+
+            const sig = payload.signatures || {};
+            document.getElementById('sigPrepared').value = sig.prepared || 'Rtr. Madan Subedi';
+            document.getElementById('sigReviewed').value = sig.reviewed || 'Rtr. Anil Shrestha';
+            document.getElementById('sigApproved').value = sig.approved || 'Rtr. Nabin Chalise';
+
+            calculateAttendanceCounts();
+        }
+
+        // ============================================================
+        //  CORE: COMPILE, SAVE (with version & timestamp)
         // ============================================================
         async function compileSaveAndEmail() {
             const btn = document.getElementById('saveBtn');
             if (btn.classList.contains('loading')) return;
 
-            // --- Check meeting mode first ---
             const modeEnabled = await checkMeetingMode();
-            if (!modeEnabled) {
-                showModeOffOverlay();
-                return;
-            }
+            if (!modeEnabled) { showModeOffOverlay(); return; }
 
-            // --- 13a. Gather form data ---
             const meetNo = document.getElementById('meetNo').value || 'Regular Meeting';
             const meetDateRaw = document.getElementById('meetDate').value;
             const meetDate = meetDateRaw ? new Date(meetDateRaw) : new Date();
@@ -1544,7 +1811,7 @@
             const membersPresent = parseInt(document.getElementById('countPresent').value) || 0;
             const guestsCount = parseInt(document.getElementById('countGuests').value) || 0;
 
-            // --- 13b. Collect checked members ---
+            // Members
             const members = [];
             document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
                 members.push({ name: cb.getAttribute('data-name'), role: cb.getAttribute('data-role') });
@@ -1556,96 +1823,142 @@
                 if (name) members.push({ name: name.toUpperCase(), role: role.toUpperCase() });
             });
 
-            // --- 13c. Collect guests ---
+            // Guests
             const guests = [];
             document.querySelectorAll('.guest-input-name').forEach(inp => {
                 const val = inp.value.trim();
                 if (val) guests.push(val);
             });
 
-            // --- 13d. Collect agendas ---
+            // Agendas
             const agendas = [];
             document.querySelectorAll('.agenda-group').forEach(block => {
                 const title = block.querySelector('.agenda-title').value.trim();
                 const desc = block.querySelector('.agenda-desc').value.trim();
-                if (title || desc) {
-                    agendas.push({ title: title || 'General Discussion', description: desc || 'No resolution recorded.' });
-                }
+                if (title || desc) agendas.push({ title: title || 'General Discussion', description: desc ||
+                        'No resolution recorded.' });
             });
 
-            // --- 13e. Build payload ---
+            // Discussions
+            const discussions = {
+                saa: document.getElementById('saaReport').value.trim(),
+                happy: document.getElementById('happyMoments').value.trim(),
+                president: document.getElementById('presidentRemarks').value.trim(),
+                committee: document.getElementById('committeeUpdates').value.trim(),
+                announcements: document.getElementById('announcements').value.trim(),
+                openFloor: document.getElementById('openFloor').value.trim()
+            };
+
+            // Action Items
+            const actionItems = [];
+            document.querySelectorAll('.action-item-row').forEach(row => {
+                const task = row.querySelector('.ai-task').value.trim();
+                const person = row.querySelector('.ai-person').value.trim();
+                const deadline = row.querySelector('.ai-deadline').value;
+                const status = row.querySelector('.ai-status').value;
+                if (task || person) actionItems.push({ task, person, deadline, status });
+            });
+
+            // Signatures with images
+            const preparedImg = document.getElementById('autoPreparedImg');
+            const approvedImg = document.getElementById('autoApprovedImg');
+
+            const signatures = {
+                prepared: document.getElementById('sigPrepared').value.trim(),
+                reviewed: document.getElementById('sigReviewed').value.trim(),
+                approved: document.getElementById('sigApproved').value.trim(),
+                preparedImage: preparedImg && preparedImg.src ? preparedImg.src : null,
+                approvedImage: approvedImg && approvedImg.src ? approvedImg.src : null
+            };
+
+            // Build version and savedAt
+            const nowIso = new Date().toISOString();
+            // Increment version: check if we are editing an existing meeting (search loaded)
+            const searchVal = document.getElementById('searchMeetingNo').value.trim();
+            let version = 'v1.0';
+            let savedAt = nowIso;
+            if (searchVal) {
+                // Try to find existing version
+                const existing = allMeetings.find(item => {
+                    const title = (item.data?.meeting_number || '').toLowerCase();
+                    return title === searchVal.toLowerCase() || title.includes(searchVal.toLowerCase());
+                });
+                if (existing && existing.data && existing.data._version) {
+                    const parts = existing.data._version.match(/v(\d+)\.(\d+)/);
+                    if (parts) {
+                        const major = parseInt(parts[1]);
+                        const minor = parseInt(parts[2]) + 1;
+                        version = `v${major}.${minor}`;
+                    } else {
+                        version = 'v1.1';
+                    }
+                } else {
+                    version = 'v1.0';
+                }
+            }
+
             const payload = {
                 meeting_number: meetNo,
                 meeting_date: meetDate.toISOString(),
-                venue: venue,
+                venue,
                 chairperson: chair,
                 members_present: membersPresent,
                 guests_count: guestsCount,
-                agendas: agendas,
-                members: members,
-                guests: guests,
-                created_at: new Date().toISOString()
+                members,
+                guests,
+                agendas,
+                discussions,
+                actionItems,
+                signatures,
+                _version: version,
+                _savedAt: nowIso,
+                created_at: nowIso
             };
 
-            // --- 13f. Show loading state ---
             btn.classList.add('loading');
             btn.disabled = true;
             dismissAllToasts();
-            const loadingToast = showToast('Saving...', 'Uploading meeting minutes to dashboard.', 'loading');
+            const loadingToast = showToast('Saving...', 'Uploading minutes with version ' + version, 'loading');
 
             try {
-                // --- 13g. Save to Supabase ---
                 let savedId = null;
                 if (supabaseClient) {
-                    const { data, error } = await supabaseClient
-                        .from('meeting_minutes')
-                        .insert([{ data: payload }])
-                        .select('id')
-                        .single();
-
+                    const { data, error } = await supabaseClient.from('meeting_minutes').insert([{ data: payload }]).select(
+                        'id').single();
                     if (error) {
-                        // Check if it's RLS error (meeting mode off)
                         if (error.code === '42501' || error.message.includes('row-level security')) {
                             loadingToast.remove();
-                            showModeOffOverlay();
+                            showToast('⚠️ Permission Denied', 'Please set RLS INSERT policy in Supabase.', 'error');
                             btn.classList.remove('loading');
                             btn.disabled = false;
                             return;
                         }
-
-                        if (error.message && error.message.includes('column "data" of relation "meeting_minutes" does not exist')) {
-                            throw new Error(
-                                'The "data" column is missing in your "meeting_minutes" table. ' +
-                                'Please add it: ALTER TABLE meeting_minutes ADD COLUMN data JSONB;'
-                            );
-                        }
                         throw error;
                     }
                     savedId = data?.id;
+                    await fetchAllMeetings();
+                    // Update version display
+                    document.getElementById('versionDisplay').textContent = version;
+                    document.getElementById('savedAtDisplay').textContent = new Date(nowIso).toLocaleString();
                 } else {
-                    console.warn('Supabase client not available – data not saved to cloud.');
+                    loadingToast.remove();
+                    showToast('⚠️ Supabase Not Configured', 'Saved locally only.', 'error');
+                    populatePrintPreview(payload, meetDate);
+                    triggerEmail(payload);
+                    setTimeout(() => window.print(), 400);
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    return;
                 }
-
-                // --- 13h. Show success ---
                 loadingToast.remove();
-                const successMsg = savedId ?
-                    `Saved successfully! (ID: ${savedId})` :
-                    'Saved locally (Supabase not configured or skipped).';
-                showToast('✅ Dashboard Updated', successMsg, 'success');
-
-                // --- 13i. Populate print preview ---
+                showToast('✅ Dashboard Updated', `Saved (ID: ${savedId}) version ${version}`, 'success');
                 populatePrintPreview(payload, meetDate);
-
-                // --- 13j. Trigger email (mailto) ---
                 triggerEmail(payload);
-
-                // --- 13k. Print PDF ---
                 setTimeout(() => window.print(), 400);
-
             } catch (err) {
                 loadingToast.remove();
-                console.error('Supabase save error:', err);
-                showToast('❌ Save Failed', err.message || 'Could not save to dashboard. Check console.', 'error');
+                console.error(err);
+                showToast('❌ Save Failed', err.message || 'Could not save.', 'error');
             } finally {
                 btn.classList.remove('loading');
                 btn.disabled = false;
@@ -1653,7 +1966,7 @@
         }
 
         // ============================================================
-        //  14. POPULATE PRINT PREVIEW
+        //  PRINT PREVIEW POPULATE
         // ============================================================
         function populatePrintPreview(payload, dateObj) {
             document.getElementById('outMeetNo').innerText = payload.meeting_number;
@@ -1661,73 +1974,92 @@
                 timeStyle: 'short' });
             document.getElementById('outVenue').innerText = payload.venue;
             document.getElementById('outChair').innerText = payload.chairperson;
-            document.getElementById('outChairSign').innerText = payload.chairperson;
             document.getElementById('outPres').innerText = payload.members_present;
             document.getElementById('outGst').innerText = payload.guests_count;
 
-            // Members table
-            let memberHTML = `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th class="col-name">Name</th><th class="col-role">Designation</th></tr></thead><tbody>`;
+            let memberHTML =
+                `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th class="col-name">Name</th><th class="col-role">Designation</th></tr></thead><tbody>`;
             payload.members.forEach((m, i) => {
-                memberHTML +=
-                    `<tr><td style="text-align:center;">${i+1}</td><td>${m.name}</td><td>${m.role}</td></tr>`;
+                memberHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${m.name}</td><td>${m.role}</td></tr>`;
             });
             memberHTML += `</tbody></table>`;
             document.getElementById('outPresentMembersNames').innerHTML = payload.members.length ? memberHTML :
                 '<p style="font-size:13px;color:#666;">No members marked present.</p>';
 
-            // Guests
             const guestSection = document.getElementById('print-section-guests');
             if (payload.guests.length) {
-                let guestHTML = `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th style="width:92%;">Guest Details</th></tr></thead><tbody>`;
-                payload.guests.forEach((g, i) => {
-                    guestHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${g}</td></tr>`;
-                });
+                let guestHTML =
+                    `<table class="print-table"><thead><tr><th class="col-sn">S.N.</th><th style="width:92%;">Guest Details</th></tr></thead><tbody>`;
+                payload.guests.forEach((g, i) => { guestHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${g}</td></tr>`; });
                 guestHTML += `</tbody></table>`;
                 document.getElementById('outGuestsNames').innerHTML = guestHTML;
                 guestSection.style.display = 'block';
-            } else {
-                guestSection.style.display = 'none';
-            }
+            } else { guestSection.style.display = 'none'; }
 
-            // Agendas
+            const d = payload.discussions || {};
+            let discHTML = '';
+            if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${d.saa}</p>`;
+            if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${d.happy}</p>`;
+            if (d.president) discHTML += `<p><strong>President's Remarks:</strong> ${d.president}</p>`;
+            if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${d.committee}</p>`;
+            if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${d.announcements}</p>`;
+            if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${d.openFloor}</p>`;
+            document.getElementById('outDiscussions').innerHTML = discHTML || '<p>No discussions recorded.</p>';
+
             let agendaHTML = '';
             payload.agendas.forEach((a, i) => {
-                agendaHTML += `
-                    <div class="agenda-item">
-                        <strong>Agenda ${i+1}: ${a.title}</strong>
-                        <p style="margin:4px 0 0 15px;color:#333;text-align:justify;">${a.description}</p>
-                    </div>
-                `;
+                agendaHTML +=
+                    `<div class="agenda-item"><strong>Agenda ${i+1}: ${a.title}</strong><p style="margin:4px 0 0 15px;color:#333;text-align:justify;">${a.description}</p></div>`;
             });
-            document.getElementById('outAgendas').innerHTML = agendaHTML ||
-                '<p>No formal agendas recorded.</p>';
+            document.getElementById('outAgendas').innerHTML = agendaHTML || '<p>No formal agendas recorded.</p>';
+
+            const ai = payload.actionItems || [];
+            let aiHTML = '';
+            if (ai.length) {
+                aiHTML =
+                    `<table class="print-table"><thead><tr><th>Task</th><th>Responsible</th><th>Deadline</th><th>Status</th></tr></thead><tbody>`;
+                ai.forEach(a => {
+                    aiHTML +=
+                        `<tr><td>${a.task}</td><td>${a.person}</td><td>${a.deadline || '—'}</td><td>${a.status}</td></tr>`;
+                });
+                aiHTML += `</tbody></table>`;
+            } else { aiHTML = '<p>No action items recorded.</p>'; }
+            document.getElementById('outActionItems').innerHTML = aiHTML;
+
+            const sig = payload.signatures || {};
+            document.getElementById('outSigPrepared').innerText = sig.prepared || 'Rtr. Madan Subedi';
+            document.getElementById('outSigReviewed').innerText = sig.reviewed || 'Rtr. Anil Shrestha';
+            document.getElementById('outSigApproved').innerText = sig.approved || 'Rtr. Nabin Chalise';
+            if (sig.preparedImage) {
+                document.getElementById('outSigPreparedImg').src = sig.preparedImage;
+                document.getElementById('outSigPreparedImg').style.display = 'block';
+            }
+            if (sig.approvedImage) {
+                document.getElementById('outSigApprovedImg').src = sig.approvedImage;
+                document.getElementById('outSigApprovedImg').style.display = 'block';
+            }
         }
 
         // ============================================================
-        //  15. TRIGGER EMAIL (mailto)
+        //  EMAIL TRIGGER
         // ============================================================
         function triggerEmail(payload) {
             const recipients = 'galkot@rotaract3292.org,pilotprosoft@gmail.com,nabin.chalise@rotaract3292.org';
-            const subject = encodeURIComponent(`Meeting Minutes Log: ${payload.meeting_number} - RAC Galkot Baglung`);
-
-            let body = `Dear Admins,\n\nPlease find the summary coordinates for the logged meeting details below:\n\n`;
-            body += `• Meeting: ${payload.meeting_number}\n`;
-            body += `• Date/Time: ${new Date(payload.meeting_date).toLocaleString()}\n`;
-            body += `• Venue: ${payload.venue}\n`;
-            body += `• Chairperson: ${payload.chairperson}\n`;
-            body += `• Attendance Count: ${payload.members_present} Present\n\n`;
-
+            const subject = encodeURIComponent(`Meeting Minutes: ${payload.meeting_number} - RAC Galkot`);
+            let body = `Dear Admins,\n\nMeeting Summary:\n`;
+            body += `• Meeting: ${payload.meeting_number}\n• Date/Time: ${new Date(payload.meeting_date).toLocaleString()}\n• Venue: ${payload.venue}\n• Chair: ${payload.chairperson}\n• Attendance: ${payload.members_present} members, ${payload.guests_count} guests\n\n`;
             if (payload.agendas.length) {
-                body += `Recorded Business Details:\n`;
-                payload.agendas.forEach((a, i) => {
-                    body += `\n- Agenda ${i+1}: ${a.title}\n  Resolution: ${a.description}\n`;
-                });
-                body += `\n`;
+                body += `Agendas & Resolutions:\n`;
+                payload.agendas.forEach((a, i) => body += `\n${i+1}. ${a.title}\n   Resolution: ${a.description}\n`);
             }
-
-            body += `Regards,\nRotaract Club of Galkot Baglung`;
-
-            const mailtoUrl = `mailto:${recipients}?subject=${subject}&body=${encodeURIComponent(body)}`;
+            if (payload.actionItems && payload.actionItems.length) {
+                body += `\nAction Items:\n`;
+                payload.actionItems.forEach(a => body +=
+                    `• ${a.task} (${a.person}) - ${a.status} ${a.deadline ? 'by '+a.deadline : ''}\n`);
+            }
+            body += `\nRegards,\nRotaract Club of Galkot Baglung`;
+            const mailtoUrl =
+                `mailto:${recipients}?subject=${subject}&body=${encodeURIComponent(body)}`;
             const link = document.createElement('a');
             link.href = mailtoUrl;
             link.style.display = 'none';
@@ -1737,49 +2069,63 @@
         }
 
         // ============================================================
-        //  16. EXPOSE FUNCTIONS TO GLOBAL SCOPE
+        //  EXPOSE GLOBALS
         // ============================================================
         window.calculateAttendanceCounts = calculateAttendanceCounts;
+        window.filterMembers = filterMembers;
         window.addNewMemberRow = addNewMemberRow;
         window.addGuestRow = addGuestRow;
         window.addAgendaRow = addAgendaRow;
+        window.addActionItem = addActionItem;
         window.compileSaveAndEmail = compileSaveAndEmail;
+        window.searchMeeting = searchMeeting;
+        window.selectMeeting = selectMeeting;
         window.showToast = showToast;
         window.dismissAllToasts = dismissAllToasts;
+        window.fetchAllMeetings = fetchAllMeetings;
         window.checkMeetingMode = checkMeetingMode;
         window.showModeOffOverlay = showModeOffOverlay;
         window.updateMeetingModeBadge = updateMeetingModeBadge;
 
         // ============================================================
-        //  17. INITIALIZATION
+        //  INIT
         // ============================================================
-        // Initial count
         calculateAttendanceCounts();
+        fetchAllMeetings();
 
-        // Check meeting mode on load
-        document.addEventListener('DOMContentLoaded', async () => {
-            const modeEnabled = await updateMeetingModeBadge();
-            if (!modeEnabled) {
-                // Show overlay immediately if mode is off
-                showModeOffOverlay();
-            }
-            console.log('✅ Minutes Builder with Meeting Mode ready.');
+        document.getElementById('searchMeetingNo').addEventListener('input', function(e) {
+            const searchTerm = this.value;
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { showAutocomplete(searchTerm); }, 300);
         });
 
-        // Check meeting mode periodically (every 30 seconds)
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.search-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('autocompleteDropdown').classList.remove('active');
+            }
+        });
+
+        document.getElementById('searchMeetingNo').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('autocompleteDropdown').classList.remove('active');
+                searchMeeting();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const modeEnabled = await updateMeetingModeBadge();
+            if (!modeEnabled) showModeOffOverlay();
+            console.log('✅ Minutes Builder ready (versioned saves).');
+        });
+
         setInterval(async () => {
             const modeEnabled = await updateMeetingModeBadge();
-            if (!modeEnabled) {
-                // If mode turns off while user is on page, show overlay
-                showModeOffOverlay();
-            }
+            if (!modeEnabled) showModeOffOverlay();
         }, 30000);
 
-        console.log('✅ Minutes Builder with Supabase logging ready.');
-        if (!supabaseClient) {
-            console.warn('⚠️ Supabase not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.');
-        }
+        console.log('✅ Minutes Builder with versioned saves (date/time + version)');
     </script>
-
 </body>
 </html>

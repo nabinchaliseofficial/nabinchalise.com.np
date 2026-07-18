@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meeting Minutes Management</title>
-    <meta name="description" content="Manage real-time meeting minutes." />
+    <meta name="description" content="Manage real-time meeting minutes with version tracking." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -190,11 +190,6 @@
             gap: 8px;
         }
 
-        .mode-toggle-label i {
-            font-size: 1.1rem;
-        }
-
-        /* Toggle Switch */
         .toggle-switch {
             position: relative;
             width: 60px;
@@ -206,11 +201,9 @@
             flex-shrink: 0;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-
         .toggle-switch.active {
             background: var(--cls-professional);
         }
-
         .toggle-switch .toggle-knob {
             position: absolute;
             top: 3px;
@@ -222,7 +215,6 @@
             transition: var(--transition-smooth);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-
         .toggle-switch.active .toggle-knob {
             left: 31px;
         }
@@ -235,12 +227,10 @@
             min-width: 70px;
             text-align: center;
         }
-
         .mode-status-text.on {
             color: #34d399;
             background: rgba(52, 211, 153, 0.15);
         }
-
         .mode-status-text.off {
             color: #f87171;
             background: rgba(248, 113, 113, 0.15);
@@ -251,7 +241,6 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
-
         .toggle-loading.show {
             display: inline-block;
         }
@@ -369,6 +358,20 @@
         .node-detail {
             font-size: 0.9rem;
             color: var(--text-muted);
+        }
+        .node-version-badge {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--cls-galkot);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .node-version-badge i {
+            width: 16px;
         }
         .node-message {
             background: rgba(15, 23, 42, 0.4);
@@ -548,6 +551,10 @@
             border-color: var(--cls-galkot);
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
         }
+        .form-group input[readonly] {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
         .form-group textarea {
             min-height: 80px;
             resize: vertical;
@@ -676,7 +683,7 @@
         }
 
         /* ============================================================ */
-        /* PRINT STYLES - FIXED VERSION */
+        /* PRINT STYLES - Same as minutes.html */
         /* ============================================================ */
         @media print {
             body {
@@ -704,106 +711,122 @@
             #print-preview {
                 display: block !important;
                 padding: 40px 50px;
-                font-family: 'Inter', Arial, sans-serif;
+                font-family: 'Segoe UI', Arial, sans-serif;
                 background: #fff;
                 color: #000;
                 max-width: 1000px;
                 margin: 0 auto;
+                position: relative;
+                min-height: 100vh;
+            }
+
+            #print-preview::before {
+                content: "";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 480px;
+                height: 480px;
+                background-image: url('rotaract.jpg');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                opacity: 0.06;
+                pointer-events: none;
+                z-index: -1;
             }
 
             .letterhead {
-                text-align: center;
-                border-bottom: 3px double #D70060;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 3px double var(--primary);
                 padding-bottom: 15px;
                 margin-bottom: 25px;
             }
-
+            .letterhead-logo {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 75px;
+                width: auto;
+            }
+            .letterhead-text {
+                text-align: center;
+                width: 100%;
+            }
             .letterhead h1 {
-                color: #D70060;
+                color: var(--primary);
                 font-size: 24px;
-                font-weight: 800;
-                letter-spacing: 1px;
+                font-weight: bold;
                 margin-bottom: 2px;
             }
-
             .letterhead h2 {
-                color: #015491;
+                color: var(--secondary);
                 font-size: 15px;
-                font-weight: 600;
+                display: block !important;
                 margin-bottom: 2px;
             }
-
             .letterhead-subtext {
                 font-size: 12px;
                 color: #444;
-                font-weight: 500;
             }
 
             #outTitle {
                 text-align: center;
                 text-transform: uppercase;
-                margin: 20px 0 25px;
+                margin-bottom: 20px;
+                letter-spacing: 1px;
                 font-size: 18px;
-                font-weight: 800;
-                color: #1E293B;
-                letter-spacing: 2px;
-                border-bottom: 2px solid #1E293B;
-                padding-bottom: 10px;
+                font-weight: bold;
+                color: var(--dark);
             }
 
             .meta-table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-bottom: 20px;
-                font-size: 13px;
+                margin-bottom: 25px;
             }
-
             .meta-table td {
                 padding: 8px 12px;
                 border: 1px solid #cbd5e1;
-                vertical-align: middle;
+                font-size: 13px;
             }
-
             .meta-title {
-                font-weight: 700;
-                background: #f1f5f9;
-                width: 20%;
-                color: #1e293b;
+                font-weight: bold;
+                background: #f8fafc;
+                width: 22%;
             }
-
-            .meta-table .meta-value {
-                width: 30%;
-                color: #0f172a;
+            .width-30 {
+                width: 28%;
             }
 
             .content-section {
-                margin-bottom: 20px;
+                margin-bottom: 24px;
+                page-break-inside: avoid;
             }
-
             .content-section h4 {
-                color: #015491;
-                border-bottom: 2px solid #015491;
-                padding-bottom: 6px;
+                color: var(--secondary);
+                border-bottom: 1px solid #cbd5e1;
+                padding-bottom: 5px;
                 margin-bottom: 12px;
                 font-size: 14px;
+                text-align: center;
                 text-transform: uppercase;
-                font-weight: 700;
                 letter-spacing: 0.5px;
             }
 
             .agenda-item {
-                margin-bottom: 12px;
-                font-size: 13px;
-                padding-left: 10px;
-                border-left: 3px solid #D70060;
-                padding-left: 12px;
+                margin-bottom: 14px;
+                font-size: 13.5px;
             }
-
             .agenda-item strong {
                 color: #1e293b;
                 font-weight: 700;
             }
-
             .agenda-item p {
                 margin: 3px 0 0 15px;
                 color: #334155;
@@ -814,24 +837,27 @@
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 8px;
-                font-size: 12px;
             }
-
             .print-table th,
             .print-table td {
                 border: 1px solid #cbd5e1;
                 padding: 6px 12px;
+                font-size: 12.5px;
                 text-align: left;
             }
-
             .print-table th {
-                background-color: #f1f5f9;
-                font-weight: 700;
-                color: #1e293b;
-            }
-
-            .print-table tr:nth-child(even) {
                 background-color: #f8fafc;
+                font-weight: bold;
+            }
+            .col-sn {
+                width: 8%;
+                text-align: center;
+            }
+            .col-name {
+                width: 52%;
+            }
+            .col-role {
+                width: 40%;
             }
 
             .footer-sign {
@@ -842,24 +868,20 @@
                 padding-top: 20px;
                 border-top: 1px solid #e2e8f0;
             }
-
             .sign-line {
                 text-align: center;
                 min-width: 200px;
             }
-
             .sign-line p {
                 margin: 0;
                 font-size: 13px;
                 color: #1e293b;
             }
-
             .sign-line p:first-child {
                 font-weight: 700;
                 font-size: 14px;
                 margin-bottom: 4px;
             }
-
             .sign-line .sign-role {
                 font-size: 11px;
                 color: #64748b;
@@ -869,7 +891,6 @@
             .modal-overlay {
                 display: none !important;
             }
-
             .page-break {
                 page-break-before: always;
             }
@@ -950,6 +971,11 @@
                 gap: 12px;
                 padding: 12px 16px;
             }
+            .node-version-badge {
+                flex-direction: column;
+                gap: 4px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -973,7 +999,7 @@
     <!-- ===== HERO ===== -->
     <header class="hero">
         <h1><i class="fa-solid fa-file-lines" style="color:var(--primary);"></i> Meeting Minutes Management</h1>
-        <p>View, edit, print, and manage all meeting minutes in one place.</p>
+        <p>View, edit, print, and manage all meeting minutes with version tracking.</p>
 
         <!-- ===== MEETING MODE TOGGLE ===== -->
         <div class="mode-toggle-container">
@@ -999,52 +1025,46 @@
         <div class="panel-header">
             <h2><i class="fa-solid fa-file-lines" style="color: var(--primary);"></i> Real-Time Meeting Minutes Log</h2>
             <div class="panel-actions">
-                <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh Minutes</button>
+                <button class="action-btn" id="refresh-minutes-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
                 <button class="action-btn clear-btn-accent" id="clear-minutes-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
             </div>
         </div>
         <div class="print-selector-bar">
-            <label for="meetingSelect" style="font-weight:600;font-size:0.9rem;"><i class="fa-solid fa-print"></i> Select Meeting to Print:</label>
+            <label for="meetingSelect" style="font-weight:600;font-size:0.9rem;"><i class="fa-solid fa-print"></i> Select Meeting:</label>
             <select id="meetingSelect">
                 <option value="">-- Loading latest meetings --</option>
             </select>
-            <button class="action-btn btn-primary-accent" id="printSelectedBtn"><i class="fa-solid fa-file-pdf"></i> Print Selected</button>
-            <button class="action-btn btn-edit-accent" id="editSelectedBtn"><i class="fa-solid fa-pen-to-square"></i> Edit Minute</button>
+            <button class="action-btn btn-primary-accent" id="printSelectedBtn"><i class="fa-solid fa-file-pdf"></i> Print</button>
+            <button class="action-btn btn-edit-accent" id="editSelectedBtn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
         </div>
         <div class="minutes-feed" id="minutes-feed">
             <div class="status-msg">Connecting to meeting minutes stream...</div>
         </div>
     </section>
 
-    <!-- ===== PRINT PREVIEW (Hidden - Shows only when printing) ===== -->
+    <!-- ===== PRINT PREVIEW - Same design as minutes.html ===== -->
     <div id="print-preview" style="display:none;">
         <div class="letterhead">
-            <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
-            <h2>Rotary International District 3292 Nepal-Bhutan</h2>
-            <p class="letterhead-subtext">Club ID: 8823562 | Rota Year 2026-27</p>
+            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
+            <div class="letterhead-text">
+                <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
+                <h2>Rotary International District 3292 Nepal-Bhutan</h2>
+                <p class="letterhead-subtext">Club ID: 8823562 | Rota Year 2026-27</p>
+                <p class="letterhead-subtext">Charter Day: April 23<sup>rd</sup> 2021</p>
+            </div>
         </div>
-
         <h3 id="outTitle">MINUTES OF MEETING</h3>
 
+        <!-- Version Info -->
+        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+            <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
+            <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
+        </div>
+
         <table class="meta-table">
-            <tr>
-                <td class="meta-title">Meeting Number</td>
-                <td class="meta-value" id="outMeetNo">---</td>
-                <td class="meta-title">Date / Time</td>
-                <td class="meta-value" id="outDate">---</td>
-            </tr>
-            <tr>
-                <td class="meta-title">Venue</td>
-                <td class="meta-value" id="outVenue">---</td>
-                <td class="meta-title">Chairperson</td>
-                <td class="meta-value" id="outChair">---</td>
-            </tr>
-            <tr>
-                <td class="meta-title">Attendance Summary</td>
-                <td colspan="3" style="font-weight:600;">
-                    Total Present Members: <span id="outPres">0</span> &nbsp;|&nbsp; Invited Guests: <span id="outGst">0</span>
-                </td>
-            </tr>
+            <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
+            <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
 
         <div class="content-section" id="print-section-members">
@@ -1053,13 +1073,41 @@
         </div>
 
         <div class="content-section" id="print-section-guests" style="display:none;">
-            <h4>Special Guests / Observers</h4>
+            <h4>Special Guests</h4>
             <div id="outGuestsNames"></div>
         </div>
 
         <div class="content-section">
-            <h4>Agendas &amp; Key Resolutions</h4>
+            <h4>Meeting Discussions</h4>
+            <div id="outDiscussions">No discussions recorded.</div>
+        </div>
+
+        <div class="content-section">
+            <h4>Agendas &amp; Resolutions</h4>
             <div id="outAgendas">No formal agendas recorded.</div>
+        </div>
+
+        <div class="content-section">
+            <h4>Action Items</h4>
+            <div id="outActionItems">No action items recorded.</div>
+        </div>
+
+        <div class="content-section">
+            <h4>Approval &amp; Signatures</h4>
+            <table class="print-table" style="width:100%;">
+                <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
+                <tr>
+                    <td style="text-align:center;">
+                        <div id="outSigPrepared">Rtr. Madan Subedi</div>
+                        <img id="outSigPreparedImg" src="secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                    </td>
+                    <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
+                    <td style="text-align:center;">
+                        <div id="outSigApproved">Rtr. Nabin Chalise</div>
+                        <img id="outSigApprovedImg" src="presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div class="footer-sign">
@@ -1081,8 +1129,21 @@
             <div class="modal-title"><i class="fa-solid fa-pen-to-square"></i> Edit Meeting Minutes</div>
             <form id="editMinuteForm">
                 <input type="hidden" id="editMinuteId" value="">
+
+                <!-- Version info (read-only) -->
                 <div class="form-row">
-                    <div class="form-group"><label for="editMeetingNumber">Meeting Number</label><input type="text" id="editMeetingNumber" placeholder="e.g. 12th Regular Meeting" /></div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-code-branch"></i> Version</label>
+                        <input type="text" id="editVersion" readonly value="v1.0" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-regular fa-clock"></i> Last Saved</label>
+                        <input type="text" id="editSavedAt" readonly value="---" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group"><label for="editMeetingNumber">Meeting Number</label><input type="text" id="editMeetingNumber" placeholder="e.g. 181'st Regular Meeting" /></div>
                     <div class="form-group"><label for="editMeetingDate">Date &amp; Time</label><input type="datetime-local" id="editMeetingDate" /></div>
                 </div>
                 <div class="form-row">
@@ -1093,6 +1154,30 @@
                     <div class="form-group"><label for="editMembersPresent">Members Present (Count)</label><input type="number" id="editMembersPresent" min="0" /></div>
                     <div class="form-group"><label for="editGuestsCount">Guests Count</label><input type="number" id="editGuestsCount" min="0" /></div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="editMeetingType">Meeting Type</label>
+                        <select id="editMeetingType">
+                            <option value="Regular">Regular</option>
+                            <option value="Special">Special</option>
+                            <option value="Board">Board</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="editStatus">Status</label>
+                        <select id="editStatus">
+                            <option value="Draft">Draft</option>
+                            <option value="Published">Published</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Discussions -->
+                <div class="form-group">
+                    <label>Discussions &amp; Remarks</label>
+                    <textarea id="editDiscussions" placeholder="Sergeant-at-Arms, Happy Moments, President's Remarks, Committee Updates, Announcements, Open Floor..." rows="4"></textarea>
+                </div>
+
                 <div class="form-group">
                     <label>Attended Members</label>
                     <div class="members-editor" id="membersEditor"></div>
@@ -1106,6 +1191,15 @@
                     <label>Agendas &amp; Resolutions</label>
                     <div class="members-editor" id="agendasEditor"></div>
                     <button type="button" class="add-entry-btn" id="addAgendaBtn"><i class="fa-solid fa-plus"></i> Add Agenda</button>
+                </div>
+                <div class="form-group">
+                    <label>Action Items</label>
+                    <div class="members-editor" id="actionItemsEditor"></div>
+                    <button type="button" class="add-entry-btn" id="addActionItemBtn"><i class="fa-solid fa-plus"></i> Add Action Item</button>
+                </div>
+                <div class="form-group">
+                    <label>Closing Remarks</label>
+                    <textarea id="editClosingRemarks" placeholder="Any closing remarks..." rows="2"></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="action-btn btn-cancel-accent" id="modalCancelBtn">Cancel</button>
@@ -1161,7 +1255,6 @@
             // ===== MEETING MODE FUNCTIONS =====
             // ============================================================
 
-            // Get current meeting mode from Supabase
             const getMeetingMode = async () => {
                 try {
                     const { data, error } = await supabase
@@ -1172,14 +1265,13 @@
 
                     if (error) {
                         console.error('Error fetching meeting mode:', error);
-                        return true; // Default to ON
+                        return true;
                     }
 
                     if (data) {
                         return data.setting_value === 'true' || data.setting_value === true;
                     }
 
-                    // If no setting exists, create it with default 'true'
                     await supabase
                         .from('app_settings')
                         .insert([{ setting_key: 'meeting_mode', setting_value: 'true' }]);
@@ -1191,7 +1283,6 @@
                 }
             };
 
-            // Update meeting mode in Supabase
             const setMeetingMode = async (enabled) => {
                 const value = enabled ? 'true' : 'false';
 
@@ -1217,7 +1308,6 @@
                 }
             };
 
-            // Update UI based on mode status
             const updateModeUI = (enabled) => {
                 const toggle = document.getElementById('modeToggle');
                 const statusText = document.getElementById('modeStatusText');
@@ -1233,12 +1323,10 @@
                 }
             };
 
-            // Toggle meeting mode (called by click)
             window.toggleMeetingMode = async function() {
                 const toggle = document.getElementById('modeToggle');
                 const loading = document.getElementById('toggleLoading');
 
-                // Don't allow toggling while loading
                 if (loading.classList.contains('show')) return;
 
                 loading.classList.add('show');
@@ -1255,7 +1343,6 @@
                 toggle.style.pointerEvents = 'auto';
             };
 
-            // Load meeting mode on page load
             const loadMeetingMode = async () => {
                 const status = await getMeetingMode();
                 currentModeStatus = status;
@@ -1264,7 +1351,7 @@
             };
 
             // ============================================================
-            // ===== LOAD MEETING MINUTES =====
+            // ===== LOAD MEETING MINUTES (with version) =====
             // ============================================================
             const loadMeetingMinutes = async () => {
                 const feedContainer = document.getElementById('minutes-feed');
@@ -1276,7 +1363,7 @@
                     const { data, error } = await supabase
                         .from('meeting_minutes')
                         .select('*')
-                        .order('id', { ascending: false });
+                        .order('created_at', { ascending: false });
                     if (error) throw error;
                     allMinutesData = data || [];
 
@@ -1287,26 +1374,38 @@
                         return;
                     }
 
+                    // Populate select dropdown with version info
                     selectDropdown.innerHTML = allMinutesData.map((row, idx) => {
-                        const m = row.data || {};
+                        const m = row.data || row;
+                        const version = m._version || 'v1.0';
                         const titleText =
-                            `${m.meeting_number || 'Meeting'} - ${m.meeting_date ? new Date(m.meeting_date).toLocaleDateString() : 'Date N/A'}`;
+                            `${m.meeting_number || 'Meeting'} - ${m.meeting_date ? new Date(m.meeting_date).toLocaleDateString() : 'Date N/A'} (v${version})`;
                         return `<option value="${row.id}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(titleText)}</option>`;
                     }).join('');
 
                     feedContainer.innerHTML = allMinutesData.map(row => {
-                        const m = row.data || {};
+                        const m = row.data || row;
                         const dateStr = m.meeting_date ? new Date(m.meeting_date).toLocaleString() : 'N/A';
                         const memberCount = (m.members || []).length;
                         const agendaCount = (m.agendas || []).length;
+                        const status = row.status || m.status || 'Draft';
+                        const meetingType = row.meeting_type || m.meeting_type || 'Regular';
+                        const version = m._version || 'v1.0';
+                        const savedAt = m._savedAt || m.created_at || row.created_at;
+                        const savedAtDisplay = savedAt ? new Date(savedAt).toLocaleString() : 'N/A';
+
                         return `
                             <article class="minute-node" style="border-left-color: var(--primary);">
                                 <div class="node-meta">
-                                    <span>ID: ${row.id}</span>
+                                    <span>${status} | ${meetingType}</span>
                                     <span>${dateStr}</span>
                                 </div>
                                 <div class="node-title" style="color: var(--primary);">
                                     <i class="fa-solid fa-file-lines" aria-hidden="true"></i> ${escapeHtml(m.meeting_number || 'Untitled Meeting')}
+                                </div>
+                                <div class="node-version-badge">
+                                    <span><i class="fa-solid fa-code-branch"></i> Version: ${version}</span>
+                                    <span><i class="fa-regular fa-clock"></i> Saved: ${savedAtDisplay}</span>
                                 </div>
                                 <div class="node-detail">
                                     <i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(m.venue || 'N/A')}
@@ -1332,11 +1431,10 @@
                         `;
                     }).join('');
 
-                    // Attach event listeners - FIXED: No parseInt for UUID
                     document.querySelectorAll('.minute-node .action-btn-sm').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            const id = btn.dataset.id; // Keep as string for UUID
+                            const id = btn.dataset.id;
                             const action = btn.dataset.action;
                             if (action === 'delete') {
                                 deleteMinute(id);
@@ -1355,21 +1453,18 @@
             };
 
             // ============================================================
-            // ===== DELETE MINUTE (FIXED FOR UUID) =====
+            // ===== DELETE MINUTE =====
             // ============================================================
             const deleteMinute = async (id) => {
-                // Keep as string for UUID
-                const idString = String(id);
-                
-                if (!confirm(`⚠️ Are you sure you want to DELETE meeting minute #${idString} permanently?`)) return;
+                if (!confirm(`⚠️ Are you sure you want to DELETE this meeting minute permanently?`)) return;
                 try {
                     const { error } = await supabase
                         .from('meeting_minutes')
                         .delete()
-                        .eq('id', idString);  // Use string for UUID
-                        
+                        .eq('id', id);
+
                     if (error) throw error;
-                    showToast(`🗑️ Meeting minute #${idString} deleted!`, 'success');
+                    showToast(`🗑️ Meeting minute deleted!`, 'success');
                     await loadMeetingMinutes();
                 } catch (err) {
                     console.error('Delete error:', err);
@@ -1389,7 +1484,7 @@
                     const { error } = await supabase
                         .from('meeting_minutes')
                         .delete()
-                        .neq('id', '0');  // Use string for UUID
+                        .neq('id', '0');
                     if (error) throw error;
                     showToast('✅ All minutes deleted!', 'success');
                     await loadMeetingMinutes();
@@ -1401,10 +1496,15 @@
             });
 
             // ============================================================
-            // ===== POPULATE PRINT PREVIEW =====
+            // ===== POPULATE PRINT PREVIEW (same as minutes.html) =====
             // ============================================================
             const populatePrintPreviewFromData = (m) => {
                 const dateObj = m.meeting_date ? new Date(m.meeting_date) : new Date();
+
+                // Version info
+                document.getElementById('outVersion').innerText = m._version || 'v1.0';
+                const savedAt = m._savedAt || m.created_at;
+                document.getElementById('outSavedAt').innerText = savedAt ? new Date(savedAt).toLocaleString() : '---';
 
                 document.getElementById('outMeetNo').innerText = m.meeting_number || 'N/A';
                 document.getElementById('outDate').innerText = dateObj.toLocaleString('en-US', {
@@ -1417,15 +1517,16 @@
                 document.getElementById('outPres').innerText = m.members_present || 0;
                 document.getElementById('outGst').innerText = m.guests_count || 0;
 
+                // Members
                 let memberHTML = '';
                 if (m.members && m.members.length > 0) {
                     memberHTML = `
                         <table class="print-table">
                             <thead>
                                 <tr>
-                                    <th style="width:8%;text-align:center;">S.N.</th>
-                                    <th style="width:52%;">Name</th>
-                                    <th style="width:40%;">Designation</th>
+                                    <th class="col-sn">S.N.</th>
+                                    <th class="col-name">Name</th>
+                                    <th class="col-role">Designation</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1444,13 +1545,14 @@
                 }
                 document.getElementById('outPresentMembersNames').innerHTML = memberHTML;
 
+                // Guests
                 const guestSection = document.getElementById('print-section-guests');
                 if (m.guests && m.guests.length > 0) {
                     let guestHTML = `
                         <table class="print-table">
                             <thead>
                                 <tr>
-                                    <th style="width:8%;text-align:center;">S.N.</th>
+                                    <th class="col-sn">S.N.</th>
                                     <th style="width:92%;">Guest Details</th>
                                 </tr>
                             </thead>
@@ -1470,6 +1572,18 @@
                     guestSection.style.display = 'none';
                 }
 
+                // Discussions
+                const d = m.discussions || {};
+                let discHTML = '';
+                if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${d.saa}</p>`;
+                if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${d.happy}</p>`;
+                if (d.president) discHTML += `<p><strong>President's Remarks:</strong> ${d.president}</p>`;
+                if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${d.committee}</p>`;
+                if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${d.announcements}</p>`;
+                if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${d.openFloor}</p>`;
+                document.getElementById('outDiscussions').innerHTML = discHTML || '<p>No discussions recorded.</p>';
+
+                // Agendas
                 let agendaHTML = '';
                 if (m.agendas && m.agendas.length > 0) {
                     agendaHTML = m.agendas.map((a, i) => `
@@ -1482,6 +1596,46 @@
                     agendaHTML = '<p style="font-size:13px; color:#64748b;">No formal agendas recorded.</p>';
                 }
                 document.getElementById('outAgendas').innerHTML = agendaHTML;
+
+                // Action Items
+                const ai = m.actionItems || [];
+                let aiHTML = '';
+                if (ai.length > 0) {
+                    aiHTML = `
+                        <table class="print-table">
+                            <thead>
+                                <tr><th>Task</th><th>Responsible</th><th>Deadline</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                ${ai.map(a => `
+                                    <tr>
+                                        <td>${escapeHtml(a.task)}</td>
+                                        <td>${escapeHtml(a.person)}</td>
+                                        <td>${a.deadline || '—'}</td>
+                                        <td>${a.status}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else {
+                    aiHTML = '<p style="font-size:13px; color:#64748b;">No action items recorded.</p>';
+                }
+                document.getElementById('outActionItems').innerHTML = aiHTML;
+
+                // Signatures
+                const sig = m.signatures || {};
+                document.getElementById('outSigPrepared').innerText = sig.prepared || 'Rtr. Madan Subedi';
+                document.getElementById('outSigReviewed').innerText = sig.reviewed || 'Rtr. Anil Shrestha';
+                document.getElementById('outSigApproved').innerText = sig.approved || 'Rtr. Nabin Chalise';
+                if (sig.preparedImage) {
+                    document.getElementById('outSigPreparedImg').src = sig.preparedImage;
+                    document.getElementById('outSigPreparedImg').style.display = 'block';
+                }
+                if (sig.approvedImage) {
+                    document.getElementById('outSigApprovedImg').src = sig.approvedImage;
+                    document.getElementById('outSigApprovedImg').style.display = 'block';
+                }
             };
 
             // ============================================================
@@ -1489,10 +1643,11 @@
             // ============================================================
             const printSpecificMinute = (id) => {
                 const found = allMinutesData.find(item => item.id == id);
-                if (found && found.data) {
+                if (found) {
+                    const m = found.data || found;
                     const preview = document.getElementById('print-preview');
                     preview.style.display = 'block';
-                    populatePrintPreviewFromData(found.data);
+                    populatePrintPreviewFromData(m);
 
                     setTimeout(() => {
                         window.print();
@@ -1537,6 +1692,25 @@
                 container.appendChild(div);
             };
 
+            const addActionItemRow = (task = '', person = '', deadline = '', status = 'Pending') => {
+                const container = document.getElementById('actionItemsEditor');
+                const div = document.createElement('div');
+                div.className = 'member-entry';
+                div.innerHTML = `
+                    <input type="text" placeholder="Task" value="${escapeHtml(task)}" class="ai-task" style="flex:2;" />
+                    <input type="text" placeholder="Responsible" value="${escapeHtml(person)}" class="ai-person" style="flex:1;" />
+                    <input type="date" value="${deadline}" class="ai-deadline" style="flex:0.8;" />
+                    <select class="ai-status" style="flex:0.8;">
+                        <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                    <button type="button" class="remove-btn" title="Remove action item"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                div.querySelector('.remove-btn').addEventListener('click', () => div.remove());
+                container.appendChild(div);
+            };
+
             const editMinute = (id) => {
                 const found = allMinutesData.find(item => item.id == id);
                 if (!found) { showToast('Meeting not found.', 'error'); return; }
@@ -1546,7 +1720,12 @@
             const openEditModal = (minuteData) => {
                 if (!minuteData) return;
                 editingId = minuteData.id;
-                const m = minuteData.data || {};
+                const m = minuteData.data || minuteData;
+
+                // Version info
+                document.getElementById('editVersion').value = m._version || 'v1.0';
+                const savedAt = m._savedAt || m.created_at || minuteData.created_at;
+                document.getElementById('editSavedAt').value = savedAt ? new Date(savedAt).toLocaleString() : '---';
 
                 document.getElementById('editMinuteId').value = minuteData.id;
                 document.getElementById('editMeetingNumber').value = m.meeting_number || '';
@@ -1556,7 +1735,24 @@
                 document.getElementById('editChairperson').value = m.chairperson || '';
                 document.getElementById('editMembersPresent').value = m.members_present || 0;
                 document.getElementById('editGuestsCount').value = m.guests_count || 0;
+                document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'Regular';
+                document.getElementById('editStatus').value = minuteData.status || m.status || 'Draft';
 
+                // Discussions
+                const d = m.discussions || {};
+                const discText = [
+                    d.saa ? `Sergeant-at-Arms: ${d.saa}` : '',
+                    d.happy ? `Happy Moments: ${d.happy}` : '',
+                    d.president ? `President's Remarks: ${d.president}` : '',
+                    d.committee ? `Committee Updates: ${d.committee}` : '',
+                    d.announcements ? `Announcements: ${d.announcements}` : '',
+                    d.openFloor ? `Open Floor: ${d.openFloor}` : ''
+                ].filter(s => s).join('\n');
+                document.getElementById('editDiscussions').value = discText;
+
+                document.getElementById('editClosingRemarks').value = minuteData.closing_remarks || m.closing_remarks || '';
+
+                // Members
                 const membersEditor = document.getElementById('membersEditor');
                 membersEditor.innerHTML = '';
                 (m.members || []).forEach((mem) => addMemberRow(mem.name, mem.role));
@@ -1564,10 +1760,18 @@
 
                 document.getElementById('editGuests').value = (m.guests || []).join('\n');
 
+                // Agendas
                 const agendasEditor = document.getElementById('agendasEditor');
                 agendasEditor.innerHTML = '';
                 (m.agendas || []).forEach((agenda) => addAgendaRow(agenda.title, agenda.description));
                 if ((m.agendas || []).length === 0) addAgendaRow('', '');
+
+                // Action Items
+                const actionItemsEditor = document.getElementById('actionItemsEditor');
+                actionItemsEditor.innerHTML = '';
+                (m.actionItems || []).forEach((item) => addActionItemRow(item.task, item.person, item.deadline, item
+                    .status));
+                if ((m.actionItems || []).length === 0) addActionItemRow('', '', '', 'Pending');
 
                 editModal.classList.add('active');
             };
@@ -1583,6 +1787,7 @@
 
             document.getElementById('addMemberBtn')?.addEventListener('click', () => addMemberRow('', ''));
             document.getElementById('addAgendaBtn')?.addEventListener('click', () => addAgendaRow('', ''));
+            document.getElementById('addActionItemBtn')?.addEventListener('click', () => addActionItemRow('', '', '', 'Pending'));
 
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1594,6 +1799,33 @@
                 const chairperson = document.getElementById('editChairperson').value.trim();
                 const membersPresent = parseInt(document.getElementById('editMembersPresent').value) || 0;
                 const guestsCount = parseInt(document.getElementById('editGuestsCount').value) || 0;
+                const meetingType = document.getElementById('editMeetingType').value;
+                const status = document.getElementById('editStatus').value;
+                const closingRemarks = document.getElementById('editClosingRemarks').value.trim();
+                const discussionsText = document.getElementById('editDiscussions').value;
+
+                // Parse discussions
+                const discussions = {
+                    saa: '',
+                    happy: '',
+                    president: '',
+                    committee: '',
+                    announcements: '',
+                    openFloor: ''
+                };
+                discussionsText.split('\n').forEach(line => {
+                    const parts = line.split(':');
+                    if (parts.length >= 2) {
+                        const key = parts[0].trim().toLowerCase().replace(/[^a-z]/g, '');
+                        const value = parts.slice(1).join(':').trim();
+                        if (key.includes('sergeant') || key.includes('arms')) discussions.saa = value;
+                        else if (key.includes('happy')) discussions.happy = value;
+                        else if (key.includes('president')) discussions.president = value;
+                        else if (key.includes('committee')) discussions.committee = value;
+                        else if (key.includes('announcement')) discussions.announcements = value;
+                        else if (key.includes('open') || key.includes('floor')) discussions.openFloor = value;
+                    }
+                });
 
                 const memberRows = document.querySelectorAll('#membersEditor .member-entry');
                 const members = [];
@@ -1614,6 +1846,29 @@
                     if (title || desc) agendas.push({ title: title || 'Untitled Agenda', description: desc || '' });
                 });
 
+                const actionRows = document.querySelectorAll('#actionItemsEditor .member-entry');
+                const actionItems = [];
+                actionRows.forEach(row => {
+                    const task = row.querySelector('.ai-task').value.trim();
+                    const person = row.querySelector('.ai-person').value.trim();
+                    const deadline = row.querySelector('.ai-deadline').value;
+                    const statusVal = row.querySelector('.ai-status').value;
+                    if (task || person) actionItems.push({ task, person, deadline, status: statusVal });
+                });
+
+                // Get existing version
+                const existingVersion = document.getElementById('editVersion').value;
+                // Increment version
+                const parts = existingVersion.match(/v(\d+)\.(\d+)/);
+                let newVersion = 'v1.1';
+                if (parts) {
+                    const major = parseInt(parts[1]);
+                    const minor = parseInt(parts[2]) + 1;
+                    newVersion = `v${major}.${minor}`;
+                }
+
+                const nowIso = new Date().toISOString();
+
                 const updatedData = {
                     meeting_number: meetingNumber || 'Unnamed Meeting',
                     meeting_date: meetingDate || new Date().toISOString(),
@@ -1623,16 +1878,27 @@
                     guests_count: guestsCount,
                     members: members,
                     guests: guests,
-                    agendas: agendas
+                    agendas: agendas,
+                    discussions: discussions,
+                    actionItems: actionItems,
+                    closing_remarks: closingRemarks,
+                    _version: newVersion,
+                    _savedAt: nowIso
                 };
 
                 try {
                     const { error } = await supabase
                         .from('meeting_minutes')
-                        .update({ data: updatedData })
+                        .update({
+                            data: updatedData,
+                            meeting_type: meetingType,
+                            status: status,
+                            closing_remarks: closingRemarks,
+                            updated_at: nowIso
+                        })
                         .eq('id', editingId);
                     if (error) throw error;
-                    showToast('✅ Meeting minutes updated successfully!', 'success');
+                    showToast(`✅ Meeting minutes updated! Version ${newVersion}`, 'success');
                     closeEditModal();
                     await loadMeetingMinutes();
                 } catch (err) {
@@ -1730,7 +1996,6 @@
                         console.log('📡 Minutes subscription status:', status);
                     });
 
-                // Also listen for app_settings changes (meeting mode)
                 supabase.channel('settings-changes')
                     .on('postgres_changes', {
                         event: '*',
