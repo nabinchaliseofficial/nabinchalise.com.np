@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Members Management</title>
-    <meta name="description" content="Manage active members and new registration requests." />
+    <title>Members · Image Upload & Status</title>
+    <meta name="description" content="Manage members with profile image upload, Active/Inactive status, realtime sync." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <style>
-        /* --- BASE VARIABLES --- */
         :root {
             --bg-dark: #0f172a;
             --bg-card: rgba(30, 41, 59, 0.7);
@@ -27,10 +26,8 @@
             --primary: #D70060;
             --secondary: #015491;
             --cta-logout: #ef4444;
-            --cta-logout-hover: #dc2626;
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-dark: #f8fafc;
@@ -40,28 +37,21 @@
                 --text-muted: #64748b;
             }
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        html {
-            scroll-behavior: smooth;
-        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
+            background: var(--bg-dark);
             color: var(--text-main);
             line-height: 1.6;
-            overflow-x: hidden;
             background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
             background-attachment: fixed;
             min-height: 100vh;
         }
-
-        /* --- NAVBAR --- */
         .navbar {
             position: fixed;
             top: 0;
@@ -70,7 +60,6 @@
             z-index: 1000;
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             padding: 1rem 2rem;
             display: flex;
@@ -100,6 +89,7 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
         }
         .btn-back {
             background: var(--cls-galkot);
@@ -124,7 +114,7 @@
         }
         .btn-logout {
             background: var(--cta-logout);
-            color: #ffffff !important;
+            color: #fff !important;
             border: none;
             padding: 0.6rem 1.2rem;
             border-radius: 10px;
@@ -135,7 +125,6 @@
             align-items: center;
             gap: 0.5rem;
             transition: var(--transition-smooth);
-            text-decoration: none;
             min-height: 44px;
         }
         .btn-logout:hover {
@@ -143,8 +132,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
-
-        /* --- HERO --- */
         .hero {
             padding: 8rem 2rem 2rem;
             max-width: 1200px;
@@ -165,8 +152,6 @@
             max-width: 650px;
             margin: 0 auto;
         }
-
-        /* --- WORKSPACE SECTION --- */
         .workspace-section {
             max-width: 1200px;
             margin: 0 auto 3rem;
@@ -176,11 +161,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
             flex-wrap: wrap;
             gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
         }
         .panel-header h2 {
             font-size: 1.5rem;
@@ -207,7 +192,7 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 0.85rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             transition: var(--transition-smooth);
@@ -232,16 +217,6 @@
             background: #2bbf8a;
             border-color: #2bbf8a;
         }
-        .btn-edit-accent {
-            background: var(--cls-galkot);
-            border-color: var(--cls-galkot);
-            color: #000 !important;
-        }
-        .btn-edit-accent:hover {
-            background: #e5a800;
-            border-color: #e5a800;
-        }
-
         .members-feed {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -255,50 +230,109 @@
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             transition: var(--transition-smooth);
         }
         .member-node:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
+        .member-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .member-header .node-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
         .node-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 500;
         }
-        .node-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
         .node-detail {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
-        .node-message {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            color: rgba(248, 250, 252, 0.9);
-            white-space: pre-wrap;
-            max-height: 120px;
-            overflow-y: auto;
+        .status-badge {
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        .status-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-style: italic;
+        .status-active {
+            background: #34d399;
+            color: #000;
         }
-
+        .status-inactive {
+            background: #94a3b8;
+            color: #000;
+        }
+        .application-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .action-btn-sm {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .action-btn-sm.edit-btn {
+            background: var(--cls-galkot);
+            color: #000;
+        }
+        .action-btn-sm.edit-btn:hover {
+            background: #e5a800;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.delete-btn {
+            background: #f43f5e;
+            color: #fff;
+        }
+        .action-btn-sm.delete-btn:hover {
+            background: #e11d48;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.status-toggle {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .action-btn-sm.status-toggle:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.status-toggle.inactive-toggle {
+            background: #f59e0b;
+            color: #000;
+        }
+        .action-btn-sm.status-toggle.inactive-toggle:hover {
+            background: #d97706;
+        }
         .search-box-inline {
             display: flex;
             gap: 0.5rem;
@@ -315,7 +349,7 @@
             padding: 0.4rem 0;
             font-size: 0.85rem;
             outline: none;
-            min-width: 150px;
+            min-width: 140px;
             font-family: 'Inter', sans-serif;
         }
         .search-box-inline input::placeholder {
@@ -336,81 +370,15 @@
         .search-box-inline button:hover {
             background: #9370db;
         }
-
-        .action-btn-sm {
-            padding: 0.35rem 0.85rem;
-            font-size: 0.75rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        .action-btn-sm.approve-btn {
-            background: #34d399;
-            color: #000;
-        }
-        .action-btn-sm.approve-btn:hover {
-            background: #2bbf8a;
-            transform: scale(1.02);
-        }
-        .action-btn-sm.reject-btn {
-            background: #ef4444;
-            color: #fff;
-        }
-        .action-btn-sm.reject-btn:hover {
-            background: #dc2626;
-            transform: scale(1.02);
-        }
-        .action-btn-sm.delete-btn {
-            background: #f43f5e;
-            color: #fff;
-        }
-        .action-btn-sm.delete-btn:hover {
-            background: #e11d48;
-            transform: scale(1.02);
-        }
-        .action-btn-sm.edit-btn {
-            background: var(--cls-galkot);
-            color: #000;
-        }
-        .action-btn-sm.edit-btn:hover {
-            background: #e5a800;
-            transform: scale(1.02);
-        }
-        .application-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-pending {
-            background: #fbbf24;
-            color: #000;
-        }
-        .status-approved {
-            background: #34d399;
-            color: #000;
-        }
-        .status-rejected {
-            background: #ef4444;
-            color: #fff;
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
         }
 
-        /* --- MODAL --- */
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -507,10 +475,6 @@
             border-color: var(--cls-galkot);
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
         }
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -521,6 +485,7 @@
             gap: 1rem;
             margin-top: 1.5rem;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
         .form-actions .action-btn {
             padding: 0.7rem 1.5rem;
@@ -542,8 +507,42 @@
             background: rgba(239, 68, 68, 0.1) !important;
             border-color: rgba(239, 68, 68, 0.6) !important;
         }
-
-        /* Toast Notification */
+        .image-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .image-preview img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .image-preview .no-image {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-input-wrapper .action-btn {
+            pointer-events: none;
+        }
         .toast {
             position: fixed;
             bottom: 20px;
@@ -566,7 +565,6 @@
         .toast.info {
             border-left-color: #3b82f6;
         }
-
         footer {
             text-align: center;
             padding: 2rem;
@@ -574,7 +572,6 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -603,7 +600,6 @@
                 opacity: 1;
             }
         }
-
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
@@ -651,82 +647,82 @@
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar" id="navbar" aria-label="Main Navigation">
-        <a href="#" class="nav-logo">
-            <i class="fa-solid fa-users" aria-hidden="true"></i> Members Management
-        </a>
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo"><i class="fa-solid fa-users"></i> Members · Image</a>
         <div class="nav-actions">
-            <button class="btn-back" id="backToAdminBtn">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Admin
-            </button>
-            <button class="btn-logout" id="logout-btn">
-                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
-            </button>
+            <button class="btn-back" id="backToAdminBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <button class="btn-logout" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
     <header class="hero">
-        <h1><i class="fa-solid fa-users" style="color:var(--cls-rotaract);"></i> Members Management</h1>
-        <p>Manage active members and review new registration requests in one place.</p>
+        <h1><i class="fa-solid fa-address-card" style="color:var(--cls-rotaract);"></i> Members Management</h1>
+        <p>Active / Inactive · Profile image upload · Realtime sync</p>
     </header>
 
-    <!-- ===== NEW MEMBER REGISTRATIONS ===== -->
-    <section class="workspace-section" id="registrations-panel">
-        <div class="panel-header">
-            <h2><i class="fa-solid fa-user-plus" aria-hidden="true" style="color: var(--cls-rotaract);"></i> New Member Requests</h2>
-            <div class="panel-actions">
-                <button class="action-btn" id="refresh-registrations-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                <button class="action-btn clear-btn-accent" id="clear-registrations-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
-            </div>
-        </div>
-        <div class="members-feed" id="registrations-feed">
-            <div class="status-msg">Loading registration requests...</div>
-        </div>
-    </section>
-
-    <!-- ===== ACTIVE MEMBERS ===== -->
     <section class="workspace-section" id="members-panel">
         <div class="panel-header">
-            <h2><i class="fa-solid fa-user-check" aria-hidden="true" style="color: var(--cls-professional);"></i> Active Members</h2>
+            <h2><i class="fa-solid fa-user-check" style="color: var(--cls-professional);"></i> Members</h2>
             <div class="panel-actions">
                 <div class="search-box-inline">
                     <input type="text" id="memberSearchInput" placeholder="Search by name..." />
                     <button id="memberSearchBtn"><i class="fa-solid fa-search"></i> Search</button>
                 </div>
-                <button class="action-btn btn-add-accent" id="addMemberBtn"><i class="fa-solid fa-plus"></i> Add Member</button>
+                <button class="action-btn btn-add-accent" id="addMemberBtn"><i class="fa-solid fa-plus"></i> Add</button>
                 <button class="action-btn" id="refresh-members-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
                 <button class="action-btn clear-btn-accent" id="clear-members-btn"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> Clear All</button>
             </div>
         </div>
         <div class="members-feed" id="members-feed">
-            <div class="status-msg">Loading registered members...</div>
+            <div class="status-msg">Loading members...</div>
         </div>
     </section>
 
-    <!-- ===== MEMBER MODAL ===== -->
+    <!-- MODAL -->
     <div class="modal-overlay" id="memberModal">
         <div class="modal-content">
-            <button class="modal-close" id="memberModalCloseBtn" aria-label="Close member modal"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-title"><i class="fa-solid fa-user-plus" style="color: var(--cls-rotaract);"></i> <span id="memberModalTitle">Add New Member</span></div>
+            <button class="modal-close" id="memberModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-solid fa-user-pen" style="color: var(--cls-rotaract);"></i> <span id="memberModalTitle">Add / Edit Member</span></div>
             <form id="memberForm">
                 <input type="hidden" id="memberId" value="">
-                <div class="form-group"><label for="memberName">Full Name *</label><input type="text" id="memberName" placeholder="e.g. Rtr. Nabin Chalise" required /></div>
-                <div class="form-group"><label for="memberEmail">Email Address *</label><input type="email" id="memberEmail" placeholder="e.g. member@example.com" required /></div>
-                <div class="form-group"><label for="memberPhone">Phone Number</label><input type="text" id="memberPhone" placeholder="e.g. 984-1234567" /></div>
+                <div class="form-group"><label>Full Name *</label><input type="text" id="memberName" placeholder="Rtr. Nabin Chalise" required /></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="memberEmail" placeholder="member@example.com" required /></div>
                 <div class="form-row">
-                    <div class="form-group"><label for="memberGender">Gender</label>
+                    <div class="form-group"><label>Phone</label><input type="text" id="memberPhone" placeholder="984-1234567" /></div>
+                    <div class="form-group"><label>Gender</label>
                         <select id="memberGender"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
                     </div>
-                    <div class="form-group"><label for="memberBlood">Blood Group</label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Blood Group</label>
                         <select id="memberBlood"><option value="">Select</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select>
                     </div>
+                    <div class="form-group"><label>Position</label><input type="text" id="memberPosition" placeholder="President, Secretary" /></div>
                 </div>
-                <div class="form-group"><label for="memberPosition">Position/Role</label><input type="text" id="memberPosition" placeholder="e.g. President, Secretary, Member" /></div>
-                <div class="form-group"><label for="memberAddress">Address</label><input type="text" id="memberAddress" placeholder="e.g. Galkot Municipality-3, Baglung" /></div>
-                <div class="form-group"><label for="memberProfession">Profession</label><input type="text" id="memberProfession" placeholder="e.g. ICT Teacher" /></div>
-                <div class="form-group"><label for="memberBirthday">Birthday</label><input type="date" id="memberBirthday" /></div>
+                <div class="form-group"><label>Address</label><input type="text" id="memberAddress" placeholder="Galkot Municipality-3" /></div>
+                <div class="form-group"><label>Profession</label><input type="text" id="memberProfession" placeholder="ICT Teacher" /></div>
+                <div class="form-group"><label>Birthday</label><input type="date" id="memberBirthday" /></div>
+                <div class="form-group"><label>Status</label>
+                    <select id="memberStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label>Profile Image</label>
+                    <div class="image-preview" id="imagePreviewContainer">
+                        <img id="imagePreview" src="" alt="Profile preview" style="display:none;" />
+                        <span class="no-image" id="noImageText">No image uploaded</span>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">
+                        <div class="file-input-wrapper">
+                            <button type="button" class="action-btn" style="pointer-events:none;"><i class="fa-solid fa-upload"></i> Choose Image</button>
+                            <input type="file" id="profileImageInput" accept="image/*" />
+                        </div>
+                        <button type="button" class="action-btn clear-btn-accent" id="removeImageBtn" style="border-color:rgba(239,68,68,0.3);"><i class="fa-solid fa-trash-can"></i> Remove</button>
+                    </div>
+                    <input type="hidden" id="profileImageUrl" value="" />
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="action-btn btn-cancel-accent" id="memberModalCancelBtn">Cancel</button>
                     <button type="submit" class="action-btn btn-save-accent"><i class="fa-solid fa-floppy-disk"></i> <span id="memberSubmitBtnText">Save Member</span></button>
@@ -735,26 +731,24 @@
         </div>
     </div>
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <p>&copy; 2026 Members Management Dashboard. Built for efficiency.</p>
-    </footer>
+    <footer><p>&copy; 2026 Members · Image Upload & Status</p></footer>
 
-    <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
         (() => {
             "use strict";
 
-            // ---- SUPABASE CLIENT ----
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+            // Use this bucket name - make sure it exists in your Supabase Storage
+            const STORAGE_BUCKET = 'members-profile';
+
             let editingMemberId = null;
-            let allMembersData = [];
-            let registrationsData = [];
+            let allMembers = [];
+            let currentImageFile = null;
+            let existingImageUrl = '';
 
             const escapeHtml = (str) => {
                 if (!str) return '';
@@ -762,7 +756,6 @@
                     "&quot;").replace(/'/g, "&#039;");
             };
 
-            // ---- TOAST ----
             const showToast = (message, type = 'success') => {
                 const existing = document.querySelector('.toast');
                 if (existing) existing.remove();
@@ -777,196 +770,63 @@
                 }, 3000);
             };
 
-            // ============================================================
-            // ===== LOAD REGISTRATIONS =====
-            // ============================================================
-            const loadRegistrations = async () => {
-                const feedContainer = document.getElementById('registrations-feed');
-                if (!feedContainer) return;
-                feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading registrations...</div>';
+            // ---------- IMAGE UPLOAD HELPERS ----------
+            const uploadImage = async (file, memberId) => {
+                if (!file) return null;
+                const ext = file.name.split('.').pop() || 'jpg';
+                const fileName = `member_${memberId}_${Date.now()}.${ext}`;
+
                 try {
-                    const { data, error } = await supabase
-                        .from('member_registrations')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    registrationsData = data || [];
-
-                    if (!registrationsData.length) {
-                        feedContainer.innerHTML = '📭 No pending registrations.';
-                        return;
-                    }
-
-                    feedContainer.innerHTML = registrationsData.map(item => {
-                        const name = item.full_name || item.name || '';
-                        return `
-                            <article class="member-node" style="border-left-color: #fbbf24;">
-                                <div class="node-meta">
-                                    <span>ID: ${item.id}</span>
-                                    <span>${new Date(item.created_at).toLocaleString()}</span>
-                                </div>
-                                <div class="node-title" style="color: var(--cls-rotaract);">
-                                    <i class="fa-solid fa-user"></i> ${escapeHtml(name)}
-                                </div>
-                                <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal); text-decoration: none;">
-                                    <i class="fa-solid fa-envelope"></i> ${escapeHtml(item.email)}
-                                </a>
-                                ${item.phone || item.phone_number ? `<div class="node-detail"><i class="fa-solid fa-phone"></i> ${escapeHtml(item.phone || item.phone_number)}</div>` : ''}
-                                ${item.position || item.designation ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.position || item.designation)}</div>` : ''}
-                                ${item.address ? `<div class="node-detail"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.address)}</div>` : ''}
-                                ${item.profession ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.profession)}</div>` : ''}
-                                ${item.gender ? `<div class="node-detail"><i class="fa-solid fa-venus-mars"></i> ${escapeHtml(item.gender)}</div>` : ''}
-                                ${item.blood_group ? `<div class="node-detail"><i class="fa-solid fa-droplet"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
-                                ${item.birth_date || item.birthday || item.date_of_birth ? `<div class="node-detail"><i class="fa-solid fa-calendar"></i> ${new Date(item.birth_date || item.birthday || item.date_of_birth).toLocaleDateString()}</div>` : ''}
-                                <div class="application-actions">
-                                    <button class="action-btn-sm approve-btn" data-id="${item.id}" data-action="accept"><i class="fa-solid fa-check"></i> Accept Member</button>
-                                    <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="reject"><i class="fa-solid fa-trash"></i> Reject</button>
-                                </div>
-                            </article>
-                        `;
-                    }).join('');
-
-                    // Attach event listeners
-                    document.querySelectorAll('#registrations-feed .action-btn-sm').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const id = btn.dataset.id;
-                            const action = btn.dataset.action;
-                            if (action === 'accept') {
-                                acceptMember(id);
-                            } else if (action === 'reject') {
-                                rejectRegistration(id);
-                            }
+                    // First, try to upload to the bucket
+                    const { data, error } = await supabase.storage
+                        .from(STORAGE_BUCKET)
+                        .upload(fileName, file, {
+                            cacheControl: '3600',
+                            upsert: true,
                         });
-                    });
-
-                } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    showToast('Error loading registrations: ' + err.message, 'error');
-                }
-            };
-
-            // ============================================================
-            // ===== ACCEPT MEMBER =====
-            // ============================================================
-            const acceptMember = async (id) => {
-                if (!confirm('✅ Accept this member and move to active members list?')) return;
-
-                try {
-                    const reg = registrationsData.find(r => String(r.id) === String(id));
-                    if (!reg) {
-                        showToast('Registration record not found. Please refresh and try again.', 'error');
-                        return;
-                    }
-
-                    // Get the name from various possible column names
-                    const fullName = reg.full_name || reg.name || '';
-
-                    const memberData = {
-                        name: fullName,
-                        email: reg.email || '',
-                        phone: reg.phone || reg.phone_number || '',
-                        gender: reg.gender || '',
-                        blood_group: reg.blood_group || '',
-                        position: reg.position || reg.designation || '',
-                        address: reg.address || '',
-                        profession: reg.profession || '',
-                        birthday: reg.birth_date || reg.birthday || reg.date_of_birth || null,
-                        created_at: new Date().toISOString()
-                    };
-
-                    // Check if member already exists
-                    const { data: existing, error: checkError } = await supabase
-                        .from('members')
-                        .select('id')
-                        .eq('email', memberData.email)
-                        .maybeSingle();
-
-                    if (checkError && checkError.code !== 'PGRST116') {
-                        throw new Error('Error checking existing member: ' + checkError.message);
-                    }
-
-                    if (existing) {
-                        showToast('⚠️ Member already exists. Deleting from registrations...', 'info');
-                        const { error: deleteError } = await supabase
-                            .from('member_registrations')
-                            .delete()
-                            .eq('id', id);
-                        if (deleteError) throw deleteError;
-                        await loadRegistrations();
-                        await loadMembers(document.getElementById('memberSearchInput')?.value || '');
-                        return;
-                    }
-
-                    // Insert into members table
-                    const { data: insertData, error: insertError } = await supabase
-                        .from('members')
-                        .insert([memberData])
-                        .select();
-
-                    if (insertError) {
-                        console.error('❌ Insert error:', insertError);
-                        throw new Error(insertError.message);
-                    }
-
-                    // Delete from registrations
-                    const { error: deleteError } = await supabase
-                        .from('member_registrations')
-                        .delete()
-                        .eq('id', id);
-
-                    if (deleteError) {
-                        console.error('❌ Delete error:', deleteError);
-                        throw new Error(deleteError.message);
-                    }
-
-                    showToast('✅ Member accepted and added to active members list!', 'success');
-
-                    await loadRegistrations();
-                    await loadMembers(document.getElementById('memberSearchInput')?.value || '');
-
-                } catch (err) {
-                    console.error('❌ Error in acceptMember:', err);
-                    showToast('❌ Error accepting member: ' + err.message, 'error');
-                }
-            };
-
-            // ============================================================
-            // ===== REJECT REGISTRATION =====
-            // ============================================================
-            const rejectRegistration = async (id) => {
-                if (!confirm('❌ Reject this registration? This will delete it permanently.')) return;
-
-                try {
-                    const { error } = await supabase
-                        .from('member_registrations')
-                        .delete()
-                        .eq('id', id);
 
                     if (error) {
-                        console.error('❌ Delete error:', error);
-                        throw new Error(error.message);
+                        console.error('Upload error:', error);
+                        throw new Error('Upload failed: ' + error.message);
                     }
 
-                    showToast('🗑️ Registration rejected and removed.', 'info');
-                    await loadRegistrations();
+                    // Get the public URL
+                    const { data: urlData } = supabase.storage
+                        .from(STORAGE_BUCKET)
+                        .getPublicUrl(fileName);
 
+                    return urlData.publicUrl;
                 } catch (err) {
-                    console.error('❌ Error in rejectRegistration:', err);
-                    showToast('❌ Error rejecting registration: ' + err.message, 'error');
+                    console.error('Upload error:', err);
+                    throw new Error('Image upload failed: ' + err.message);
                 }
             };
 
-            // ============================================================
-            // ===== LOAD MEMBERS =====
-            // ============================================================
+            const deleteOldImage = async (imageUrl) => {
+                if (!imageUrl) return;
+                try {
+                    // Extract filename from URL
+                    const urlParts = imageUrl.split(`/storage/v1/object/public/${STORAGE_BUCKET}/`);
+                    if (urlParts.length > 1) {
+                        const path = urlParts[1];
+                        await supabase.storage.from(STORAGE_BUCKET).remove([path]);
+                    } else {
+                        // Try to extract from any URL pattern
+                        const match = imageUrl.match(/\/([^\/]+\.(jpg|jpeg|png|gif|webp|svg))$/i);
+                        if (match) {
+                            await supabase.storage.from(STORAGE_BUCKET).remove([match[1]]);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not delete old image:', e);
+                }
+            };
+
+            // ---------- LOAD MEMBERS ----------
             const loadMembers = async (searchTerm = '') => {
-                const feedContainer = document.getElementById('members-feed');
-                if (!feedContainer) return;
-                feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading members...</div>';
+                const feed = document.getElementById('members-feed');
+                if (!feed) return;
+                feed.innerHTML = '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
                 try {
                     let query = supabase.from('members').select('*').order('id', { ascending: false });
                     if (searchTerm && searchTerm.trim()) {
@@ -974,80 +834,101 @@
                     }
                     const { data, error } = await query;
                     if (error) throw error;
-                    allMembersData = data || [];
+                    allMembers = data || [];
 
-                    if (!allMembersData.length) {
-                        feedContainer.innerHTML =
-                            '📋 No members found in the database. Click "Add Member" to get started.';
+                    if (!allMembers.length) {
+                        feed.innerHTML = '📋 No members. Click "Add" to create one.';
                         return;
                     }
 
-                    feedContainer.innerHTML = allMembersData.map(item => `
-                        <article class="member-node" style="border-left-color: var(--cls-rotaract);">
-                            <div class="node-meta">
-                                <span>ID: ${item.id}</span>
-                                <span>${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</span>
-                            </div>
-                            <div class="node-title" style="color: var(--cls-rotaract);">
-                                <i class="fa-solid fa-user" aria-hidden="true"></i> ${escapeHtml(item.name)}
-                            </div>
-                            <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal); text-decoration: none;">
-                                <i class="fa-solid fa-envelope" aria-hidden="true"></i> ${escapeHtml(item.email)}
-                            </a>
-                            ${item.phone ? `<div class="node-detail"><i class="fa-solid fa-phone" aria-hidden="true"></i> ${escapeHtml(item.phone)}</div>` : ''}
-                            ${item.position ? `<div class="node-detail"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.position)}</div>` : ''}
-                            ${item.address ? `<div class="node-detail"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${escapeHtml(item.address)}</div>` : ''}
-                            ${item.profession ? `<div class="node-detail"><i class="fa-solid fa-briefcase" aria-hidden="true"></i> ${escapeHtml(item.profession)}</div>` : ''}
-                            ${item.gender ? `<div class="node-detail"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i> ${escapeHtml(item.gender)}</div>` : ''}
-                            ${item.blood_group ? `<div class="node-detail"><i class="fa-solid fa-droplet" aria-hidden="true"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
-                            ${item.birthday ? `<div class="node-detail"><i class="fa-solid fa-calendar" aria-hidden="true"></i> ${new Date(item.birthday).toLocaleDateString()}</div>` : ''}
-                            <div class="application-actions">
-                                <button class="action-btn-sm edit-btn" data-id="${item.id}" data-action="edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="delete"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </article>
-                    `).join('');
+                    feed.innerHTML = allMembers.map(item => {
+                        const status = item.status || 'active';
+                        const badgeClass = status === 'active' ? 'status-active' : 'status-inactive';
+                        const toggleText = status === 'active' ? 'Set Inactive' : 'Set Active';
+                        const toggleClass = status === 'active' ? '' : 'inactive-toggle';
+                        const profileImg = item.profile_image || item.photo || item.photo_url || '';
+                        return `
+                            <article class="member-node" style="border-left-color: ${status === 'active' ? 'var(--cls-rotaract)' : '#94a3b8'};">
+                                <div class="node-meta">
+                                    <span>ID: ${item.id}</span>
+                                    <span class="status-badge ${badgeClass}">${status}</span>
+                                </div>
+                                <div class="member-header">
+                                    ${profileImg ? `<img src="${escapeHtml(profileImg)}" class="member-avatar" alt="avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />` : ''}
+                                    <div class="member-avatar" style="${profileImg ? 'display:none;' : 'display:flex;'}align-items:center;justify-content:center;background:rgba(255,255,255,0.05);"><i class="fa-solid fa-user" style="color:var(--text-muted);font-size:1.5rem;"></i></div>
+                                    <div class="node-title">${escapeHtml(item.name)}</div>
+                                </div>
+                                <a href="mailto:${escapeHtml(item.email)}" class="node-detail" style="color: var(--cls-personal);">${escapeHtml(item.email)}</a>
+                                ${item.phone ? `<div class="node-detail"><i class="fa-solid fa-phone"></i> ${escapeHtml(item.phone)}</div>` : ''}
+                                ${item.position ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.position)}</div>` : ''}
+                                ${item.address ? `<div class="node-detail"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.address)}</div>` : ''}
+                                ${item.profession ? `<div class="node-detail"><i class="fa-solid fa-briefcase"></i> ${escapeHtml(item.profession)}</div>` : ''}
+                                ${item.gender ? `<div class="node-detail"><i class="fa-solid fa-venus-mars"></i> ${escapeHtml(item.gender)}</div>` : ''}
+                                ${item.blood_group ? `<div class="node-detail"><i class="fa-solid fa-droplet"></i> ${escapeHtml(item.blood_group)}</div>` : ''}
+                                ${item.birthday ? `<div class="node-detail"><i class="fa-solid fa-calendar"></i> ${new Date(item.birthday).toLocaleDateString()}</div>` : ''}
+                                <div class="application-actions">
+                                    <button class="action-btn-sm status-toggle ${toggleClass}" data-id="${item.id}" data-action="toggle-status"><i class="fa-solid fa-arrows-rotate"></i> ${toggleText}</button>
+                                    <button class="action-btn-sm edit-btn" data-id="${item.id}" data-action="edit"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                    <button class="action-btn-sm delete-btn" data-id="${item.id}" data-action="delete"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
 
-                    // Attach event listeners
                     document.querySelectorAll('#members-feed .action-btn-sm').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation();
                             const id = parseInt(btn.dataset.id);
                             const action = btn.dataset.action;
-                            if (action === 'delete') {
-                                deleteMember(id);
-                            } else if (action === 'edit') {
-                                editMember(id);
-                            }
+                            if (action === 'delete') deleteMember(id);
+                            else if (action === 'edit') editMember(id);
+                            else if (action === 'toggle-status') toggleMemberStatus(id);
                         });
                     });
 
                 } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error loading members: ${err.message}</div>`;
+                    feed.innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ${err.message}</div>`;
                     showToast('Error loading members: ' + err.message, 'error');
                 }
             };
 
-            // ============================================================
-            // ===== DELETE MEMBER =====
-            // ============================================================
-            const deleteMember = async (id) => {
-                if (!confirm(`⚠️ Are you sure you want to permanently delete member #${id}? This action cannot be undone.`))
-                    return;
+            // ---------- TOGGLE STATUS ----------
+            const toggleMemberStatus = async (id) => {
                 try {
-                    const { error } = await supabase.from('members').delete().eq('id', id);
+                    const member = allMembers.find(m => m.id === id);
+                    if (!member) { showToast('Member not found.', 'error'); return; }
+                    const newStatus = member.status === 'active' ? 'inactive' : 'active';
+                    const { error } = await supabase
+                        .from('members')
+                        .update({ status: newStatus })
+                        .eq('id', id);
                     if (error) throw error;
-                    showToast(`🗑️ Member #${id} deleted!`, 'success');
+                    showToast(`✅ Status updated to ${newStatus}`, 'success');
                     await loadMembers(document.getElementById('memberSearchInput').value);
                 } catch (err) {
-                    showToast('❌ Error deleting member: ' + err.message, 'error');
+                    showToast('❌ Error toggling status: ' + err.message, 'error');
                 }
             };
 
-            // ============================================================
-            // ===== EDIT MEMBER =====
-            // ============================================================
+            // ---------- DELETE ----------
+            const deleteMember = async (id) => {
+                if (!confirm(`⚠️ Delete member #${id}?`)) return;
+                try {
+                    const member = allMembers.find(m => m.id === id);
+                    if (member && (member.profile_image || member.photo || member.photo_url)) {
+                        await deleteOldImage(member.profile_image || member.photo || member.photo_url);
+                    }
+                    const { error } = await supabase.from('members').delete().eq('id', id);
+                    if (error) throw error;
+                    showToast(`🗑️ Member #${id} deleted`, 'success');
+                    await loadMembers(document.getElementById('memberSearchInput').value);
+                } catch (err) {
+                    showToast('❌ Error deleting: ' + err.message, 'error');
+                }
+            };
+
+            // ---------- EDIT (load into modal) ----------
             const editMember = async (id) => {
                 try {
                     const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
@@ -1065,46 +946,83 @@
                     document.getElementById('memberAddress').value = data.address || '';
                     document.getElementById('memberProfession').value = data.profession || '';
                     document.getElementById('memberBirthday').value = data.birthday ? data.birthday.split('T')[0] : '';
+                    document.getElementById('memberStatus').value = data.status || 'active';
+
+                    // Image
+                    const imgUrl = data.profile_image || data.photo || data.photo_url || '';
+                    existingImageUrl = imgUrl;
+                    document.getElementById('profileImageUrl').value = imgUrl;
+                    const preview = document.getElementById('imagePreview');
+                    const noText = document.getElementById('noImageText');
+                    if (imgUrl) {
+                        preview.src = imgUrl;
+                        preview.style.display = 'block';
+                        noText.style.display = 'none';
+                    } else {
+                        preview.style.display = 'none';
+                        noText.style.display = 'inline';
+                    }
+                    currentImageFile = null;
 
                     document.getElementById('memberModalTitle').textContent = 'Edit Member';
                     document.getElementById('memberSubmitBtnText').textContent = 'Update Member';
                     document.getElementById('memberModal').classList.add('active');
                 } catch (err) {
-                    showToast('Error loading member data: ' + err.message, 'error');
+                    showToast('Error loading member: ' + err.message, 'error');
                 }
             };
 
-            // ============================================================
-            // ===== OPEN ADD MEMBER MODAL =====
-            // ============================================================
-            const openAddMemberModal = () => {
+            // ---------- OPEN ADD MODAL ----------
+            const openAddModal = () => {
                 editingMemberId = null;
                 document.getElementById('memberForm').reset();
                 document.getElementById('memberId').value = '';
+                document.getElementById('memberStatus').value = 'active';
+                document.getElementById('profileImageUrl').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('noImageText').style.display = 'inline';
+                currentImageFile = null;
+                existingImageUrl = '';
                 document.getElementById('memberModalTitle').textContent = 'Add New Member';
                 document.getElementById('memberSubmitBtnText').textContent = 'Save Member';
                 document.getElementById('memberModal').classList.add('active');
             };
 
-            const closeMemberModal = () => {
+            const closeModal = () => {
                 document.getElementById('memberModal').classList.remove('active');
                 editingMemberId = null;
+                currentImageFile = null;
+                existingImageUrl = '';
+                document.getElementById('profileImageInput').value = '';
             };
 
-            // ---- Modal events ----
-            document.getElementById('memberModalCloseBtn')?.addEventListener('click', closeMemberModal);
-            document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeMemberModal);
-            document.getElementById('memberModal')?.addEventListener('click', (e) => {
-                if (e.target === document.getElementById('memberModal')) closeMemberModal();
+            // ---------- IMAGE PREVIEW ----------
+            document.getElementById('profileImageInput')?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                currentImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = ev.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('noImageText').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
             });
-            document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
 
-            // ============================================================
-            // ===== MEMBER FORM SUBMIT =====
-            // ============================================================
+            document.getElementById('removeImageBtn')?.addEventListener('click', () => {
+                currentImageFile = null;
+                document.getElementById('profileImageInput').value = '';
+                document.getElementById('profileImageUrl').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('noImageText').style.display = 'inline';
+                existingImageUrl = '';
+            });
+
+            // ---------- FORM SUBMIT (with image upload) ----------
             document.getElementById('memberForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
                 const memberData = {
                     name: document.getElementById('memberName').value.trim(),
                     email: document.getElementById('memberEmail').value.trim(),
@@ -1114,243 +1032,141 @@
                     position: document.getElementById('memberPosition').value.trim(),
                     address: document.getElementById('memberAddress').value.trim(),
                     profession: document.getElementById('memberProfession').value.trim(),
-                    birthday: document.getElementById('memberBirthday').value || null
+                    birthday: document.getElementById('memberBirthday').value || null,
+                    status: document.getElementById('memberStatus').value || 'active'
                 };
-
                 if (!memberData.name || !memberData.email) {
-                    showToast('Name and Email are required fields.', 'error');
+                    showToast('Name and Email are required.', 'error');
                     return;
                 }
 
-                const memberId = document.getElementById('memberId').value;
+                const id = document.getElementById('memberId').value;
+                const isEdit = !!id;
 
                 try {
+                    let finalImageUrl = document.getElementById('profileImageUrl').value || existingImageUrl;
+
+                    // If user selected a new image, upload it
+                    if (currentImageFile) {
+                        // If editing, delete old image first
+                        if (isEdit && finalImageUrl) {
+                            await deleteOldImage(finalImageUrl);
+                        }
+                        const tempId = isEdit ? id : Date.now();
+                        const uploadedUrl = await uploadImage(currentImageFile, tempId);
+                        if (uploadedUrl) {
+                            finalImageUrl = uploadedUrl;
+                        } else {
+                            throw new Error('Image upload returned empty URL.');
+                        }
+                    } else if (isEdit && !currentImageFile && !document.getElementById('profileImageUrl').value &&
+                        existingImageUrl) {
+                        // User removed the image
+                        await deleteOldImage(existingImageUrl);
+                        finalImageUrl = '';
+                    }
+
+                    memberData.profile_image = finalImageUrl || null;
+
                     let result;
-                    if (memberId) {
-                        result = await supabase
-                            .from('members')
-                            .update(memberData)
-                            .eq('id', parseInt(memberId));
+                    if (isEdit) {
+                        result = await supabase.from('members').update(memberData).eq('id', parseInt(id));
                     } else {
-                        result = await supabase
-                            .from('members')
-                            .insert([memberData]);
+                        result = await supabase.from('members').insert([memberData]);
                     }
                     if (result.error) throw result.error;
 
-                    showToast(memberId ? '✅ Member updated successfully!' : '✅ New member added!', 'success');
-                    closeMemberModal();
+                    showToast(isEdit ? '✅ Member updated!' : '✅ Member added!', 'success');
+                    closeModal();
                     await loadMembers(document.getElementById('memberSearchInput').value);
                 } catch (err) {
-                    showToast('❌ Error saving member: ' + err.message, 'error');
+                    console.error('Save error:', err);
+                    showToast('❌ Error saving: ' + err.message, 'error');
                 }
             });
 
-            // ============================================================
-            // ===== SEARCH =====
-            // ============================================================
+            // ---------- SEARCH ----------
             document.getElementById('memberSearchBtn')?.addEventListener('click', () => {
-                const searchTerm = document.getElementById('memberSearchInput').value.trim();
-                loadMembers(searchTerm);
-            });
-
-            document.getElementById('memberSearchInput')?.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
-                    const searchTerm = document.getElementById('memberSearchInput').value.trim();
-                    loadMembers(searchTerm);
-                }
-            });
-
-            // ============================================================
-            // ===== REFRESH BUTTONS =====
-            // ============================================================
-            document.getElementById('refresh-members-btn')?.addEventListener('click', () => {
-                showToast('🔄 Refreshing members...', 'info');
                 loadMembers(document.getElementById('memberSearchInput').value);
             });
-
-            document.getElementById('refresh-registrations-btn')?.addEventListener('click', () => {
-                showToast('🔄 Refreshing registrations...', 'info');
-                loadRegistrations();
+            document.getElementById('memberSearchInput')?.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') loadMembers(e.target.value);
             });
 
-            // ============================================================
-            // ===== CLEAR ALL =====
-            // ============================================================
-            document.getElementById('clear-registrations-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to DELETE ALL registration requests permanently?")) return;
-                const feedContainer = document.getElementById('registrations-feed');
-                feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all registrations...</div>';
-                try {
-                    const { error } = await supabase
-                        .from('member_registrations')
-                        .delete()
-                        .neq('id', 0);
-                    if (error) throw error;
-                    showToast('✅ All registrations cleared!', 'success');
-                    await loadRegistrations();
-                } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    showToast('❌ Error clearing registrations: ' + err.message, 'error');
-                }
+            // ---------- REFRESH / CLEAR ----------
+            document.getElementById('refresh-members-btn')?.addEventListener('click', () => {
+                loadMembers(document.getElementById('memberSearchInput').value);
             });
-
             document.getElementById('clear-members-btn')?.addEventListener('click', async () => {
-                if (!confirm("⚠️ Are you sure you want to DELETE ALL members permanently?")) return;
-                const feedContainer = document.getElementById('members-feed');
-                feedContainer.innerHTML =
-                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all members...</div>';
+                if (!confirm("⚠️ DELETE ALL members?")) return;
                 try {
-                    const { error } = await supabase
-                        .from('members')
-                        .delete()
-                        .neq('id', 0);
+                    for (const m of allMembers) {
+                        if (m.profile_image || m.photo || m.photo_url) {
+                            await deleteOldImage(m.profile_image || m.photo || m.photo_url);
+                        }
+                    }
+                    const { error } = await supabase.from('members').delete().neq('id', 0);
                     if (error) throw error;
-                    showToast('✅ All members cleared!', 'success');
+                    showToast('✅ All members cleared.', 'success');
                     await loadMembers();
                 } catch (err) {
-                    feedContainer.innerHTML =
-                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
-                    showToast('❌ Error clearing members: ' + err.message, 'error');
+                    showToast('❌ Error clearing: ' + err.message, 'error');
                 }
             });
 
-            // ============================================================
-            // ===== EXPOSE GLOBALLY =====
-            // ============================================================
-            window.acceptMember = acceptMember;
-            window.rejectRegistration = rejectRegistration;
-            window.deleteMember = deleteMember;
-            window.editMember = editMember;
+            // ---------- MODAL EVENTS ----------
+            document.getElementById('addMemberBtn')?.addEventListener('click', openAddModal);
+            document.getElementById('memberModalCloseBtn')?.addEventListener('click', closeModal);
+            document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeModal);
+            document.getElementById('memberModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('memberModal')) closeModal();
+            });
 
-            // ============================================================
-            // ===== CROSS-TAB LOGOUT + INACTIVITY TIMEOUT =====
-            // ============================================================
-            (function() {
-                supabase.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_OUT' || !session) {
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    }
-                });
+            // ---------- BACK & LOGOUT ----------
+            document.getElementById('backToAdminBtn')?.addEventListener('click', () => { window.location.href =
+                    'admin.html'; });
+            document.getElementById('logout-btn')?.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+                window.location.href = '/index.html';
+            });
 
-                const INACTIVITY_TIMEOUT = 60 * 1000;
-                let logoutTimer = null;
-
-                const performLogout = async () => {
-                    try {
-                        await supabase.auth.signOut();
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    } catch (err) {
-                        console.error('Auto-logout error:', err);
-                    }
-                };
-
-                const resetTimer = () => {
-                    if (logoutTimer) clearTimeout(logoutTimer);
-                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-                };
-
-                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
-                activityEvents.forEach(event => {
-                    document.addEventListener(event, resetTimer, { passive: true });
-                });
-
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden) resetTimer();
-                });
-
-                resetTimer();
-                window.addEventListener('beforeunload', () => { if (logoutTimer) clearTimeout(logoutTimer); });
-            })();
-
-            // ============================================================
-            // ===== REALTIME SUBSCRIPTIONS =====
-            // ============================================================
-            const setupRealtimeSubscriptions = () => {
-                supabase.channel('members-changes')
+            // ---------- REALTIME ----------
+            const setupRealtime = () => {
+                supabase.channel('members-img-status')
                     .on('postgres_changes', {
                         event: '*',
                         schema: 'public',
                         table: 'members'
                     }, () => {
-                        console.log('🔄 Members table changed, refreshing...');
+                        console.log('🔄 Realtime: members changed');
                         loadMembers(document.getElementById('memberSearchInput').value);
                     })
                     .subscribe((status) => {
-                        console.log('📡 Members subscription status:', status);
-                    });
-
-                supabase.channel('registrations-changes')
-                    .on('postgres_changes', {
-                        event: '*',
-                        schema: 'public',
-                        table: 'member_registrations'
-                    }, () => {
-                        console.log('🔄 Registrations table changed, refreshing...');
-                        loadRegistrations();
-                    })
-                    .subscribe((status) => {
-                        console.log('📡 Registrations subscription status:', status);
+                        console.log('📡 Realtime subscription:', status);
                     });
             };
 
-            // ============================================================
-            // ===== SESSION VERIFICATION =====
-            // ============================================================
-            const verifySecureAuthentication = async () => {
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        await Promise.all([
-                            loadRegistrations(),
-                            loadMembers()
-                        ]);
-                        setupRealtimeSubscriptions();
-                    } else {
-                        window.location.href = '/index.html';
-                    }
-                } catch (error) {
-                    console.error('Auth error:', error);
+            // ---------- AUTH INIT ----------
+            const init = async () => {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
                     window.location.href = '/index.html';
+                    return;
                 }
+                await loadMembers();
+                setupRealtime();
             };
 
-            // ============================================================
-            // ===== NAVBAR SCROLL =====
-            // ============================================================
             const navbar = document.getElementById('navbar');
             window.addEventListener('scroll', () => {
                 navbar.classList.toggle('scrolled', window.scrollY > 50);
             });
 
-            // ============================================================
-            // ===== BACK TO ADMIN =====
-            // ============================================================
-            document.getElementById('backToAdminBtn')?.addEventListener('click', () => {
-                window.location.href = 'admin.html';
-            });
+            document.addEventListener('DOMContentLoaded', init);
 
-            // ============================================================
-            // ===== LOGOUT =====
-            // ============================================================
-            document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await supabase.auth.signOut();
-                window.location.href = '/index.html';
-            });
-
-            // ============================================================
-            // ===== DOM CONTENT LOADED =====
-            // ============================================================
-            document.addEventListener('DOMContentLoaded', () => {
-                verifySecureAuthentication();
-            });
+            window.deleteMember = deleteMember;
+            window.editMember = editMember;
+            window.toggleMemberStatus = toggleMemberStatus;
 
         })();
     </script>

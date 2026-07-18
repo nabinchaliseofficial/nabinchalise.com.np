@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Board of Directors · Rotaract Galkot Baglung</title>
+  <!-- Tailwind + Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* subtle animated gradient + card polish */
+    .bg-director {
+      background: linear-gradient(145deg, #0b1a2e 0%, #1a2f44 100%);
+    }
+    .cinzel {
+      font-family: 'Cinzel', serif;
+    }
+    .shimmer-once {
+      background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,215,0,0.10) 50%, rgba(255,255,255,0) 100%);
+      background-size: 200% 100%;
+      animation: shimmerMove 2.2s ease-in-out forwards;
+    }
+    @keyframes shimmerMove {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .frame-cut {
+      clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 12px);
+    }
+    .frame-ring {
+      transition: all 0.25s ease;
+    }
+    .frame-ring:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 35px -8px rgba(0,0,0,0.5);
+    }
+    .frame-ring:hover .frame-cut {
+      border-color: #D91A5C;
+    }
+    .social-glass {
+      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,215,0,0.08);
+    }
+    .gold-glow {
+      text-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    }
+    /* responsive tweaks */
+    @media (max-width: 640px) {
+      .grid-cols-3 { gap: 0.75rem; }
+      .grid-cols-4 { gap: 0.5rem; }
+      .grid-cols-5 { gap: 0.4rem; }
+      .grid-cols-6 { gap: 0.3rem; }
+    }
+  </style>
+</head>
+<body class="bg-[#f1f4fa] flex items-center justify-center min-h-screen p-4 font-['Inter']">
+
+  <!-- main card – social‑ready, self‑contained -->
+  <div class="max-w-6xl w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
+
+    <!-- header : club + year -->
+    <div class="bg-director px-6 py-5 text-center relative overflow-hidden">
+      <div class="absolute inset-0 shimmer-once pointer-events-none"></div>
+      <div class="relative z-10">
+        <h1 class="cinzel text-2xl sm:text-4xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200 drop-shadow-md">
+          BOARD OF DIRECTORS
+        </h1>
+        <p class="text-amber-400/80 text-[11px] sm:text-sm font-bold tracking-[0.2em] mt-1 uppercase flex items-center justify-center gap-3">
+          <span class="w-6 h-px bg-amber-400/40"></span>
+          Rotaract Club of Galkot Baglung · RY 2026-27
+          <span class="w-6 h-px bg-amber-400/40"></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- board grid – tiered structure -->
+    <div class="p-5 sm:p-10 bg-gradient-to-b from-slate-50/60 to-white">
+
+      <!-- TIER 1 : President · Secretary · Treasurer (core) -->
+      <div class="mb-10">
+        <div class="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto items-end">
+
+          <!-- Secretary -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[140px] mx-auto">
+              <div class="frame-cut border-2 border-amber-700/30 bg-[#baa697] p-1 shadow-md">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/madansharma.jpg" alt="Rtr. Madan Sharma" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/200?img=11'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[8px] sm:text-[10px] font-bold py-1 px-1 text-center truncate">Rtr. Madan Sharma</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[10px] sm:text-xs font-extrabold text-slate-700 mt-2 uppercase tracking-widest">Secretary</span>
+          </div>
+
+          <!-- President (center, scaled) -->
+          <div class="flex flex-col items-center transform scale-105 z-10">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[160px] mx-auto">
+              <div class="frame-cut border-2 border-rose-600/60 bg-[#baa697] p-1.5 shadow-2xl">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/nabinchalise.jpg" alt="Rtr. Nabin Chalise" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/200?img=12'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-rose-950 to-rose-900/90 text-white text-[9px] sm:text-sm font-black py-1.5 px-1 text-center truncate">Rtr. Nabin Chalise</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs sm:text-sm font-black text-rose-700 mt-2 uppercase tracking-[0.15em]">President</span>
+          </div>
+
+          <!-- Treasurer -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[140px] mx-auto">
+              <div class="frame-cut border-2 border-amber-700/30 bg-[#baa697] p-1 shadow-md">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/manishkandel.jpg" alt="Rtr. Manish Kandel" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/200?img=13'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[8px] sm:text-[10px] font-bold py-1 px-1 text-center truncate">Rtr. Manish Kandel</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[10px] sm:text-xs font-extrabold text-slate-700 mt-2 uppercase tracking-widest">Treasurer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 2 : Vice‑Presidents + IPP / Elect -->
+      <div class="mb-8">
+        <div class="grid grid-cols-4 gap-3 sm:gap-5 max-w-3xl mx-auto">
+          <!-- IPP -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[100px] mx-auto">
+              <div class="frame-cut border border-amber-700/20 bg-[#baa697] p-0.5 shadow">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/nabinsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/150?img=14'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[7px] sm:text-[9px] font-bold py-0.5 truncate text-center">Rtr. Nabin Subedi</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-1.5 text-center">IPP / Mentor</span>
+          </div>
+          <!-- Pres Elect -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[100px] mx-auto">
+              <div class="frame-cut border border-amber-700/20 bg-[#baa697] p-0.5 shadow">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/tikaramgautam.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/150?img=15'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[7px] sm:text-[9px] font-bold py-0.5 truncate text-center">Rtr. Tika Gautam</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-1.5 text-center">Pres. Elect</span>
+          </div>
+          <!-- VP -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[100px] mx-auto">
+              <div class="frame-cut border border-amber-700/20 bg-[#baa697] p-0.5 shadow">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/vikashsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/150?img=16'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[7px] sm:text-[9px] font-bold py-0.5 truncate text-center">Rtr. Vikash Subedi</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-1.5 text-center">Vice President</span>
+          </div>
+          <!-- Joint Sec -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[100px] mx-auto">
+              <div class="frame-cut border border-amber-700/20 bg-[#baa697] p-0.5 shadow">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/sagarchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/150?img=17'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[7px] sm:text-[9px] font-bold py-0.5 truncate text-center">Rtr. Sagar Chalise</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-1.5 text-center">Joint Secretary</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 3 : Action Chairs (5) -->
+      <div class="mb-8">
+        <div class="grid grid-cols-5 gap-2 sm:gap-4 max-w-4xl mx-auto">
+          <!-- Membership -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[90px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/bipinchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/120?img=18'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[6px] sm:text-[8px] font-bold py-0.5 truncate text-center">Rtr. Bipin C.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[7px] sm:text-[9px] font-bold text-slate-600 mt-1 text-center leading-tight">Membership Chair</span>
+          </div>
+          <!-- Public Image -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[90px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/manishgurung.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/120?img=19'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[6px] sm:text-[8px] font-bold py-0.5 truncate text-center">Rtr. Manish G.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[7px] sm:text-[9px] font-bold text-slate-600 mt-1 text-center leading-tight">Public Image Chair</span>
+          </div>
+          <!-- Service Projects -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[90px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/smritibudhathoki.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/120?img=20'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[6px] sm:text-[8px] font-bold py-0.5 truncate text-center">Rtr. Smriti B.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[7px] sm:text-[9px] font-bold text-slate-600 mt-1 text-center leading-tight">Service Projects Chair</span>
+          </div>
+          <!-- Health -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[90px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/manojkarki.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/120?img=21'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[6px] sm:text-[8px] font-bold py-0.5 truncate text-center">Rtr. Dr. M. Karki</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[7px] sm:text-[9px] font-bold text-slate-600 mt-1 text-center leading-tight">Health Program Chair</span>
+          </div>
+          <!-- Foundation -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[90px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/manjeelashrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/120?img=22'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[6px] sm:text-[8px] font-bold py-0.5 truncate text-center">Rtr. Manjeela S.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[7px] sm:text-[9px] font-bold text-slate-600 mt-1 text-center leading-tight">Rotary Foundation Chair</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 4 : Officers (6) -->
+      <div>
+        <div class="grid grid-cols-6 gap-1.5 sm:gap-3 max-w-4xl mx-auto">
+          <!-- Sergeant -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/lokendragaire.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=23'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Lokendra G.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">Sergeant At Arms</span>
+          </div>
+          <!-- IT -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/rajusahani.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=24'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Raju Sahani</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">IT Officer</span>
+          </div>
+          <!-- Young Leaders -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/melinakharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=25'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Melina K.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">Young Leaders Contact</span>
+          </div>
+          <!-- Learning -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/laxmipun.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=26'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Laxmi Pun</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">PP / Learning Facilitator</span>
+          </div>
+          <!-- PP/ISD -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/anilshrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=27'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Anil S.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">PP / ISD / Advisor</span>
+          </div>
+          <!-- Club Advisor -->
+          <div class="flex flex-col items-center">
+            <div class="frame-ring w-full aspect-[4/5] max-w-[70px] mx-auto">
+              <div class="frame-cut border border-amber-700/10 bg-[#baa697] p-0.5 shadow-sm">
+                <div class="w-full h-full overflow-hidden relative bg-[#a0846f]">
+                  <img src="images/kamalkharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://i.pravatar.cc/100?img=28'"/>
+                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[5px] sm:text-[7px] font-bold py-0.5 truncate text-center">Rtr. Kamal K.</div>
+                </div>
+              </div>
+            </div>
+            <span class="text-[6px] sm:text-[8px] font-bold text-slate-500 mt-1 text-center leading-tight">PP / Club Advisor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- bottom motto / social stamp -->
+      <div class="mt-10 text-center border-t border-amber-200/30 pt-6 flex flex-wrap items-center justify-center gap-4 text-xs sm:text-sm text-slate-500">
+        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-600/40"></span> #RotaractGalkot</span>
+        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400/40"></span> RI District 3292</span>
+        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400/40"></span> Service Above Self</span>
+      </div>
+
+    </div> <!-- end inner bg -->
+
+    <!-- footer minimal -->
+    <div class="bg-director px-4 py-3 text-center text-[10px] text-amber-300/40 tracking-widest">
+      Rotaract Club of Galkot Baglung · Board 2026-27
+    </div>
+  </div>
+
+</body>
+</html>
