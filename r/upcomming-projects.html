@@ -77,6 +77,7 @@
     .badge { font-size: 0.65rem; font-weight: 600; padding: 0.2rem 0.8rem; border-radius: 40px; background: #eef2f6; }
     .badge-open { background: #dbeafe; color: #1d4ed8; }
     .badge-closing { background: #fee2e2; color: #b91c1c; }
+    .badge-expired { background: #e5e7eb; color: #4b5563; }
     .project-title { font-size: 1.3rem; font-weight: 700; }
     .project-meta { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.85rem; color: #475569; }
     .project-meta i { width: 16px; color: #64748b; }
@@ -87,7 +88,8 @@
     .seats-text { font-size: 0.75rem; color: #475569; font-weight: 500; }
     .card-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
     .btn-register { background: #C2185B; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; cursor: pointer; flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
-    .btn-register:hover { background: #a0154a; transform: scale(1.01); }
+    .btn-register:hover:not(:disabled) { background: #a0154a; transform: scale(1.01); }
+    .btn-register:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; }
     .btn-outline { background: transparent; border: 1px solid #d0d9e6; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
     .btn-outline:hover { background: #f1f4f9; }
     .organizer { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: #334155; }
@@ -120,7 +122,8 @@
     .form-group textarea { min-height: 70px; resize: vertical; }
     .form-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
     .btn-submit { background: #C2185B; color: white; border: none; padding: 0.7rem 2rem; border-radius: 40px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .btn-submit:hover { background: #a0154a; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(194,24,91,0.25); }
+    .btn-submit:hover:not(:disabled) { background: #a0154a; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(194,24,91,0.25); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-cancel { background: #e9edf2; color: #334155; border: none; padding: 0.7rem 1.8rem; border-radius: 40px; font-weight: 500; cursor: pointer; }
     .btn-cancel:hover { background: #d1d9e6; }
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 0.6rem 1.8rem; border-radius: 60px; font-weight: 500; opacity: 0; transition: 0.3s; z-index: 9999; pointer-events: none; }
@@ -136,6 +139,20 @@
       .project-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(2,1fr); }
     }
+    .expired-notice {
+      background: #fef2f2;
+      color: #991b1b;
+      border-radius: 16px;
+      padding: 0.9rem 1.2rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #dc2626;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .expired-notice i { font-size: 1.2rem; }
   </style>
 </head>
 <body>
@@ -199,6 +216,10 @@
     <button class="modal-close" id="modalCloseBtn"><i class="fas fa-xmark"></i></button>
     <h2><i class="fas fa-hand-peace" style="color:#C2185B;"></i> Register Interest</h2>
     <div class="project-name-display">Project: <span id="modalProjectName">—</span></div>
+    <!-- Expired notice (hidden by default) -->
+    <div id="expiredNotice" class="expired-notice" style="display:none;">
+      <i class="fas fa-calendar-xmark"></i> This project has already passed its date. Registration is closed.
+    </div>
     <form id="registerForm">
       <div class="form-group">
         <label>Full Name <span class="required">*</span></label>
@@ -241,6 +262,7 @@
     const modalClose = document.getElementById('modalCloseBtn');
     const modalCancel = document.getElementById('modalCancelBtn');
     const modalProjectName = document.getElementById('modalProjectName');
+    const expiredNotice = document.getElementById('expiredNotice');
     const regName = document.getElementById('regName');
     const regEmail = document.getElementById('regEmail');
     const regPhone = document.getElementById('regPhone');
@@ -253,6 +275,7 @@
     let currentPage = 1;
     const perPage = 6;
     let currentProjectName = '';
+    let currentProjectDate = ''; // store date for expiry check
 
     // Toast notification
     function showToast(msg, isError = false) {
@@ -277,6 +300,16 @@
       grid.innerHTML = html;
     }
 
+    // Helper: check if date is past (expired)
+    function isDateExpired(dateStr) {
+      if (!dateStr) return false;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const projDate = new Date(dateStr);
+      projDate.setHours(0,0,0,0);
+      return projDate < today;
+    }
+
     // Render projects
     function renderProjects(list) {
       if (!list || list.length === 0) {
@@ -292,13 +325,17 @@
         const filled = Math.floor(Math.random() * 30) + 10;
         const total = 50;
         const progress = Math.min(100, Math.round((filled / total) * 100));
-        const status = p.status || 'open';
-        const badgeClass = status === 'open' ? 'badge-open' : status === 'closing' ? 'badge-closing' : 'badge-open';
+        let status = p.status || 'open';
+        const isExpired = isDateExpired(p.date);
+        if (isExpired) status = 'expired';
+        const badgeClass = status === 'open' ? 'badge-open' : status === 'closing' ? 'badge-closing' : 'badge-expired';
+        const isDisabled = (status === 'expired');
 
         html += `<div class="project-card">
           <div class="project-badge-row" style="display:flex;gap:0.4rem;flex-wrap:wrap;">
             <span class="badge ${badgeClass}">${status.toUpperCase()}</span>
             <span class="badge">${p.category || 'Community'}</span>
+            ${isExpired ? '<span class="badge badge-expired"><i class="fas fa-clock"></i> Expired</span>' : ''}
           </div>
           <div class="project-title">${p.name || 'Untitled'}</div>
           <div class="project-meta">
@@ -316,8 +353,8 @@
             ${p.organizer || 'Rotaract Club'} · <span style="color:#64748b;">${p.contact || '—'}</span>
           </div>
           <div class="card-actions">
-            <button class="btn-register register-btn" data-id="${p.id}" data-name="${p.name || 'Project'}">
-              <i class="fas fa-hand-peace"></i> Register
+            <button class="btn-register register-btn" data-id="${p.id}" data-name="${p.name || 'Project'}" data-date="${p.date || ''}" ${isDisabled ? 'disabled' : ''}>
+              <i class="fas fa-hand-peace"></i> ${isDisabled ? 'Expired' : 'Register'}
             </button>
             <button class="btn-outline view-detail" data-id="${p.id}"><i class="fas fa-eye"></i></button>
             <button class="btn-outline"><i class="fas fa-share-alt"></i></button>
@@ -331,9 +368,14 @@
       document.querySelectorAll('.register-btn').forEach(b => {
         b.addEventListener('click', function(e) {
           e.stopPropagation();
+          if (this.disabled) {
+            showToast('⛔ This project has expired. Registration is closed.', true);
+            return;
+          }
           const id = this.dataset.id;
           const name = this.dataset.name;
-          openRegisterModal(id, name);
+          const date = this.dataset.date || '';
+          openRegisterModal(id, name, date);
         });
       });
 
@@ -381,9 +423,23 @@
     }
 
     // Open registration modal
-    function openRegisterModal(projectId, projectName) {
+    function openRegisterModal(projectId, projectName, projectDate) {
       currentProjectName = projectName;
+      currentProjectDate = projectDate || '';
       modalProjectName.textContent = projectName;
+
+      // Check if expired and show/hide notice
+      const expired = isDateExpired(projectDate);
+      if (expired) {
+        expiredNotice.style.display = 'flex';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-ban"></i> Registration Closed';
+      } else {
+        expiredNotice.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+      }
+
       registerForm.reset();
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -393,11 +449,21 @@
     function closeModal() {
       modal.classList.remove('active');
       document.body.style.overflow = '';
+      // reset submit button state
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
     }
 
     // Register form submission - matches your exact table schema
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Double-check expiry
+      if (isDateExpired(currentProjectDate)) {
+        showToast('⛔ This project has expired. Registration is closed.', true);
+        closeModal();
+        return;
+      }
 
       const name = regName.value.trim();
       const email = regEmail.value.trim();
@@ -414,8 +480,6 @@
       submitBtn.disabled = true;
 
       try {
-        // Payload matches your table columns exactly:
-        // id (auto-generated), project_name, applicant_name, email, phone_number, message, status, created_at, updated_at
         const payload = {
           project_name: currentProjectName,
           applicant_name: name,
@@ -475,9 +539,9 @@
         projects = data || [];
         document.getElementById('totalCount').textContent = projects.length;
         document.getElementById('statTotal').textContent = projects.length;
-        document.getElementById('statOpen').textContent = projects.filter(p => p.status === 'open').length;
+        document.getElementById('statOpen').textContent = projects.filter(p => p.status === 'open' && !isDateExpired(p.date)).length;
         document.getElementById('statVol').textContent = Math.floor(Math.random() * 80) + 20;
-        document.getElementById('statClosing').textContent = projects.filter(p => p.status === 'closing').length;
+        document.getElementById('statClosing').textContent = projects.filter(p => p.status === 'closing' && !isDateExpired(p.date)).length;
 
         currentPage = 1;
         filterAndPaginate();
