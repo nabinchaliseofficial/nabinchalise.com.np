@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rotaract · Member Dashboard</title>
+    <meta name="description" content="Active member directory for Rotaract Club of Galkot Baglung — search members, view contact details, and upcoming birthdays." />
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%232563eb'/></svg>">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <!-- html2pdf library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -849,6 +851,45 @@
             .stat-card .stat-label { font-size: 0.6rem; }
             .birthday-chip { font-size: 0.75rem; padding: 0.1rem 0.6rem; }
         }
+
+        /* ===== BACK TO DASHBOARD BUTTON ===== */
+        .home-btn-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 900;
+        }
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            color: #fff;
+            padding: 0.7rem 1.3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .home-btn:hover, .home-btn:focus {
+            background: #0f172a;
+            transform: translateY(-3px);
+            outline: none;
+        }
+        @media (max-width: 480px) {
+            .home-btn { padding: 0.55rem 1rem; font-size: 0.8rem; }
+            .home-btn-container { bottom: 16px; right: 16px; }
+        }
+
+        /* ===== LAST SYNCED INDICATOR ===== */
+        .last-synced {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -876,7 +917,7 @@
         </div>
 
         <!-- Stats -->
-        <div class="stats-row" id="statsRow">
+        <div class="stats-row" id="statsRow" aria-live="polite">
             <div class="stat-card"><i class="fas fa-users"></i><div class="stat-info"><span class="stat-number" id="totalMembers">0</span><span class="stat-label">Total</span></div></div>
             <div class="stat-card"><i class="fas fa-mars"></i><div class="stat-info"><span class="stat-number" id="maleCount">0</span><span class="stat-label">Male</span></div></div>
             <div class="stat-card"><i class="fas fa-venus"></i><div class="stat-info"><span class="stat-number" id="femaleCount">0</span><span class="stat-label">Female</span></div></div>
@@ -888,20 +929,26 @@
                 </div>
             </div>
         </div>
+        <div class="last-synced" id="lastSynced"></div>
 
         <!-- Birthday Banner -->
         <div id="birthdayBanner" class="birthday-banner">
             <div class="title"><i class="fas fa-birthday-cake"></i> 🎂 Upcoming Birthdays (next 10 days)</div>
-            <div id="birthdayChips" class="birthday-chips">
+            <div id="birthdayChips" class="birthday-chips" aria-live="polite">
                 <span class="no-birthday">loading ...</span>
             </div>
         </div>
 
         <!-- Profile Grid -->
-        <div id="profileGrid" class="profile-grid">
+        <div id="profileGrid" class="profile-grid" aria-live="polite">
             <div class="loading-grid"><i class="fas fa-spinner fa-spin"></i><div>Loading members...</div></div>
         </div>
 
+    </div>
+
+    <!-- ===== BACK TO DASHBOARD ===== -->
+    <div class="home-btn-container">
+        <a href="index.html" class="home-btn"><span aria-hidden="true">🏠</span> Dashboard</a>
     </div>
 
     <!-- ===== FOOTER ===== -->
@@ -911,7 +958,7 @@
     </div>
 
     <!-- ===== BIRTHDAY POPUP ===== -->
-    <div id="birthdayPopup" class="birthday-popup-overlay">
+    <div id="birthdayPopup" class="birthday-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popupName" aria-hidden="true">
         <div class="birthday-popup" id="popupContent">
             <!-- Club Logo -->
             <div class="popup-logo">
@@ -964,12 +1011,14 @@
             const popup = document.getElementById('birthdayPopup');
             const popupName = document.getElementById('popupName');
             const popupContent = document.getElementById('popupContent');
+            const lastSynced = document.getElementById('lastSynced');
 
             let allMembers = [];
             let activeMembers = [];
             let popupTimeout = null;
             let popupShownForToday = false;
             let autoRefreshInterval = null;
+            let searchDebounce = null;
 
             // ===== HELPERS =====
             function formatDate(dateStr) {
@@ -1056,10 +1105,13 @@
             }
 
             // ===== SHOW BIRTHDAY POPUP =====
+            let lastFocusedEl = null;
             function showBirthdayPopup(name) {
                 if (popupShownForToday) return;
                 popupName.textContent = name;
+                lastFocusedEl = document.activeElement;
                 popup.classList.add('active');
+                popup.setAttribute('aria-hidden', 'false');
                 popupShownForToday = true;
 
                 if (popupTimeout) clearTimeout(popupTimeout);
@@ -1070,14 +1122,20 @@
 
             window.closePopup = function() {
                 popup.classList.remove('active');
+                popup.setAttribute('aria-hidden', 'true');
                 if (popupTimeout) {
                     clearTimeout(popupTimeout);
                     popupTimeout = null;
                 }
+                if (lastFocusedEl) lastFocusedEl.focus();
             };
 
             popup.addEventListener('click', function(e) {
                 if (e.target === this) closePopup();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && popup.classList.contains('active')) closePopup();
             });
 
             // ===== PDF DOWNLOAD for the popup card =====
@@ -1177,10 +1235,12 @@
             });
 
             // ===== RENDER =====
-            function renderProfiles(members) {
+            function renderProfiles(members, searchActive = false) {
                 grid.innerHTML = '';
                 if (!members || members.length === 0) {
-                    grid.innerHTML = `<div class="loading-grid" style="padding:2rem;">📭 No active members found</div>`;
+                    grid.innerHTML = searchActive
+                        ? `<div class="loading-grid" style="padding:2rem;">🔍 No members match your search</div>`
+                        : `<div class="loading-grid" style="padding:2rem;">📭 No active members found</div>`;
                     return;
                 }
 
@@ -1216,6 +1276,7 @@
                         const img = document.createElement('img');
                         img.src = photoSrc;
                         img.alt = displayName;
+                        img.loading = 'lazy';
                         img.onerror = function() {
                             this.style.display = 'none';
                             const parent = this.parentNode;
@@ -1377,7 +1438,7 @@
             function applyFiltersAndRender(searchTerm = '') {
                 const filtered = filterMembers(searchTerm);
                 const sorted = sortMembers(filtered);
-                renderProfiles(sorted);
+                renderProfiles(sorted, !!searchTerm.trim());
                 updateStats(sorted);
                 updateBirthdayBanner(sorted);
             }
@@ -1405,6 +1466,9 @@
                     allMembers = data;
                     activeMembers = data;
                     applyFiltersAndRender(searchInput.value);
+                    if (lastSynced) {
+                        lastSynced.textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
+                    }
                 } catch (err) {
                     console.error('Supabase error:', err);
                     grid.innerHTML =
@@ -1464,7 +1528,9 @@
             });
 
             searchInput.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') applyFiltersAndRender(searchInput.value);
+                if (e.key === 'Enter') { applyFiltersAndRender(searchInput.value); return; }
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => applyFiltersAndRender(searchInput.value), 350);
             });
 
             // ===== CLEANUP ON PAGE UNLOAD =====

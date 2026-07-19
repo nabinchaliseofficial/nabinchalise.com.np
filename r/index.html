@@ -555,10 +555,157 @@
                 font-size: 0.8rem;
             }
         }
+
+        /* ====== WELCOME POPUP ====== */
+        .welcome-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        .welcome-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .welcome-popup-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            max-width: 560px;
+            width: 100%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+            position: relative;
+        }
+        .welcome-popup-overlay.active .welcome-popup-card {
+            transform: scale(1) translateY(0);
+        }
+        .welcome-popup-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .welcome-popup-close:hover {
+            color: var(--text-main);
+            background: #f1f5f9;
+        }
+        .welcome-popup-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            margin-bottom: 6px;
+        }
+        .welcome-popup-sub {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+        .welcome-popup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .welcome-popup-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 18px 12px;
+            background: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .welcome-popup-item:hover,
+        .welcome-popup-item:focus {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            outline: none;
+        }
+        .welcome-popup-item .icon {
+            font-size: 1.6rem;
+        }
+        .welcome-popup-item .label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .welcome-popup-continue {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            padding: 10px 30px;
+            border-radius: 60px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.25s;
+        }
+        .welcome-popup-continue:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+        @media (max-width: 480px) {
+            .welcome-popup-card { padding: 32px 20px; }
+            .welcome-popup-title { font-size: 1.3rem; }
+        }
     </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- ====== WELCOME / QUICK NAV POPUP ====== -->
+    <div class="welcome-popup-overlay" id="welcomePopup" role="dialog" aria-modal="true" aria-labelledby="welcomePopupTitle" aria-hidden="true">
+        <div class="welcome-popup-card">
+            <button class="welcome-popup-close" id="welcomePopupClose" aria-label="Close popup">&times;</button>
+            <div class="welcome-popup-title" id="welcomePopupTitle">Welcome 👋</div>
+            <div class="welcome-popup-sub">Jump straight to what you're looking for</div>
+            <div class="welcome-popup-grid">
+                <a href="activemembers.html" class="welcome-popup-item">
+                    <span class="icon">📅</span>
+                    <span class="label">Active Members</span>
+                </a>
+                <a href="strategic-planning.html" class="welcome-popup-item">
+                    <span class="icon">🎯</span>
+                    <span class="label">Vision & Goals</span>
+                </a>
+                <a href="upcomming-projects.html" class="welcome-popup-item">
+                    <span class="icon">🚀</span>
+                    <span class="label">Upcoming Projects</span>
+                </a>
+                <a href="loginminutes.html" class="welcome-popup-item">
+                    <span class="icon">🔐</span>
+                    <span class="label">Rotaract Login</span>
+                </a>
+            </div>
+            <a href="#" class="welcome-popup-continue" id="welcomePopupContinue">Continue to Dashboard</a>
+        </div>
+    </div>
+
     <div class="dashboard-container">
         <header role="banner">
             <h1>Rotaract Club of Galkot Baglung</h1>
@@ -600,15 +747,15 @@
                     <div>
                         <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto w-full items-end">
                             <div class="flex flex-col items-center">
-                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-md"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/madansharma.jpg" alt="Rtr. Madan Sharma" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Madan+Sharma&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Madan Sharma</div></div></div></div>
+                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-md"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/madansharma.jpg" alt="Rtr. Madan Sharma" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Madan+Sharma&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Madan Sharma</div></div></div></div>
                                 <span class="text-[10px] sm:text-xs font-black text-slate-800 mt-3 text-center uppercase tracking-wide">Secretary</span>
                             </div>
                             <div class="flex flex-col items-center transform scale-105 z-10">
-                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1.5 w-full h-full shadow-xl border-2 border-rose-700/60"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/nabinchalise.jpg" alt="Rtr. Nabin Chalise" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Nabin+Chalise&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-rose-950 to-rose-900 text-white text-[10px] sm:text-sm font-black py-1 px-1.5 truncate text-center">Rtr. Nabin Chalise</div></div></div></div>
+                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1.5 w-full h-full shadow-xl border-2 border-rose-700/60"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/nabinchalise.jpg" alt="Rtr. Nabin Chalise" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Nabin+Chalise&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-rose-950 to-rose-900 text-white text-[10px] sm:text-sm font-black py-1 px-1.5 truncate text-center">Rtr. Nabin Chalise</div></div></div></div>
                                 <span class="text-xs sm:text-sm font-black text-rose-700 mt-3 text-center uppercase tracking-wider">President</span>
                             </div>
                             <div class="flex flex-col items-center">
-                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-md"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/manishkandel.jpg" alt="Rtr. Manish Kandel" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Manish+Kandel&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Manish Kandel</div></div></div></div>
+                                <div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-md"><div class="w-full h-full bg-[#baa697] overflow-hidden flex items-center justify-center relative"><img src="images/manishkandel.jpg" alt="Rtr. Manish Kandel" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Manish+Kandel&background=D91A5C&color=fff&size=200';"><div class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xs text-white text-[8px] sm:text-xs font-bold py-1 px-1.5 truncate text-center">Rtr. Manish Kandel</div></div></div></div>
                                 <span class="text-[10px] sm:text-xs font-black text-slate-800 mt-3 text-center uppercase tracking-wide">Treasurer</span>
                             </div>
                         </div>
@@ -616,31 +763,31 @@
                     <!-- TIER 2: VICE-PRESIDENTS -->
                     <div>
                         <div class="grid grid-cols-4 gap-6 max-w-4xl mx-auto w-full">
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/nabinsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Nabin+Subedi&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Nabin Subedi</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">IPP / Mentor</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/tikaramgautam.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Tika+Ram+Gautam&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Tika Ram Gautam</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">President Elect</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/vikashsubedi.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Vikash+Subedi&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Vikash Subedi</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Vice President</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/sagarchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Sagar+Chalise&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Sagar Chalise</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Joint Secretary</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/nabinsubedi.jpg" alt="Rtr. Nabin Subedi" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Nabin+Subedi&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Nabin Subedi</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">IPP / Mentor</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/tikaramgautam.jpg" alt="Rtr. Tika Ram Gautam" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Tika+Ram+Gautam&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Tika Ram Gautam</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">President Elect</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/vikashsubedi.jpg" alt="Rtr. Vikash Subedi" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Vikash+Subedi&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Vikash Subedi</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Vice President</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/sagarchalise.jpg" alt="Rtr. Sagar Chalise" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Sagar+Chalise&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[10px] font-bold py-0.5 px-1 truncate text-center">Rtr. Sagar Chalise</div></div></div></div><span class="text-[9px] sm:text-[11px] font-bold text-slate-700 mt-2 text-center leading-tight">Joint Secretary</span></div>
                         </div>
                     </div>
                     <!-- TIER 3: ACTION CHAIRS -->
                     <div>
                         <div class="grid grid-cols-5 gap-4 w-full">
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/bipinchalise.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Bipin+Chalise&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Bipin Chalise</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Membership Chair</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manishgurung.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Manish+Gurung&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manish Gurung</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Public Image Chair</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/smritibudhathoki.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Smriti+Budhathoki&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Smriti Budhathoki</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Service Projects Chair</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manojkarki.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Manoj+Karki&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Dr. Manoj Karki</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Health Program Chair</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manjeelashrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Manjeela+Shrestha&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manjeela Shrestha</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Rotary Foundation Chair</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/bipinchalise.jpg" alt="Rtr. Bipin Chalise" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Bipin+Chalise&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Bipin Chalise</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Membership Chair</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manishgurung.jpg" alt="Rtr. Manish Gurung" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Manish+Gurung&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manish Gurung</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Public Image Chair</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/smritibudhathoki.jpg" alt="Rtr. Smriti Budhathoki" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Smriti+Budhathoki&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Smriti Budhathoki</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Service Projects Chair</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manojkarki.jpg" alt="Rtr. Dr Manoj Karki" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Manoj+Karki&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Dr. Manoj Karki</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Health Program Chair</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-1 w-full h-full shadow-sm"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/manjeelashrestha.jpg" alt="Rtr. Manjeela Shrestha" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Manjeela+Shrestha&background=D91A5C&color=fff&size=150'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[8px] sm:text-[9px] font-bold py-0.5 px-1 truncate text-center">Rtr. Manjeela Shrestha</div></div></div></div><span class="text-[8px] sm:text-[10px] font-bold text-slate-600 mt-2 text-center leading-tight">Rotary Foundation Chair</span></div>
                         </div>
                     </div>
                     <!-- TIER 4: OFFICERS -->
                     <div>
                         <div class="grid grid-cols-6 gap-3 w-full">
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/lokendragaire.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Lokendra+Gaire&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Lokendra Gaire</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Sergeant At Arms</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/rajusahani.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Raju+Sahani&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Raju Sahani (RJ)</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">IT Officer</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/melinakharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Melina+Kharel&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Melina Kharel</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Young Leaders Contact</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/laxmipun.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Laxmi+Pun&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Laxmi Pun</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Learning Facilitator</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/anilshrestha.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Anil+Shrestha&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Anil Shrestha</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/ISD/Advisor</span></div>
-                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/kamalkharel.jpg" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=Kamal+Kharel&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Kamal Kharel</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Club Advisor</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/lokendragaire.jpg" alt="Rtr. Lokendra Gaire" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Lokendra+Gaire&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Lokendra Gaire</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Sergeant At Arms</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/rajusahani.jpg" alt="Rtr. Raju Sahani" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Raju+Sahani&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Raju Sahani (RJ)</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">IT Officer</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/melinakharel.jpg" alt="Rtr. Melina Kharel" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Melina+Kharel&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Melina Kharel</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">Young Leaders Contact</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/laxmipun.jpg" alt="Rtr. Laxmi Pun" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Laxmi+Pun&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Laxmi Pun</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Learning Facilitator</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/anilshrestha.jpg" alt="Rtr. Anil Shrestha" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Anil+Shrestha&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Anil Shrestha</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/ISD/Advisor</span></div>
+                            <div class="flex flex-col items-center"><div class="dynamic-frame-container w-full aspect-[4/5]"><div class="dynamic-cut-frame p-0.5 w-full h-full shadow-xs"><div class="w-full h-full bg-[#baa697] overflow-hidden relative"><img src="images/kamalkharel.jpg" alt="Rtr. Kamal Kharel" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=Kamal+Kharel&background=D91A5C&color=fff&size=120'"><div class="absolute bottom-0 inset-x-0 bg-black/90 text-white text-[7px] sm:text-[9px] font-bold py-0.5 px-0.5 truncate text-center">Rtr. Kamal Kharel</div></div></div></div><span class="text-[7px] sm:text-[9px] font-bold text-slate-500 mt-1.5 text-center leading-none">PP/Club Advisor</span></div>
                         </div>
                     </div>
                 </div>
@@ -685,7 +832,7 @@
     </div>
 
     <div class="home-btn-container">
-        <a href="index.html" class="home-btn" id="interactiveHomeBtn"><span aria-hidden="true">🏠</span> HOME</a>
+        <a href="/index.html" class="home-btn" id="interactiveHomeBtn"><span aria-hidden="true">🏠</span> HOME</a>
     </div>
 
     <footer role="contentinfo">
@@ -704,6 +851,36 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            // ---------- WELCOME POPUP ----------
+            const welcomePopup = document.getElementById('welcomePopup');
+            const welcomePopupClose = document.getElementById('welcomePopupClose');
+            const welcomePopupContinue = document.getElementById('welcomePopupContinue');
+            let lastFocusedEl = null;
+
+            function openWelcomePopup() {
+                lastFocusedEl = document.activeElement;
+                welcomePopup.classList.add('active');
+                welcomePopup.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                welcomePopupClose.focus();
+            }
+            function closeWelcomePopup() {
+                welcomePopup.classList.remove('active');
+                welcomePopup.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                sessionStorage.setItem('welcomePopupSeen', '1');
+                if (lastFocusedEl) lastFocusedEl.focus();
+            }
+            if (welcomePopup && !sessionStorage.getItem('welcomePopupSeen')) {
+                setTimeout(openWelcomePopup, 500);
+            }
+            welcomePopupClose?.addEventListener('click', closeWelcomePopup);
+            welcomePopupContinue?.addEventListener('click', (e) => { e.preventDefault(); closeWelcomePopup(); });
+            welcomePopup?.addEventListener('click', (e) => { if (e.target === welcomePopup) closeWelcomePopup(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && welcomePopup?.classList.contains('active')) closeWelcomePopup();
+            });
+
             // Live date
             const dateEl = document.getElementById("live-date");
             if (dateEl) dateEl.innerText = new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long',

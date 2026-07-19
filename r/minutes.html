@@ -689,9 +689,11 @@
             justify-content: space-between;
             align-items: center;
         }
-        .autocomplete-item:hover {
+        .autocomplete-item:hover,
+        .autocomplete-item:focus-visible {
             background: #f8fafc;
             border-color: var(--primary);
+            outline: none;
         }
         .autocomplete-item .meeting-title {
             font-weight: 600;
@@ -872,6 +874,9 @@
         }
         .action-buttons-group {
             margin-top: 40px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
         }
         .btn-submit {
             background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
@@ -881,7 +886,7 @@
             font-size: 1.1rem;
             font-weight: 700;
             border-radius: var(--radius-md);
-            width: 100%;
+            flex: 1 1 260px;
             box-shadow: var(--shadow-lg);
             display: flex;
             align-items: center;
@@ -890,6 +895,14 @@
             letter-spacing: -0.2px;
             transition: var(--transition);
             cursor: pointer;
+        }
+        .btn-submit.btn-print {
+            background: linear-gradient(135deg, var(--secondary) 0%, #003f6e 100%);
+            box-shadow: 0 20px 25px -5px rgba(1, 84, 145, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-submit.btn-print:hover {
+            background: linear-gradient(135deg, #013f6b 0%, #002b4a 100%);
+            box-shadow: 0 12px 28px rgba(1, 84, 145, 0.25);
         }
         .btn-submit:hover {
             background: linear-gradient(135deg, #be0055 0%, #910040 100%);
@@ -1566,6 +1579,9 @@
                 <span class="spinner"></span>
                 <span class="btn-text">💾 Save to Dashboard</span>
             </button>
+            <button type="button" class="btn-submit btn-print" id="printBtn" onclick="printMinutes()">
+                <span class="btn-text">🖨️ Print / Export PDF</span>
+            </button>
         </div>
     </main>
 
@@ -2172,7 +2188,7 @@
             });
             if (filtered.length === 0) {
                 dropdown.innerHTML =
-                    `<div class="autocomplete-empty">No meetings found matching "${searchTerm}"</div>`;
+                    `<div class="autocomplete-empty">No meetings found matching "${escapeHtml(searchTerm)}"</div>`;
                 dropdown.classList.add('active');
                 return;
             }
@@ -2182,9 +2198,9 @@
                 const title = meeting.meeting_number || 'Untitled';
                 const date = meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString() : 'No date';
                 html += `
-                    <div class="autocomplete-item" onclick="selectMeeting(${item.id})">
-                        <span class="meeting-title">${title}</span>
-                        <span class="meeting-date">${date}</span>
+                    <div class="autocomplete-item" data-meeting-id="${escapeHtml(String(item.id))}" tabindex="0" role="option">
+                        <span class="meeting-title">${escapeHtml(title)}</span>
+                        <span class="meeting-date">${escapeHtml(date)}</span>
                     </div>
                 `;
             });
@@ -2192,10 +2208,23 @@
             dropdown.classList.add('active');
         }
 
+        // Event delegation: works no matter what type the meeting id is
+        // (numeric, uuid, etc.) — avoids embedding raw ids inside onclick="".
+        function handleAutocompleteClick(e) {
+            const row = e.target.closest('.autocomplete-item');
+            if (!row) return;
+            const meetingId = row.dataset.meetingId;
+            if (meetingId) selectMeeting(meetingId);
+        }
+        document.getElementById('autocompleteDropdown')?.addEventListener('click', handleAutocompleteClick);
+        document.getElementById('autocompleteDropdown')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAutocompleteClick(e); }
+        });
+
         function selectMeeting(meetingId) {
             const dropdown = document.getElementById('autocompleteDropdown');
             if (dropdown) dropdown.classList.remove('active');
-            const item = allMeetings.find(m => m.id === meetingId);
+            const item = allMeetings.find(m => String(m.id) === String(meetingId));
             if (!item || !item.data) {
                 showToast('❌ Error', 'Meeting data not found.', 'error');
                 return;
@@ -2208,6 +2237,9 @@
                 if (searchInput) searchInput.value = payload.meeting_number;
                 if (meetNoInput) meetNoInput.value = payload.meeting_number;
             }
+            // Leave the search box populated and ready — user can hit
+            // "Search" again immediately or start typing a new query.
+            if (searchInput) searchInput.focus();
 
             populateFormFromData(payload);
             const versionDisplay = document.getElementById('versionDisplay');
@@ -2409,6 +2441,166 @@
         }
 
         // ============================================================
+        //  HELPERS: ESCAPE + COLLECT FORM DATA
+        // ============================================================
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        function collectFormPayload() {
+            const meetNo = document.getElementById('meetNo')?.value.trim() || '';
+            const meetDateRaw = document.getElementById('meetDate')?.value || '';
+            const meetVenue = document.getElementById('meetVenue')?.value.trim() || '';
+            const meetChair = document.getElementById('meetChair')?.value.trim() || '';
+
+            const members = [];
+            document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+                members.push({ name: cb.dataset.name, role: cb.dataset.role });
+            });
+            document.querySelectorAll('.add-member-checkbox:checked').forEach(cb => {
+                const row = cb.parentElement;
+                const name = row.querySelector('.add-member-name')?.value.trim();
+                const role = row.querySelector('.add-member-role')?.value.trim() || 'CLUB MEMBER';
+                if (name) members.push({ name, role });
+            });
+
+            const guests = [];
+            document.querySelectorAll('.guest-input-name').forEach(input => {
+                const v = input.value.trim();
+                if (v) guests.push(v);
+            });
+
+            const agendas = [];
+            document.querySelectorAll('#agenda-container .agenda-group').forEach(row => {
+                const title = row.querySelector('.agenda-title')?.value.trim() || '';
+                const description = row.querySelector('.agenda-desc')?.value.trim() || '';
+                if (title || description) agendas.push({ title, description });
+            });
+
+            const discussions = {
+                saa: document.getElementById('saaReport')?.value.trim() || '',
+                happy: document.getElementById('happyMoments')?.value.trim() || '',
+                president: document.getElementById('presidentRemarks')?.value.trim() || '',
+                committee: document.getElementById('committeeUpdates')?.value.trim() || '',
+                announcements: document.getElementById('announcements')?.value.trim() || '',
+                openFloor: document.getElementById('openFloor')?.value.trim() || ''
+            };
+
+            const actionItems = [];
+            document.querySelectorAll('#action-items-container .action-item-row').forEach(row => {
+                const task = row.querySelector('.ai-task')?.value.trim() || '';
+                const person = row.querySelector('.ai-person')?.value.trim() || '';
+                const deadline = row.querySelector('.ai-deadline')?.value || '';
+                const status = row.querySelector('.ai-status')?.value || 'Pending';
+                if (task || person) actionItems.push({ task, person, deadline, status });
+            });
+
+            const signatures = {
+                prepared: document.getElementById('sigPrepared')?.value.trim() || '',
+                reviewed: document.getElementById('sigReviewed')?.value.trim() || '',
+                approved: document.getElementById('sigApproved')?.value.trim() || ''
+            };
+
+            return {
+                meeting_number: meetNo,
+                meeting_date: meetDateRaw ? new Date(meetDateRaw).toISOString() : null,
+                venue: meetVenue,
+                chairperson: meetChair,
+                members,
+                guests,
+                agendas,
+                discussions,
+                actionItems,
+                signatures
+            };
+        }
+
+        // ============================================================
+        //  POPULATE PRINT PREVIEW
+        // ============================================================
+        function populatePrintPreview(payload) {
+            const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+            setText('outMeetNo', payload.meeting_number || '—');
+            setText('outDate', payload.meeting_date ? new Date(payload.meeting_date).toLocaleString() : '—');
+            setText('outVenue', payload.venue || '—');
+            setText('outChair', payload.chairperson || '—');
+            setText('outPres', payload.members.length);
+            setText('outGst', payload.guests.length);
+
+            const membersEl = document.getElementById('outPresentMembersNames');
+            if (membersEl) {
+                membersEl.innerHTML = payload.members.length
+                    ? `<table class="print-table"><tr><th class="col-sn">S.N.</th><th class="col-name">Name</th><th class="col-role">Designation</th></tr>` +
+                      payload.members.map((m, i) => `<tr><td class="col-sn">${i + 1}</td><td class="col-name">${escapeHtml(m.name)}</td><td class="col-role">${escapeHtml(m.role || '')}</td></tr>`).join('') +
+                      `</table>`
+                    : '<p>No members marked present.</p>';
+            }
+
+            const guestsSection = document.getElementById('print-section-guests');
+            const guestsEl = document.getElementById('outGuestsNames');
+            if (payload.guests.length && guestsSection && guestsEl) {
+                guestsSection.style.display = 'block';
+                guestsEl.innerHTML = '<ul>' + payload.guests.map(g => `<li>${escapeHtml(g)}</li>`).join('') + '</ul>';
+            } else if (guestsSection) {
+                guestsSection.style.display = 'none';
+            }
+
+            const discussionLabels = {
+                saa: 'Sergeant-at-Arms', happy: 'Happy Moments', president: "President's Remarks",
+                committee: 'Committee Updates', announcements: 'Announcements', openFloor: 'Open Floor'
+            };
+            const discussionsEl = document.getElementById('outDiscussions');
+            if (discussionsEl) {
+                const parts = Object.entries(discussionLabels)
+                    .filter(([key]) => payload.discussions[key])
+                    .map(([key, label]) => `<div class="agenda-item"><strong>${label}:</strong> ${escapeHtml(payload.discussions[key])}</div>`);
+                discussionsEl.innerHTML = parts.length ? parts.join('') : '<p>No discussion notes recorded.</p>';
+            }
+
+            const agendasEl = document.getElementById('outAgendas');
+            if (agendasEl) {
+                agendasEl.innerHTML = payload.agendas.length
+                    ? payload.agendas.map((a, i) => `<div class="agenda-item"><strong>${i + 1}. ${escapeHtml(a.title || 'Untitled')}</strong><br>${escapeHtml(a.description || '')}</div>`).join('')
+                    : '<p>No agenda items recorded.</p>';
+            }
+
+            const actionsEl = document.getElementById('outActionItems');
+            if (actionsEl) {
+                actionsEl.innerHTML = payload.actionItems.length
+                    ? `<table class="print-table"><tr><th>Task</th><th>Responsible</th><th>Deadline</th><th>Status</th></tr>` +
+                      payload.actionItems.map(a => `<tr><td>${escapeHtml(a.task)}</td><td>${escapeHtml(a.person)}</td><td>${a.deadline ? new Date(a.deadline).toLocaleDateString() : '—'}</td><td>${escapeHtml(a.status)}</td></tr>`).join('') +
+                      `</table>`
+                    : '<p>No action items recorded.</p>';
+            }
+
+            setText('outSigPrepared', payload.signatures.prepared || '—');
+            setText('outSigReviewed', payload.signatures.reviewed || '—');
+            setText('outSigApproved', payload.signatures.approved || '—');
+        }
+
+        // ============================================================
+        //  PRINT / EXPORT
+        // ============================================================
+        function printMinutes() {
+            const payload = collectFormPayload();
+            if (!payload.meeting_number) {
+                showToast('⚠️ Missing Info', 'Please enter a Meeting Number before printing.', 'error');
+                document.getElementById('meetNo')?.focus();
+                return;
+            }
+            const existing = allMeetings.find(item =>
+                (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
+            );
+            payload._version = existing?.data?._version || 'v1.0 (unsaved)';
+            payload._savedAt = existing?.data?._savedAt || null;
+            populatePrintPreview(payload);
+            setTimeout(() => window.print(), 100);
+        }
+
+        // ============================================================
         //  CORE: COMPILE, SAVE
         // ============================================================
         async function compileSaveAndEmail() {
@@ -2418,10 +2610,70 @@
             const modeEnabled = await checkMeetingMode();
             if (!modeEnabled) { showModeOffOverlay(); return; }
 
-            // ... (rest of the compileSaveAndEmail function - keep as before)
-            // (Too long, but same as previous version)
-            
-            showToast('✅ Saved', 'Minutes saved successfully!', 'success');
+            const payload = collectFormPayload();
+
+            if (!payload.meeting_number) {
+                showToast('⚠️ Missing Info', 'Please enter a Meeting Number before saving.', 'error');
+                document.getElementById('meetNo')?.focus();
+                return;
+            }
+            if (!payload.meeting_date) {
+                showToast('⚠️ Missing Info', 'Please set the meeting Date & Time.', 'error');
+                return;
+            }
+            if (!supabaseClient) {
+                showToast('❌ Error', 'Supabase not configured. Please refresh the page.', 'error');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                // Match against an existing meeting with the same meeting number (update in place)
+                const existing = allMeetings.find(item =>
+                    (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
+                );
+
+                let versionNum = 1;
+                if (existing && existing.data?._version) {
+                    const match = /v(\d+)/i.exec(existing.data._version);
+                    versionNum = match ? parseInt(match[1], 10) + 1 : 2;
+                }
+                payload._version = `v${versionNum}.0`;
+                payload._savedAt = new Date().toISOString();
+                payload._savedBy = currentUser?.email || 'unknown';
+
+                let error;
+                if (existing) {
+                    ({ error } = await supabaseClient
+                        .from('meeting_minutes')
+                        .update({ data: payload })
+                        .eq('id', existing.id));
+                } else {
+                    ({ error } = await supabaseClient
+                        .from('meeting_minutes')
+                        .insert([{ data: payload }]));
+                }
+                if (error) throw error;
+
+                populatePrintPreview(payload);
+
+                const versionDisplay = document.getElementById('versionDisplay');
+                const savedAtDisplay = document.getElementById('savedAtDisplay');
+                if (versionDisplay) versionDisplay.textContent = payload._version;
+                if (savedAtDisplay) savedAtDisplay.textContent = new Date(payload._savedAt).toLocaleString();
+
+                await fetchAllMeetings();
+
+                showToast('✅ Saved', `Minutes ${existing ? 'updated' : 'saved'} successfully (${payload._version})!`, 'success');
+            } catch (err) {
+                console.error('Save error:', err);
+                showToast('❌ Error', err.message || 'Failed to save minutes.', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
         }
 
         // ============================================================
@@ -2434,6 +2686,7 @@
         window.addAgendaRow = addAgendaRow;
         window.addActionItem = addActionItem;
         window.compileSaveAndEmail = compileSaveAndEmail;
+        window.printMinutes = printMinutes;
         window.searchMeeting = searchMeeting;
         window.selectMeeting = selectMeeting;
         window.showToast = showToast;
