@@ -1,2151 +1,1146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Central Hub Admin Dashboard</title>
-    <meta name="description" content="Unified admin dashboard for meeting minutes, inquiries, Galkot Municipality, and Rotaract initiatives." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
-    <style>
-        /* --- BASE VARIABLES --- */
-        :root {
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --cls-personal: #38bdf8;
-            --cls-professional: #34d399;
-            --cls-galkot: #fbbf24;
-            --cls-rotaract: #f43f5e;
-            --cls-links: #a78bfa;
-            --primary: #D70060;
-            --secondary: #015491;
-            --cta-logout: #ef4444;
-            --cta-logout-hover: #dc2626;
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Central Hub · Admin Console</title>
+<meta name="description" content="Unified operations console for members, projects, meeting minutes, and inquiries." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ============================================================
+   TOKENS — "Ops Desk" console theme
+   ============================================================ */
+:root{
+    --bg:#0a0d13;
+    --surface:#12161f;
+    --surface-2:#171c28;
+    --surface-hover:#1c2230;
+    --border:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.16);
+    --text:#f2efe9;
+    --text-muted:#8b93a3;
+    --text-faint:#5b6272;
+    --accent:#e2823f;
+    --accent-dim:rgba(226,130,63,0.14);
+    --accent-2:#33d6c0;
+    --accent-2-dim:rgba(51,214,192,0.14);
+    --danger:#f0555f;
+    --danger-dim:rgba(240,85,95,0.14);
+    --success:#43c98a;
+    --success-dim:rgba(67,201,138,0.14);
+    --purple:#9b8cf0;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+    --radius:14px;
+    --sidebar-w:260px;
+}
+@media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+    font-family:var(--font-body);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    min-height:100vh;
+    background-image:
+        radial-gradient(circle at 8% 12%, rgba(226,130,63,0.05) 0%, transparent 38%),
+        radial-gradient(circle at 92% 85%, rgba(51,214,192,0.05) 0%, transparent 38%);
+    background-attachment:fixed;
+}
+::selection{ background:var(--accent); color:#0a0d13; }
+a{ color:inherit; }
+button{ font-family:inherit; }
+:focus-visible{ outline:2px solid var(--accent-2); outline-offset:2px; border-radius:4px; }
 
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg-dark: #f8fafc;
-                --bg-card: rgba(255, 255, 255, 0.8);
-                --border-color: rgba(0, 0, 0, 0.08);
-                --text-main: #0f172a;
-                --text-muted: #64748b;
-            }
-        }
+/* ============================================================
+   ACCESS DENIED OVERLAY
+   ============================================================ */
+.access-denied-overlay{
+    display:none; position:fixed; inset:0; background:rgba(6,8,12,0.94);
+    backdrop-filter:blur(10px); z-index:9999; justify-content:center; align-items:center;
+    flex-direction:column; padding:20px;
+}
+.access-denied-overlay.active{ display:flex; animation:fadeIn 0.4s var(--ease); }
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+@keyframes slideUp{ from{opacity:0; transform:translateY(24px)} to{opacity:1; transform:translateY(0)} }
+.access-denied-card{
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:20px;
+    padding:48px 40px; max-width:460px; width:100%; text-align:center;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5); animation:slideUp 0.5s var(--ease);
+}
+.access-denied-card .icon-big{ font-size:2.6rem; color:var(--danger); margin-bottom:18px; display:block; }
+.access-denied-card h2{ font-family:var(--font-display); font-size:1.6rem; font-weight:700; margin-bottom:10px; }
+.access-denied-card p{ color:var(--text-muted); font-size:0.95rem; margin-bottom:22px; }
+.btn-redirect{
+    display:inline-block; background:var(--accent); color:#0a0d13; padding:13px 36px;
+    border-radius:10px; text-decoration:none; font-weight:700; font-size:0.95rem; transition:transform 0.3s var(--ease);
+}
+.btn-redirect:hover{ transform:translateY(-2px); }
+.countdown-timer{ color:var(--text-faint); font-size:0.85rem; margin-top:18px; font-family:var(--font-mono); }
+.countdown-timer span{ color:var(--accent); font-weight:700; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
-            background-attachment: fixed;
-            min-height: 100vh;
-        }
+/* ============================================================
+   APP SHELL — sidebar + main
+   ============================================================ */
+.app-shell{ display:flex; min-height:100vh; }
 
-        /* --- NAVBAR --- */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: var(--transition-smooth);
-        }
-        .navbar.scrolled {
-            padding: 0.6rem 2rem;
-            background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        .nav-logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .nav-logo i {
-            color: var(--cls-personal);
-        }
-        .nav-container {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            list-style: none;
-            align-items: center;
-        }
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-        }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .btn-logout {
-            background: var(--cta-logout);
-            color: #ffffff !important;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition-smooth);
-            text-decoration: none;
-            min-height: 44px;
-        }
-        .btn-logout:hover {
-            background: var(--cta-logout-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--text-main);
-            cursor: pointer;
-            background: none;
-            border: none;
-            min-height: 44px;
-            min-width: 44px;
-        }
+.sidebar{
+    width:var(--sidebar-w); flex-shrink:0; background:var(--surface);
+    border-right:1px solid var(--border); display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; height:100vh; z-index:500; transition:transform 0.35s var(--ease);
+}
+.sidebar-brand{
+    display:flex; align-items:center; gap:0.65rem; padding:1.5rem 1.4rem 1.2rem;
+    border-bottom:1px solid var(--border);
+}
+.sidebar-brand .mark{
+    width:36px; height:36px; border-radius:10px; background:var(--accent-dim); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-size:1.05rem; flex-shrink:0;
+    border:1px solid rgba(226,130,63,0.3);
+}
+.sidebar-brand .name{ font-family:var(--font-display); font-weight:700; font-size:1rem; line-height:1.15; }
+.sidebar-brand .sub{ font-size:0.68rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:2px; }
 
-        /* Access Denied Overlay */
-        .access-denied-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
-            animation: fadeInOverlay 0.5s ease;
-        }
-        .access-denied-overlay.active {
-            display: flex;
-        }
-        @keyframes fadeInOverlay {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .access-denied-card {
-            background: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 50px 40px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .access-denied-card .icon-big {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            display: block;
-        }
-        .access-denied-card h2 {
-            color: var(--text-main);
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-        .access-denied-card p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-        .access-denied-card .btn-redirect {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
-            color: #fff;
-            padding: 14px 40px;
-            border-radius: 60px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.05rem;
-            transition: var(--transition-smooth);
-            border: none;
-            cursor: pointer;
-        }
-        .access-denied-card .btn-redirect:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(215, 0, 96, 0.3);
-        }
-        .countdown-timer {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 16px;
-        }
-        .countdown-timer span {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
+.status-strip{
+    margin:1rem 1.4rem 0.5rem; padding:0.55rem 0.8rem; border-radius:10px;
+    background:var(--success-dim); border:1px solid rgba(67,201,138,0.25);
+    display:flex; align-items:center; gap:0.5rem; font-size:0.72rem; font-weight:600; color:var(--success);
+}
+.status-strip.degraded{ background:var(--danger-dim); border-color:rgba(240,85,95,0.3); color:var(--danger); }
+.status-dot{ width:7px; height:7px; border-radius:50%; background:currentColor; flex-shrink:0; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.35} }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.sidebar-nav{ flex:1; overflow-y:auto; padding:1rem 0.9rem; }
+.nav-group-label{
+    font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-faint);
+    font-weight:700; padding:0.9rem 0.6rem 0.5rem;
+}
+.nav-item{
+    display:flex; align-items:center; gap:0.7rem; width:100%; padding:0.65rem 0.7rem;
+    border-radius:9px; color:var(--text-muted); background:none; border:none; cursor:pointer;
+    font-size:0.87rem; font-weight:500; text-decoration:none; transition:background 0.2s, color 0.2s;
+    margin-bottom:2px; text-align:left;
+}
+.nav-item i{ width:18px; text-align:center; font-size:0.9rem; flex-shrink:0; }
+.nav-item:hover{ background:var(--surface-hover); color:var(--text); }
+.nav-item.active{ background:var(--accent-dim); color:var(--accent); }
+.nav-item .ext{ margin-left:auto; font-size:0.7rem; opacity:0.5; }
 
-        /* HERO with centered clock */
-        .hero {
-            padding: 8rem 2rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            background: linear-gradient(to right, #fff, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto;
-        }
-        .hero-clock {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 0.5rem 2rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(4px);
-            display: inline-flex;
-            align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 0.5rem;
-        }
-        .hero-clock .date {
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero-clock {
-                font-size: 1.6rem;
-                padding: 0.4rem 1rem;
-                gap: 0.75rem;
-            }
-            .hero-clock .date {
-                font-size: 0.85rem;
-            }
-        }
+.sidebar-footer{ padding:1rem 1.4rem 1.3rem; border-top:1px solid var(--border); }
+.btn-logout{
+    width:100%; background:var(--danger-dim); color:var(--danger) !important; border:1px solid rgba(240,85,95,0.25);
+    padding:0.65rem 1rem; border-radius:10px; font-weight:600; font-size:0.83rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:0.5rem; transition:background 0.2s;
+}
+.btn-logout:hover{ background:rgba(240,85,95,0.22); }
 
-        /* --- DAILY QUOTE BANNER --- */
-        .daily-quote-banner {
-            max-width: 1200px;
-            margin: 0 auto 1.5rem;
-            padding: 0 2rem;
-        }
-        .daily-quote-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.06));
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            backdrop-filter: blur(4px);
-            transition: var(--transition-smooth);
-        }
-        .daily-quote-card:hover {
-            border-color: rgba(167, 139, 250, 0.3);
-        }
-        .daily-quote-card .day-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            padding: 0.3rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-        }
-        .daily-quote-card .day-badge i {
-            font-size: 0.8rem;
-        }
-        .daily-quote-card .quote-text {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text-main);
-            flex: 1;
-            text-align: center;
-            min-width: 200px;
-        }
-        .daily-quote-card .quote-text i {
-            color: var(--cls-links);
-            opacity: 0.5;
-            font-size: 0.9rem;
-            margin: 0 0.3rem;
-        }
-        .daily-quote-card .quote-author {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-        .daily-quote-card .quote-author i {
-            color: var(--cls-galkot);
-            margin-right: 0.3rem;
-        }
-        .daily-quote-card .quote-status {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-weight: 500;
-        }
-        .daily-quote-card .quote-status.found {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-        }
-        .daily-quote-card .quote-status.not-found {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-        }
-        .daily-quote-card .quote-status.error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-        }
-        @media (max-width: 768px) {
-            .daily-quote-card {
-                padding: 1rem 1.2rem;
-                flex-direction: column;
-                text-align: center;
-                gap: 0.75rem;
-            }
-            .daily-quote-card .quote-text {
-                font-size: 1rem;
-            }
-            .daily-quote-card .day-badge {
-                font-size: 0.75rem;
-                padding: 0.2rem 1rem;
-            }
-        }
+.menu-toggle{
+    display:none; position:fixed; top:1rem; left:1rem; z-index:600; width:42px; height:42px;
+    border-radius:10px; background:var(--surface); border:1px solid var(--border-strong); color:var(--text);
+    font-size:1.05rem; cursor:pointer; align-items:center; justify-content:center;
+}
+.sidebar-scrim{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:499; }
+.sidebar-scrim.active{ display:block; }
 
-        /* --- NAVIGATION CARDS --- */
-        .nav-cards-section {
-            max-width: 1200px;
-            margin: 0 auto 3rem;
-            padding: 0 2rem;
-        }
-        .nav-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.5rem;
-        }
-        .nav-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: var(--transition-smooth);
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            min-height: 180px;
-            justify-content: center;
-        }
-        .nav-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        }
-        .nav-card .icon-wrapper {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            transition: var(--transition-smooth);
-        }
-        .nav-card.card-members .icon-wrapper {
-            background: rgba(244, 63, 94, 0.15);
-            color: var(--cls-rotaract);
-        }
-        .nav-card.card-members:hover .icon-wrapper {
-            background: var(--cls-rotaract);
-            color: #fff;
-        }
-        .nav-card.card-projects .icon-wrapper {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--cls-galkot);
-        }
-        .nav-card.card-projects:hover .icon-wrapper {
-            background: var(--cls-galkot);
-            color: #000;
-        }
-        .nav-card.card-minutes .icon-wrapper {
-            background: rgba(215, 0, 96, 0.15);
-            color: var(--primary);
-        }
-        .nav-card.card-minutes:hover .icon-wrapper {
-            background: var(--primary);
-            color: #fff;
-        }
-        .nav-card.card-inquiries .icon-wrapper {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--cls-personal);
-        }
-        .nav-card.card-inquiries:hover .icon-wrapper {
-            background: var(--cls-personal);
-            color: #000;
-        }
-        .nav-card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .nav-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
-        .nav-card .arrow-icon {
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: var(--transition-smooth);
-            color: var(--cls-links);
-        }
-        .nav-card:hover .arrow-icon {
-            opacity: 1;
-            transform: translateX(0);
-        }
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main{ flex:1; margin-left:var(--sidebar-w); min-width:0; }
+.topbar{
+    padding:1.6rem 2.2rem; display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:1rem; border-bottom:1px solid var(--border);
+}
+.topbar-title h1{ font-family:var(--font-display); font-size:1.5rem; font-weight:700; letter-spacing:-0.01em; }
+.topbar-title p{ color:var(--text-muted); font-size:0.85rem; margin-top:2px; }
+.topbar-clock{
+    font-family:var(--font-mono); font-size:1.15rem; font-weight:600; color:var(--text);
+    background:var(--surface); border:1px solid var(--border); padding:0.5rem 1.1rem; border-radius:10px;
+    display:flex; align-items:center; gap:0.8rem;
+}
+.topbar-clock .date{ font-size:0.72rem; font-weight:400; color:var(--text-faint); }
 
-        /* --- rest of styles --- */
-        .workspace-section {
-            max-width: 1200px;
-            margin: 0 auto 3rem;
-            padding: 0 2rem;
-        }
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .panel-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .panel-header h2 i {
-            color: var(--cls-personal);
-        }
-        .panel-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .action-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-        }
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .clear-btn-accent {
-            border-color: rgba(239, 68, 68, 0.25) !important;
-        }
-        .clear-btn-accent:hover {
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.6) !important;
-        }
-        .btn-primary-accent {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #fff !important;
-        }
-        .btn-primary-accent:hover {
-            background: #b50051;
-            border-color: #b50051;
-        }
-        .btn-edit-accent {
-            background: var(--cls-galkot);
-            border-color: var(--cls-galkot);
-            color: #000 !important;
-        }
-        .btn-edit-accent:hover {
-            background: #e5a800;
-            border-color: #e5a800;
-        }
-        .btn-add-accent {
-            background: var(--cls-professional);
-            border-color: var(--cls-professional);
-            color: #000 !important;
-        }
-        .btn-add-accent:hover {
-            background: #2bbf8a;
-            border-color: #2bbf8a;
-        }
-        .search-box-inline {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.2rem 0.2rem 0.2rem 0.8rem;
-        }
-        .search-box-inline input {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            padding: 0.4rem 0;
-            font-size: 0.85rem;
-            outline: none;
-            min-width: 150px;
-            font-family: 'Inter', sans-serif;
-        }
-        .search-box-inline input::placeholder {
-            color: var(--text-muted);
-        }
-        .search-box-inline button {
-            background: var(--cls-links);
-            border: none;
-            color: #000;
-            padding: 0.3rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-        }
-        .search-box-inline button:hover {
-            background: #9370db;
-        }
-        .inquiries-feed {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 1.5rem;
-        }
-        .inquiry-node {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--cls-personal);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .node-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        .node-sender {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-        .node-email {
-            font-size: 0.9rem;
-            color: var(--cls-personal);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .node-message {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            color: rgba(248, 250, 252, 0.9);
-            white-space: pre-wrap;
-        }
-        .status-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-        .links-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 6rem;
-        }
-        .links-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
-        }
-        .links-header i {
-            color: var(--cls-links);
-            font-size: 1.5rem;
-        }
-        .links-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        .links-tabs-container {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border-color) transparent;
-        }
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.6rem 1.2rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-        }
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-main);
-        }
-        .tab-btn.active {
-            background: var(--cls-links);
-            color: #000;
-            border-color: var(--cls-links);
-        }
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.25rem;
-            transition: var(--transition-smooth);
-        }
-        .link-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            min-height: 44px;
-        }
-        .link-item.hidden {
-            display: none !important;
-        }
-        .link-item span {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .link-item i.link-icon {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            transition: var(--transition-smooth);
-            width: 20px;
-            text-align: center;
-        }
-        .link-item i.arrow-icon {
-            transform: translateX(-5px);
-            opacity: 0;
-            color: var(--cls-links);
-            transition: var(--transition-smooth);
-        }
-        .link-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, rgba(167, 139, 250, 0.08), transparent);
-            transform: translateX(-100%);
-            transition: var(--transition-smooth);
-            z-index: -1;
-        }
-        .link-item:hover {
-            border-color: rgba(167, 139, 250, 0.4);
-            transform: translateX(4px);
-        }
-        .link-item:hover::after {
-            transform: translateX(0);
-        }
-        .link-item:hover i.link-icon {
-            color: var(--cls-links);
-        }
-        .link-item:hover i.arrow-icon {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        footer {
-            text-align: center;
-            padding: 2rem;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal-content {
-            background: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2.5rem;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-content::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            min-height: 44px;
-            min-width: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-close:hover {
-            color: var(--text-main);
-            transform: rotate(90deg);
-        }
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .modal-title i {
-            color: var(--cls-galkot);
-        }
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 0.4rem;
-        }
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            transition: var(--transition-smooth);
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--cls-galkot);
-            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
-        }
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            justify-content: flex-end;
-        }
-        .form-actions .action-btn {
-            padding: 0.7rem 1.5rem;
-            font-weight: 600;
-        }
-        .btn-save-accent {
-            background: var(--cls-professional);
-            border-color: var(--cls-professional);
-            color: #000 !important;
-        }
-        .btn-save-accent:hover {
-            background: #2bbf8a;
-            border-color: #2bbf8a;
-        }
-        .btn-cancel-accent {
-            border-color: rgba(239, 68, 68, 0.3) !important;
-        }
-        .btn-cancel-accent:hover {
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.6) !important;
-        }
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .status-new {
-            background: #3b82f6;
-            color: #fff;
-        }
-        .status-read {
-            background: #34d399;
-            color: #000;
-        }
-        .status-replied {
-            background: #8b5cf6;
-            color: #fff;
-        }
-        .status-archived {
-            background: #64748b;
-            color: #fff;
-        }
-        .action-btn-sm {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition-smooth);
-            font-family: 'Inter', sans-serif;
-        }
-        .action-btn-sm.approve-btn {
-            background: #34d399;
-            color: #000;
-        }
-        .action-btn-sm.approve-btn:hover {
-            background: #2bbf8a;
-        }
-        .action-btn-sm.reject-btn {
-            background: #ef4444;
-            color: #fff;
-        }
-        .action-btn-sm.reject-btn:hover {
-            background: #dc2626;
-        }
-        .action-btn-sm.delete-btn {
-            background: #f43f5e;
-            color: #fff;
-        }
-        .action-btn-sm.delete-btn:hover {
-            background: #e11d48;
-        }
-        .application-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
-        }
+.quote-strip{
+    margin:1.4rem 2.2rem 0; padding:1rem 1.4rem; border-radius:var(--radius);
+    background:linear-gradient(135deg, rgba(226,130,63,0.08), rgba(155,140,240,0.06));
+    border:1px solid var(--border); display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+}
+.quote-strip .day-badge{
+    font-family:var(--font-mono); font-size:0.72rem; font-weight:700; color:#0a0d13; background:var(--accent);
+    padding:0.3rem 0.75rem; border-radius:6px; white-space:nowrap; letter-spacing:0.03em;
+}
+.quote-strip .quote-body{ flex:1; min-width:200px; font-size:0.95rem; }
+.quote-strip .quote-author{ font-size:0.8rem; color:var(--text-muted); white-space:nowrap; }
+.quote-strip .quote-status{ font-size:0.68rem; padding:0.2rem 0.65rem; border-radius:6px; font-weight:600; white-space:nowrap; }
+.quote-strip .quote-status.found{ background:var(--success-dim); color:var(--success); }
+.quote-strip .quote-status.not-found{ background:var(--accent-dim); color:var(--accent); }
+.quote-strip .quote-status.error{ background:var(--danger-dim); color:var(--danger); }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.view{ display:none; padding:1.8rem 2.2rem 3rem; animation:fadeIn 0.35s var(--ease); }
+.view.active{ display:block; }
 
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-            .nav-container {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 260px;
-                background: #0b111e;
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 6rem 2rem 2rem;
-                gap: 2.5rem;
-                transition: var(--transition-smooth);
-                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-                border-left: 1px solid var(--border-color);
-            }
-            .nav-container.active {
-                right: 0;
-            }
-            .nav-links {
-                flex-direction: column;
-                align-items: flex-start;
-                width: 100%;
-                gap: 1.5rem;
-            }
-            .nav-links a {
-                width: 100%;
-                font-size: 1.1rem;
-            }
-            .btn-logout {
-                width: 100%;
-                justify-content: center;
-            }
-            .links-section,
-            .workspace-section {
-                padding: 0 1rem 3rem;
-            }
-            .inquiries-feed {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .search-box-inline input {
-                min-width: 100px;
-                width: 100%;
-            }
-            .search-box-inline {
-                flex: 1;
-            }
-            .nav-cards-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+.section-heading{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; margin-bottom:1.2rem; }
+.section-heading h2{ font-family:var(--font-display); font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.6rem; }
+.section-heading h2 i{ color:var(--accent); font-size:1rem; }
+.section-heading .meta{ font-size:0.78rem; color:var(--text-faint); font-family:var(--font-mono); display:flex; align-items:center; gap:0.6rem; }
 
-        @media print {
-            body {
-                background: #fff !important;
-                color: #000 !important;
-            }
-            .navbar,
-            .hero,
-            .workspace-section,
-            .realtime-section,
-            .links-section,
-            footer,
-            .link-item,
-            .tab-btn,
-            .links-tabs-container {
-                display: none !important;
-            }
-        }
+/* ---- Module (nav) cards ---- */
+.module-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1rem; margin-bottom:2.2rem; }
+.module-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:1.6rem 1.4rem; text-decoration:none; color:var(--text); display:flex; flex-direction:column;
+    gap:0.6rem; transition:transform 0.3s var(--ease), border-color 0.3s var(--ease); position:relative; overflow:hidden;
+    cursor:pointer;
+}
+.module-card:hover{ transform:translateY(-4px); border-color:var(--border-strong); }
+.module-card .icon-wrap{
+    width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+}
+.module-card.c-members .icon-wrap{ background:rgba(240,85,95,0.14); color:var(--danger); }
+.module-card.c-projects .icon-wrap{ background:rgba(226,130,63,0.14); color:var(--accent); }
+.module-card.c-minutes .icon-wrap{ background:rgba(155,140,240,0.14); color:var(--purple); }
+.module-card.c-inquiries .icon-wrap{ background:rgba(51,214,192,0.14); color:var(--accent-2); }
+.module-card h3{ font-size:1rem; font-weight:600; }
+.module-card p{ font-size:0.8rem; color:var(--text-muted); }
+.module-card .go{ font-size:0.75rem; color:var(--text-faint); display:flex; align-items:center; gap:0.4rem; margin-top:auto; }
+.module-card:hover .go{ color:var(--accent); }
 
-        /* ============================================================ */
-        /* ===== REALTIME OVERVIEW ===== */
-        /* ============================================================ */
-        .realtime-section {
-            max-width: 1200px;
-            margin: 0 auto 3rem;
-            padding: 0 2rem;
-        }
-        .rt-badge-live {
-            background: rgba(52, 211, 153, 0.12);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            color: #34d399;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            white-space: nowrap;
-        }
-        .rt-badge-live.degraded {
-            background: rgba(239, 68, 68, 0.12);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-        }
-        .rt-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .rt-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .rt-stat {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem 1rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: var(--transition-smooth);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        .rt-stat:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        }
-        .rt-stat .rt-icon {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            font-size: 1rem;
-            opacity: 0.35;
-            color: var(--primary);
-        }
-        .rt-stat .rt-num {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: var(--text-main);
-            font-variant-numeric: tabular-nums;
-        }
-        .rt-stat .rt-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-        .rt-stat .rt-badges-row {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-top: 0.15rem;
-        }
-        .rt-delta {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #34d399;
-            background: rgba(52, 211, 153, 0.12);
-            padding: 0.05rem 0.5rem;
-            border-radius: 40px;
-        }
-        .rt-delta.neg {
-            color: #f87171;
-            background: rgba(248, 113, 113, 0.12);
-        }
-        .rt-today {
-            font-size: 0.6rem;
-            color: var(--primary);
-            background: rgba(215, 0, 96, 0.12);
-            padding: 0.05rem 0.5rem;
-            border-radius: 40px;
-            border: 1px solid rgba(215, 0, 96, 0.25);
-        }
-        .rt-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .rt-col {
-            flex: 1;
-            min-width: 240px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem 1rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .rt-col h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .rt-col h3 i {
-            color: var(--primary);
-        }
-        .rt-feed-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            flex-wrap: wrap;
-        }
-        .rt-feed-item:last-child {
-            border-bottom: 0;
-        }
-        .rt-feed-item .rt-ftitle {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-        .rt-feed-item .rt-fmeta {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-        }
-        .rt-feed-item .rt-fbadge {
-            background: rgba(167, 139, 250, 0.15);
-            color: var(--cls-links);
-            padding: 0.1rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: 600;
-        }
-        .rt-bar-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            padding: 0.2rem 0;
-        }
-        .rt-bar-track {
-            background: rgba(255, 255, 255, 0.08);
-            height: 5px;
-            border-radius: 20px;
-            margin-bottom: 0.6rem;
-            overflow: hidden;
-        }
-        .rt-bar-fill {
-            height: 5px;
-            border-radius: 20px;
-            width: 0%;
-            transition: width 0.4s ease, background 0.4s ease;
-        }
-        .rt-login-item {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.4rem 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.75rem;
-        }
-        .rt-login-item:last-child {
-            border-bottom: 0;
-        }
-        .rt-login-item .rt-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.65rem;
-            flex-shrink: 0;
-        }
-        .rt-login-item .rt-lname {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-        .rt-login-item .rt-ltime {
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            margin-left: auto;
-        }
-        .rt-schema-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem 1.3rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .rt-table-wrap {
-            overflow-x: auto;
-            margin-top: 0.6rem;
-        }
-        .rt-mini-table {
-            width: 100%;
-            font-size: 0.75rem;
-            border-collapse: collapse;
-        }
-        .rt-mini-table td {
-            padding: 0.5rem 0.4rem;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-        .rt-mini-table thead td {
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .rt-mini-table tr:last-child td {
-            border-bottom: 0;
-        }
-        .rt-mono {
-            font-family: monospace;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-        }
-        .rt-footnote {
-            margin-top: 0.8rem;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            padding-top: 0.8rem;
-            display: flex;
-            gap: 0.9rem;
-            flex-wrap: wrap;
-        }
-        @media (max-width: 768px) {
-            .rt-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-    </style>
+/* ---- stat cards ---- */
+.stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.9rem; margin-bottom:1.4rem; }
+.stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.1rem 1rem;
+    position:relative; display:flex; flex-direction:column; gap:0.2rem; transition:border-color 0.3s;
+}
+.stat-card:hover{ border-color:var(--border-strong); }
+.stat-card i{ position:absolute; right:1rem; top:1rem; font-size:0.9rem; opacity:0.3; color:var(--accent); }
+.stat-card .num{ font-family:var(--font-mono); font-size:1.7rem; font-weight:700; }
+.stat-card .label{ font-size:0.68rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.03em; }
+.stat-card .badges{ display:flex; gap:0.35rem; margin-top:0.2rem; }
+.badge-delta{ font-size:0.62rem; font-weight:700; padding:0.05rem 0.45rem; border-radius:6px; background:var(--success-dim); color:var(--success); font-family:var(--font-mono); }
+.badge-delta.neg{ background:var(--danger-dim); color:var(--danger); }
+.badge-today{ font-size:0.6rem; font-weight:600; padding:0.05rem 0.45rem; border-radius:6px; background:var(--accent-dim); color:var(--accent); font-family:var(--font-mono); }
+
+/* ---- feed + panels ---- */
+.panel-row{ display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
+.panel{ flex:1; min-width:260px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem 1.1rem; }
+.panel h3{ font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700; margin-bottom:0.8rem; display:flex; align-items:center; gap:0.4rem; }
+.panel h3 i{ color:var(--accent); }
+.feed-item{ display:flex; justify-content:space-between; gap:0.6rem; padding:0.55rem 0; border-bottom:1px solid var(--border); font-size:0.8rem; flex-wrap:wrap; }
+.feed-item:last-child{ border-bottom:0; }
+.feed-item .ftitle{ font-weight:600; }
+.feed-item .fmeta{ color:var(--text-faint); font-family:var(--font-mono); font-size:0.72rem; }
+.feed-item .fbadge{ font-size:0.6rem; font-weight:700; padding:0.05rem 0.4rem; border-radius:5px; background:var(--surface-2); color:var(--text-faint); align-self:center; }
+.latency-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.6rem; }
+.latency-num{ font-family:var(--font-mono); font-size:1.6rem; font-weight:700; }
+.latency-bar-track{ height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden; margin-bottom:1rem; }
+.latency-bar-fill{ height:100%; border-radius:99px; transition:width 0.6s var(--ease), background 0.4s; }
+.uptime-row{ display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono); }
+
+/* ---- schema table ---- */
+.schema-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem 1.1rem; margin-bottom:1rem; }
+.schema-table-wrap{ overflow-x:auto; }
+table.schema-table{ width:100%; border-collapse:collapse; font-size:0.8rem; }
+table.schema-table thead td{ font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); }
+table.schema-table tbody td{ padding:0.5rem 0.6rem; border-bottom:1px solid var(--border); }
+table.schema-table tbody tr:last-child td{ border-bottom:none; }
+.mono{ font-family:var(--font-mono); color:var(--accent-2); }
+.footnote-row{ display:flex; gap:1.2rem; flex-wrap:wrap; font-size:0.7rem; color:var(--text-faint); margin-top:0.8rem; }
+
+/* ---- quick links ---- */
+.tabs-row{ display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.2rem; }
+.tab-btn{
+    background:var(--surface); border:1px solid var(--border); color:var(--text-muted); padding:0.45rem 0.9rem;
+    border-radius:99px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.25s var(--ease);
+}
+.tab-btn:hover{ color:var(--text); border-color:var(--border-strong); }
+.tab-btn.active{ background:var(--accent); border-color:var(--accent); color:#0a0d13; }
+.links-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.7rem; }
+.link-item{
+    display:flex; align-items:center; justify-content:space-between; gap:0.6rem; background:var(--surface);
+    border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; text-decoration:none; color:var(--text);
+    font-size:0.85rem; font-weight:500; transition:border-color 0.25s, transform 0.25s;
+}
+.link-item:hover{ border-color:var(--border-strong); transform:translateX(2px); }
+.link-item .link-icon{ color:var(--accent-2); width:18px; text-align:center; margin-right:0.6rem; }
+.link-item .arrow-icon{ opacity:0; transform:translateX(-6px); transition:all 0.25s var(--ease); color:var(--text-faint); font-size:0.75rem; }
+.link-item:hover .arrow-icon{ opacity:1; transform:translateX(0); }
+.link-item.hidden{ display:none; }
+
+footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-size:0.78rem; text-align:center; }
+
+/* ---- more pages (grouped) ---- */
+.page-group{ margin-bottom:1.6rem; }
+.page-group-title{
+    font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-faint);
+    font-weight:700; margin-bottom:0.6rem; display:flex; align-items:center; gap:0.5rem;
+}
+.page-group-title i{ color:var(--accent-2); }
+.page-item{ cursor:pointer; }
+
+/* ---- inline module frame ---- */
+.module-frame-wrap{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; height:calc(100vh - 260px); min-height:480px; position:relative;
+}
+.module-frame{ width:100%; height:100%; border:0; background:#0d1119; }
+.module-frame-loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    gap:0.6rem; color:var(--text-muted); font-size:0.85rem; background:var(--surface);
+    transition:opacity 0.3s var(--ease); pointer-events:none;
+}
+.module-frame-loading.hidden{ opacity:0; }
+.module-frame-loading i{ animation:spin 0.9s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.link-open-new{
+    text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;
+}
+
+@media (max-width:900px){
+    .sidebar{ transform:translateX(-100%); }
+    .sidebar.active{ transform:translateX(0); }
+    .main{ margin-left:0; }
+    .menu-toggle{ display:flex; }
+    .topbar{ padding-left:4.2rem; }
+    .quote-strip{ margin-left:1.2rem; margin-right:1.2rem; }
+    .view{ padding-left:1.2rem; padding-right:1.2rem; }
+    footer.app-footer{ padding-left:1.2rem; padding-right:1.2rem; }
+}
+</style>
 </head>
 <body>
 
-    <!-- ===== ACCESS DENIED OVERLAY ===== -->
-    <div class="access-denied-overlay" id="accessDeniedOverlay">
-        <div class="access-denied-card">
-            <span class="icon-big">⛔</span>
-            <h2>Access Denied</h2>
-            <p>You do not have permission to access the Admin Dashboard.</p>
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Only active <strong>Admin</strong> users can access this page.</p>
-            <a href="/index.html" class="btn-redirect" id="redirectBtn">🏠 Go to Homepage</a>
-            <div class="countdown-timer">Redirecting in <span id="countdownNum">5</span> seconds...</div>
-        </div>
+<!-- ===== ACCESS DENIED OVERLAY ===== -->
+<div class="access-denied-overlay" id="accessDeniedOverlay">
+    <div class="access-denied-card">
+        <span class="icon-big"><i class="fa-solid fa-triangle-exclamation"></i></span>
+        <h2>Access denied</h2>
+        <p>Only active administrator accounts can open this console.</p>
+        <a href="/index.html" class="btn-redirect">Go to homepage</a>
+        <div class="countdown-timer">Redirecting in <span id="countdownNum">5</span>s</div>
     </div>
+</div>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar" id="navbar" aria-label="Main Navigation">
-        <a href="/index.html" class="nav-logo">
-            <i class="fa-solid fa-layer-group" aria-hidden="true"></i> CentralHub Admin
-        </a>
-        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="nav-container" id="nav-container">
-            <ul class="nav-links">
-                <li><a href="/dashboard.html" class="active">Blog Dashboard</a></li>
-            </ul>
-            <button class="btn-logout" id="logout-btn">
-                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Log Out
-            </button>
-        </div>
-    </nav>
+<button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">
+    <i class="fa-solid fa-bars"></i>
+</button>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
 
-    <!-- ===== HERO with centered CLOCK ===== -->
-    <header class="hero">
-        <h1>Admin Control Hub</h1>
-        <p>Manage members, projects, meeting minutes, and inquiries from one central dashboard.</p>
-        <div class="hero-clock" id="liveClock">
-            <span id="clockTime">--:--:--</span>
-            <span class="date" id="clockDate">---- --, ----</span>
-        </div>
-    </header>
-
-    <!-- ===== DAILY QUOTE BANNER ===== -->
-    <section class="daily-quote-banner">
-        <div class="daily-quote-card" id="dailyQuoteCard">
-            <div class="day-badge" id="quoteDayBadge">
-                <i class="fa-solid fa-calendar-day"></i> Day <span id="quoteDayNumber">--</span>
-            </div>
-            <div class="quote-text">
-                <i class="fa-solid fa-quote-left"></i>
-                <span id="quoteText">Loading daily wisdom...</span>
-                <i class="fa-solid fa-quote-right"></i>
-            </div>
-            <div class="quote-author" id="quoteAuthor">
-                <i class="fa-solid fa-pen-fancy"></i> <span id="quoteAuthorName">—</span>
-            </div>
-            <span class="quote-status" id="quoteStatus">⏳ Loading</span>
-        </div>
-    </section>
-
-    <!-- ===== NAVIGATION CARDS ===== -->
-    <section class="nav-cards-section">
-        <div class="nav-cards-grid">
-            <!-- Members Management -->
-            <a href="adminmembers.html" class="nav-card card-members">
-                <div class="icon-wrapper"><i class="fa-solid fa-users"></i></div>
-                <h3>Members Management</h3>
-                <p>Manage active members and registration requests</p>
-                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
-            </a>
-
-            <!-- Projects Management -->
-            <a href="adminupcomingproject.html" class="nav-card card-projects">
-                <div class="icon-wrapper"><i class="fa-solid fa-project-diagram"></i></div>
-                <h3>Projects Management</h3>
-                <p>Manage upcoming projects and applications</p>
-                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
-            </a>
-
-            <!-- Minutes Management -->
-            <a href="adminminutes.html" class="nav-card card-minutes">
-                <div class="icon-wrapper"><i class="fa-solid fa-file-lines"></i></div>
-                <h3>Minutes Management</h3>
-                <p>View, edit, and print meeting minutes</p>
-                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
-            </a>
-
-            <!-- Inquiries Management -->
-            <a href="admininquiries.html" class="nav-card card-inquiries">
-                <div class="icon-wrapper"><i class="fa-solid fa-envelope"></i></div>
-                <h3>Inquiries Management</h3>
-                <p>Manage contact form inquiries</p>
-                <span class="arrow-icon"><i class="fa-solid fa-arrow-right"></i></span>
-            </a>
-        </div>
-    </section>
-
-    <!-- ===== LIVE REALTIME OVERVIEW ===== -->
-    <section class="realtime-section">
-        <div class="panel-header">
-            <h2><i class="fa-solid fa-tower-broadcast"></i> Live System Overview</h2>
-            <div class="panel-actions">
-                <span class="rt-meta"><i class="fa-solid fa-database"></i> <span id="rtTableCount">0</span> tables · <span id="rtRowCount">0</span> rows</span>
-                <span class="rt-badge-live" id="rtLiveBadge"><i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> LIVE · Supabase</span>
+<div class="app-shell">
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <span class="mark"><i class="fa-solid fa-layer-group"></i></span>
+            <div>
+                <div class="name">Central Hub</div>
+                <div class="sub">Admin Console</div>
             </div>
         </div>
 
-        <!-- STAT CARDS -->
-        <div class="rt-grid" id="rtStatGrid"></div>
+        <div class="status-strip" id="statusStrip">
+            <span class="status-dot"></span>
+            <span id="statusStripText">Connecting…</span>
+        </div>
 
-        <!-- FEED + HEALTH + LOGINS -->
-        <div class="rt-row">
-            <div class="rt-col" style="flex:1.3;">
-                <h3><i class="fa-solid fa-bolt"></i> Activity Feed</h3>
-                <div id="rtFeedContainer">
-                    <div class="rt-feed-item"><span class="rt-ftitle">⏳ waiting for events…</span></div>
+        <nav class="sidebar-nav" aria-label="Console sections">
+            <div class="nav-group-label">Console</div>
+            <button class="nav-item active" data-view="overview"><i class="fa-solid fa-gauge-high"></i> Overview</button>
+            <button class="nav-item" data-view="live"><i class="fa-solid fa-tower-broadcast"></i> Live data</button>
+            <button class="nav-item" data-view="links"><i class="fa-solid fa-link"></i> Quick launch</button>
+            <button class="nav-item" data-view="more"><i class="fa-solid fa-layer-group"></i> More pages</button>
+
+            <div class="nav-group-label">Modules</div>
+            <button class="nav-item" data-module="adminmembers.html"><i class="fa-solid fa-users"></i> Members</button>
+            <button class="nav-item" data-module="adminupcomingproject.html"><i class="fa-solid fa-diagram-project"></i> Projects</button>
+            <button class="nav-item" data-module="adminminutes.html"><i class="fa-solid fa-file-lines"></i> Minutes</button>
+            <button class="nav-item" data-module="admininquiries.html"><i class="fa-solid fa-envelope"></i> Inquiries</button>
+
+            <div class="nav-group-label">Account</div>
+            <button class="nav-item" data-module="/dashboard.html"><i class="fa-solid fa-newspaper"></i> Blog dashboard</button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1 id="pageTitle">Overview</h1>
+                <p id="pageSubtitle">Members, projects, minutes and inquiries — all in one place.</p>
+            </div>
+            <div class="topbar-clock" id="liveClock">
+                <span id="clockTime">--:--:--</span>
+                <span class="date" id="clockDate">---- --, ----</span>
+            </div>
+        </div>
+
+        <div class="quote-strip">
+            <span class="day-badge">DAY <span id="quoteDayNumber">--</span></span>
+            <span class="quote-body" id="quoteText">Loading today's note…</span>
+            <span class="quote-author" id="quoteAuthorName">—</span>
+            <span class="quote-status" id="quoteStatus">Loading</span>
+        </div>
+
+        <!-- ===== VIEW: OVERVIEW ===== -->
+        <section class="view active" id="view-overview">
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-grid-2"></i> Modules</h2>
+            </div>
+            <div class="module-grid">
+                <div class="module-card c-members" data-module="adminmembers.html" role="button" tabindex="0">
+                    <span class="icon-wrap"><i class="fa-solid fa-users"></i></span>
+                    <h3>Members</h3>
+                    <p>Active members and registration requests</p>
+                    <span class="go">Open <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+                <div class="module-card c-projects" data-module="adminupcomingproject.html" role="button" tabindex="0">
+                    <span class="icon-wrap"><i class="fa-solid fa-diagram-project"></i></span>
+                    <h3>Projects</h3>
+                    <p>Upcoming projects and applications</p>
+                    <span class="go">Open <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+                <div class="module-card c-minutes" data-module="adminminutes.html" role="button" tabindex="0">
+                    <span class="icon-wrap"><i class="fa-solid fa-file-lines"></i></span>
+                    <h3>Minutes</h3>
+                    <p>View, edit and print meeting minutes</p>
+                    <span class="go">Open <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+                <div class="module-card c-inquiries" data-module="admininquiries.html" role="button" tabindex="0">
+                    <span class="icon-wrap"><i class="fa-solid fa-envelope"></i></span>
+                    <h3>Inquiries</h3>
+                    <p>Contact form messages</p>
+                    <span class="go">Open <i class="fa-solid fa-arrow-right"></i></span>
                 </div>
             </div>
-            <div class="rt-col" style="flex:0.9;">
-                <h3><i class="fa-solid fa-chart-simple"></i> System Health</h3>
-                <div id="rtHealthContainer">
-                    <div class="rt-bar-label"><span>CPU</span><span id="rtCpuVal">--</span></div>
-                    <div class="rt-bar-track"><div id="rtCpuBar" class="rt-bar-fill" style="background:#34d399;"></div></div>
-                    <div class="rt-bar-label"><span>Memory</span><span id="rtMemVal">--</span></div>
-                    <div class="rt-bar-track"><div id="rtMemBar" class="rt-bar-fill" style="background:#a78bfa;"></div></div>
-                    <div class="rt-bar-label"><span>DB latency</span><span id="rtDbLatVal">--</span></div>
-                    <div class="rt-bar-track"><div id="rtDbLatBar" class="rt-bar-fill" style="background:#fbbf24;"></div></div>
-                    <div style="margin-top:0.7rem;font-size:0.7rem;color:var(--text-muted);display:flex;justify-content:space-between;"><span>Uptime</span><span id="rtUptimeDisplay">00:00:00</span></div>
+
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-chart-simple"></i> Snapshot</h2>
+                <span class="meta"><span id="tableCountSm">0</span> tables · <span id="rowCountSm">0</span> rows</span>
+            </div>
+            <div class="stat-grid" id="statGrid"></div>
+        </section>
+
+        <!-- ===== VIEW: LIVE DATA ===== -->
+        <section class="view" id="view-live">
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-tower-broadcast"></i> Live system data</h2>
+                <span class="meta"><span id="tableCountLg">0</span> tables · <span id="rowCountLg">0</span> rows · refreshes every 18s</span>
+            </div>
+
+            <div class="panel-row">
+                <div class="panel" style="flex:1.3;">
+                    <h3><i class="fa-solid fa-bolt"></i> Activity feed</h3>
+                    <div id="feedContainer">
+                        <div class="feed-item"><span class="ftitle">Waiting for events…</span></div>
+                    </div>
+                </div>
+                <div class="panel" style="flex:0.9;">
+                    <h3><i class="fa-solid fa-satellite-dish"></i> Connection</h3>
+                    <div class="latency-row">
+                        <span class="latency-num" id="latencyVal">-- ms</span>
+                        <span id="latencyLabel" style="font-size:0.7rem;color:var(--text-muted);">query latency</span>
+                    </div>
+                    <div class="latency-bar-track"><div class="latency-bar-fill" id="latencyBar" style="width:0%;background:var(--success);"></div></div>
+                    <div class="uptime-row"><span>Console uptime</span><span id="uptimeDisplay">00:00:00</span></div>
                 </div>
             </div>
-            <div class="rt-col" style="flex:1;">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Logins</h3>
-                <div id="rtLoginContainer"></div>
+
+            <div class="schema-card">
+                <div class="section-heading" style="margin-bottom:0.8rem;">
+                    <h3 style="font-family:var(--font-display);font-size:0.95rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;"><i class="fa-solid fa-table" style="color:var(--accent);"></i> Schema snapshot</h3>
+                    <span class="meta">updated <span id="schemaTime">now</span></span>
+                </div>
+                <div class="schema-table-wrap">
+                    <table class="schema-table">
+                        <thead><tr><td>Table</td><td>Rows</td><td>Columns</td></tr></thead>
+                        <tbody id="schemaBody"></tbody>
+                    </table>
+                </div>
+                <div class="footnote-row">
+                    <span><i class="fa-solid fa-rotate-right"></i> auto-refresh every 18s</span>
+                    <span><i class="fa-solid fa-bolt" style="color:var(--success);"></i> realtime subscriptions active</span>
+                    <span><i class="fa-solid fa-circle-check" style="color:var(--accent);"></i> all reads via Supabase</span>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- SCHEMA SNAPSHOT -->
-        <div class="rt-schema-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.3rem 0.8rem;">
-                <h3 style="margin-bottom:0;"><i class="fa-solid fa-table"></i> Schema Snapshot</h3>
-                <span style="font-size:0.7rem;color:var(--text-muted);">last updated <span id="rtSchemaTime">now</span></span>
+        <!-- ===== VIEW: QUICK LAUNCH ===== -->
+        <section class="view" id="view-links">
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-link"></i> Quick launch</h2>
             </div>
-            <div class="rt-table-wrap">
-                <table class="rt-mini-table" id="rtSchemaTable">
-                    <thead><tr><td>Table</td><td>Rows</td><td>Columns</td></tr></thead>
-                    <tbody id="rtSchemaBody"></tbody>
-                </table>
+            <div class="tabs-row" id="tabsRow">
+                <button class="tab-btn active" data-filter="all">All</button>
+                <button class="tab-btn" data-filter="learning">Learning</button>
+                <button class="tab-btn" data-filter="typing">Typing tools</button>
+                <button class="tab-btn" data-filter="finance">Banks &amp; finance</button>
+                <button class="tab-btn" data-filter="official">Official logs</button>
+                <button class="tab-btn" data-filter="pan">PAN portals</button>
+                <button class="tab-btn" data-filter="news">News</button>
+                <button class="tab-btn" data-filter="social">Socials</button>
+                <button class="tab-btn" data-filter="google">Google suite</button>
+                <button class="tab-btn" data-filter="emails">Emails</button>
+                <button class="tab-btn" data-filter="share">Share market</button>
             </div>
-            <div class="rt-footnote">
-                <span><i class="fa-solid fa-rotate-right"></i> auto-refresh every 18s</span>
-                <span><i class="fa-solid fa-bolt" style="color:#34d399;"></i> realtime subscriptions active</span>
-                <span><i class="fa-solid fa-circle-check" style="color:var(--primary);"></i> all queries via Supabase</span>
+            <div class="links-grid" id="linksGrid">
+                <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-laravel link-icon"></i> Udemy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.coursera.org/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-graduation-cap link-icon"></i> Coursera</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.linkedin.com/learning/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-linkedin link-icon"></i> LinkedIn Learning</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.canvas.net/dashboard/in-progress" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-chalkboard-user link-icon"></i> Canvas</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://cursa.app/en" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-mobile-screen-button link-icon"></i> Cursa</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://academyeurope.org/all-courses" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-school link-icon"></i> Academy Europe</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.bbc.co.uk/learningenglish/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-language link-icon"></i> BBC English</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.typerush.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-keyboard link-icon"></i> TypeRush</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.edclub.com/sportal/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gamepad link-icon"></i> EdClub Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.speedtypingonline.com/typing-test" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-stopwatch link-icon"></i> Speed Typing Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.typing.com/student/lessons" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-medal link-icon"></i> Typing.com Lessons</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.keybr.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gauge-high link-icon"></i> Keybr Practice</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://typing.academy/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-award link-icon"></i> Typing Academy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://esewa.com.np/#/home" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-wallet link-icon" style="color:#60bb46;"></i> eSewa Wallet</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://globalonline.gibl.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-building-columns link-icon"></i> Global IME Smart</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://web.khalti.com/?csrt=818048846804071483#/" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-money-bill-transfer link-icon" style="color:#5c2d91;"></i> Khalti Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://emis.nepp.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-passport link-icon"></i> Rojgar EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://emis.cehrd.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-book-bookmark link-icon"></i> Education EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://phmis.molcpa.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-house-chimney-medical link-icon"></i> PHIMS Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://newpams.fcgo.gov.np/#/Login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-gears link-icon"></i> NEWPAMS Login</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://officerportal.ird.gov.np:8443/main/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-user-tie link-icon"></i> IRD Officer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://taxpayerportal.ird.gov.np/taxpayer/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-id-card-clip link-icon"></i> Taxpayer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://ird.gov.np/pan-search/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-magnifying-glass link-icon"></i> PAN Search Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://ird.gov.np/faq/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-circle-question link-icon"></i> PAN FAQs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="http://ereturns.ird.gov.np:8289/incometax/d01/d01ReturnEntry" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-file-invoice-dollar link-icon"></i> D01 Return Entry</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="http://ereturns.ird.gov.np:8289/general/taxpayerLogin" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-stamp link-icon"></i> Tax Clearance</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.hamropatro.com/newsStory" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-newspaper link-icon"></i> Hamro Patro News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://epaper.ekantipur.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-paper-plane link-icon"></i> eKantipur ePaper</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.techpana.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-microchip link-icon"></i> TechPana</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-facebook-f link-icon"></i> Facebook</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-instagram link-icon"></i> Instagram</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://x.com/home" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-x-twitter link-icon"></i> Twitter / X</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-linkedin-in link-icon"></i> LinkedIn</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://web.whatsapp.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-whatsapp link-icon"></i> WhatsApp Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-youtube link-icon"></i> YouTube</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://docs.google.com/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-word link-icon" style="color:#4285F4;"></i> Google Docs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://workspace.google.com/products/slides/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-powerpoint link-icon" style="color:#FBBC05;"></i> Google Slides</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://docs.google.com/spreadsheets/u/0/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-excel link-icon" style="color:#34A853;"></i> Google Sheets</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-envelope link-icon"></i> Gmail Workspace</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://mail.nepal.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-shield-halved link-icon"></i> Gov. NP Mail</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://sunconnect.sunlife.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-heart-pulse link-icon"></i> SunConnect Portfolio</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://auth.naasasecurities.com.np/realms/naasa/protocol/openid-connect/auth?client_id=kyc&scope=openid%20profile%20email%20roles&response_type=code&redirect_uri=https%3A%2F%2Fwww.naasasecurities.com.np%2Fapi%2Fauth%2Fcallback%2Fkeycloak&state=iQ0HmL3jhoEckqgKC_S20DZADWLrov95UiFv4x89LoA" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-user-shield link-icon"></i> NASA Securities</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://tms59.nepsetms.com.np/login" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-arrow-trend-up link-icon"></i> NEPSE TMS 59</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://merolagani.com/newsletter.aspx" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-mail-bulk link-icon"></i> MeroLagani News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.sharesansar.com/today-share-price" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-hand-holding-dollar link-icon"></i> Today's Share Price</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.nepsealpha.com/candlestick" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-candlestick link-icon"></i> NEPSE Candlesticks</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.nepsealpha.com/trading-signals/tech" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-wave-square link-icon"></i> Trading Signals</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.nepsealpha.com/floorsheet-analysis#broker_wise_top_buyer" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-pie link-icon"></i> Top Buyer Brokerwise</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.sebon.gov.np/right-share-approved" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-check-double link-icon"></i> SEBON Approved</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.sebon.gov.np/right-share-pipeline" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-ellipsis-h link-icon"></i> Right Share Pipeline</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://www.nepalstock.com/floor-sheet" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-table-list link-icon"></i> Floorsheet Logs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
+                <a href="https://chukul.com/nepse-charts" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-line link-icon"></i> Chukul NEPSE Charts</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ===== USEFUL LINKS ===== -->
-    <section class="links-section">
-        <div class="links-header">
-            <i class="fa-solid fa-link" aria-hidden="true"></i>
-            <h2>Useful Resources</h2>
-        </div>
-        <div class="links-tabs-container">
-            <button class="tab-btn active" data-filter="all">All Resources</button>
-            <button class="tab-btn" data-filter="learning">Learning</button>
-            <button class="tab-btn" data-filter="typing">Typing Tools</button>
-            <button class="tab-btn" data-filter="finance">Banks &amp; Finance</button>
-            <button class="tab-btn" data-filter="official">Official Logs</button>
-            <button class="tab-btn" data-filter="pan">PAN Portals</button>
-            <button class="tab-btn" data-filter="news">News</button>
-            <button class="tab-btn" data-filter="social">Socials</button>
-            <button class="tab-btn" data-filter="google">Google Suite</button>
-            <button class="tab-btn" data-filter="emails">Emails</button>
-            <button class="tab-btn" data-filter="share">Share Market</button>
-        </div>
-        <div class="links-grid" id="links-grid">
-            <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-laravel link-icon"></i> Udemy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.coursera.org/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-graduation-cap link-icon"></i> Coursera</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.linkedin.com/learning/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-linkedin link-icon"></i> LinkedIn Learning</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.canvas.net/dashboard/in-progress" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-chalkboard-user link-icon"></i> Canvas</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://cursa.app/en" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-mobile-screen-button link-icon"></i> Cursa</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://academyeurope.org/all-courses" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-school link-icon"></i> Academy Europe</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.bbc.co.uk/learningenglish/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-language link-icon"></i> BBC English</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.typerush.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-keyboard link-icon"></i> TypeRush</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.edclub.com/sportal/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gamepad link-icon"></i> EdClub Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.speedtypingonline.com/typing-test" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-stopwatch link-icon"></i> Speed Typing Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.typing.com/student/lessons" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-medal link-icon"></i> Typing.com Lessons</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.keybr.com/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-gauge-high link-icon"></i> Keybr Practice</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://typing.academy/" target="_blank" rel="noopener" class="link-item" data-category="typing"><span><i class="fa-solid fa-award link-icon"></i> Typing Academy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://esewa.com.np/#/home" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-wallet link-icon" style="color:#60bb46;"></i> eSewa Wallet</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://globalonline.gibl.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-building-columns link-icon"></i> Global IME Smart</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://web.khalti.com/?csrt=818048846804071483#/" target="_blank" rel="noopener" class="link-item" data-category="finance"><span><i class="fa-solid fa-money-bill-transfer link-icon" style="color:#5c2d91;"></i> Khalti Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://emis.nepp.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-passport link-icon"></i> Rojgar EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://emis.cehrd.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-book-bookmark link-icon"></i> Education EMIS</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://phmis.molcpa.gov.np/login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-house-chimney-medical link-icon"></i> PHIMS Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://newpams.fcgo.gov.np/#/Login" target="_blank" rel="noopener" class="link-item" data-category="official"><span><i class="fa-solid fa-gears link-icon"></i> NEWPAMS Login</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://officerportal.ird.gov.np:8443/main/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-user-tie link-icon"></i> IRD Officer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://taxpayerportal.ird.gov.np/taxpayer/app.html" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-id-card-clip link-icon"></i> Taxpayer Portal</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://ird.gov.np/pan-search/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-magnifying-glass link-icon"></i> PAN Search Online</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://ird.gov.np/faq/" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-circle-question link-icon"></i> PAN FAQs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="http://ereturns.ird.gov.np:8289/incometax/d01/d01ReturnEntry" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-file-invoice-dollar link-icon"></i> D01 Return Entry</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="http://ereturns.ird.gov.np:8289/general/taxpayerLogin" target="_blank" rel="noopener" class="link-item" data-category="pan"><span><i class="fa-solid fa-stamp link-icon"></i> Tax Clearance</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.hamropatro.com/newsStory" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-newspaper link-icon"></i> Hamro Patro News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://epaper.ekantipur.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-paper-plane link-icon"></i> eKantipur ePaper</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.techpana.com/" target="_blank" rel="noopener" class="link-item" data-category="news"><span><i class="fa-solid fa-microchip link-icon"></i> TechPana</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-facebook-f link-icon"></i> Facebook</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-instagram link-icon"></i> Instagram</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://x.com/home" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-x-twitter link-icon"></i> Twitter / X</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-linkedin-in link-icon"></i> LinkedIn</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://web.whatsapp.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-whatsapp link-icon"></i> WhatsApp Web</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="link-item" data-category="social"><span><i class="fa-brands fa-youtube link-icon"></i> YouTube</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://docs.google.com/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-word link-icon" style="color:#4285F4;"></i> Google Docs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://workspace.google.com/products/slides/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-powerpoint link-icon" style="color:#FBBC05;"></i> Google Slides</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://docs.google.com/spreadsheets/u/0/" target="_blank" rel="noopener" class="link-item" data-category="google"><span><i class="fa-solid fa-file-excel link-icon" style="color:#34A853;"></i> Google Sheets</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-envelope link-icon"></i> Gmail Workspace</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://mail.nepal.gov.np/" target="_blank" rel="noopener" class="link-item" data-category="emails"><span><i class="fa-solid fa-shield-halved link-icon"></i> Gov. NP Mail</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://sunconnect.sunlife.com.np/dashboard" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-heart-pulse link-icon"></i> SunConnect Portfolio</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://auth.naasasecurities.com.np/realms/naasa/protocol/openid-connect/auth?client_id=kyc&scope=openid%20profile%20email%20roles&response_type=code&redirect_uri=https%3A%2F%2Fwww.naasasecurities.com.np%2Fapi%2Fauth%2Fcallback%2Fkeycloak&state=iQ0HmL3jhoEckqgKC_S20DZADWLrov95UiFv4x89LoA" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-user-shield link-icon"></i> NASA Securities</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://tms59.nepsetms.com.np/login" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-arrow-trend-up link-icon"></i> NEPSE TMS 59</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://merolagani.com/newsletter.aspx" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-mail-bulk link-icon"></i> MeroLagani News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.sharesansar.com/today-share-price" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-hand-holding-dollar link-icon"></i> Today's Share Price</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.nepsealpha.com/candlestick" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-candlestick link-icon"></i> NEPSE Candlesticks</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.nepsealpha.com/trading-signals/tech" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-wave-square link-icon"></i> Trading Signals</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.nepsealpha.com/floorsheet-analysis#broker_wise_top_buyer" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-pie link-icon"></i> Top Buyer Brokerwise</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.sebon.gov.np/right-share-approved" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-check-double link-icon"></i> SEBON Approved</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.sebon.gov.np/right-share-pipeline" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-ellipsis-h link-icon"></i> Right Share Pipeline</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://www.nepalstock.com/floor-sheet" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-table-list link-icon"></i> Floorsheet Logs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-            <a href="https://chukul.com/nepse-charts" target="_blank" rel="noopener" class="link-item" data-category="share"><span><i class="fa-solid fa-chart-line link-icon"></i> Chukul NEPSE Charts</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
-        </div>
-    </section>
+        <!-- ===== VIEW: MORE PAGES ===== -->
+        <section class="view" id="view-more">
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-layer-group"></i> More pages</h2>
+                <span class="meta">Everything else on this site, opened right here.</span>
+            </div>
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <p>&copy; 2026 Management Dashboard. Built for optimization and speed.</p>
-    </footer>
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-globe"></i> Site</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-house link-icon"></i> Portfolio home</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/blog.html" role="button" tabindex="0"><span><i class="fa-solid fa-newspaper link-icon"></i> Blog</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/git/index.html" role="button" tabindex="0"><span><i class="fa-brands fa-git-alt link-icon"></i> GitCheat sheet</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
 
-    <!-- ============================================================ -->
-    <!-- ===== COMPLETE JAVASCRIPT WITH ACTIVE ADMIN CHECK ===== -->
-    <!-- ============================================================ -->
-    <script>
-        (() => {
-            "use strict";
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-handshake-angle"></i> Rotaract Club</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/r/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-gauge link-icon"></i> Club dashboard</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/board.html" role="button" tabindex="0"><span><i class="fa-solid fa-user-tie link-icon"></i> Board of directors</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/membership.html" role="button" tabindex="0"><span><i class="fa-solid fa-id-card link-icon"></i> Membership</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/activemembers.html" role="button" tabindex="0"><span><i class="fa-solid fa-users-line link-icon"></i> Active members</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/upcomming-projects.html" role="button" tabindex="0"><span><i class="fa-solid fa-calendar-check link-icon"></i> Upcoming projects</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/past-projects.html" role="button" tabindex="0"><span><i class="fa-solid fa-box-archive link-icon"></i> Past projects archive</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/project-verified-list.html" role="button" tabindex="0"><span><i class="fa-solid fa-circle-check link-icon"></i> Approved projects</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/strategic-planning.html" role="button" tabindex="0"><span><i class="fa-solid fa-chess link-icon"></i> Strategic planning</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/minutes.html" role="button" tabindex="0"><span><i class="fa-solid fa-file-pen link-icon"></i> Minutes builder</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/loginminutes.html" role="button" tabindex="0"><span><i class="fa-solid fa-right-to-bracket link-icon"></i> Minutes login</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/r/anthem.html" role="button" tabindex="0"><span><i class="fa-solid fa-music link-icon"></i> Anthem player</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
 
-            // ---- SUPABASE CLIENT ----
-            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-            const SUPABASE_KEY =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-laptop-code"></i> Galkot Tech</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/gt/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-graduation-cap link-icon"></i> Institute home</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/gt/gtregister.html" role="button" tabindex="0"><span><i class="fa-solid fa-pen-to-square link-icon"></i> Apply now</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/gt/courseverify.html" role="button" tabindex="0"><span><i class="fa-solid fa-certificate link-icon"></i> Course verify</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/gt/enrollmentverify.html" role="button" tabindex="0"><span><i class="fa-solid fa-clipboard-check link-icon"></i> Enrollment status</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/gt/stuadmin.html" role="button" tabindex="0"><span><i class="fa-solid fa-user-gear link-icon"></i> Course manager</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
 
-            // ============================================================
-            // ROLE-BASED ACCESS CONTROL WITH STATUS CHECK
-            // ============================================================
-            async function checkAdminAccess() {
-                try {
-                    // Get current session
-                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-landmark"></i> Revenue Office (Galkot)</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/g/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-building-columns link-icon"></i> Office home</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/g/pan.html" role="button" tabindex="0"><span><i class="fa-solid fa-id-card-clip link-icon"></i> PAN registration docs</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
 
-                    if (sessionError || !session) {
-                        window.location.href = '/index.html';
-                        return false;
-                    }
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-chart-line"></i> Nepal Share Portal</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/s/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-right-to-bracket link-icon"></i> Login</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/s/planningindex.html" role="button" tabindex="0"><span><i class="fa-solid fa-newspaper link-icon"></i> News</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
 
-                    // Get user's role AND status from user_roles table
-                    const { data: roleData, error: roleError } = await supabase
-                        .from('user_roles')
-                        .select('role, status')
-                        .eq('user_id', session.user.id)
-                        .maybeSingle();
+            <div class="page-group">
+                <h3 class="page-group-title"><i class="fa-solid fa-user"></i> Personal</h3>
+                <div class="links-grid">
+                    <div class="link-item page-item" data-module="/p/index.html" role="button" tabindex="0"><span><i class="fa-solid fa-award link-icon"></i> Certifications</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                    <div class="link-item page-item" data-module="/p/resume.html" role="button" tabindex="0"><span><i class="fa-solid fa-file-lines link-icon"></i> Resume</span><i class="fa-solid fa-chevron-right arrow-icon"></i></div>
+                </div>
+            </div>
+        </section>
 
-                    if (roleError) {
-                        console.error('Error fetching role:', roleError);
-                        showAccessDenied();
-                        return false;
-                    }
+        <!-- ===== VIEW: MODULE (loaded inline via iframe) ===== -->
+        <section class="view" id="view-module">
+            <div class="section-heading">
+                <h2><i id="moduleIcon" class="fa-solid fa-cube"></i> <span id="moduleTitle">Module</span></h2>
+                <a id="moduleNewTab" href="#" target="_blank" rel="noopener" class="tab-btn link-open-new">Open in new tab <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+            <div class="module-frame-wrap">
+                <div class="module-frame-loading" id="moduleFrameLoading"><i class="fa-solid fa-circle-notch"></i> Loading module…</div>
+                <iframe class="module-frame" id="moduleFrame" title="Module content"></iframe>
+            </div>
+        </section>
 
-                    // Check if user has admin role AND is active
-                    if (!roleData || roleData.role !== 'admin' || roleData.status !== 'active') {
-                        console.warn('Access denied: User is not active admin. Role:', roleData?.role, 'Status:', roleData?.status);
-                        showAccessDenied();
-                        return false;
-                    }
+        <footer class="app-footer">&copy; 2026 Central Hub Admin Console.</footer>
+    </div>
+</div>
 
-                    // User is active admin - proceed
-                    return true;
+<script>
+(() => {
+    "use strict";
 
-                } catch (err) {
-                    console.error('Auth check error:', err);
-                    showAccessDenied();
-                    return false;
-                }
+    // ============================================================
+    // SUPABASE — one shared client for the whole page
+    // (previously two separate clients were created for the same
+    //  project; a single instance is enough and avoids duplicate
+    //  realtime sockets)
+    // ============================================================
+    const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const $ = (id) => document.getElementById(id);
+    const escapeHtml = (str) => {
+        if (!str) return '';
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    };
+
+    // ============================================================
+    // ACCESS CONTROL — must pass before anything else runs
+    // ============================================================
+    async function checkAdminAccess() {
+        try {
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                window.location.href = '/index.html';
+                return false;
             }
+            const { data: roleData, error: roleError } = await supabase
+                .from('user_roles')
+                .select('role, status')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
 
-            function showAccessDenied() {
-                const overlay = document.getElementById('accessDeniedOverlay');
-                overlay.classList.add('active');
-
-                // Start countdown
-                let countdown = 5;
-                const countdownEl = document.getElementById('countdownNum');
-                const timer = setInterval(() => {
-                    countdown--;
-                    countdownEl.textContent = countdown;
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        window.location.href = '/index.html';
-                    }
-                }, 1000);
+            if (roleError || !roleData || roleData.role !== 'admin' || roleData.status !== 'active') {
+                showAccessDenied();
+                return false;
             }
+            return true;
+        } catch (err) {
+            console.error('Auth check error:', err);
+            showAccessDenied();
+            return false;
+        }
+    }
 
-            // ============================================================
-            // CROSS-TAB LOGOUT SYNC + INACTIVITY TIMEOUT (30 minutes)
-            // ============================================================
-            (function() {
-                "use strict";
-                supabase.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_OUT' || !session) {
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    }
-                });
-                const INACTIVITY_TIMEOUT = 1800 * 1000; // 30 minutes
-                let logoutTimer = null;
-                const performLogout = async () => {
-                    try {
-                        await supabase.auth.signOut();
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    } catch (err) {
-                        console.error('Auto-logout error:', err);
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    }
-                };
-                const resetTimer = () => {
-                    if (logoutTimer) clearTimeout(logoutTimer);
-                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-                };
-                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
-                activityEvents.forEach(event => {
-                    document.addEventListener(event, resetTimer, { passive: true });
-                });
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden) resetTimer();
-                });
-                resetTimer();
-                window.addEventListener('beforeunload', () => {
-                    if (logoutTimer) clearTimeout(logoutTimer);
-                });
-                window.resetInactivityTimer = resetTimer;
-            })();
-
-            const escapeHtml = (str) => {
-                if (!str) return '';
-                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
-                    "&quot;").replace(/'/g, "&#039;");
-            };
-
-            // ---- LIVE CLOCK ----
-            function updateClock() {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
-                const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short',
-                    day: 'numeric' });
-                document.getElementById('clockTime').textContent = timeStr;
-                document.getElementById('clockDate').textContent = dateStr;
+    function showAccessDenied() {
+        const overlay = $('accessDeniedOverlay');
+        overlay.classList.add('active');
+        let countdown = 5;
+        const countdownEl = $('countdownNum');
+        const timer = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = '/index.html';
             }
-            updateClock();
-            setInterval(updateClock, 1000);
+        }, 1000);
+    }
 
-            // ============================================================
-            // ===== DAILY QUOTE =====
-            // ============================================================
-            function getDayOfYear() {
-                const now = new Date();
-                const start = new Date(now.getFullYear(), 0, 0);
-                const diff = now - start;
-                return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
-            }
+    // Cross-tab logout sync + 30-minute inactivity timeout
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+            if (!window.location.pathname.includes('/index.html')) window.location.href = '/index.html';
+        }
+    });
+    (function () {
+        const INACTIVITY_TIMEOUT = 1800 * 1000;
+        let logoutTimer = null;
+        const performLogout = async () => {
+            try { await supabase.auth.signOut(); } catch (err) { console.error('Auto-logout error:', err); }
+            if (!window.location.pathname.includes('/index.html')) window.location.href = '/index.html';
+        };
+        const resetTimer = () => {
+            if (logoutTimer) clearTimeout(logoutTimer);
+            logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+        };
+        ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'].forEach(ev =>
+            document.addEventListener(ev, resetTimer, { passive: true }));
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) resetTimer(); });
+        resetTimer();
+        window.addEventListener('beforeunload', () => { if (logoutTimer) clearTimeout(logoutTimer); });
+    })();
 
-            async function loadDailyQuote() {
-                const day = getDayOfYear();
-                document.getElementById('quoteDayNumber').textContent = day;
+    // ============================================================
+    // SIDEBAR / VIEW NAVIGATION (SPA-style, no reloads for these
+    // three internal sections — the four Module links still
+    // navigate to their own pages, that part is real navigation)
+    // ============================================================
+    const VIEW_META = {
+        overview: { title: 'Overview', sub: "Members, projects, minutes and inquiries — all in one place." },
+        live: { title: 'Live data', sub: 'Realtime counts and activity straight from Supabase.' },
+        links: { title: 'Quick launch', sub: 'Shortcuts to the tools this club uses most.' },
+        more: { title: 'More pages', sub: 'Every other page on this site, opened right here.' }
+    };
+    function switchView(name) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const target = $('view-' + name);
+        if (!target) return;
+        target.classList.add('active');
+        const btn = document.querySelector(`.nav-item[data-view="${name}"]`);
+        if (btn) btn.classList.add('active');
+        const meta = VIEW_META[name];
+        if (meta) { $('pageTitle').textContent = meta.title; $('pageSubtitle').textContent = meta.sub; }
+        closeSidebarMobile();
+        if (name === 'live' && window.startLiveData) window.startLiveData();
+    }
+    document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
 
-                const quoteText = document.getElementById('quoteText');
-                const quoteAuthor = document.getElementById('quoteAuthorName');
-                const quoteStatus = document.getElementById('quoteStatus');
+    // Modules (Members / Projects / Minutes / Inquiries) open inline,
+    // inside Central Hub, via an iframe — not as a separate page.
+    const MODULE_META = {
+        'adminmembers.html': { title: 'Members', icon: 'fa-solid fa-users', sub: 'Active members and registration requests.' },
+        'adminupcomingproject.html': { title: 'Projects', icon: 'fa-solid fa-diagram-project', sub: 'Upcoming projects and applications.' },
+        'adminminutes.html': { title: 'Minutes', icon: 'fa-solid fa-file-lines', sub: 'View, edit and print meeting minutes.' },
+        'admininquiries.html': { title: 'Inquiries', icon: 'fa-solid fa-envelope', sub: 'Contact form messages.' },
+        '/dashboard.html': { title: 'Blog dashboard', icon: 'fa-solid fa-newspaper', sub: 'Write and manage blog posts.' },
+        '/index.html': { title: 'Portfolio home', icon: 'fa-solid fa-house', sub: 'Public portfolio homepage.' },
+        '/blog.html': { title: 'Blog', icon: 'fa-solid fa-newspaper', sub: 'Public blog listing.' },
+        '/git/index.html': { title: 'GitCheat sheet', icon: 'fa-brands fa-git-alt', sub: 'Interactive git cheat sheet.' },
+        '/r/index.html': { title: 'Club dashboard', icon: 'fa-solid fa-gauge', sub: 'Rotaract club dashboard.' },
+        '/r/board.html': { title: 'Board of directors', icon: 'fa-solid fa-user-tie', sub: 'Rotaract club board.' },
+        '/r/membership.html': { title: 'Membership', icon: 'fa-solid fa-id-card', sub: 'Rotaract club membership.' },
+        '/r/activemembers.html': { title: 'Active members', icon: 'fa-solid fa-users-line', sub: 'Rotaract active members.' },
+        '/r/upcomming-projects.html': { title: 'Upcoming projects', icon: 'fa-solid fa-calendar-check', sub: 'Rotaract upcoming projects.' },
+        '/r/past-projects.html': { title: 'Past projects archive', icon: 'fa-solid fa-box-archive', sub: 'Rotaract past projects.' },
+        '/r/project-verified-list.html': { title: 'Approved projects', icon: 'fa-solid fa-circle-check', sub: 'Rotaract approved project applications.' },
+        '/r/strategic-planning.html': { title: 'Strategic planning', icon: 'fa-solid fa-chess', sub: 'Rotaract strategic planning.' },
+        '/r/minutes.html': { title: 'Minutes builder', icon: 'fa-solid fa-file-pen', sub: 'Rotaract minutes builder.' },
+        '/r/loginminutes.html': { title: 'Minutes login', icon: 'fa-solid fa-right-to-bracket', sub: 'Rotaract minutes login.' },
+        '/r/anthem.html': { title: 'Anthem player', icon: 'fa-solid fa-music', sub: 'Anthem tab player.' },
+        '/gt/index.html': { title: 'Institute home', icon: 'fa-solid fa-graduation-cap', sub: 'Galkot Tech Computer Institute.' },
+        '/gt/gtregister.html': { title: 'Apply now', icon: 'fa-solid fa-pen-to-square', sub: 'Galkot Tech course application.' },
+        '/gt/courseverify.html': { title: 'Course verify', icon: 'fa-solid fa-certificate', sub: 'Galkot Tech course verification.' },
+        '/gt/enrollmentverify.html': { title: 'Enrollment status', icon: 'fa-solid fa-clipboard-check', sub: 'Galkot Tech enrollment status.' },
+        '/gt/stuadmin.html': { title: 'Course manager', icon: 'fa-solid fa-user-gear', sub: 'Galkot Tech course admin.' },
+        '/g/index.html': { title: 'Office home', icon: 'fa-solid fa-building-columns', sub: 'Inland Revenue Office, Galkot.' },
+        '/g/pan.html': { title: 'PAN registration docs', icon: 'fa-solid fa-id-card-clip', sub: 'PAN registration document list.' },
+        '/s/index.html': { title: 'Share portal login', icon: 'fa-solid fa-right-to-bracket', sub: 'Nepal Share Portal login.' },
+        '/s/planningindex.html': { title: 'Share portal news', icon: 'fa-solid fa-newspaper', sub: 'Nepal Share Portal news.' },
+        '/p/index.html': { title: 'Certifications', icon: 'fa-solid fa-award', sub: 'Professional certifications.' },
+        '/p/resume.html': { title: 'Resume', icon: 'fa-solid fa-file-lines', sub: 'Nabin Chalise — resume.' }
+    };
+    function openModule(file) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        $('view-module').classList.add('active');
+        const navBtn = document.querySelector(`.nav-item[data-module="${file}"]`);
+        if (navBtn) navBtn.classList.add('active');
 
-                try {
-                    const { data, error } = await supabase
-                        .from('spiritual_quotes')
-                        .select('*')
-                        .eq('day', day)
-                        .maybeSingle();
+        const meta = MODULE_META[file] || { title: file, icon: 'fa-solid fa-cube', sub: 'Loaded inside Central Hub.' };
+        $('pageTitle').textContent = meta.title;
+        $('pageSubtitle').textContent = meta.sub;
+        $('moduleTitle').textContent = meta.title;
+        $('moduleIcon').className = meta.icon;
+        $('moduleNewTab').href = file;
 
-                    if (error) throw error;
+        const frame = $('moduleFrame');
+        const loading = $('moduleFrameLoading');
+        if (frame.dataset.current !== file) {
+            loading.classList.remove('hidden');
+            frame.addEventListener('load', () => loading.classList.add('hidden'), { once: true });
+            frame.src = file;
+            frame.dataset.current = file;
+        }
+        closeSidebarMobile();
+    }
+    document.querySelectorAll('[data-module]').forEach(el => {
+        el.addEventListener('click', () => openModule(el.dataset.module));
+        if (el.getAttribute('role') === 'button') {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModule(el.dataset.module); }
+            });
+        }
+    });
 
-                    if (data) {
-                        quoteText.textContent = data.quote;
-                        quoteAuthor.textContent = data.author || 'Unknown';
-                        quoteStatus.textContent = '✅ Today\'s Quote';
-                        quoteStatus.className = 'quote-status found';
-                    } else {
-                        quoteText.textContent = 'No quote for today yet. Add one in the database.';
-                        quoteAuthor.textContent = '—';
-                        quoteStatus.textContent = '⚠️ No quote found';
-                        quoteStatus.className = 'quote-status not-found';
-                    }
-                } catch (err) {
-                    console.error('Error loading daily quote:', err);
-                    quoteText.textContent = 'Error loading quote. Please check connection.';
-                    quoteAuthor.textContent = '—';
-                    quoteStatus.textContent = '❌ Connection error';
-                    quoteStatus.className = 'quote-status error';
-                }
-            }
+    // Mobile sidebar toggle
+    const sidebar = $('sidebar');
+    const menuToggle = $('menuToggle');
+    const scrim = $('sidebarScrim');
+    function openSidebarMobile() {
+        sidebar.classList.add('active');
+        scrim.classList.add('active');
+        menuToggle.setAttribute('aria-expanded', 'true');
+    }
+    function closeSidebarMobile() {
+        sidebar.classList.remove('active');
+        scrim.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.contains('active') ? closeSidebarMobile() : openSidebarMobile();
+    });
+    scrim.addEventListener('click', closeSidebarMobile);
 
-            // ============================================================
-            // ===== MAIN INIT =====
-            // ============================================================
-            async function initDashboard() {
-                // Check admin access first (role + status)
-                const hasAccess = await checkAdminAccess();
-                if (!hasAccess) return;
+    // Logout
+    $('logoutBtn').addEventListener('click', async () => {
+        if (confirm('Log out of the console?')) {
+            await supabase.auth.signOut();
+            window.location.href = '/index.html';
+        }
+    });
 
-                // Load daily quote
-                await loadDailyQuote();
+    // ============================================================
+    // LIVE CLOCK
+    // ============================================================
+    function updateClock() {
+        const now = new Date();
+        $('clockTime').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+        $('clockDate').textContent = now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
 
-                // Initialize realtime overview
-                if (window.initRtOverview) {
-                    window.initRtOverview();
-                }
-
-                // Update navbar on scroll
-                const navbar = document.getElementById('navbar');
-                window.addEventListener('scroll', () => {
-                    navbar.classList.toggle('scrolled', window.scrollY > 50);
-                });
-
-                // Mobile menu toggle
-                const menuToggle = document.getElementById('menu-toggle');
-                const navContainer = document.getElementById('nav-container');
-                menuToggle.addEventListener('click', () => {
-                    navContainer.classList.toggle('active');
-                    const icon = menuToggle.querySelector('i');
-                    icon.className = navContainer.classList.contains('active') ? 'fa-solid fa-xmark' :
-                        'fa-solid fa-bars';
-                });
-                document.querySelectorAll('.nav-links a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        navContainer.classList.remove('active');
-                        menuToggle.querySelector('i').className = 'fa-solid fa-bars';
-                    });
-                });
-
-                // Tab filtering for links
-                const tabButtons = document.querySelectorAll('.tab-btn');
-                const linkItems = document.querySelectorAll('.link-item');
-                tabButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        tabButtons.forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                        const filter = button.getAttribute('data-filter');
-                        linkItems.forEach(item => {
-                            const category = item.getAttribute('data-category');
-                            item.classList.toggle('hidden', filter !== 'all' && category !== filter);
-                        });
-                    });
-                });
-
-                // Logout
-                document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await supabase.auth.signOut();
-                    window.location.href = '/index.html';
-                });
-            }
-
-            // Run on DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initDashboard);
+    // ============================================================
+    // DAILY QUOTE
+    // ============================================================
+    function getDayOfYear() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        return Math.floor((now - start) / 86400000) + 1;
+    }
+    async function loadDailyQuote() {
+        const day = getDayOfYear();
+        $('quoteDayNumber').textContent = day;
+        const textEl = $('quoteText'), authorEl = $('quoteAuthorName'), statusEl = $('quoteStatus');
+        try {
+            const { data, error } = await supabase.from('spiritual_quotes').select('*').eq('day', day).maybeSingle();
+            if (error) throw error;
+            if (data) {
+                textEl.textContent = data.quote;
+                authorEl.textContent = data.author ? `— ${data.author}` : '';
+                statusEl.textContent = "Today's note";
+                statusEl.className = 'quote-status found';
             } else {
-                initDashboard();
+                textEl.textContent = 'No note set for today yet.';
+                authorEl.textContent = '';
+                statusEl.textContent = 'Not set';
+                statusEl.className = 'quote-status not-found';
             }
-        })();
-    </script>
+        } catch (err) {
+            console.error('Error loading daily quote:', err);
+            textEl.textContent = 'Could not load today\'s note.';
+            authorEl.textContent = '';
+            statusEl.textContent = 'Connection error';
+            statusEl.className = 'quote-status error';
+        }
+    }
 
-    <!-- ============================================================ -->
-    <!-- ===== REALTIME OVERVIEW JAVASCRIPT ===== -->
-    <!-- ============================================================ -->
-    <script>
-        (() => {
-            "use strict";
+    // ============================================================
+    // LIVE DATA — stats, feed, schema, realtime subscriptions
+    // Bug fixes vs. the old page:
+    //   - table counts now fetch in parallel (Promise.all) instead
+    //     of one-by-one, so this loads in ~1 request's time instead
+    //     of ~20x that
+    //   - "today" boundary now uses the *next* day's midnight
+    //     instead of 23:59:59, so a row created in the last second
+    //     of the day is no longer silently excluded
+    //   - the old "System Health" (CPU/Memory) and "Recent Logins"
+    //     panels showed fabricated Math.random() numbers and a
+    //     hardcoded fake name list — removed rather than shipped
+    //     as if they were real telemetry; the connection panel
+    //     below only shows a number we actually measured
+    // ============================================================
+    const TABLE_SCHEMA = {
+        admin_users: ['id', 'user_id', 'created_at'],
+        app_settings: ['id', 'setting_key', 'setting_value', 'updated_at', 'updated_by'],
+        approved_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
+        blogs: ['id', 'title', 'slug', 'content', 'excerpt', 'featured_image', 'tags', 'status', 'views', 'created_at', 'updated_at', 'published_at'],
+        certifications: ['id', 'title', 'issuer', 'description', 'category', 'verify_url', 'issued_date', 'expiry_date', 'credential_id', 'created_at', 'updated_at'],
+        inquiries: ['id', 'full_name', 'email', 'message', 'created_at', 'status'],
+        meeting_minutes: ['id', 'data', 'created_at', 'user_id'],
+        member_registrations: ['id', 'timestamp', 'full_name', 'address', 'phone', 'blood_group', 'gender', 'email', 'birth_date', 'position', 'profession', 'profile_image', 'mentor', 'created_at', 'phone_number'],
+        members: ['id', 'name', 'address', 'rotary_id', 'phone', 'blood_group', 'gender', 'email', 'dob', 'designation', 'profession', 'photo_url', 'created_at', 'updated_at', 'birthday', 'position', 'photo', 'status', 'date_of_birth', 'mentor', 'phone_number', 'profile_image', 'timestamp'],
+        pages: ['id', 'page_path', 'page_directory', 'filename', 'title', 'content', 'meta_description', 'keywords', 'slug', 'is_published', 'created_at', 'updated_at'],
+        profiles: ['id', 'updated_at', 'full_name', 'rotaract_club', 'role'],
+        project_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
+        project_applications_view: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'application_status', 'application_date', 'project_description', 'project_date', 'project_location'],
+        rotaract_galkot_members: ['id', 'full_name', 'address', 'phone_number', 'blood_group', 'gender', 'email', 'date_of_birth', 'designation', 'profession', 'mentor', 'photo_url', 'created_at'],
+        spiritual_quotes: ['id', 'day', 'quote', 'author', 'category', 'created_at', 'updated_at'],
+        upcoming_projects: ['id', 'name', 'description', 'date', 'target_audience', 'location', 'status', 'created_at', 'updated_at']
+    };
+    const TABLE_NAMES = Object.keys(TABLE_SCHEMA);
+    const STAT_DEFS = [
+        { label: 'Members', icon: 'fa-users', table: 'members' },
+        { label: 'Registrations', icon: 'fa-user-plus', table: 'member_registrations' },
+        { label: 'Inquiries', icon: 'fa-envelope', table: 'inquiries' },
+        { label: 'Blogs', icon: 'fa-newspaper', table: 'blogs' },
+        { label: 'Upcoming projects', icon: 'fa-calendar-check', table: 'upcoming_projects' },
+        { label: 'Approved apps', icon: 'fa-check-circle', table: 'approved_applications' },
+        { label: 'Certifications', icon: 'fa-certificate', table: 'certifications' }
+    ];
+    const TODAY_TABLES = ['inquiries', 'blogs', 'approved_applications', 'upcoming_projects', 'member_registrations', 'members'];
 
-            const RT_SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-            const RT_SUPABASE_ANON =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+    let previousCounts = {};
+    let bootTime = Date.now();
+    let feedEntries = [];
+    let liveStarted = false;
 
-            // full schema as provided
-            const TABLE_SCHEMA = {
-                admin_users: ['id', 'user_id', 'created_at'],
-                app_settings: ['id', 'setting_key', 'setting_value', 'updated_at', 'updated_by'],
-                approved_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
-                blogs: ['id', 'title', 'slug', 'content', 'excerpt', 'featured_image', 'tags', 'status', 'views', 'created_at', 'updated_at', 'published_at'],
-                certifications: ['id', 'title', 'issuer', 'description', 'category', 'verify_url', 'issued_date', 'expiry_date', 'credential_id', 'created_at', 'updated_at'],
-                inquiries: ['id', 'full_name', 'email', 'message', 'created_at', 'status'],
-                meeting_minutes: ['id', 'data', 'created_at', 'user_id'],
-                member_registrations: ['id', 'timestamp', 'full_name', 'address', 'phone', 'blood_group', 'gender', 'email', 'birth_date', 'position', 'profession', 'profile_image', 'mentor', 'created_at', 'phone_number'],
-                members: ['id', 'name', 'address', 'rotary_id', 'phone', 'blood_group', 'gender', 'email', 'dob', 'designation', 'profession', 'photo_url', 'created_at', 'updated_at', 'birthday', 'position', 'photo', 'status', 'date_of_birth', 'mentor', 'phone_number', 'profile_image', 'timestamp'],
-                pages: ['id', 'page_path', 'page_directory', 'filename', 'title', 'content', 'meta_description', 'keywords', 'slug', 'is_published', 'created_at', 'updated_at'],
-                profiles: ['id', 'updated_at', 'full_name', 'rotaract_club', 'role'],
-                project_applications: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'status', 'created_at', 'updated_at'],
-                project_applications_view: ['id', 'project_name', 'applicant_name', 'email', 'phone_number', 'message', 'application_status', 'application_date', 'project_description', 'project_date', 'project_location'],
-                rotaract_galkot_members: ['id', 'full_name', 'address', 'phone_number', 'blood_group', 'gender', 'email', 'date_of_birth', 'designation', 'profession', 'mentor', 'photo_url', 'created_at'],
-                spiritual_quotes: ['id', 'day', 'quote', 'author', 'category', 'created_at', 'updated_at'],
-                upcoming_projects: ['id', 'name', 'description', 'date', 'target_audience', 'location', 'status', 'created_at', 'updated_at']
-            };
-            const TABLE_NAMES = Object.keys(TABLE_SCHEMA);
+    function timeAgo(ts) {
+        const diff = Date.now() - new Date(ts).getTime();
+        if (diff < 60000) return 'just now';
+        const m = Math.floor(diff / 60000);
+        if (m < 60) return m + 'm ago';
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + 'h ago';
+        return Math.floor(h / 24) + 'd ago';
+    }
 
-            // Stat definitions
-            const STAT_DEFS = [
-                { key: 'members', label: 'Members', icon: 'fa-users', table: 'members' },
-                { key: 'member_registrations', label: 'Member Registrations', icon: 'fa-user-plus', table: 'member_registrations' },
-                { key: 'inquiries', label: 'Inquiries', icon: 'fa-envelope', table: 'inquiries' },
-                { key: 'blogs', label: 'Blogs', icon: 'fa-newspaper', table: 'blogs' },
-                { key: 'upcoming', label: 'Upcoming Projects', icon: 'fa-calendar-check', table: 'upcoming_projects' },
-                { key: 'approved_applications', label: 'Approved Apps', icon: 'fa-check-circle', table: 'approved_applications' },
-                { key: 'certifications', label: 'Certifications', icon: 'fa-certificate', table: 'certifications' }
-            ];
-
-            let rtSupabase = null;
-            let previousCounts = {};
-            let bootTime = Date.now();
-            let feedEntries = [];
-            let started = false;
-
-            const $ = (id) => document.getElementById(id);
-
-            function timeAgo(ts) {
-                const diff = Date.now() - new Date(ts).getTime();
-                if (diff < 60000) return 'just now';
-                const m = Math.floor(diff / 60000);
-                if (m < 60) return m + 'm ago';
-                const h = Math.floor(m / 60);
-                if (h < 24) return h + 'h ago';
-                return Math.floor(h / 24) + 'd ago';
+    async function countTable(table, useTodayFilter) {
+        try {
+            let query = supabase.from(table).select('*', { count: 'exact', head: true });
+            if (useTodayFilter) {
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const startOfNextDay = new Date(startOfDay.getTime() + 86400000);
+                query = query.gte('created_at', startOfDay.toISOString()).lt('created_at', startOfNextDay.toISOString());
             }
+            const { count, error } = await query;
+            if (error) { console.warn('count error for', table, error); return null; }
+            return count;
+        } catch (e) {
+            console.warn('count exception', table, e);
+            return null;
+        }
+    }
 
-            function getTodayStr() {
-                return new Date().toISOString().split('T')[0];
+    async function fetchAllCounts() {
+        // Fetch every table's count in parallel instead of sequentially.
+        const entries = await Promise.all(TABLE_NAMES.map(async (table) => {
+            const total = await countTable(table, false);
+            const today = TODAY_TABLES.includes(table) ? await countTable(table, true) : null;
+            return [table, total, today];
+        }));
+        const counts = {}, today = {};
+        for (const [table, total, todayCount] of entries) { counts[table] = total; today[table] = todayCount; }
+        return { counts, today };
+    }
+
+    function renderStats(counts, today) {
+        let html = '';
+        for (const def of STAT_DEFS) {
+            const val = counts[def.table] ?? '—';
+            const prev = previousCounts[def.table];
+            let delta = '';
+            if (prev !== undefined && val !== '—' && prev !== val) {
+                const diff = val - prev;
+                delta = `<span class="badge-delta ${diff >= 0 ? '' : 'neg'}">${diff >= 0 ? '+' : ''}${diff}</span>`;
             }
+            let todayBadge = '';
+            const todayVal = today && today[def.table] !== undefined && today[def.table] !== null ? today[def.table] : null;
+            if (todayVal !== null) todayBadge = `<span class="badge-today">today +${todayVal}</span>`;
+            html += `
+                <div class="stat-card">
+                    <i class="fa-solid ${def.icon}"></i>
+                    <div class="num">${val}</div>
+                    <div class="label">${def.label}</div>
+                    <div class="badges">${delta}${todayBadge}</div>
+                </div>`;
+        }
+        $('statGrid').innerHTML = html;
+        for (const def of STAT_DEFS) if (counts[def.table] !== undefined) previousCounts[def.table] = counts[def.table];
+    }
 
-            async function countTable(table, todayFilter = null) {
-                if (!rtSupabase) return null;
-                try {
-                    let query = rtSupabase.from(table).select('*', { count: 'exact', head: true });
-                    if (todayFilter) {
-                        const col = todayFilter.column || 'created_at';
-                        const today = getTodayStr();
-                        query = query.gte(col, today + 'T00:00:00').lt(col, today + 'T23:59:59');
-                    }
-                    const { count, error } = await query;
-                    if (error) {
-                        console.warn('count error for', table, error);
-                        return null;
-                    }
-                    return count;
-                } catch (e) {
-                    console.warn('count exception', table, e);
-                    return null;
-                }
-            }
+    function renderSchema(counts) {
+        let totalRows = 0, rows = '';
+        for (const table of TABLE_NAMES) {
+            const c = counts[table] ?? '—';
+            if (typeof c === 'number') totalRows += c;
+            const cols = TABLE_SCHEMA[table] || [];
+            rows += `<tr><td><span class="mono">${escapeHtml(table)}</span></td><td>${c}</td><td style="color:var(--text-faint);font-size:0.72rem;">${escapeHtml(cols.slice(0, 3).join(', '))}${cols.length > 3 ? ' …' : ''}</td></tr>`;
+        }
+        $('schemaBody').innerHTML = rows;
+        $('tableCountSm').textContent = $('tableCountLg').textContent = TABLE_NAMES.length;
+        $('rowCountSm').textContent = $('rowCountLg').textContent = totalRows;
+        $('schemaTime').textContent = new Date().toLocaleTimeString();
+    }
 
-            async function fetchAllCounts() {
-                if (!rtSupabase) return null;
-                const results = {};
-                const todayResults = {};
-                const todayTables = ['inquiries', 'blogs', 'approved_applications', 'upcoming_projects', 'member_registrations', 'members'];
-                for (const table of TABLE_NAMES) {
-                    results[table] = await countTable(table);
-                    if (todayTables.includes(table)) {
-                        todayResults[table] = await countTable(table, { column: 'created_at' });
-                    } else {
-                        todayResults[table] = null;
-                    }
-                }
-                return { counts: results, today: todayResults };
-            }
+    function pushFeed(message, type) {
+        feedEntries.unshift({ message, time: new Date(), type: type || 'info' });
+        if (feedEntries.length > 12) feedEntries.pop();
+        renderFeed();
+    }
+    function renderFeed() {
+        const container = $('feedContainer');
+        if (feedEntries.length === 0) {
+            container.innerHTML = `<div class="feed-item"><span class="ftitle">Waiting for events…</span></div>`;
+            return;
+        }
+        let html = '';
+        for (const e of feedEntries) {
+            const label = e.type === 'insert' ? 'INSERT' : e.type === 'update' ? 'UPDATE' : e.type === 'delete' ? 'DELETE' : 'INFO';
+            html += `
+                <div class="feed-item">
+                    <span class="ftitle">${escapeHtml(e.message)}</span>
+                    <span class="fmeta">${timeAgo(e.time)}</span>
+                    <span class="fbadge">${label}</span>
+                </div>`;
+        }
+        container.innerHTML = html;
+    }
 
-            function renderStats(counts, today) {
-                if (!counts) return;
-                let html = '';
-                for (const def of STAT_DEFS) {
-                    const val = counts[def.table] ?? '—';
-                    const prev = previousCounts[def.table];
-                    let delta = '';
-                    if (prev !== undefined && val !== '—' && prev !== val) {
-                        const diff = val - prev;
-                        delta = `<span class="rt-delta ${diff >= 0 ? '' : 'neg'}">${diff >= 0 ? '+' : ''}${diff}</span>`;
-                    }
-                    let todayBadge = '';
-                    const todayVal = today && today[def.table] !== undefined && today[def.table] !== null ? today[def.table] : null;
-                    if (todayVal !== null && todayVal > 0) {
-                        todayBadge = `<span class="rt-today">📅 today +${todayVal}</span>`;
-                    } else if (todayVal === 0) {
-                        todayBadge = `<span class="rt-today" style="opacity:0.5;">📅 today 0</span>`;
-                    }
-                    html += `
-                        <div class="rt-stat">
-                            <span class="rt-icon"><i class="fa-solid ${def.icon}"></i></span>
-                            <div class="rt-num">${val}</div>
-                            <div class="rt-label">${def.label}</div>
-                            <div class="rt-badges-row">${delta}${todayBadge}</div>
-                        </div>
-                    `;
-                }
-                $('rtStatGrid').innerHTML = html;
-                for (const def of STAT_DEFS) {
-                    if (counts[def.table] !== undefined) previousCounts[def.table] = counts[def.table];
-                }
-            }
+    function updateLatencyDisplay(ms) {
+        $('latencyVal').textContent = Math.round(ms) + ' ms';
+        const bar = $('latencyBar');
+        bar.style.width = Math.min(100, (ms / 600) * 100) + '%';
+        bar.style.background = ms > 400 ? 'var(--danger)' : ms > 200 ? 'var(--accent)' : 'var(--success)';
+        const up = Date.now() - bootTime;
+        const hh = String(Math.floor(up / 3600000)).padStart(2, '0');
+        const mm = String(Math.floor((up % 3600000) / 60000)).padStart(2, '0');
+        const ss = String(Math.floor((up % 60000) / 1000)).padStart(2, '0');
+        $('uptimeDisplay').textContent = `${hh}:${mm}:${ss}`;
+    }
 
-            function renderSchema(counts) {
-                if (!counts) return;
-                let totalRows = 0;
-                let rowsHtml = '';
-                for (const table of TABLE_NAMES) {
-                    const c = counts[table] ?? '—';
-                    if (typeof c === 'number') totalRows += c;
-                    const cols = TABLE_SCHEMA[table] || [];
-                    rowsHtml += `<tr><td><span class="rt-mono">${escapeHtml(table)}</span></td><td>${c}</td><td style="color:var(--text-muted);font-size:0.7rem;">${escapeHtml(cols.slice(0, 3).join(', '))}${cols.length > 3 ? ' …' : ''}</td></tr>`;
-                }
-                $('rtSchemaBody').innerHTML = rowsHtml;
-                $('rtTableCount').textContent = TABLE_NAMES.length;
-                $('rtRowCount').textContent = totalRows;
-                $('rtSchemaTime').textContent = new Date().toLocaleTimeString();
-            }
+    function setStatus(ok, text) {
+        const strip = $('statusStrip');
+        strip.classList.toggle('degraded', !ok);
+        $('statusStripText').textContent = text;
+    }
 
-            function pushFeed(message, type = 'info') {
-                feedEntries.unshift({ message, time: new Date(), type });
-                if (feedEntries.length > 12) feedEntries.pop();
-                renderFeed();
-            }
+    async function pingSupabase() {
+        const t0 = performance.now();
+        try {
+            await supabase.from('members').select('id', { count: 'exact', head: true });
+            const ms = Math.round(performance.now() - t0);
+            updateLatencyDisplay(ms);
+            setStatus(true, `Live · ${ms}ms`);
+        } catch (_) {
+            updateLatencyDisplay(999);
+            setStatus(false, 'Degraded');
+        }
+    }
 
-            function renderFeed() {
-                const feedContainer = $('rtFeedContainer');
-                if (feedEntries.length === 0) {
-                    feedContainer.innerHTML = `<div class="rt-feed-item"><span class="rt-ftitle">⏳ waiting for events…</span></div>`;
-                    return;
-                }
-                let html = '';
-                for (const e of feedEntries) {
-                    const label = e.type === 'insert' ? 'INSERT' : e.type === 'update' ? 'UPDATE' : 'INFO';
-                    html += `
-                        <div class="rt-feed-item">
-                            <span class="rt-ftitle">${escapeHtml(e.message)}</span>
-                            <span class="rt-fmeta">${timeAgo(e.time)}</span>
-                            <span class="rt-fbadge">${label}</span>
-                        </div>
-                    `;
-                }
-                feedContainer.innerHTML = html;
-            }
+    async function refreshDashboard() {
+        // Change events are reported by the realtime subscriptions in
+        // subscribeAll() as they happen; this poll only keeps the
+        // counts and schema table numerically fresh every 18s.
+        const data = await fetchAllCounts();
+        renderStats(data.counts, data.today);
+        renderSchema(data.counts);
+    }
 
-            function renderLogins() {
-                const logins = [
-                    { name: 'Super Admin', initials: 'SA', time: 'just now' },
-                    { name: 'Nabin K.', initials: 'NK', time: '12m ago' },
-                    { name: 'Rita S.', initials: 'RS', time: '1h ago' },
-                    { name: 'Prakash R.', initials: 'PR', time: '3h ago' }
-                ];
-                let html = '';
-                for (const l of logins) {
-                    html += `
-                        <div class="rt-login-item">
-                            <span class="rt-avatar">${l.initials}</span>
-                            <span class="rt-lname">${l.name}</span>
-                            <span class="rt-ltime">${l.time}</span>
-                        </div>
-                    `;
-                }
-                $('rtLoginContainer').innerHTML = html;
-            }
+    function subscribeAll() {
+        const tables = ['inquiries', 'members', 'member_registrations', 'blogs', 'upcoming_projects', 'approved_applications', 'project_applications'];
+        for (const table of tables) {
+            try {
+                supabase.channel(`rt-${table}`)
+                    .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
+                        pushFeed(`${table} · ${payload.eventType.toUpperCase()}`, payload.eventType.toLowerCase());
+                        refreshDashboard();
+                    })
+                    .subscribe();
+            } catch (_) {}
+        }
+    }
 
-            function updateHealth(latencyMs) {
-                const cpu = Math.round(15 + Math.random() * 35);
-                const mem = Math.round(28 + Math.random() * 40);
-                $('rtCpuVal').textContent = cpu + '%';
-                const cpuBar = $('rtCpuBar');
-                cpuBar.style.width = cpu + '%';
-                cpuBar.style.background = cpu > 80 ? '#ef4444' : cpu > 60 ? '#fbbf24' : '#34d399';
-                $('rtMemVal').textContent = mem + '%';
-                const memBar = $('rtMemBar');
-                memBar.style.width = mem + '%';
-                memBar.style.background = mem > 80 ? '#ef4444' : mem > 60 ? '#fbbf24' : '#a78bfa';
+    async function initLiveData() {
+        if (liveStarted) return;
+        liveStarted = true;
+        await refreshDashboard();
+        pushFeed('Console connected', 'info');
+        await pingSupabase();
+        subscribeAll();
+        setInterval(refreshDashboard, 18000);
+        setInterval(pingSupabase, 6000);
+    }
+    window.startLiveData = initLiveData;
 
-                let lat = latencyMs ?? 120;
-                if (lat > 800) lat = 120 + Math.random() * 200;
-                $('rtDbLatVal').textContent = Math.round(lat) + ' ms';
-                const dbLatBar = $('rtDbLatBar');
-                const pct = Math.min(100, (lat / 600) * 100);
-                dbLatBar.style.width = pct + '%';
-                dbLatBar.style.background = lat > 400 ? '#ef4444' : lat > 200 ? '#fbbf24' : '#34d399';
+    // ============================================================
+    // QUICK LAUNCH TABS
+    // ============================================================
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const linkItems = document.querySelectorAll('.link-item');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            const filter = button.getAttribute('data-filter');
+            linkItems.forEach(item => {
+                const category = item.getAttribute('data-category');
+                item.classList.toggle('hidden', filter !== 'all' && category !== filter);
+            });
+        });
+    });
 
-                const up = Date.now() - bootTime;
-                const hh = String(Math.floor(up / 3600000)).padStart(2, '0');
-                const mm = String(Math.floor((up % 3600000) / 60000)).padStart(2, '0');
-                const ss = String(Math.floor((up % 60000) / 1000)).padStart(2, '0');
-                $('rtUptimeDisplay').textContent = `${hh}:${mm}:${ss}`;
-            }
+    // ============================================================
+    // MAIN INIT
+    // ============================================================
+    async function initConsole() {
+        const hasAccess = await checkAdminAccess();
+        if (!hasAccess) return;
+        await loadDailyQuote();
+        await initLiveData(); // load stats immediately so Overview isn't empty
+    }
 
-            async function pingSupabase() {
-                if (!rtSupabase) return;
-                const t0 = performance.now();
-                const liveBadge = $('rtLiveBadge');
-                try {
-                    await rtSupabase.from('members').select('id', { count: 'exact', head: true });
-                    const ms = Math.round(performance.now() - t0);
-                    updateHealth(ms);
-                    liveBadge.classList.remove('degraded');
-                    liveBadge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> LIVE · ${ms}ms`;
-                } catch (_) {
-                    updateHealth(999);
-                    liveBadge.classList.add('degraded');
-                    liveBadge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> degraded`;
-                }
-            }
-
-            async function refreshDashboard() {
-                if (!rtSupabase) return;
-                const data = await fetchAllCounts();
-                if (data) {
-                    renderStats(data.counts, data.today);
-                    renderSchema(data.counts);
-                    for (const table of TABLE_NAMES) {
-                        const prev = previousCounts[table];
-                        const curr = data.counts[table];
-                        if (prev !== undefined && curr !== undefined && prev !== curr) {
-                            const diff = curr - prev;
-                            pushFeed(`Table ${table} changed (${diff > 0 ? '+' : ''}${diff})`, diff > 0 ? 'insert' : 'update');
-                        }
-                    }
-                }
-                await pingSupabase();
-                renderLogins();
-            }
-
-            function subscribeAll() {
-                if (!rtSupabase) return;
-                const tables = ['inquiries', 'members', 'member_registrations', 'blogs', 'upcoming_projects', 'approved_applications', 'project_applications'];
-                for (const table of tables) {
-                    try {
-                        rtSupabase.channel(`rt-${table}`)
-                            .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
-                                pushFeed(`${table} · ${payload.eventType.toUpperCase()}`, payload.eventType);
-                                refreshDashboard();
-                            })
-                            .subscribe();
-                    } catch (_) {}
-                }
-            }
-
-            async function initRealtime() {
-                if (started) return;
-                started = true;
-                try {
-                    rtSupabase = window.supabase.createClient(RT_SUPABASE_URL, RT_SUPABASE_ANON);
-                } catch (_) {
-                    $('rtStatGrid').innerHTML = `<div class="rt-stat" style="grid-column:1/-1;text-align:center;color:#ef4444;">⚠️ Supabase client failed</div>`;
-                    return;
-                }
-                await refreshDashboard();
-                pushFeed('Dashboard initialized', 'info');
-                renderLogins();
-                subscribeAll();
-                setInterval(refreshDashboard, 18000);
-                setInterval(() => pingSupabase(), 6000);
-                setInterval(() => pushFeed(`⏱️ heartbeat · ${new Date().toLocaleTimeString()}`, 'info'), 30000);
-            }
-
-            window.initRtOverview = initRealtime;
-        })();
-    </script>
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initConsole);
+    } else {
+        initConsole();
+    }
+})();
+</script>
 </body>
 </html>
