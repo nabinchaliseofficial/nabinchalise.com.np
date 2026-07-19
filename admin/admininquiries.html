@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inquiries Management</title>
-    <meta name="description" content="Manage contact form inquiries." />
+    <title>Inquiries Management - Admin Only</title>
+    <meta name="description" content="Admin-only contact form inquiries management." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
     </script>
     <style>
-        /* --- BASE VARIABLES --- */
         :root {
             --bg-dark: #0f172a;
             --bg-card: rgba(30, 41, 59, 0.7);
@@ -61,7 +60,64 @@
             min-height: 100vh;
         }
 
-        /* --- NAVBAR --- */
+        /* ACCESS DENIED */
+        .access-denied-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        .access-denied-overlay.active {
+            display: flex;
+        }
+        .access-denied-overlay .denied-icon {
+            font-size: 5rem;
+            color: #ef4444;
+        }
+        .access-denied-overlay h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ef4444;
+        }
+        .access-denied-overlay p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 500px;
+        }
+        .access-denied-overlay .btn-go-back {
+            background: var(--cls-galkot);
+            color: #000 !important;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 48px;
+        }
+        .access-denied-overlay .btn-go-back:hover {
+            background: #e5a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        /* NAVBAR */
         .navbar {
             position: fixed;
             top: 0;
@@ -144,7 +200,7 @@
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
-        /* --- HERO --- */
+        /* HERO */
         .hero {
             padding: 8rem 2rem 2rem;
             max-width: 1200px;
@@ -166,7 +222,7 @@
             margin: 0 auto;
         }
 
-        /* --- WORKSPACE SECTION --- */
+        /* WORKSPACE */
         .workspace-section {
             max-width: 1200px;
             margin: 0 auto 3rem;
@@ -222,15 +278,6 @@
         .clear-btn-accent:hover {
             background: rgba(239, 68, 68, 0.1) !important;
             border-color: rgba(239, 68, 68, 0.6) !important;
-        }
-        .btn-primary-accent {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #fff !important;
-        }
-        .btn-primary-accent:hover {
-            background: #b50051;
-            border-color: #b50051;
         }
 
         .inquiries-feed {
@@ -374,7 +421,6 @@
             font-size: 0.85rem;
         }
 
-        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -409,15 +455,6 @@
             }
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
@@ -446,12 +483,28 @@
                 font-size: 0.75rem;
                 padding: 0.4rem 0.8rem;
             }
+            .access-denied-overlay h2 {
+                font-size: 1.8rem;
+            }
+            .access-denied-overlay .denied-icon {
+                font-size: 3.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
+    <!-- ACCESS DENIED OVERLAY -->
+    <div class="access-denied-overlay" id="accessDeniedOverlay">
+        <div class="denied-icon"><i class="fa-solid fa-lock"></i></div>
+        <h2>⛔ Access Denied</h2>
+        <p>This area is strictly for administrators only. You do not have permission to view this page.</p>
+        <button class="btn-go-back" id="goBackBtn">
+            <i class="fa-solid fa-arrow-left"></i> Go Back
+        </button>
+    </div>
+
+    <!-- NAVBAR -->
     <nav class="navbar" id="navbar" aria-label="Main Navigation">
         <a href="#" class="nav-logo">
             <i class="fa-solid fa-envelope" aria-hidden="true"></i> Inquiries Management
@@ -466,13 +519,13 @@
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
+    <!-- HERO -->
     <header class="hero">
         <h1><i class="fa-solid fa-envelope" style="color:var(--cls-personal);"></i> Inquiries Management</h1>
         <p>View, manage, and respond to all contact form inquiries in one place.</p>
     </header>
 
-    <!-- ===== INQUIRIES ===== -->
+    <!-- INQUIRIES -->
     <section class="workspace-section" id="inquiries-panel">
         <div class="panel-header">
             <h2><i class="fa-solid fa-envelope" aria-hidden="true" style="color: var(--cls-personal);"></i> Contact Form Inquiries</h2>
@@ -486,24 +539,26 @@
         </div>
     </section>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- FOOTER -->
     <footer>
         <p>&copy; 2026 Inquiries Management. Built for efficiency.</p>
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
+    <!-- JAVASCRIPT - SECURE VERSION WITH DATABASE ROLE CHECK -->
+    <!-- ============================================================ -->
     <script>
         (() => {
             "use strict";
 
-            // ---- SUPABASE CLIENT ----
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            // ---- HELPERS ----
+            const accessDeniedOverlay = document.getElementById('accessDeniedOverlay');
+            const feedContainer = document.getElementById('inquiries-feed');
+
             const escapeHtml = (str) => {
                 if (!str) return '';
                 return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
@@ -524,14 +579,73 @@
                 }, 3000);
             };
 
+            const showAccessDenied = () => {
+                accessDeniedOverlay.classList.add('active');
+                if (feedContainer) {
+                    feedContainer.innerHTML = '';
+                }
+            };
+
+            const hideAccessDenied = () => {
+                accessDeniedOverlay.classList.remove('active');
+            };
+
+            document.getElementById('goBackBtn')?.addEventListener('click', () => {
+                window.location.href = '/index.html';
+            });
+
             // ============================================================
-            // ===== LOAD INQUIRIES =====
+            // SECURE ROLE CHECK - Uses database user_roles table
+            // ============================================================
+            const checkAdminRole = async () => {
+                try {
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                    if (sessionError || !session) {
+                        window.location.href = '/index.html';
+                        return false;
+                    }
+
+                    // Check user_roles table for admin role
+                    const { data: roleData, error: roleError } = await supabase
+                        .from('user_roles')
+                        .select('role')
+                        .eq('user_id', session.user.id)
+                        .maybeSingle();
+
+                    if (roleError) {
+                        console.error('Error fetching role:', roleError);
+                        showAccessDenied();
+                        return false;
+                    }
+
+                    if (!roleData || roleData.role !== 'admin') {
+                        console.warn('Access denied: User does not have admin role.');
+                        showAccessDenied();
+                        return false;
+                    }
+
+                    hideAccessDenied();
+                    return true;
+
+                } catch (err) {
+                    console.error('Auth check error:', err);
+                    showAccessDenied();
+                    return false;
+                }
+            };
+
+            // ============================================================
+            // LOAD INQUIRIES - RLS will enforce security at database level
             // ============================================================
             const loadInquiries = async () => {
-                const feedContainer = document.getElementById('inquiries-feed');
+                const isAuthorized = await checkAdminRole();
+                if (!isAuthorized) return;
+
                 if (!feedContainer) return;
                 feedContainer.innerHTML =
-                '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>';
+                    '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...</div>';
+
                 try {
                     const { data, error } = await supabase
                         .from('inquiries')
@@ -579,12 +693,15 @@
                         `;
                     }).join('');
 
-                    // ---- ATTACH EVENT LISTENERS TO BUTTONS ----
                     document.querySelectorAll('.action-btn-sm').forEach(btn => {
                         btn.addEventListener('click', async (e) => {
                             e.stopPropagation();
                             const id = parseInt(btn.dataset.id);
                             const action = btn.dataset.action;
+
+                            // Re-check admin role before any action
+                            const isAdmin = await checkAdminRole();
+                            if (!isAdmin) return;
 
                             if (action === 'delete') {
                                 await deleteInquiry(id);
@@ -602,7 +719,7 @@
             };
 
             // ============================================================
-            // ===== UPDATE INQUIRY STATUS =====
+            // UPDATE INQUIRY STATUS
             // ============================================================
             const updateInquiryStatus = async (id, status) => {
                 try {
@@ -619,7 +736,7 @@
             };
 
             // ============================================================
-            // ===== DELETE INQUIRY =====
+            // DELETE INQUIRY
             // ============================================================
             const deleteInquiry = async (id) => {
                 if (!confirm(`⚠️ Are you sure you want to DELETE inquiry #${id} permanently?`)) return;
@@ -637,13 +754,17 @@
             };
 
             // ============================================================
-            // ===== CLEAR ALL INQUIRIES =====
+            // CLEAR ALL
             // ============================================================
             document.getElementById('clear-inquiries-btn')?.addEventListener('click', async () => {
+                const isAdmin = await checkAdminRole();
+                if (!isAdmin) return;
+
                 if (!confirm("⚠️ Are you sure you want to DELETE ALL inquiries permanently?")) return;
-                const feedContainer = document.getElementById('inquiries-feed');
+                if (!feedContainer) return;
                 feedContainer.innerHTML =
                     '<div class="status-msg"><i class="fa-solid fa-spinner fa-spin"></i> Deleting all inquiries...</div>';
+
                 try {
                     const { error } = await supabase
                         .from('inquiries')
@@ -660,7 +781,7 @@
             });
 
             // ============================================================
-            // ===== REFRESH BUTTON =====
+            // REFRESH
             // ============================================================
             document.getElementById('refresh-inquiries-btn')?.addEventListener('click', () => {
                 showToast('🔄 Refreshing inquiries...', 'info');
@@ -668,75 +789,50 @@
             });
 
             // ============================================================
-            // ===== CROSS-TAB LOGOUT + INACTIVITY TIMEOUT =====
+            // CROSS-TAB LOGOUT SYNC
             // ============================================================
-            (function() {
-                // ---- 1. CROSS-TAB SYNC ----
-                supabase.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_OUT' || !session) {
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    }
-                });
-
-                // ---- 2. INACTIVITY TIMEOUT (60 seconds) ----
-                const INACTIVITY_TIMEOUT = 1800 * 1000;
-                let logoutTimer = null;
-
-                const performLogout = async () => {
-                    try {
-                        await supabase.auth.signOut();
-                        if (!window.location.pathname.includes('/index.html')) {
-                            window.location.href = '/index.html';
-                        }
-                    } catch (err) {
-                        console.error('Auto-logout error:', err);
-                    }
-                };
-
-                const resetTimer = () => {
-                    if (logoutTimer) clearTimeout(logoutTimer);
-                    logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
-                };
-
-                const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
-                activityEvents.forEach(event => {
-                    document.addEventListener(event, resetTimer, { passive: true });
-                });
-
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden) resetTimer();
-                });
-
-                resetTimer();
-
-                window.addEventListener('beforeunload', () => {
-                    if (logoutTimer) clearTimeout(logoutTimer);
-                });
-
-                window.resetInactivityTimer = resetTimer;
-            })();
-
-            // ============================================================
-            // ===== SESSION VERIFICATION =====
-            // ============================================================
-            const verifySecureAuthentication = async () => {
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        await loadInquiries();
-                    } else {
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT' || !session) {
+                    if (!window.location.pathname.includes('/index.html')) {
                         window.location.href = '/index.html';
                     }
-                } catch (error) {
-                    console.error('Auth error:', error);
-                    window.location.href = '/index.html';
+                }
+            });
+
+            // ============================================================
+            // INACTIVITY TIMEOUT (30 minutes)
+            // ============================================================
+            const INACTIVITY_TIMEOUT = 1800 * 1000;
+            let logoutTimer = null;
+
+            const performLogout = async () => {
+                try {
+                    await supabase.auth.signOut();
+                    if (!window.location.pathname.includes('/index.html')) {
+                        window.location.href = '/index.html';
+                    }
+                } catch (err) {
+                    console.error('Auto-logout error:', err);
                 }
             };
 
+            const resetTimer = () => {
+                if (logoutTimer) clearTimeout(logoutTimer);
+                logoutTimer = setTimeout(performLogout, INACTIVITY_TIMEOUT);
+            };
+
+            ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'].forEach(event => {
+                document.addEventListener(event, resetTimer, { passive: true });
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) resetTimer();
+            });
+
+            resetTimer();
+
             // ============================================================
-            // ===== NAVBAR SCROLL =====
+            // NAVBAR SCROLL
             // ============================================================
             const navbar = document.getElementById('navbar');
             window.addEventListener('scroll', () => {
@@ -744,14 +840,14 @@
             });
 
             // ============================================================
-            // ===== BACK TO ADMIN =====
+            // BACK TO ADMIN
             // ============================================================
             document.getElementById('backToAdminBtn')?.addEventListener('click', () => {
                 window.location.href = 'admin.html';
             });
 
             // ============================================================
-            // ===== LOGOUT =====
+            // LOGOUT
             // ============================================================
             document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -760,10 +856,10 @@
             });
 
             // ============================================================
-            // ===== DOM CONTENT LOADED =====
+            // INIT
             // ============================================================
             document.addEventListener('DOMContentLoaded', () => {
-                verifySecureAuthentication();
+                loadInquiries();
             });
 
         })();

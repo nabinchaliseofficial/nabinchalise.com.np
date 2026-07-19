@@ -88,6 +88,32 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
+        /* Home Button */
+        .home-link {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--light-bg);
+            border: 1px solid var(--border);
+        }
+
+        .home-link:hover {
+            color: var(--primary);
+            background: #fff;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
         .login-header {
             text-align: center;
             margin-bottom: 32px;
@@ -219,18 +245,6 @@
             cursor: pointer;
         }
 
-        .form-options a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .form-options a:hover {
-            text-decoration: underline;
-        }
-
         .btn-login {
             background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
             color: var(--white);
@@ -285,24 +299,6 @@
             }
         }
 
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .register-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-
         .error-message {
             background: #fee2e2;
             border: 1px solid #fecaca;
@@ -347,23 +343,6 @@
             flex-shrink: 0;
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 24px 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            gap: 16px;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
         .role-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -395,138 +374,6 @@
             color: #374151;
         }
 
-        .demo-credentials {
-            background: #f1f5f9;
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-top: 16px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-
-        .demo-credentials strong {
-            color: var(--dark);
-        }
-
-        .demo-credentials code {
-            background: var(--white);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Password Reset Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 40px 36px;
-            max-width: 420px;
-            width: 100%;
-            animation: fadeInUp 0.4s ease;
-            position: relative;
-        }
-
-        .modal-content h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .modal-content p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-
-        .modal-content .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        .modal-content .modal-close:hover {
-            color: var(--dark);
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            transition: var(--transition);
-            margin-bottom: 16px;
-        }
-
-        .modal-content input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .modal-actions button {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-
-        .modal-actions .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        .modal-actions .btn-primary:hover {
-            background: var(--primary-hover);
-        }
-
-        .modal-actions .btn-secondary {
-            background: var(--border);
-            color: var(--dark);
-        }
-
-        .modal-actions .btn-secondary:hover {
-            background: #cbd5e1;
-        }
-
         @media (max-width: 480px) {
             .login-card {
                 padding: 32px 24px;
@@ -541,12 +388,11 @@
                 font-size: 0.9rem;
             }
 
-            .modal-content {
-                padding: 28px 20px;
-            }
-
-            .modal-actions {
-                flex-direction: column;
+            .home-link {
+                top: 12px;
+                right: 14px;
+                font-size: 0.75rem;
+                padding: 4px 10px;
             }
         }
     </style>
@@ -555,6 +401,9 @@
 
     <div class="login-container">
         <div class="login-card">
+            <!-- Home Link -->
+            <a href="index.html" class="home-link">🏠 Home</a>
+
             <!-- Logo -->
             <div class="login-header">
                 <div class="login-logo">
@@ -562,7 +411,7 @@
                     <div class="login-logo-text">Rotaract<span>Galkot</span></div>
                 </div>
                 <h1>Minutes Builder</h1>
-                <p>Secure access for Rotaractors</p>
+                <p>Secure access for authorized personnel</p>
             </div>
 
             <!-- Error Message -->
@@ -603,7 +452,6 @@
                         <input type="checkbox" id="rememberMe" />
                         Remember me
                     </label>
-                    <a href="#" onclick="openResetModal()">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="btn-login" id="loginBtn">
@@ -611,35 +459,6 @@
                     <span class="btn-text">🔑 Sign In</span>
                 </button>
             </form>
-
-            <div class="divider">or</div>
-
-            <div class="register-link">
-                Don't have an account? <a href="#" onclick="showRegister()">Request Access</a>
-            </div>
-
-            <!-- Demo Credentials -->
-            <div class="demo-credentials">
-                <strong>🔐 Official Access:</strong><br />
-                <strong>President:</strong> <code>nabinchaliseofficial@gmail.com</code><br />
-                <strong>Secretary:</strong> <code>madanbsharma98@gmail.com</code><br />
-                <span style="font-size:0.7rem;">Contact admin if you need access.</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Reset Modal -->
-    <div class="modal-overlay" id="resetModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeResetModal()">✕</button>
-            <h3>🔑 Reset Password</h3>
-            <p>Enter your email address and we'll send you a password reset link.</p>
-            <input type="email" id="resetEmail" placeholder="your@email.com" />
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="sendResetLink()">Send Reset Link</button>
-                <button class="btn-secondary" onclick="closeResetModal()">Cancel</button>
-            </div>
-            <div id="resetStatus" style="margin-top:12px; font-size:0.9rem;"></div>
         </div>
     </div>
 
@@ -647,9 +466,8 @@
         // ============================================================
         // SUPABASE CONFIG
         // ============================================================
-        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
-
+         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
         // Redirect URL - Change this to your minutes builder page
         const REDIRECT_URL = "minutes.html";
 
@@ -713,62 +531,7 @@
         }
 
         // ============================================================
-        // PASSWORD RESET MODAL
-        // ============================================================
-        function openResetModal() {
-            document.getElementById('resetModal').classList.add('active');
-            document.getElementById('resetEmail').value = '';
-            document.getElementById('resetStatus').textContent = '';
-        }
-
-        function closeResetModal() {
-            document.getElementById('resetModal').classList.remove('active');
-        }
-
-        async function sendResetLink() {
-            const email = document.getElementById('resetEmail').value.trim();
-            const status = document.getElementById('resetStatus');
-
-            if (!email) {
-                status.innerHTML = '⚠️ Please enter your email address.';
-                status.style.color = '#991b1b';
-                return;
-            }
-
-            if (!supabaseClient) {
-                status.innerHTML = '⚠️ Password reset is not available. Please contact admin.';
-                status.style.color = '#991b1b';
-                return;
-            }
-
-            status.innerHTML = '⏳ Sending reset link...';
-            status.style.color = '#64748B';
-
-            try {
-                const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/' + REDIRECT_URL,
-                });
-
-                if (error) {
-                    status.innerHTML = '❌ ' + error.message;
-                    status.style.color = '#991b1b';
-                    return;
-                }
-
-                status.innerHTML = '✅ Password reset link sent to ' + email + '! Check your inbox.';
-                status.style.color = '#065f46';
-
-                setTimeout(() => {
-                    closeResetModal();
-                }, 3000);
-            } catch (err) {
-                status.innerHTML = '❌ Something went wrong. Please try again.';
-                status.style.color = '#991b1b';
-            }
-        }
-
-        // ============================================================
-        // CHECK USER ROLE (Supports President & Secretary)
+        // CHECK USER ROLE
         // ============================================================
         async function checkUserRole(userId) {
             if (!supabaseClient) return null;
@@ -793,7 +556,7 @@
         }
 
         // ============================================================
-        // CHECK IF USER HAS MEETING ACCESS (President & Secretary included)
+        // CHECK IF USER HAS MEETING ACCESS
         // ============================================================
         async function hasMeetingAccess(userId) {
             const role = await checkUserRole(userId);
@@ -815,48 +578,15 @@
         }
 
         // ============================================================
-        // GET ROLE BADGE CLASS
-        // ============================================================
-        function getRoleBadgeClass(role) {
-            const roleMap = {
-                'admin': 'admin',
-                'editor': 'editor',
-                'president': 'president',
-                'secretary': 'secretary',
-                'viewer': 'viewer'
-            };
-            return roleMap[role] || 'viewer';
-        }
-
-        // ============================================================
         // LOGIN HANDLER
         // ============================================================
         async function handleLogin(email, password) {
-            // If Supabase is not available, use demo fallback
             if (!supabaseClient) {
-                // Demo fallback for testing with actual credentials
-                if (email === 'nabinchaliseofficial@gmail.com' && password === 'President@2026') {
-                    localStorage.setItem('user_email', email);
-                    localStorage.setItem('user_role', 'president');
-                    localStorage.setItem('is_authenticated', 'true');
-                    showSuccess('✅ Welcome, President! Redirecting...');
-                    setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
-                    return;
-                } else if (email === 'madanbsharma98@gmail.com' && password === 'Secretary@2026') {
-                    localStorage.setItem('user_email', email);
-                    localStorage.setItem('user_role', 'secretary');
-                    localStorage.setItem('is_authenticated', 'true');
-                    showSuccess('✅ Welcome, Secretary! Redirecting...');
-                    setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
-                    return;
-                } else {
-                    showError('❌ Invalid credentials. Please try again.');
-                    return;
-                }
+                showError('❌ Authentication service is unavailable. Please contact admin.');
+                return;
             }
 
             try {
-                // Attempt login with Supabase
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password,
@@ -874,7 +604,6 @@
                     return;
                 }
 
-                // Check user role
                 const role = await checkUserRole(user.id);
 
                 if (!role) {
@@ -883,15 +612,13 @@
                     return;
                 }
 
-                // Check if user has meeting access (President & Secretary included)
                 const hasAccess = await hasMeetingAccess(user.id);
                 if (!hasAccess) {
-                    showError(`⚠️ Your role (${role}) does not have permission to access the Minutes Builder. Contact admin.`);
+                    showError(`⚠️ Your role (${role}) does not have permission to access the Minutes Builder.`);
                     await supabaseClient.auth.signOut();
                     return;
                 }
 
-                // Store user info
                 localStorage.setItem('user_email', user.email);
                 localStorage.setItem('user_role', role);
                 localStorage.setItem('user_id', user.id);
@@ -901,10 +628,8 @@
                     localStorage.setItem('remember_me', 'true');
                 }
 
-                // Success with role-specific message
                 const roleDisplay = getRoleDisplayName(role);
-                const emoji = role === 'president' ? '👑' : role === 'secretary' ? '📝' : '👤';
-                showSuccess(`${emoji} Welcome, ${roleDisplay}! Redirecting to Minutes Builder...`);
+                showSuccess(`✅ Welcome, ${roleDisplay}! Redirecting to Minutes Builder...`);
 
                 setTimeout(() => {
                     window.location.href = REDIRECT_URL;
@@ -960,14 +685,6 @@
             }
         });
 
-        // Also support Enter key in reset modal
-        document.getElementById('resetEmail').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendResetLink();
-            }
-        });
-
         // ============================================================
         // CHECK EXISTING SESSION
         // ============================================================
@@ -977,12 +694,10 @@
             const userRole = localStorage.getItem('user_role');
 
             if (isAuthenticated && userEmail && ['admin', 'editor', 'president', 'secretary'].includes(userRole)) {
-                // Try to verify with Supabase
                 if (supabaseClient) {
                     try {
                         const { data: { session } } = await supabaseClient.auth.getSession();
                         if (session) {
-                            // Session is valid, redirect
                             window.location.href = REDIRECT_URL;
                             return;
                         }
@@ -990,19 +705,11 @@
                         console.warn('Session check failed:', err);
                     }
                 }
-                // If no session but localStorage says authenticated, clear it
                 localStorage.removeItem('is_authenticated');
                 localStorage.removeItem('user_email');
                 localStorage.removeItem('user_role');
                 localStorage.removeItem('user_id');
             }
-        }
-
-        // ============================================================
-        // REGISTER PLACEHOLDER
-        // ============================================================
-        function showRegister() {
-            showError('📝 Please contact the club secretary to request access.');
         }
 
         // ============================================================
@@ -1015,7 +722,6 @@
                 if (email) {
                     emailInput.value = email;
                     rememberMe.checked = true;
-                    // Focus password field for convenience
                     passwordInput.focus();
                 }
             }
@@ -1032,22 +738,11 @@
                 emailInput.focus();
             }
 
-            console.log('✅ Login page ready (President & Secretary roles supported)');
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('resetModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                closeResetModal();
-            }
+            console.log('✅ Login page ready (Secure, Role-Based Access)');
         });
 
         // Expose functions globally
         window.togglePassword = togglePassword;
-        window.openResetModal = openResetModal;
-        window.closeResetModal = closeResetModal;
-        window.sendResetLink = sendResetLink;
-        window.showRegister = showRegister;
         window.showError = showError;
         window.showSuccess = showSuccess;
     </script>

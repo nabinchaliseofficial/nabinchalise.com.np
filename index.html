@@ -805,7 +805,7 @@
       <span class="icon-big">⛔</span>
       <h2>Access Restricted</h2>
       <p>You do not have permission to access the Admin Portal.</p>
-      <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:20px;">Only users with <strong>Admin</strong> role can access this portal.</p>
+      <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:20px;">Only active <strong>Admin</strong> users can access this portal.</p>
       <button class="btn-redirect" id="accessDeniedBtn">🏠 Return to Homepage</button>
       <div class="countdown-timer">Redirecting in <span id="accessDeniedCountdown">10</span> seconds...</div>
     </div>
@@ -1112,15 +1112,16 @@
         }
       }
 
-      // ====== CHECK IF USER IS ADMIN ======
+      // ====== CHECK IF USER IS ADMIN (WITH STATUS) ======
       async function checkUserIsAdmin() {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (!session) return false;
 
+          // ✅ Check BOTH role AND status
           const { data, error } = await supabase
             .from('user_roles')
-            .select('role')
+            .select('role, status')
             .eq('user_id', session.user.id)
             .maybeSingle();
 
@@ -1129,7 +1130,8 @@
             return false;
           }
 
-          return data && data.role === 'admin';
+          // ✅ Both conditions must be true
+          return data && data.role === 'admin' && data.status === 'active';
         } catch (err) {
           console.error('Admin check error:', err);
           return false;
@@ -1154,7 +1156,6 @@
             clearInterval(accessDeniedTimer);
             accessDeniedOverlay.classList.remove('active');
             isAccessDenied = false;
-            // Redirect to homepage
             window.location.href = window.location.pathname;
           }
         }, 1000);
@@ -1190,18 +1191,13 @@
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session) {
-            // Check if user is admin
             const isAdmin = await checkUserIsAdmin();
             
             if (!isAdmin) {
-              // Non-admin user is logged in - show access denied
               showAccessDenied();
-              // Also sign them out to clear session
               await supabase.auth.signOut();
               return false;
             }
-            
-            // Admin is logged in - allow access
             return true;
           }
           return false;
@@ -1235,21 +1231,17 @@
       portalBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         
-        // First check if already logged in
         const hasSession = await checkExistingSession();
         if (hasSession) {
-          // Admin is logged in, redirect to admin panel
           window.location.href = 'admin/admin.html';
           return;
         }
 
-        // Check if access denied is active (non-admin logged in)
         if (isAccessDenied) {
           showAccessDenied();
           return;
         }
 
-        // No session - open login modal
         openModal();
       });
 
@@ -1314,18 +1306,15 @@
           }
 
           if (data.session) {
-            // Check if user is admin
             const isAdmin = await checkUserIsAdmin();
             
             if (!isAdmin) {
-              // Not admin - show access denied
               await supabase.auth.signOut();
               setLoading(false);
               showAccessDenied();
               return;
             }
 
-            // Admin - login successful
             showSuccess();
             loginForm.style.display = 'none';
             setTimeout(() => {
@@ -1541,7 +1530,6 @@
       });
 
       // ====== INIT: CHECK EXISTING SESSION ======
-      // Check if any user is logged in on page load
       checkExistingSession();
 
     })();

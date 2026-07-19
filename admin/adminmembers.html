@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Members · Image Upload & Status</title>
-    <meta name="description" content="Manage members with profile image upload, Active/Inactive status, realtime sync." />
+    <title>Members · Admin Only</title>
+    <meta name="description" content="Admin-only members management with image upload, roles, and realtime sync." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -52,6 +52,50 @@
             background-attachment: fixed;
             min-height: 100vh;
         }
+
+        .access-denied-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        .access-denied-overlay.active { display: flex; }
+        .access-denied-overlay .denied-icon { font-size: 5rem; color: #ef4444; }
+        .access-denied-overlay h2 { font-size: 2.5rem; font-weight: 800; color: #ef4444; }
+        .access-denied-overlay p { font-size: 1.2rem; color: var(--text-muted); max-width: 500px; }
+        .access-denied-overlay .btn-go-back {
+            background: var(--cls-galkot);
+            color: #000 !important;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 48px;
+        }
+        .access-denied-overlay .btn-go-back:hover {
+            background: #e5a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
         .navbar {
             position: fixed;
             top: 0;
@@ -82,9 +126,7 @@
             align-items: center;
             gap: 0.5rem;
         }
-        .nav-logo i {
-            color: var(--cls-rotaract);
-        }
+        .nav-logo i { color: var(--cls-rotaract); }
         .nav-actions {
             display: flex;
             gap: 0.75rem;
@@ -174,9 +216,7 @@
             align-items: center;
             gap: 0.75rem;
         }
-        .panel-header h2 i {
-            color: var(--cls-rotaract);
-        }
+        .panel-header h2 i { color: var(--cls-rotaract); }
         .panel-actions {
             display: flex;
             gap: 0.5rem;
@@ -198,9 +238,7 @@
             transition: var(--transition-smooth);
             font-family: 'Inter', sans-serif;
         }
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .action-btn:hover { background: rgba(255, 255, 255, 0.1); }
         .clear-btn-accent {
             border-color: rgba(239, 68, 68, 0.25) !important;
         }
@@ -217,6 +255,7 @@
             background: #2bbf8a;
             border-color: #2bbf8a;
         }
+
         .members-feed {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -275,18 +314,9 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-        .status-active {
-            background: #34d399;
-            color: #000;
-        }
-        .status-inactive {
-            background: #94a3b8;
-            color: #000;
-        }
-        .status-pending {
-            background: #fbbf24;
-            color: #000;
-        }
+        .status-active { background: #34d399; color: #000; }
+        .status-inactive { background: #94a3b8; color: #000; }
+        .status-pending { background: #fbbf24; color: #000; }
         .application-actions {
             display: flex;
             gap: 0.4rem;
@@ -361,6 +391,15 @@
             background: #9370db;
             transform: scale(1.02);
         }
+        .action-btn-sm.add-role-btn {
+            background: var(--cls-professional);
+            color: #000;
+        }
+        .action-btn-sm.add-role-btn:hover {
+            background: #2bbf8a;
+            transform: scale(1.02);
+        }
+
         .search-box-inline {
             display: flex;
             gap: 0.5rem;
@@ -405,6 +444,7 @@
             color: var(--text-muted);
             font-style: italic;
         }
+
         .slider-container {
             position: relative;
             overflow: hidden;
@@ -440,12 +480,8 @@
         .slider-btn:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-        .slider-btn.prev {
-            left: 10px;
-        }
-        .slider-btn.next {
-            right: 10px;
-        }
+        .slider-btn.prev { left: 10px; }
+        .slider-btn.next { right: 10px; }
         .slider-dots {
             display: flex;
             justify-content: center;
@@ -480,9 +516,7 @@
             padding: 2rem;
             animation: fadeIn 0.3s ease;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal-content {
             background: var(--bg-dark);
             border: 1px solid var(--border-color);
@@ -495,9 +529,7 @@
             position: relative;
             animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
+        .modal-content::-webkit-scrollbar { width: 6px; }
         .modal-content::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 3px;
@@ -531,9 +563,7 @@
             align-items: center;
             gap: 0.75rem;
         }
-        .modal-title i {
-            color: var(--cls-rotaract);
-        }
+        .modal-title i { color: var(--cls-rotaract); }
         .form-group {
             margin-bottom: 1.25rem;
         }
@@ -596,6 +626,7 @@
             background: rgba(239, 68, 68, 0.1) !important;
             border-color: rgba(239, 68, 68, 0.6) !important;
         }
+
         .image-preview {
             display: flex;
             align-items: center;
@@ -648,12 +679,8 @@
             animation: slideIn 0.3s ease;
             backdrop-filter: blur(10px);
         }
-        .toast.error {
-            border-left-color: #ef4444;
-        }
-        .toast.info {
-            border-left-color: #3b82f6;
-        }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.info { border-left-color: #3b82f6; }
         footer {
             text-align: center;
             padding: 2rem;
@@ -672,55 +699,23 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-        .role-badge.admin {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .role-badge.president {
-            background: #fce4ec;
-            color: #991b1b;
-        }
-        .role-badge.secretary {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .role-badge.editor {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-        .role-badge.viewer {
-            background: #e5e7eb;
-            color: #374151;
-        }
-        .role-badge.no-role {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
+        .role-badge.admin { background: #fef3c7; color: #92400e; }
+        .role-badge.president { background: #fce4ec; color: #991b1b; }
+        .role-badge.secretary { background: #dbeafe; color: #1e40af; }
+        .role-badge.editor { background: #e0f2fe; color: #0369a1; }
+        .role-badge.viewer { background: #e5e7eb; color: #374151; }
+        .role-badge.no-role { background: #f3f4f6; color: #6b7280; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
+
         @media (max-width: 1024px) {
             .slider-track .member-node {
                 min-width: calc(50% - 1rem);
@@ -728,63 +723,42 @@
             }
         }
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .members-feed {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .navbar {
-                padding: 0.75rem 1rem;
-            }
-            .workspace-section {
-                padding: 0 1rem;
-            }
-            .panel-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .panel-actions {
-                flex-wrap: wrap;
-            }
-            .search-box-inline input {
-                min-width: 100px;
-                width: 100%;
-            }
-            .search-box-inline {
-                flex: 1;
-            }
-            .nav-actions {
-                flex-wrap: wrap;
-            }
-            .btn-back,
-            .btn-logout {
-                font-size: 0.75rem;
-                padding: 0.4rem 0.8rem;
-            }
+            .hero h1 { font-size: 2rem; }
+            .members-feed { grid-template-columns: 1fr; }
+            .modal-content { padding: 1.5rem; margin: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .navbar { padding: 0.75rem 1rem; }
+            .workspace-section { padding: 0 1rem; }
+            .panel-header { flex-direction: column; align-items: stretch; }
+            .panel-actions { flex-wrap: wrap; }
+            .search-box-inline input { min-width: 100px; width: 100%; }
+            .search-box-inline { flex: 1; }
+            .nav-actions { flex-wrap: wrap; }
+            .btn-back, .btn-logout { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
             .slider-track .member-node {
                 min-width: calc(100% - 0rem);
                 flex: 0 0 calc(100% - 0rem);
             }
-            .slider-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 0.8rem;
-            }
+            .slider-btn { width: 32px; height: 32px; font-size: 0.8rem; }
+            .access-denied-overlay h2 { font-size: 1.8rem; }
+            .access-denied-overlay .denied-icon { font-size: 3.5rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== ACCESS DENIED OVERLAY ===== -->
+    <div class="access-denied-overlay" id="accessDeniedOverlay">
+        <div class="denied-icon"><i class="fa-solid fa-lock"></i></div>
+        <h2>⛔ Access Denied</h2>
+        <p>This area is strictly for administrators only. You do not have permission to view this page.</p>
+        <button class="btn-go-back" id="goBackBtn">
+            <i class="fa-solid fa-arrow-left"></i> Go Back
+        </button>
+    </div>
+
     <nav class="navbar" id="navbar">
-        <a href="#" class="nav-logo"><i class="fa-solid fa-users"></i> Members · Admin</a>
+        <a href="#" class="nav-logo"><i class="fa-solid fa-users"></i> Members · Admin Only</a>
         <div class="nav-actions">
             <button class="btn-back" id="backToAdminBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
             <button class="btn-logout" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
@@ -840,6 +814,7 @@
         <div class="panel-header">
             <h2><i class="fa-solid fa-user-shield" style="color: var(--cls-links);"></i> Manage Roles</h2>
             <div class="panel-actions">
+                <button class="action-btn btn-add-accent" id="addRoleBtn"><i class="fa-solid fa-plus"></i> Add Role</button>
                 <button class="action-btn" id="refresh-roles-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
             </div>
         </div>
@@ -904,24 +879,25 @@
         </div>
     </div>
 
-    <!-- MODAL for Role Management -->
+    <!-- MODAL for Role Management (Add/Edit) -->
     <div class="modal-overlay" id="roleModal">
         <div class="modal-content">
             <button class="modal-close" id="roleModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
             <div class="modal-title"><i class="fa-solid fa-user-shield" style="color: var(--cls-links);"></i> <span id="roleModalTitle">Manage User Role</span></div>
             <form id="roleForm">
                 <input type="hidden" id="roleUserId" value="">
+                <input type="hidden" id="roleEditMode" value="edit">
                 <div class="form-group">
-                    <label>User Email</label>
-                    <input type="text" id="roleUserEmail" readonly style="background:rgba(255,255,255,0.02);" />
+                    <label>User Email *</label>
+                    <input type="email" id="roleUserEmail" placeholder="user@example.com" required />
                 </div>
                 <div class="form-group">
-                    <label>Current Role</label>
-                    <input type="text" id="roleCurrentRole" readonly style="background:rgba(255,255,255,0.02);" />
+                    <label>Full Name</label>
+                    <input type="text" id="roleFullName" placeholder="Full Name" />
                 </div>
                 <div class="form-group">
-                    <label>Assign New Role</label>
-                    <select id="roleNewRole">
+                    <label>Assign Role *</label>
+                    <select id="roleNewRole" required>
                         <option value="viewer">👀 Viewer</option>
                         <option value="editor">✏️ Editor</option>
                         <option value="secretary">📝 Secretary</option>
@@ -929,15 +905,22 @@
                         <option value="admin">⚙️ Admin</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="roleStatus">
+                        <option value="active">✅ Active</option>
+                        <option value="inactive">❌ Inactive</option>
+                    </select>
+                </div>
                 <div class="form-actions">
                     <button type="button" class="action-btn btn-cancel-accent" id="roleModalCancelBtn">Cancel</button>
-                    <button type="submit" class="action-btn btn-save-accent"><i class="fa-solid fa-floppy-disk"></i> Update Role</button>
+                    <button type="submit" class="action-btn btn-save-accent"><i class="fa-solid fa-floppy-disk"></i> <span id="roleSubmitBtnText">Save Role</span></button>
                 </div>
             </form>
         </div>
     </div>
 
-    <footer><p>&copy; 2026 Members · Image Upload & Role Management</p></footer>
+    <footer><p>&copy; 2026 Members · Admin Only</p></footer>
 
     <script>
         (() => {
@@ -953,6 +936,63 @@
             const REGISTRATIONS_TABLE = 'member_registrations';
             const USER_ROLES_TABLE = 'user_roles';
 
+            // ============================================================
+            // ===== SECURE ADMIN ACCESS CONTROL =====
+            // ============================================================
+            const accessDeniedOverlay = document.getElementById('accessDeniedOverlay');
+
+            const showAccessDenied = () => {
+                accessDeniedOverlay.classList.add('active');
+                document.querySelectorAll('.workspace-section').forEach(el => el.style.display = 'none');
+                document.querySelector('.hero').style.display = 'none';
+            };
+
+            const hideAccessDenied = () => {
+                accessDeniedOverlay.classList.remove('active');
+                document.querySelectorAll('.workspace-section').forEach(el => el.style.display = 'block');
+                document.querySelector('.hero').style.display = 'block';
+            };
+
+            document.getElementById('goBackBtn')?.addEventListener('click', () => {
+                window.location.href = '/index.html';
+            });
+
+            const checkAdminRole = async () => {
+                try {
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                    if (sessionError || !session) {
+                        window.location.href = '/index.html';
+                        return false;
+                    }
+
+                    const { data: roleData, error: roleError } = await supabase
+                        .from('user_roles')
+                        .select('role, status')
+                        .eq('user_id', session.user.id)
+                        .maybeSingle();
+
+                    if (roleError) {
+                        console.error('Error fetching role:', roleError);
+                        showAccessDenied();
+                        return false;
+                    }
+
+                    if (!roleData || roleData.role !== 'admin' || roleData.status !== 'active') {
+                        console.warn('Access denied: User is not active admin.', roleData);
+                        showAccessDenied();
+                        return false;
+                    }
+
+                    hideAccessDenied();
+                    return true;
+
+                } catch (err) {
+                    console.error('Auth check error:', err);
+                    showAccessDenied();
+                    return false;
+                }
+            };
+
             let editingMemberId = null;
             let allMembers = [];
             let registrations = [];
@@ -960,7 +1000,6 @@
             let currentImageFile = null;
             let existingImageUrl = '';
 
-            // Slider state
             let regSliderIndex = 0;
             let memSliderIndex = 0;
             let roleSliderIndex = 0;
@@ -1178,6 +1217,7 @@
                 const userName = item.full_name || item.name || item.email || 'Unknown User';
                 const userEmail = item.email || 'No email';
                 const isActive = item.status !== 'inactive';
+                const userId = item.user_id || '';
 
                 return `
                     <article class="member-node" style="border-left-color: var(--cls-links);">
@@ -1196,19 +1236,26 @@
                             <span class="role-badge ${badgeClass}">${icon} ${roleDisplay}</span>
                         </div>
                         <div class="application-actions">
-                            <button class="action-btn-sm role-btn" data-user-id="${item.user_id}" data-action="manage-role" data-email="${escapeHtml(userEmail)}" data-role="${role}">
-                                <i class="fa-solid fa-pen-to-square"></i> Manage Role
+                            <button class="action-btn-sm role-btn" data-user-id="${userId}" data-action="edit-role" data-email="${escapeHtml(userEmail)}" data-role="${role}" data-fullname="${escapeHtml(userName)}" data-status="${item.status || 'active'}">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
                             </button>
-                            <button class="action-btn-sm status-toggle ${isActive ? '' : 'inactive-toggle'}" data-user-id="${item.user_id}" data-action="toggle-user-status">
+                            <button class="action-btn-sm status-toggle ${isActive ? '' : 'inactive-toggle'}" data-user-id="${userId}" data-action="toggle-user-status">
                                 <i class="fa-solid fa-arrows-rotate"></i> ${isActive ? 'Set Inactive' : 'Set Active'}
+                            </button>
+                            <button class="action-btn-sm delete-btn" data-user-id="${userId}" data-action="delete-role">
+                                <i class="fa-solid fa-trash"></i> Delete
                             </button>
                         </div>
                     </article>
                 `;
             }
 
-            // ---------- LOAD REGISTRATIONS ----------
+            // ============================================================
+            // ===== LOAD REGISTRATIONS =====
+            // ============================================================
             const loadRegistrations = async () => {
+                const isAuthorized = await checkAdminRole();
+                if (!isAuthorized) return;
                 try {
                     const { data, error } = await supabase
                         .from(REGISTRATIONS_TABLE)
@@ -1224,8 +1271,12 @@
                 }
             };
 
-            // ---------- LOAD MEMBERS ----------
+            // ============================================================
+            // ===== LOAD MEMBERS =====
+            // ============================================================
             const loadMembers = async (searchTerm = '') => {
+                const isAuthorized = await checkAdminRole();
+                if (!isAuthorized) return;
                 try {
                     let query = supabase.from(MEMBERS_TABLE).select('*').order('id', { ascending: false });
                     if (searchTerm && searchTerm.trim()) {
@@ -1242,10 +1293,13 @@
                 }
             };
 
-            // ---------- LOAD USER ROLES (FIXED - Using RPC or admin API) ----------
+            // ============================================================
+            // ===== LOAD USER ROLES - WITH NAME AND EMAIL =====
+            // ============================================================
             const loadUserRoles = async () => {
+                const isAuthorized = await checkAdminRole();
+                if (!isAuthorized) return;
                 try {
-                    // Get roles from user_roles table
                     const { data: rolesData, error: rolesError } = await supabase
                         .from(USER_ROLES_TABLE)
                         .select('*')
@@ -1253,66 +1307,66 @@
 
                     if (rolesError) throw rolesError;
 
-                    // Get users from the user_roles_view (which is accessible)
+                    // Try to get user details from user_roles_view first
                     const { data: viewData, error: viewError } = await supabase
                         .from('user_roles_view')
                         .select('*')
                         .order('joined_at', { ascending: false });
 
-                    if (viewError) {
-                        // If view doesn't exist, create a fallback using roles data
-                        console.warn('user_roles_view not found, using fallback', viewError);
-                        
-                        // Create a simple fallback - get users from roles and use email from auth
-                        const merged = (rolesData || []).map(role => {
-                            // Try to get user info from members table as fallback
-                            const member = allMembers.find(m => m.email && m.email === role.email);
+                    let merged = [];
+
+                    if (!viewError && viewData && viewData.length > 0) {
+                        merged = (viewData || []).map(viewUser => {
+                            const roleEntry = (rolesData || []).find(r => r.user_id === viewUser.user_id);
                             return {
-                                user_id: role.user_id,
-                                email: role.email || member?.email || 'Unknown',
-                                full_name: member?.name || 'Unknown User',
-                                role: role.role || 'no_role',
-                                created_at: role.created_at,
-                                status: role.status || 'active'
+                                user_id: viewUser.user_id,
+                                email: viewUser.email || 'No email',
+                                full_name: viewUser.full_name || viewUser.email?.split('@')[0] || 'Unknown User',
+                                role: roleEntry?.role || viewUser.role || 'no_role',
+                                created_at: viewUser.joined_at || viewUser.role_assigned_at,
+                                status: roleEntry?.status || 'active'
                             };
                         });
-                        
-                        userRoles = merged;
-                        renderSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
-                        attachRoleListeners();
-                        return;
-                    }
-
-                    // Merge view data with roles data for complete info
-                    const merged = (viewData || []).map(viewUser => {
-                        const roleEntry = (rolesData || []).find(r => r.user_id === viewUser.user_id);
-                        return {
-                            user_id: viewUser.user_id,
-                            email: viewUser.email || 'No email',
-                            full_name: viewUser.full_name || viewUser.email?.split('@')[0] || 'Unknown',
-                            role: roleEntry?.role || viewUser.role || 'no_role',
-                            created_at: viewUser.joined_at || viewUser.role_assigned_at,
-                            status: roleEntry?.status || 'active'
-                        };
-                    });
-
-                    // If no users from view, use roles data
-                    if (merged.length === 0) {
-                        const fallbackMerged = (rolesData || []).map(role => {
-                            return {
-                                user_id: role.user_id,
-                                email: role.email || 'Unknown',
-                                full_name: 'Unknown User',
-                                role: role.role || 'no_role',
-                                created_at: role.created_at,
-                                status: role.status || 'active'
-                            };
-                        });
-                        userRoles = fallbackMerged;
                     } else {
-                        userRoles = merged;
+                        // Fallback: Join with members table to get name
+                        const { data: membersData } = await supabase
+                            .from(MEMBERS_TABLE)
+                            .select('email, name')
+                            .not('email', 'is', null);
+
+                        const memberMap = {};
+                        if (membersData) {
+                            membersData.forEach(m => {
+                                if (m.email) memberMap[m.email.toLowerCase()] = m.name;
+                            });
+                        }
+
+                        merged = (rolesData || []).map(role => {
+                            const email = role.email || 'Unknown';
+                            const fullName = memberMap[email.toLowerCase()] || email.split('@')[0] || 'Unknown User';
+                            return {
+                                user_id: role.user_id,
+                                email: email,
+                                full_name: fullName,
+                                role: role.role || 'no_role',
+                                created_at: role.created_at,
+                                status: role.status || 'active'
+                            };
+                        });
                     }
 
+                    if (merged.length === 0) {
+                        merged = (rolesData || []).map(role => ({
+                            user_id: role.user_id,
+                            email: role.email || 'Unknown',
+                            full_name: role.email?.split('@')[0] || 'Unknown User',
+                            role: role.role || 'no_role',
+                            created_at: role.created_at,
+                            status: role.status || 'active'
+                        }));
+                    }
+
+                    userRoles = merged;
                     renderSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
                     attachRoleListeners();
 
@@ -1324,7 +1378,9 @@
                 }
             };
 
-            // Helper function to attach role event listeners
+            // ============================================================
+            // ===== ROLE LISTENERS =====
+            // ============================================================
             function attachRoleListeners() {
                 document.querySelectorAll('#rolesTrack .action-btn-sm').forEach(btn => {
                     btn.removeEventListener('click', handleRoleAction);
@@ -1337,17 +1393,173 @@
                 const btn = e.currentTarget;
                 const userId = btn.dataset.userId;
                 const action = btn.dataset.action;
-                if (action === 'manage-role') {
-                    openRoleModal(userId, btn.dataset.email, btn.dataset.role);
+
+                if (action === 'edit-role') {
+                    const email = btn.dataset.email || '';
+                    const role = btn.dataset.role || 'viewer';
+                    const fullName = btn.dataset.fullname || '';
+                    const status = btn.dataset.status || 'active';
+                    openEditRoleModal(userId, email, role, fullName, status);
                 } else if (action === 'toggle-user-status') {
                     toggleUserStatus(userId);
+                } else if (action === 'delete-role') {
+                    deleteUserRole(userId);
                 }
             }
 
-            // ---------- VERIFY REGISTRATION ----------
+            // ============================================================
+            // ===== OPEN EDIT ROLE MODAL =====
+            // ============================================================
+            const openEditRoleModal = (userId, email, currentRole, fullName, status) => {
+                document.getElementById('roleUserId').value = userId || '';
+                document.getElementById('roleUserEmail').value = email || '';
+                document.getElementById('roleFullName').value = fullName || '';
+                document.getElementById('roleNewRole').value = currentRole || 'viewer';
+                document.getElementById('roleStatus').value = status || 'active';
+                document.getElementById('roleEditMode').value = 'edit';
+                document.getElementById('roleModalTitle').textContent = '✏️ Edit User Role';
+                document.getElementById('roleSubmitBtnText').textContent = 'Update Role';
+                document.getElementById('roleModal').classList.add('active');
+            };
+
+            // ============================================================
+            // ===== OPEN ADD ROLE MODAL =====
+            // ============================================================
+            const openAddRoleModal = () => {
+                document.getElementById('roleUserId').value = '';
+                document.getElementById('roleUserEmail').value = '';
+                document.getElementById('roleFullName').value = '';
+                document.getElementById('roleNewRole').value = 'viewer';
+                document.getElementById('roleStatus').value = 'active';
+                document.getElementById('roleEditMode').value = 'add';
+                document.getElementById('roleModalTitle').textContent = '➕ Add New Role';
+                document.getElementById('roleSubmitBtnText').textContent = 'Add Role';
+                document.getElementById('roleModal').classList.add('active');
+            };
+
+            // ============================================================
+            // ===== CLOSE ROLE MODAL =====
+            // ============================================================
+            const closeRoleModal = () => {
+                document.getElementById('roleModal').classList.remove('active');
+            };
+
+            // ============================================================
+            // ===== SUBMIT ROLE (Add/Edit) =====
+            // ============================================================
+            document.getElementById('roleForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const userId = document.getElementById('roleUserId').value;
+                const email = document.getElementById('roleUserEmail').value.trim();
+                const fullName = document.getElementById('roleFullName').value.trim();
+                const newRole = document.getElementById('roleNewRole').value;
+                const status = document.getElementById('roleStatus').value;
+                const editMode = document.getElementById('roleEditMode').value;
+
+                if (!email) {
+                    showToast('❌ Email is required.', 'error');
+                    return;
+                }
+
+                try {
+                    let result;
+
+                    if (editMode === 'edit' && userId) {
+                        // Update existing role
+                        result = await supabase
+                            .from(USER_ROLES_TABLE)
+                            .update({
+                                role: newRole,
+                                status: status,
+                                email: email,
+                                full_name: fullName || email.split('@')[0],
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('user_id', userId);
+                    } else {
+                        // Add new role - first check if user exists in auth.users
+                        const { data: authUser, error: authError } = await supabase
+                            .from('auth.users')
+                            .select('id')
+                            .eq('email', email)
+                            .maybeSingle();
+
+                        if (authError || !authUser) {
+                            showToast('❌ User not found. Please add user to auth first.', 'error');
+                            return;
+                        }
+
+                        // Check if role already exists
+                        const { data: existingRole } = await supabase
+                            .from(USER_ROLES_TABLE)
+                            .select('user_id')
+                            .eq('user_id', authUser.id)
+                            .maybeSingle();
+
+                        if (existingRole) {
+                            showToast('⚠️ User already has a role. Use Edit instead.', 'error');
+                            return;
+                        }
+
+                        result = await supabase
+                            .from(USER_ROLES_TABLE)
+                            .insert([{
+                                user_id: authUser.id,
+                                email: email,
+                                full_name: fullName || email.split('@')[0],
+                                role: newRole,
+                                status: status,
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
+                            }]);
+                    }
+
+                    if (result.error) throw result.error;
+
+                    showToast(`✅ Role ${editMode === 'edit' ? 'updated' : 'added'} successfully!`, 'success');
+                    closeRoleModal();
+                    await loadUserRoles();
+
+                } catch (err) {
+                    console.error('Error saving role:', err);
+                    showToast('❌ Error saving role: ' + err.message, 'error');
+                }
+            });
+
+            // ============================================================
+            // ===== DELETE USER ROLE =====
+            // ============================================================
+            const deleteUserRole = async (userId) => {
+                if (!userId) {
+                    showToast('❌ User ID not found.', 'error');
+                    return;
+                }
+
+                if (!confirm('⚠️ Are you sure you want to delete this user role permanently?')) return;
+
+                try {
+                    const { error } = await supabase
+                        .from(USER_ROLES_TABLE)
+                        .delete()
+                        .eq('user_id', userId);
+
+                    if (error) throw error;
+
+                    showToast('🗑️ User role deleted successfully!', 'success');
+                    await loadUserRoles();
+
+                } catch (err) {
+                    console.error('Error deleting role:', err);
+                    showToast('❌ Error deleting role: ' + err.message, 'error');
+                }
+            };
+
+            // ============================================================
+            // ===== VERIFY REGISTRATION =====
+            // ============================================================
             const verifyRegistration = async (id) => {
                 if (!confirm('✅ Verify this member and add to active members list?')) return;
-
                 try {
                     const reg = registrations.find(r => String(r.id) === String(id));
                     if (!reg) { showToast('Registration not found.', 'error'); return; }
@@ -1366,7 +1578,6 @@
                         status: 'active'
                     };
 
-                    // Check if member already exists
                     const { data: existing } = await supabase
                         .from(MEMBERS_TABLE)
                         .select('id')
@@ -1381,7 +1592,6 @@
                         return;
                     }
 
-                    // Insert into members
                     const { data: insertData, error: insertError } = await supabase
                         .from(MEMBERS_TABLE)
                         .insert([memberData])
@@ -1389,7 +1599,6 @@
 
                     if (insertError) throw new Error(insertError.message);
 
-                    // Delete from registrations
                     await supabase.from(REGISTRATIONS_TABLE).delete().eq('id', id);
 
                     showToast('✅ Member verified and added to active members!', 'success');
@@ -1403,7 +1612,9 @@
                 }
             };
 
-            // ---------- REJECT REGISTRATION ----------
+            // ============================================================
+            // ===== REJECT REGISTRATION =====
+            // ============================================================
             const rejectRegistration = async (id) => {
                 if (!confirm('❌ Reject this registration? This will delete it permanently.')) return;
                 try {
@@ -1415,7 +1626,9 @@
                 }
             };
 
-            // ---------- TOGGLE MEMBER STATUS ----------
+            // ============================================================
+            // ===== TOGGLE MEMBER STATUS =====
+            // ============================================================
             const toggleMemberStatus = async (id) => {
                 try {
                     const member = allMembers.find(m => m.id === id);
@@ -1430,14 +1643,15 @@
                 }
             };
 
-            // ---------- TOGGLE USER STATUS (for role management) ----------
+            // ============================================================
+            // ===== TOGGLE USER STATUS =====
+            // ============================================================
             const toggleUserStatus = async (userId) => {
                 try {
                     const user = userRoles.find(u => u.user_id === userId);
                     if (!user) { showToast('User not found.', 'error'); return; }
                     const newStatus = user.status === 'active' ? 'inactive' : 'active';
-                    
-                    // Update in user_roles table
+
                     const { error } = await supabase
                         .from(USER_ROLES_TABLE)
                         .update({ status: newStatus })
@@ -1451,7 +1665,9 @@
                 }
             };
 
-            // ---------- DELETE MEMBER ----------
+            // ============================================================
+            // ===== DELETE MEMBER =====
+            // ============================================================
             const deleteMember = async (id) => {
                 if (!confirm(`⚠️ Delete member #${id}?`)) return;
                 try {
@@ -1468,7 +1684,9 @@
                 }
             };
 
-            // ---------- EDIT MEMBER ----------
+            // ============================================================
+            // ===== EDIT MEMBER =====
+            // ============================================================
             const editMember = async (id) => {
                 try {
                     const { data, error } = await supabase.from(MEMBERS_TABLE).select('*').eq('id', id).single();
@@ -1511,48 +1729,9 @@
                 }
             };
 
-            // ---------- OPEN ROLE MODAL ----------
-            const openRoleModal = (userId, email, currentRole) => {
-                document.getElementById('roleUserId').value = userId;
-                document.getElementById('roleUserEmail').value = email || 'No email';
-                document.getElementById('roleCurrentRole').value = getRoleDisplayName(currentRole) + ' ' + getRoleIcon(currentRole);
-                document.getElementById('roleNewRole').value = currentRole || 'viewer';
-                document.getElementById('roleModalTitle').textContent = 'Manage User Role';
-                document.getElementById('roleModal').classList.add('active');
-            };
-
-            // ---------- CLOSE ROLE MODAL ----------
-            const closeRoleModal = () => {
-                document.getElementById('roleModal').classList.remove('active');
-            };
-
-            // ---------- SUBMIT ROLE ----------
-            document.getElementById('roleForm')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const userId = document.getElementById('roleUserId').value;
-                const newRole = document.getElementById('roleNewRole').value;
-
-                if (!userId) {
-                    showToast('❌ User ID not found.', 'error');
-                    return;
-                }
-
-                try {
-                    const { error } = await supabase
-                        .from(USER_ROLES_TABLE)
-                        .upsert({ user_id: userId, role: newRole }, { onConflict: 'user_id' });
-
-                    if (error) throw error;
-
-                    showToast(`✅ Role updated to ${getRoleDisplayName(newRole)}`, 'success');
-                    closeRoleModal();
-                    await loadUserRoles();
-                } catch (err) {
-                    showToast('❌ Error updating role: ' + err.message, 'error');
-                }
-            });
-
-            // ---------- OPEN ADD MODAL ----------
+            // ============================================================
+            // ===== OPEN ADD MODAL =====
+            // ============================================================
             const openAddModal = () => {
                 editingMemberId = null;
                 document.getElementById('memberForm').reset();
@@ -1576,7 +1755,9 @@
                 document.getElementById('profileImageInput').value = '';
             };
 
-            // ---------- IMAGE PREVIEW ----------
+            // ============================================================
+            // ===== IMAGE PREVIEW =====
+            // ============================================================
             document.getElementById('profileImageInput')?.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1600,7 +1781,9 @@
                 existingImageUrl = '';
             });
 
-            // ---------- FORM SUBMIT ----------
+            // ============================================================
+            // ===== FORM SUBMIT =====
+            // ============================================================
             document.getElementById('memberForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const memberData = {
@@ -1659,8 +1842,9 @@
                 }
             });
 
-            // ---------- EVENT LISTENERS ----------
-            // Registrations actions (delegated)
+            // ============================================================
+            // ===== EVENT LISTENERS =====
+            // ============================================================
             document.getElementById('registrationsTrack')?.addEventListener('click', (e) => {
                 const btn = e.target.closest('.action-btn-sm');
                 if (!btn) return;
@@ -1670,7 +1854,6 @@
                 else if (action === 'reject') rejectRegistration(id);
             });
 
-            // Members actions (delegated)
             document.getElementById('membersTrack')?.addEventListener('click', (e) => {
                 const btn = e.target.closest('.action-btn-sm');
                 if (!btn) return;
@@ -1730,6 +1913,9 @@
                 loadMembers(document.getElementById('memberSearchInput').value || '');
             });
             document.getElementById('refresh-roles-btn')?.addEventListener('click', loadUserRoles);
+
+            // Add Role button
+            document.getElementById('addRoleBtn')?.addEventListener('click', openAddRoleModal);
 
             // Clear buttons
             document.getElementById('clear-registrations-btn')?.addEventListener('click', async () => {
@@ -1819,10 +2005,16 @@
                     window.location.href = '/index.html';
                     return;
                 }
+
+                const isAuthorized = await checkAdminRole();
+                if (!isAuthorized) {
+                    showAccessDenied();
+                    return;
+                }
+
                 await Promise.all([loadRegistrations(), loadMembers(), loadUserRoles()]);
                 setupRealtime();
 
-                // Handle window resize for slider
                 let resizeTimeout;
                 window.addEventListener('resize', () => {
                     clearTimeout(resizeTimeout);
@@ -1840,15 +2032,6 @@
             });
 
             document.addEventListener('DOMContentLoaded', init);
-
-            // Expose functions globally for inline handlers
-            window.deleteMember = deleteMember;
-            window.editMember = editMember;
-            window.toggleMemberStatus = toggleMemberStatus;
-            window.verifyRegistration = verifyRegistration;
-            window.rejectRegistration = rejectRegistration;
-            window.toggleUserStatus = toggleUserStatus;
-            window.openRoleModal = openRoleModal;
 
         })();
     </script>

@@ -58,6 +58,7 @@
             background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 40%);
             background-attachment: fixed;
+            min-height: 100vh;
         }
 
         /* --- NAVBAR --- */
@@ -210,9 +211,9 @@
         .access-denied-card .btn-redirect {
             display: inline-block;
             background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
-            color: var(--white);
+            color: #fff;
             padding: 14px 40px;
-            border-radius: var(--radius-sm);
+            border-radius: 60px;
             text-decoration: none;
             font-weight: 700;
             font-size: 1.05rem;
@@ -1369,7 +1370,7 @@
             <span class="icon-big">⛔</span>
             <h2>Access Denied</h2>
             <p>You do not have permission to access the Admin Dashboard.</p>
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Only users with <strong>Admin</strong> role can access this page.</p>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Only active <strong>Admin</strong> users can access this page.</p>
             <a href="/index.html" class="btn-redirect" id="redirectBtn">🏠 Go to Homepage</a>
             <div class="countdown-timer">Redirecting in <span id="countdownNum">5</span> seconds...</div>
         </div>
@@ -1537,7 +1538,6 @@
             <button class="tab-btn" data-filter="share">Share Market</button>
         </div>
         <div class="links-grid" id="links-grid">
-            <!-- All links remain the same -->
             <a href="https://www.udemy.com/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-laravel link-icon"></i> Udemy</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
             <a href="https://www.coursera.org/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-solid fa-graduation-cap link-icon"></i> Coursera</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
             <a href="https://www.linkedin.com/learning/" target="_blank" rel="noopener" class="link-item" data-category="learning"><span><i class="fa-brands fa-linkedin link-icon"></i> LinkedIn Learning</span><i class="fa-solid fa-chevron-right arrow-icon"></i></a>
@@ -1599,7 +1599,8 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== COMPLETE JAVASCRIPT ===== -->
+    <!-- ===== COMPLETE JAVASCRIPT WITH ACTIVE ADMIN CHECK ===== -->
+    <!-- ============================================================ -->
     <script>
         (() => {
             "use strict";
@@ -1611,22 +1612,22 @@
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             // ============================================================
-            // ROLE-BASED ACCESS CONTROL
+            // ROLE-BASED ACCESS CONTROL WITH STATUS CHECK
             // ============================================================
             async function checkAdminAccess() {
                 try {
                     // Get current session
                     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                    
+
                     if (sessionError || !session) {
                         window.location.href = '/index.html';
                         return false;
                     }
 
-                    // Get user's role from user_roles table
+                    // Get user's role AND status from user_roles table
                     const { data: roleData, error: roleError } = await supabase
                         .from('user_roles')
-                        .select('role')
+                        .select('role, status')
                         .eq('user_id', session.user.id)
                         .maybeSingle();
 
@@ -1636,14 +1637,14 @@
                         return false;
                     }
 
-                    // Check if user has admin role
-                    if (!roleData || roleData.role !== 'admin') {
-                        console.warn('Access denied: User does not have admin role. Role:', roleData?.role);
+                    // Check if user has admin role AND is active
+                    if (!roleData || roleData.role !== 'admin' || roleData.status !== 'active') {
+                        console.warn('Access denied: User is not active admin. Role:', roleData?.role, 'Status:', roleData?.status);
                         showAccessDenied();
                         return false;
                     }
 
-                    // User is admin - proceed
+                    // User is active admin - proceed
                     return true;
 
                 } catch (err) {
@@ -1656,7 +1657,7 @@
             function showAccessDenied() {
                 const overlay = document.getElementById('accessDeniedOverlay');
                 overlay.classList.add('active');
-                
+
                 // Start countdown
                 let countdown = 5;
                 const countdownEl = document.getElementById('countdownNum');
@@ -1784,7 +1785,7 @@
             // ===== MAIN INIT =====
             // ============================================================
             async function initDashboard() {
-                // Check admin access first
+                // Check admin access first (role + status)
                 const hasAccess = await checkAdminAccess();
                 if (!hasAccess) return;
 
