@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Nabin Chalise · Premium Portfolio</title>
+  <title>Nabin Chalise</title>
   <meta name="description" content="Nabin Chalise – Computer Operator & ICT Professional. Galkot, Nepal.">
   <meta name="theme-color" content="#0f172a">
   <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%232563eb'/></svg>">
@@ -12,7 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    /* ====== RESET & BASE ====== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, system-ui, sans-serif;
@@ -99,7 +98,7 @@
     }
     .btn-danger:hover { background: #dc2626; }
 
-    /* ====== NAVBAR ====== */
+    /* NAVBAR */
     .navbar {
       position: fixed;
       top: 16px;
@@ -162,7 +161,7 @@
       cursor: pointer;
     }
 
-    /* ====== HERO ====== */
+    /* HERO */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -247,7 +246,7 @@
     }
     @keyframes pulseGlow { 0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
 
-    /* ====== DASHBOARD ====== */
+    /* DASHBOARD */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -268,7 +267,7 @@
     .dash-card .value { font-size: 1.6rem; font-weight: 700; }
     .dash-card .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
 
-    /* ====== TIMELINE ====== */
+    /* TIMELINE */
     .timeline {
       display: flex;
       flex-direction: column;
@@ -288,7 +287,7 @@
     .timeline-item .year { font-weight: 600; color: #2563eb; min-width: 120px; }
     .timeline-item .desc { color: #94a3b8; }
 
-    /* ====== SKILLS ====== */
+    /* SKILLS */
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -317,7 +316,7 @@
       font-size: 0.9rem;
     }
 
-    /* ====== PROJECTS ====== */
+    /* PROJECTS */
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -360,7 +359,7 @@
       color: #f1f5f9;
     }
 
-    /* ====== QUOTE ====== */
+    /* QUOTE */
     .quote-card {
       background: rgba(255,255,255,0.02);
       border-radius: 32px;
@@ -429,7 +428,7 @@
       color: #ef4444;
     }
 
-    /* ====== CONTACT ====== */
+    /* CONTACT */
     .contact-grid {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -463,7 +462,7 @@
     .contact-form textarea { min-height: 120px; resize: vertical; }
     .contact-form .btn { width: 100%; justify-content: center; }
 
-    /* ====== FOOTER ====== */
+    /* FOOTER */
     footer {
       border-top: 1px solid rgba(255,255,255,0.04);
       padding: 32px 0;
@@ -475,7 +474,7 @@
     footer .socials a { color: #94a3b8; font-size: 1.4rem; transition: 0.3s; }
     footer .socials a:hover { color: #2563eb; transform: translateY(-2px); }
 
-    /* ====== BACK TO TOP ====== */
+    /* BACK TO TOP */
     .back-top {
       position: fixed;
       bottom: 30px;
@@ -498,7 +497,7 @@
     .back-top.visible { opacity: 1; }
     .back-top:hover { transform: scale(1.08); }
 
-    /* ====== SCROLL PROGRESS ====== */
+    /* SCROLL PROGRESS */
     .scroll-progress {
       position: fixed;
       top: 0;
@@ -509,7 +508,7 @@
       transition: width 0.1s;
     }
 
-    /* ====== LOGIN MODAL ====== */
+    /* LOGIN MODAL */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -697,7 +696,7 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* ====== ACCESS DENIED OVERLAY ====== */
+    /* ACCESS DENIED OVERLAY */
     .access-denied-overlay {
       display: none;
       position: fixed;
@@ -774,7 +773,130 @@
       font-size: 1.2rem;
     }
 
-    /* ====== RESPONSIVE ====== */
+    /* ====== CHOOSE PORTAL POPUP ====== */
+    .portal-popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .portal-popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .portal-popup-card {
+      background: rgba(15,23,42,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 40px;
+      padding: 48px 40px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 50px 100px rgba(0,0,0,0.6);
+      transform: scale(0.9) translateY(30px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+    }
+    .portal-popup-overlay.active .portal-popup-card {
+      transform: scale(1) translateY(0);
+    }
+    .portal-popup-card .popup-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.6rem;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .portal-popup-card .popup-close:hover { color: #f1f5f9; background: rgba(255,255,255,0.05); }
+    .portal-popup-card .popup-greeting {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .portal-popup-card .popup-sub {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      margin-bottom: 32px;
+    }
+    .portal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .portal-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      padding: 24px 16px;
+      text-decoration: none;
+      color: #f1f5f9;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .portal-item:hover {
+      background: rgba(37,99,235,0.08);
+      border-color: #2563eb;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px -8px rgba(37,99,235,0.15);
+    }
+    .portal-item .portal-icon {
+      font-size: 2.2rem;
+      margin-bottom: 4px;
+    }
+    .portal-item .portal-label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .portal-item .portal-desc {
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+    .popup-continue {
+      display: inline-block;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 36px;
+      border-radius: 60px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .popup-continue:hover {
+      background: rgba(255,255,255,0.08);
+      color: #f1f5f9;
+    }
+    @media (max-width: 500px) {
+      .portal-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .portal-popup-card { padding: 32px 20px; }
+      .portal-popup-card .popup-greeting { font-size: 1.6rem; }
+    }
+
+    /* RESPONSIVE */
     @media (max-width: 968px) {
       .hero-content { grid-template-columns: 1fr; text-align: center; }
       .hero-text p { margin: 16px auto; }
@@ -793,6 +915,7 @@
       .quote-card blockquote { font-size: 1.2rem; }
       .quote-card { padding: 32px 20px; }
       .modal-box { padding: 28px 20px; }
+      .portal-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -808,6 +931,38 @@
       <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:20px;">Only active <strong>Admin</strong> users can access this portal.</p>
       <button class="btn-redirect" id="accessDeniedBtn">🏠 Return to Homepage</button>
       <div class="countdown-timer">Redirecting in <span id="accessDeniedCountdown">10</span> seconds...</div>
+    </div>
+  </div>
+
+  <!-- ====== CHOOSE PORTAL POPUP ====== -->
+  <div class="portal-popup-overlay" id="portalPopup">
+    <div class="portal-popup-card" style="position:relative;">
+      <button class="popup-close" id="popupClose">&times;</button>
+      <div class="popup-greeting">Welcome 👋</div>
+      <div class="popup-sub">Where would you like to go?</div>
+      <div class="portal-grid">
+        <a href="g/index.html" class="portal-item">
+          <span class="portal-icon">🏛</span>
+          <span class="portal-label">Municipality</span>
+          <span class="portal-desc">Galkot Municipality</span>
+        </a>
+        <a href="/r/index.html" class="portal-item">
+          <span class="portal-icon">🤝</span>
+          <span class="portal-label">Rotaract</span>
+          <span class="portal-desc">Rotaract Club</span>
+        </a>
+        <a href="blog.html" class="portal-item">
+          <span class="portal-icon">📝</span>
+          <span class="portal-label">Blog</span>
+          <span class="portal-desc">Nabin Chalise Blog</span>
+        </a>
+        <a href="#" class="portal-item" id="portalPopupHome">
+          <span class="portal-icon">💻</span>
+          <span class="portal-label">Portfolio</span>
+          <span class="portal-desc">Main Portfolio</span>
+        </a>
+      </div>
+      <a href="#" class="popup-continue" id="popupContinue">Continue to Homepage</a>
     </div>
   </div>
 
@@ -923,8 +1078,6 @@
           <div class="tags"><span>Operations</span><span>Data</span></div>
           <a href="g/index.html" class="card-link">View Project →</a>
         </div>
-
-
         <div class="project-card">
           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%231e293b'/%3E%3Ctext x='30' y='120' fill='%2394a3b8' font-size='20' font-family='Inter'%3ERotaract%20Club%20of%20Galkot%20Baglung%3C/text%3E%3C/svg%3E" alt="Project">
           <h4>Rotaract Club of Galkot Baglung</h4>
@@ -1030,13 +1183,11 @@
       <button class="modal-close" id="modalClose" aria-label="Close login">&times;</button>
       <div class="modal-title">Welcome Back</div>
       <div class="modal-sub">Sign in to access your portal</div>
-
       <div class="error-msg" id="errorMsg"></div>
       <div class="success-check" id="successCheck">
         <div class="check-icon">✅</div>
         <p style="color:#34d399; margin-top:6px; font-weight:500;">Login successful! Redirecting...</p>
       </div>
-
       <form id="loginForm" autocomplete="off">
         <div class="modal-field">
           <label for="loginEmail">Email</label>
@@ -1087,11 +1238,44 @@
       const accessDeniedBtn = document.getElementById('accessDeniedBtn');
       const accessDeniedCountdown = document.getElementById('accessDeniedCountdown');
 
+      // ====== POPUP CONTROLS ======
+      const portalPopup = document.getElementById('portalPopup');
+      const popupClose = document.getElementById('popupClose');
+      const popupContinue = document.getElementById('popupContinue');
+      const popupHome = document.getElementById('portalPopupHome');
+
+      function openPopup() {
+        portalPopup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      function closePopup() {
+        portalPopup.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // Show popup on load
+      window.addEventListener('load', () => {
+        setTimeout(openPopup, 600);
+      });
+
+      popupClose.addEventListener('click', closePopup);
+      popupContinue.addEventListener('click', (e) => {
+        e.preventDefault();
+        closePopup();
+      });
+      popupHome.addEventListener('click', (e) => {
+        e.preventDefault();
+        closePopup();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      portalPopup.addEventListener('click', (e) => {
+        if (e.target === portalPopup) closePopup();
+      });
+
       // ====== ACCESS DENIED STATE ======
       let accessDeniedTimer = null;
       let isAccessDenied = false;
 
-      // ====== HELPERS ======
       function showError(text) {
         errorMsg.textContent = text;
         errorMsg.classList.add('visible');
@@ -1112,43 +1296,27 @@
         }
       }
 
-      // ====== CHECK IF USER IS ADMIN (WITH STATUS) ======
       async function checkUserIsAdmin() {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (!session) return false;
-
-          // ✅ Check BOTH role AND status
           const { data, error } = await supabase
             .from('user_roles')
             .select('role, status')
             .eq('user_id', session.user.id)
             .maybeSingle();
-
-          if (error) {
-            console.error('Error checking role:', error);
-            return false;
-          }
-
-          // ✅ Both conditions must be true
+          if (error) { console.error('Error checking role:', error); return false; }
           return data && data.role === 'admin' && data.status === 'active';
-        } catch (err) {
-          console.error('Admin check error:', err);
-          return false;
-        }
+        } catch (err) { console.error('Admin check error:', err); return false; }
       }
 
-      // ====== SHOW ACCESS DENIED ======
       function showAccessDenied() {
         if (isAccessDenied) return;
         isAccessDenied = true;
         accessDeniedOverlay.classList.add('active');
-        
         let countdown = 10;
         accessDeniedCountdown.textContent = countdown;
-        
         if (accessDeniedTimer) clearInterval(accessDeniedTimer);
-        
         accessDeniedTimer = setInterval(() => {
           countdown--;
           accessDeniedCountdown.textContent = countdown;
@@ -1161,23 +1329,16 @@
         }, 1000);
       }
 
-      // ====== HIDE ACCESS DENIED ======
       function hideAccessDenied() {
-        if (accessDeniedTimer) {
-          clearInterval(accessDeniedTimer);
-          accessDeniedTimer = null;
-        }
+        if (accessDeniedTimer) { clearInterval(accessDeniedTimer); accessDeniedTimer = null; }
         accessDeniedOverlay.classList.remove('active');
         isAccessDenied = false;
       }
 
-      // ====== ACCESS DENIED BUTTON ======
       accessDeniedBtn.addEventListener('click', () => {
         hideAccessDenied();
         window.location.href = window.location.pathname;
       });
-
-      // ====== CLOSE ACCESS DENIED ON CLICK OUTSIDE ======
       accessDeniedOverlay.addEventListener('click', (e) => {
         if (e.target === accessDeniedOverlay) {
           hideAccessDenied();
@@ -1185,14 +1346,11 @@
         }
       });
 
-      // ====== CHECK EXISTING SESSION ======
       async function checkExistingSession() {
         try {
           const { data: { session } } = await supabase.auth.getSession();
-          
           if (session) {
             const isAdmin = await checkUserIsAdmin();
-            
             if (!isAdmin) {
               showAccessDenied();
               await supabase.auth.signOut();
@@ -1201,13 +1359,9 @@
             return true;
           }
           return false;
-        } catch (err) {
-          console.error('Session check error:', err);
-          return false;
-        }
+        } catch (err) { console.error('Session check error:', err); return false; }
       }
 
-      // ====== MODAL CONTROLS ======
       function openModal() {
         hideError();
         successCheck.style.display = 'none';
@@ -1227,21 +1381,17 @@
         loginForm.style.display = 'block';
       }
 
-      // ====== PORTAL BUTTON CLICK ======
       portalBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        
         const hasSession = await checkExistingSession();
         if (hasSession) {
           window.location.href = 'admin/admin.html';
           return;
         }
-
         if (isAccessDenied) {
           showAccessDenied();
           return;
         }
-
         openModal();
       });
 
@@ -1255,44 +1405,25 @@
         }
       });
 
-      // ====== PASSWORD TOGGLE ======
       togglePass.addEventListener('click', () => {
         const type = passInput.type === 'password' ? 'text' : 'password';
         passInput.type = type;
         togglePass.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
       });
 
-      // ====== LOGIN ======
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         hideError();
         successCheck.style.display = 'none';
-
         const email = emailInput.value.trim();
         const password = passInput.value;
-
-        if (!email || !password) {
-          showError('Please fill in both fields.');
-          return;
-        }
-        if (!email.includes('@') || !email.includes('.')) {
-          showError('Please enter a valid email address.');
-          return;
-        }
-        if (password.length < 6) {
-          showError('Password must be at least 6 characters.');
-          return;
-        }
-
+        if (!email || !password) { showError('Please fill in both fields.'); return; }
+        if (!email.includes('@') || !email.includes('.')) { showError('Please enter a valid email address.'); return; }
+        if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
         setLoading(true);
         loginForm.style.display = 'block';
-
         try {
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) {
             if (error.message.includes('Invalid login credentials')) {
               showError('Invalid email or password. Please try again.');
@@ -1304,17 +1435,14 @@
             setLoading(false);
             return;
           }
-
           if (data.session) {
             const isAdmin = await checkUserIsAdmin();
-            
             if (!isAdmin) {
               await supabase.auth.signOut();
               setLoading(false);
               showAccessDenied();
               return;
             }
-
             showSuccess();
             loginForm.style.display = 'none';
             setTimeout(() => {
@@ -1359,32 +1487,27 @@
       updateDash();
       setInterval(updateDash, 1000);
 
-      // ====== DAILY QUOTE FROM SUPABASE ======
+      // ====== DAILY QUOTE ======
       function getDayOfYear() {
         const now = new Date();
         const start = new Date(now.getFullYear(), 0, 0);
         const diff = now - start;
         return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
       }
-
       async function loadDailyQuote() {
         const day = getDayOfYear();
         const dayEl = document.getElementById('quoteDayNumber');
         const quoteText = document.getElementById('quoteText');
         const quoteAuthor = document.getElementById('quoteAuthorName');
         const quoteStatus = document.getElementById('quoteStatus');
-        
         if (dayEl) dayEl.textContent = day;
-        
         try {
           const { data, error } = await supabase
             .from('spiritual_quotes')
             .select('*')
             .eq('day', day)
             .maybeSingle();
-          
           if (error) throw error;
-          
           if (data) {
             quoteText.textContent = data.quote;
             quoteAuthor.textContent = data.author || 'Unknown';
@@ -1404,10 +1527,8 @@
           quoteStatus.className = 'error';
         }
       }
-
       loadDailyQuote();
 
-      // ====== COPY & SHARE QUOTE ======
       window.copyQuote = function() {
         const q = document.getElementById('quoteText').textContent;
         const status = document.getElementById('quoteStatus');
@@ -1422,26 +1543,16 @@
               status.className = originalClass;
             }, 2000);
           });
-        } else {
-          alert('No quote available to copy.');
-        }
+        } else { alert('No quote available to copy.'); }
       };
-
       window.shareQuote = function() {
         const q = document.getElementById('quoteText').textContent;
         const a = document.getElementById('quoteAuthorName').textContent;
         if (q && !q.includes('Loading') && !q.includes('Error') && !q.includes('No quote')) {
           const shareText = `"${q}" — ${a}`;
-          if (navigator.share) {
-            navigator.share({ title: 'Daily Quote', text: shareText });
-          } else {
-            navigator.clipboard?.writeText(shareText).then(() => {
-              alert('📋 Quote copied to clipboard!');
-            });
-          }
-        } else {
-          alert('No quote available to share.');
-        }
+          if (navigator.share) { navigator.share({ title: 'Daily Quote', text: shareText }); }
+          else { navigator.clipboard?.writeText(shareText).then(() => { alert('📋 Quote copied to clipboard!'); }); }
+        } else { alert('No quote available to share.'); }
       };
 
       // ====== SCROLL PROGRESS ======
@@ -1460,38 +1571,27 @@
       const links = document.getElementById('navLinks');
       toggle.addEventListener('click', () => links.classList.toggle('open'));
 
-      // ====== CONTACT FORM WITH SUPABASE ======
+      // ====== CONTACT FORM ======
       document.getElementById('contactForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const btn = this.querySelector('button[type="submit"]');
         const originalText = btn.textContent;
         btn.textContent = 'Sending...';
         btn.disabled = true;
-        
         const inputs = this.querySelectorAll('input, textarea');
         const fullName = inputs[0].value.trim();
         const email = inputs[1].value.trim();
         const message = inputs[2].value.trim();
-        
         if (!fullName || !email || !message) {
           alert('⚠️ Please fill in all fields.');
           btn.textContent = originalText;
           btn.disabled = false;
           return;
         }
-        
         try {
           const { data, error } = await supabase
             .from('inquiries')
-            .insert([
-              { 
-                full_name: fullName,
-                email: email,
-                message: message
-              }
-            ]);
-          
+            .insert([{ full_name: fullName, email: email, message: message }]);
           if (error) {
             console.error('Supabase error:', error);
             alert('❌ Failed to send message. Please try again.');
@@ -1503,7 +1603,6 @@
           console.error('Error:', err);
           alert('❌ Network error. Please check your connection.');
         }
-        
         btn.textContent = originalText;
         btn.disabled = false;
       });
@@ -1529,9 +1628,7 @@
         setTimeout(() => el.style.setProperty('--pct', pct + '%'), 200);
       });
 
-      // ====== INIT: CHECK EXISTING SESSION ======
       checkExistingSession();
-
     })();
   </script>
 </body>
