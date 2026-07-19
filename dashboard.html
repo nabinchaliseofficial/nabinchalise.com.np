@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog Dashboard · Nabin Chalise</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -97,8 +97,6 @@
         .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-secondary); }
         .btn-outline:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(59,130,246,0.15); }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-        .btn-archived { background: #8b5cf6; color: white; }
-        .btn-archived:hover { background: #7c3aed; transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 25px rgba(139,92,246,0.35); }
         
         .stats {
             display: grid;
@@ -285,6 +283,19 @@
         }
         .empty-state h3 { color: var(--text); margin-bottom: 8px; }
         
+        .access-denied {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: fadeSlideUp 0.6s ease;
+        }
+        .access-denied .icon { font-size: 4rem; margin-bottom: 20px; animation: pulse 2s ease-in-out infinite; }
+        .access-denied h2 { color: #ef4444; margin-bottom: 10px; }
+        .access-denied p { color: var(--text-secondary); margin-bottom: 20px; }
+        
         .login-required {
             text-align: center;
             padding: 80px 20px;
@@ -363,6 +374,7 @@
 </head>
 <body>
     <div class="container">
+        <!-- Login Required State -->
         <div id="loginRequired" style="display:none;">
             <div class="login-required">
                 <div class="icon">🔐</div>
@@ -371,8 +383,19 @@
                 <a href="blog.html" class="btn btn-primary">Go to Blog</a>
             </div>
         </div>
+
+        <!-- Access Denied State -->
+        <div id="accessDenied" style="display:none;">
+            <div class="access-denied">
+                <div class="icon">⛔</div>
+                <h2>Access Denied</h2>
+                <p>You don't have admin privileges to access this dashboard.</p>
+                <a href="blog.html" class="btn btn-primary">Go to Blog</a>
+            </div>
+        </div>
         
-        <div id="dashboardContent">
+        <!-- Dashboard Content (Only for Admin) -->
+        <div id="dashboardContent" style="display:none;">
             <div class="header">
                 <h1>📝 Blog <span>Dashboard</span></h1>
                 <div class="header-actions">
@@ -489,7 +512,7 @@
         (function() {
             'use strict';
             
-            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co/";
             const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
             
             let supabase;
@@ -513,11 +536,57 @@
                 applyTheme(cur === 'dark' ? 'light' : 'dark');
             });
             
-            function checkAuth() {
+            // ===== AUTH & ROLE CHECK =====
+            async function checkAuthAndRole() {
                 const verified = sessionStorage.getItem('auth_verified') === 'true';
-                document.getElementById('loginRequired').style.display = verified ? 'none' : 'block';
-                document.getElementById('dashboardContent').style.display = verified ? 'block' : 'none';
-                return verified;
+                const userId = sessionStorage.getItem('auth_user_id');
+                
+                // If not verified at all, show login required
+                if (!verified || !userId) {
+                    document.getElementById('loginRequired').style.display = 'block';
+                    document.getElementById('accessDenied').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'none';
+                    return false;
+                }
+                
+                // Check role from user_roles table
+                try {
+                    const { data, error } = await supabase
+                        .from('user_roles')
+                        .select('role')
+                        .eq('user_id', userId)
+                        .maybeSingle();
+                    
+                    if (error) {
+                        console.error('Role check error:', error);
+                        showToast('Failed to verify user role', 'error');
+                        document.getElementById('loginRequired').style.display = 'block';
+                        document.getElementById('accessDenied').style.display = 'none';
+                        document.getElementById('dashboardContent').style.display = 'none';
+                        return false;
+                    }
+                    
+                    // Check if user has admin role
+                    if (data && data.role === 'admin') {
+                        // Admin - show dashboard
+                        document.getElementById('loginRequired').style.display = 'none';
+                        document.getElementById('accessDenied').style.display = 'none';
+                        document.getElementById('dashboardContent').style.display = 'block';
+                        return true;
+                    } else {
+                        // Not admin - show access denied
+                        document.getElementById('loginRequired').style.display = 'none';
+                        document.getElementById('accessDenied').style.display = 'block';
+                        document.getElementById('dashboardContent').style.display = 'none';
+                        return false;
+                    }
+                } catch (err) {
+                    console.error('Role verification failed:', err);
+                    document.getElementById('loginRequired').style.display = 'block';
+                    document.getElementById('accessDenied').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'none';
+                    return false;
+                }
             }
             
             let currentPosts = [];
@@ -798,11 +867,21 @@
                 if (confirm('Are you sure you want to logout?')) {
                     sessionStorage.removeItem('auth_verified');
                     sessionStorage.removeItem('auth_timestamp');
+                    sessionStorage.removeItem('auth_user_id');
+                    sessionStorage.removeItem('auth_role');
                     window.location.href = 'blog.html';
                 }
             };
             
-            if (checkAuth()) fetchPosts();
+            // ===== INIT =====
+            async function init() {
+                const isAdmin = await checkAuthAndRole();
+                if (isAdmin) {
+                    fetchPosts();
+                }
+            }
+            
+            init();
             
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) closeModal();
