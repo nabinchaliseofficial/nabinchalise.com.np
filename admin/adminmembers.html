@@ -128,7 +128,7 @@
             min-height: 44px;
         }
         .btn-logout:hover {
-            background: var(--cta-logout-hover);
+            background: #dc2626;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
@@ -351,6 +351,14 @@
         }
         .action-btn-sm.reject-btn:hover {
             background: #dc2626;
+            transform: scale(1.02);
+        }
+        .action-btn-sm.role-btn {
+            background: var(--cls-links);
+            color: #000;
+        }
+        .action-btn-sm.role-btn:hover {
+            background: #9370db;
             transform: scale(1.02);
         }
         .search-box-inline {
@@ -653,6 +661,42 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
+
+        /* Role Badge Colors */
+        .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .role-badge.admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .role-badge.president {
+            background: #fce4ec;
+            color: #991b1b;
+        }
+        .role-badge.secretary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .role-badge.editor {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+        .role-badge.viewer {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .role-badge.no-role {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -749,7 +793,7 @@
 
     <header class="hero">
         <h1><i class="fa-solid fa-address-card" style="color:var(--cls-rotaract);"></i> Members Management</h1>
-        <p>Manage members, verify new registrations, and sync in realtime.</p>
+        <p>Manage members, roles, and sync in realtime.</p>
     </header>
 
     <!-- NEW MEMBER REQUESTS SECTION -->
@@ -791,7 +835,23 @@
         </div>
     </section>
 
-    <!-- MODAL -->
+    <!-- ROLE MANAGEMENT SECTION -->
+    <section class="workspace-section" id="roles-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-user-shield" style="color: var(--cls-links);"></i> Manage Roles</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-roles-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+        </div>
+        <div class="slider-container" id="rolesSlider">
+            <button class="slider-btn prev" id="roleSliderPrev"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="slider-track" id="rolesTrack"></div>
+            <button class="slider-btn next" id="roleSliderNext"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="slider-dots" id="roleDots"></div>
+        </div>
+    </section>
+
+    <!-- MODAL for Member -->
     <div class="modal-overlay" id="memberModal">
         <div class="modal-content">
             <button class="modal-close" id="memberModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
@@ -844,7 +904,40 @@
         </div>
     </div>
 
-    <footer><p>&copy; 2026 Members · Image Upload & Status</p></footer>
+    <!-- MODAL for Role Management -->
+    <div class="modal-overlay" id="roleModal">
+        <div class="modal-content">
+            <button class="modal-close" id="roleModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-solid fa-user-shield" style="color: var(--cls-links);"></i> <span id="roleModalTitle">Manage User Role</span></div>
+            <form id="roleForm">
+                <input type="hidden" id="roleUserId" value="">
+                <div class="form-group">
+                    <label>User Email</label>
+                    <input type="text" id="roleUserEmail" readonly style="background:rgba(255,255,255,0.02);" />
+                </div>
+                <div class="form-group">
+                    <label>Current Role</label>
+                    <input type="text" id="roleCurrentRole" readonly style="background:rgba(255,255,255,0.02);" />
+                </div>
+                <div class="form-group">
+                    <label>Assign New Role</label>
+                    <select id="roleNewRole">
+                        <option value="viewer">👀 Viewer</option>
+                        <option value="editor">✏️ Editor</option>
+                        <option value="secretary">📝 Secretary</option>
+                        <option value="president">👑 President</option>
+                        <option value="admin">⚙️ Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="action-btn btn-cancel-accent" id="roleModalCancelBtn">Cancel</button>
+                    <button type="submit" class="action-btn btn-save-accent"><i class="fa-solid fa-floppy-disk"></i> Update Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Members · Image Upload & Role Management</p></footer>
 
     <script>
         (() => {
@@ -858,16 +951,19 @@
             const STORAGE_BUCKET = 'members-profile';
             const MEMBERS_TABLE = 'members';
             const REGISTRATIONS_TABLE = 'member_registrations';
+            const USER_ROLES_TABLE = 'user_roles';
 
             let editingMemberId = null;
             let allMembers = [];
             let registrations = [];
+            let userRoles = [];
             let currentImageFile = null;
             let existingImageUrl = '';
 
             // Slider state
             let regSliderIndex = 0;
             let memSliderIndex = 0;
+            let roleSliderIndex = 0;
 
             const escapeHtml = (str) => {
                 if (!str) return '';
@@ -887,6 +983,36 @@
                     toast.style.transform = 'translateX(100%)';
                     setTimeout(() => toast.remove(), 400);
                 }, 3000);
+            };
+
+            // ---------- ROLE HELPERS ----------
+            const getRoleBadgeClass = (role) => {
+                if (!role || role === 'no_role') return 'no-role';
+                return role;
+            };
+
+            const getRoleDisplayName = (role) => {
+                const map = {
+                    'admin': 'Admin',
+                    'president': 'President',
+                    'secretary': 'Secretary',
+                    'editor': 'Editor',
+                    'viewer': 'Viewer',
+                    'no_role': 'No Role'
+                };
+                return map[role] || role || 'No Role';
+            };
+
+            const getRoleIcon = (role) => {
+                const map = {
+                    'admin': '⚙️',
+                    'president': '👑',
+                    'secretary': '📝',
+                    'editor': '✏️',
+                    'viewer': '👀',
+                    'no_role': '❌'
+                };
+                return map[role] || '❌';
             };
 
             // ---------- IMAGE UPLOAD HELPERS ----------
@@ -929,21 +1055,23 @@
 
                 const dots = document.getElementById(dotsId);
                 if (dots) {
-                    const totalSlides = Math.ceil(items.length / getItemsPerView());
+                    const perView = getItemsPerView();
+                    const totalSlides = Math.ceil(items.length / perView);
                     dots.innerHTML = Array.from({ length: totalSlides }, (_, i) =>
                         `<button class="slider-dot ${i === sliderIndex ? 'active' : ''}" data-index="${i}"></button>`
                     ).join('');
                     dots.querySelectorAll('.slider-dot').forEach(dot => {
                         dot.addEventListener('click', () => {
                             const idx = parseInt(dot.dataset.index);
-                            const trackId = dotsId === 'regDots' ? 'registrationsTrack' : 'membersTrack';
-                            const sliderIdx = dotsId === 'regDots' ? 'regSliderIndex' : 'memSliderIndex';
                             if (dotsId === 'regDots') {
                                 regSliderIndex = idx;
                                 updateSlider('registrationsTrack', registrations, 'regDots', renderRegistrationItem, regSliderIndex);
-                            } else {
+                            } else if (dotsId === 'memDots') {
                                 memSliderIndex = idx;
                                 updateSlider('membersTrack', allMembers, 'memDots', renderMemberItem, memSliderIndex);
+                            } else if (dotsId === 'roleDots') {
+                                roleSliderIndex = idx;
+                                updateSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
                             }
                         });
                     });
@@ -1042,6 +1170,43 @@
                 `;
             }
 
+            function renderRoleItem(item) {
+                const role = item.role || 'no_role';
+                const badgeClass = getRoleBadgeClass(role);
+                const roleDisplay = getRoleDisplayName(role);
+                const icon = getRoleIcon(role);
+                const userName = item.full_name || item.name || item.email || 'Unknown User';
+                const userEmail = item.email || 'No email';
+                const isActive = item.status !== 'inactive';
+
+                return `
+                    <article class="member-node" style="border-left-color: var(--cls-links);">
+                        <div class="node-meta">
+                            <span>${icon} ${roleDisplay}</span>
+                            <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">${isActive ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div class="member-header">
+                            <div class="member-avatar" style="display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);">
+                                <i class="fa-solid fa-user" style="color:var(--text-muted);font-size:1.5rem;"></i>
+                            </div>
+                            <div class="node-title">${escapeHtml(userName)}</div>
+                        </div>
+                        <a href="mailto:${escapeHtml(userEmail)}" class="node-detail" style="color: var(--cls-personal);">${escapeHtml(userEmail)}</a>
+                        <div class="node-detail" style="margin-top:4px;">
+                            <span class="role-badge ${badgeClass}">${icon} ${roleDisplay}</span>
+                        </div>
+                        <div class="application-actions">
+                            <button class="action-btn-sm role-btn" data-user-id="${item.user_id}" data-action="manage-role" data-email="${escapeHtml(userEmail)}" data-role="${role}">
+                                <i class="fa-solid fa-pen-to-square"></i> Manage Role
+                            </button>
+                            <button class="action-btn-sm status-toggle ${isActive ? '' : 'inactive-toggle'}" data-user-id="${item.user_id}" data-action="toggle-user-status">
+                                <i class="fa-solid fa-arrows-rotate"></i> ${isActive ? 'Set Inactive' : 'Set Active'}
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }
+
             // ---------- LOAD REGISTRATIONS ----------
             const loadRegistrations = async () => {
                 try {
@@ -1070,24 +1235,114 @@
                     if (error) throw error;
                     allMembers = data || [];
                     renderSlider('membersTrack', allMembers, 'memDots', renderMemberItem, memSliderIndex);
-
-                    // Attach event listeners for member actions
-                    document.querySelectorAll('#membersTrack .action-btn-sm').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const id = parseInt(btn.dataset.id);
-                            const action = btn.dataset.action;
-                            if (action === 'delete') deleteMember(id);
-                            else if (action === 'edit') editMember(id);
-                            else if (action === 'toggle-status') toggleMemberStatus(id);
-                        });
-                    });
                 } catch (err) {
                     document.getElementById('membersTrack').innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ${err.message}</div>`;
                     showToast('Error loading members: ' + err.message, 'error');
                 }
             };
+
+            // ---------- LOAD USER ROLES (FIXED - Using RPC or admin API) ----------
+            const loadUserRoles = async () => {
+                try {
+                    // Get roles from user_roles table
+                    const { data: rolesData, error: rolesError } = await supabase
+                        .from(USER_ROLES_TABLE)
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (rolesError) throw rolesError;
+
+                    // Get users from the user_roles_view (which is accessible)
+                    const { data: viewData, error: viewError } = await supabase
+                        .from('user_roles_view')
+                        .select('*')
+                        .order('joined_at', { ascending: false });
+
+                    if (viewError) {
+                        // If view doesn't exist, create a fallback using roles data
+                        console.warn('user_roles_view not found, using fallback', viewError);
+                        
+                        // Create a simple fallback - get users from roles and use email from auth
+                        const merged = (rolesData || []).map(role => {
+                            // Try to get user info from members table as fallback
+                            const member = allMembers.find(m => m.email && m.email === role.email);
+                            return {
+                                user_id: role.user_id,
+                                email: role.email || member?.email || 'Unknown',
+                                full_name: member?.name || 'Unknown User',
+                                role: role.role || 'no_role',
+                                created_at: role.created_at,
+                                status: role.status || 'active'
+                            };
+                        });
+                        
+                        userRoles = merged;
+                        renderSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
+                        attachRoleListeners();
+                        return;
+                    }
+
+                    // Merge view data with roles data for complete info
+                    const merged = (viewData || []).map(viewUser => {
+                        const roleEntry = (rolesData || []).find(r => r.user_id === viewUser.user_id);
+                        return {
+                            user_id: viewUser.user_id,
+                            email: viewUser.email || 'No email',
+                            full_name: viewUser.full_name || viewUser.email?.split('@')[0] || 'Unknown',
+                            role: roleEntry?.role || viewUser.role || 'no_role',
+                            created_at: viewUser.joined_at || viewUser.role_assigned_at,
+                            status: roleEntry?.status || 'active'
+                        };
+                    });
+
+                    // If no users from view, use roles data
+                    if (merged.length === 0) {
+                        const fallbackMerged = (rolesData || []).map(role => {
+                            return {
+                                user_id: role.user_id,
+                                email: role.email || 'Unknown',
+                                full_name: 'Unknown User',
+                                role: role.role || 'no_role',
+                                created_at: role.created_at,
+                                status: role.status || 'active'
+                            };
+                        });
+                        userRoles = fallbackMerged;
+                    } else {
+                        userRoles = merged;
+                    }
+
+                    renderSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
+                    attachRoleListeners();
+
+                } catch (err) {
+                    console.error('Error loading roles:', err);
+                    document.getElementById('rolesTrack').innerHTML =
+                        `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ${err.message}</div>`;
+                    showToast('Error loading roles: ' + err.message, 'error');
+                }
+            };
+
+            // Helper function to attach role event listeners
+            function attachRoleListeners() {
+                document.querySelectorAll('#rolesTrack .action-btn-sm').forEach(btn => {
+                    btn.removeEventListener('click', handleRoleAction);
+                    btn.addEventListener('click', handleRoleAction);
+                });
+            }
+
+            function handleRoleAction(e) {
+                e.stopPropagation();
+                const btn = e.currentTarget;
+                const userId = btn.dataset.userId;
+                const action = btn.dataset.action;
+                if (action === 'manage-role') {
+                    openRoleModal(userId, btn.dataset.email, btn.dataset.role);
+                } else if (action === 'toggle-user-status') {
+                    toggleUserStatus(userId);
+                }
+            }
 
             // ---------- VERIFY REGISTRATION ----------
             const verifyRegistration = async (id) => {
@@ -1108,8 +1363,7 @@
                         profession: reg.profession || '',
                         birthday: reg.birth_date || null,
                         profile_image: reg.profile_image || '',
-                        status: 'active',
-                        created_at: new Date().toISOString()
+                        status: 'active'
                     };
 
                     // Check if member already exists
@@ -1141,6 +1395,7 @@
                     showToast('✅ Member verified and added to active members!', 'success');
                     await loadRegistrations();
                     await loadMembers(document.getElementById('memberSearchInput').value || '');
+                    await loadUserRoles();
 
                 } catch (err) {
                     console.error('Error verifying member:', err);
@@ -1169,8 +1424,30 @@
                     await supabase.from(MEMBERS_TABLE).update({ status: newStatus }).eq('id', id);
                     showToast(`✅ Status updated to ${newStatus}`, 'success');
                     await loadMembers(document.getElementById('memberSearchInput').value || '');
+                    await loadUserRoles();
                 } catch (err) {
                     showToast('❌ Error toggling status: ' + err.message, 'error');
+                }
+            };
+
+            // ---------- TOGGLE USER STATUS (for role management) ----------
+            const toggleUserStatus = async (userId) => {
+                try {
+                    const user = userRoles.find(u => u.user_id === userId);
+                    if (!user) { showToast('User not found.', 'error'); return; }
+                    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+                    
+                    // Update in user_roles table
+                    const { error } = await supabase
+                        .from(USER_ROLES_TABLE)
+                        .update({ status: newStatus })
+                        .eq('user_id', userId);
+
+                    if (error) throw error;
+                    showToast(`✅ User status updated to ${newStatus}`, 'success');
+                    await loadUserRoles();
+                } catch (err) {
+                    showToast('❌ Error toggling user status: ' + err.message, 'error');
                 }
             };
 
@@ -1185,6 +1462,7 @@
                     await supabase.from(MEMBERS_TABLE).delete().eq('id', id);
                     showToast(`🗑️ Member #${id} deleted`, 'success');
                     await loadMembers(document.getElementById('memberSearchInput').value || '');
+                    await loadUserRoles();
                 } catch (err) {
                     showToast('❌ Error deleting: ' + err.message, 'error');
                 }
@@ -1232,6 +1510,47 @@
                     showToast('Error loading member: ' + err.message, 'error');
                 }
             };
+
+            // ---------- OPEN ROLE MODAL ----------
+            const openRoleModal = (userId, email, currentRole) => {
+                document.getElementById('roleUserId').value = userId;
+                document.getElementById('roleUserEmail').value = email || 'No email';
+                document.getElementById('roleCurrentRole').value = getRoleDisplayName(currentRole) + ' ' + getRoleIcon(currentRole);
+                document.getElementById('roleNewRole').value = currentRole || 'viewer';
+                document.getElementById('roleModalTitle').textContent = 'Manage User Role';
+                document.getElementById('roleModal').classList.add('active');
+            };
+
+            // ---------- CLOSE ROLE MODAL ----------
+            const closeRoleModal = () => {
+                document.getElementById('roleModal').classList.remove('active');
+            };
+
+            // ---------- SUBMIT ROLE ----------
+            document.getElementById('roleForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userId = document.getElementById('roleUserId').value;
+                const newRole = document.getElementById('roleNewRole').value;
+
+                if (!userId) {
+                    showToast('❌ User ID not found.', 'error');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from(USER_ROLES_TABLE)
+                        .upsert({ user_id: userId, role: newRole }, { onConflict: 'user_id' });
+
+                    if (error) throw error;
+
+                    showToast(`✅ Role updated to ${getRoleDisplayName(newRole)}`, 'success');
+                    closeRoleModal();
+                    await loadUserRoles();
+                } catch (err) {
+                    showToast('❌ Error updating role: ' + err.message, 'error');
+                }
+            });
 
             // ---------- OPEN ADD MODAL ----------
             const openAddModal = () => {
@@ -1333,6 +1652,7 @@
                     showToast(isEdit ? '✅ Member updated!' : '✅ Member added!', 'success');
                     closeModal();
                     await loadMembers(document.getElementById('memberSearchInput').value || '');
+                    await loadUserRoles();
                 } catch (err) {
                     console.error('Save error:', err);
                     showToast('❌ Error saving: ' + err.message, 'error');
@@ -1348,6 +1668,17 @@
                 const action = btn.dataset.action;
                 if (action === 'verify') verifyRegistration(id);
                 else if (action === 'reject') rejectRegistration(id);
+            });
+
+            // Members actions (delegated)
+            document.getElementById('membersTrack')?.addEventListener('click', (e) => {
+                const btn = e.target.closest('.action-btn-sm');
+                if (!btn) return;
+                const id = parseInt(btn.dataset.id);
+                const action = btn.dataset.action;
+                if (action === 'delete') deleteMember(id);
+                else if (action === 'edit') editMember(id);
+                else if (action === 'toggle-status') toggleMemberStatus(id);
             });
 
             // Slider navigation
@@ -1379,11 +1710,26 @@
                 updateSlider('membersTrack', allMembers, 'memDots', renderMemberItem, memSliderIndex);
             });
 
+            document.getElementById('roleSliderPrev')?.addEventListener('click', () => {
+                const perView = getItemsPerView();
+                const totalSlides = Math.ceil(userRoles.length / perView);
+                roleSliderIndex = (roleSliderIndex - 1 + totalSlides) % totalSlides;
+                updateSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
+            });
+
+            document.getElementById('roleSliderNext')?.addEventListener('click', () => {
+                const perView = getItemsPerView();
+                const totalSlides = Math.ceil(userRoles.length / perView);
+                roleSliderIndex = (roleSliderIndex + 1) % totalSlides;
+                updateSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
+            });
+
             // Refresh buttons
             document.getElementById('refresh-registrations-btn')?.addEventListener('click', loadRegistrations);
             document.getElementById('refresh-members-btn')?.addEventListener('click', () => {
                 loadMembers(document.getElementById('memberSearchInput').value || '');
             });
+            document.getElementById('refresh-roles-btn')?.addEventListener('click', loadUserRoles);
 
             // Clear buttons
             document.getElementById('clear-registrations-btn')?.addEventListener('click', async () => {
@@ -1406,6 +1752,7 @@
                     await supabase.from(MEMBERS_TABLE).delete().neq('id', 0);
                     showToast('✅ All members cleared.', 'success');
                     await loadMembers();
+                    await loadUserRoles();
                 } catch (err) {
                     showToast('❌ Error clearing: ' + err.message, 'error');
                 }
@@ -1425,6 +1772,13 @@
             document.getElementById('memberModalCancelBtn')?.addEventListener('click', closeModal);
             document.getElementById('memberModal')?.addEventListener('click', (e) => {
                 if (e.target === document.getElementById('memberModal')) closeModal();
+            });
+
+            // Role Modal events
+            document.getElementById('roleModalCloseBtn')?.addEventListener('click', closeRoleModal);
+            document.getElementById('roleModalCancelBtn')?.addEventListener('click', closeRoleModal);
+            document.getElementById('roleModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('roleModal')) closeRoleModal();
             });
 
             // Back & Logout
@@ -1449,6 +1803,13 @@
                         loadRegistrations();
                     })
                     .subscribe();
+
+                supabase.channel('roles-realtime')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: USER_ROLES_TABLE }, () => {
+                        console.log('🔄 Roles changed');
+                        loadUserRoles();
+                    })
+                    .subscribe();
             };
 
             // ---------- INIT ----------
@@ -1458,7 +1819,7 @@
                     window.location.href = '/index.html';
                     return;
                 }
-                await Promise.all([loadRegistrations(), loadMembers()]);
+                await Promise.all([loadRegistrations(), loadMembers(), loadUserRoles()]);
                 setupRealtime();
 
                 // Handle window resize for slider
@@ -1468,6 +1829,7 @@
                     resizeTimeout = setTimeout(() => {
                         updateSlider('registrationsTrack', registrations, 'regDots', renderRegistrationItem, regSliderIndex);
                         updateSlider('membersTrack', allMembers, 'memDots', renderMemberItem, memSliderIndex);
+                        updateSlider('rolesTrack', userRoles, 'roleDots', renderRoleItem, roleSliderIndex);
                     }, 200);
                 });
             };
@@ -1485,6 +1847,8 @@
             window.toggleMemberStatus = toggleMemberStatus;
             window.verifyRegistration = verifyRegistration;
             window.rejectRegistration = rejectRegistration;
+            window.toggleUserStatus = toggleUserStatus;
+            window.openRoleModal = openRoleModal;
 
         })();
     </script>

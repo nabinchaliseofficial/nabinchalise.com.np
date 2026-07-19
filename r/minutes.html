@@ -18,7 +18,6 @@
     </script>
 
     <style>
-        /* ── variables ── */
         :root {
             --primary: #D70060;
             --primary-hover: #B50051;
@@ -54,7 +53,7 @@
             min-height: 100vh;
         }
 
-        /* ── navbar ── */
+        /* Navbar */
         .navbar {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -118,8 +117,64 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(215, 0, 96, 0.3);
         }
+        .user-info-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .user-email-display {
+            font-size: 0.85rem;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .role-badge.admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .role-badge.president {
+            background: #fce4ec;
+            color: #991b1b;
+        }
+        .role-badge.secretary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .role-badge.editor {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+        .role-badge.viewer {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-logout {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-logout:hover {
+            background: #fecaca;
+        }
 
-        /* ── toast ── */
+        /* Toast */
         .toast-container {
             position: fixed;
             bottom: 24px;
@@ -212,7 +267,7 @@
             }
         }
 
-        /* ── hero ── */
+        /* Hero */
         .hero {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
@@ -270,7 +325,7 @@
             font-size: 1.05rem;
         }
 
-        /* ── container / cards ── */
+        /* Container / Cards */
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -342,7 +397,7 @@
             letter-spacing: -0.3px;
         }
 
-        /* ── search / autocomplete ── */
+        /* Search / Autocomplete */
         .search-wrapper {
             position: relative;
             margin-bottom: 20px;
@@ -442,7 +497,7 @@
             color: var(--text-muted);
         }
 
-        /* ── inputs ── */
+        /* Inputs */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -515,7 +570,7 @@
             resize: vertical;
         }
 
-        /* ── checklist ── */
+        /* Checklist */
         .checklist-search {
             display: flex;
             gap: 12px;
@@ -585,7 +640,7 @@
             display: none;
         }
 
-        /* ── buttons ── */
+        /* Buttons */
         .btn-add {
             background: var(--secondary);
             color: var(--white);
@@ -662,7 +717,7 @@
             margin-top: 24px;
         }
 
-        /* ── overlay (mode off) ── */
+        /* Overlay */
         .mode-off-overlay {
             display: none;
             position: fixed;
@@ -747,7 +802,7 @@
             font-size: 1.2rem;
         }
 
-        /* ── action items ── */
+        /* Action Items */
         .action-item-row {
             display: flex;
             gap: 10px;
@@ -790,7 +845,7 @@
             background: #fecaca;
         }
 
-        /* ── signatures ── */
+        /* Signatures */
         .signature-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -843,7 +898,7 @@
             color: #166534;
         }
 
-        /* ── print preview ── */
+        /* Print Preview */
         #print-preview {
             display: none;
             position: relative;
@@ -1001,7 +1056,7 @@
             }
         }
 
-        /* ── responsive ── */
+        /* Responsive */
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -1070,7 +1125,7 @@
 </head>
 <body>
 
-    <!-- ===== MODE OFF OVERLAY ===== -->
+    <!-- MODE OFF OVERLAY -->
     <div class="mode-off-overlay" id="modeOffOverlay">
         <div class="mode-off-card">
             <span class="icon-big">🔒</span>
@@ -1082,7 +1137,7 @@
         </div>
     </div>
 
-    <!-- ===== NAVBAR ===== -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand">
             <div class="nav-logo-marker"></div>
@@ -1090,10 +1145,11 @@
         </a>
         <div class="nav-actions">
             <a href="index.html" class="home-btn">🏠 HOME</a>
+            <div class="user-info-wrapper" id="userInfoWrapper"></div>
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
+    <!-- HERO -->
     <header class="hero">
         <div class="hero-tag">R.Y. 2026-27 Console</div>
         <h1>Minutes Writer Engine</h1>
@@ -1101,7 +1157,7 @@
         <div id="modeStatusBadge" class="mode-status-badge enabled">🟢 Meeting Mode: ON</div>
     </header>
 
-    <!-- ===== MAIN ===== -->
+    <!-- MAIN -->
     <main class="container">
 
         <!-- CARD 1: MEETING COORDINATES + SEARCH -->
@@ -1123,7 +1179,7 @@
                 <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
             </div>
 
-            <!-- Version info: shows when the meeting was saved -->
+            <!-- Version info -->
             <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; background:#f1f5f9; padding:12px 16px; border-radius:var(--radius-sm);">
                 <span style="font-weight:600;">📌 Version:</span>
                 <span id="versionDisplay" style="color:var(--text-muted);">—</span>
@@ -1271,7 +1327,7 @@
         </div>
     </main>
 
-    <!-- ===== PRINT PREVIEW ===== -->
+    <!-- PRINT PREVIEW -->
     <div id="print-preview">
         <div class="letterhead">
             <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
@@ -1309,17 +1365,94 @@
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
+    <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ============================================================ -->
-    <!-- ===== SCRIPT ===== -->
+    <!-- SCRIPT -->
     <script>
         // ============================================================
         //  SUPABASE CONFIG
         // ============================================================
         const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+        // ============================================================
+        //  SUPABASE CLIENT
+        // ============================================================
+        let supabaseClient = null;
+        try {
+            if (typeof supabase !== 'undefined' && supabase.createClient && SUPABASE_URL && SUPABASE_ANON_KEY) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase client initialized.');
+            } else {
+                console.warn('⚠️ Supabase library not loaded.');
+            }
+        } catch (e) {
+            console.warn('⚠️ Supabase init error:', e.message);
+        }
+
+        // ============================================================
+        //  AUTHENTICATION CHECK
+        // ============================================================
+        async function checkAuth() {
+            const isAuthenticated = localStorage.getItem('is_authenticated') === 'true';
+            const userRole = localStorage.getItem('user_role');
+            const userEmail = localStorage.getItem('user_email');
+
+            // Check if user is authenticated and has proper role (President, Secretary, Admin, Editor)
+            if (!isAuthenticated || !['admin', 'editor', 'president', 'secretary'].includes(userRole)) {
+                window.location.href = 'loginminutes.html';
+                return false;
+            }
+
+            // Verify with Supabase if available
+            if (supabaseClient) {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (!session) {
+                        localStorage.removeItem('is_authenticated');
+                        localStorage.removeItem('user_email');
+                        localStorage.removeItem('user_role');
+                        localStorage.removeItem('user_id');
+                        window.location.href = 'loginminutes.html';
+                        return false;
+                    }
+                } catch (err) {
+                    console.warn('Session verification failed:', err);
+                }
+            }
+
+            // Display user info in navbar
+            displayUserInfo(userEmail, userRole);
+            return true;
+        }
+
+        function displayUserInfo(email, role) {
+            const wrapper = document.getElementById('userInfoWrapper');
+            if (!wrapper) return;
+
+            const roleDisplay = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User';
+            const roleEmoji = role === 'president' ? '👑' : role === 'secretary' ? '📝' : '👤';
+
+            wrapper.innerHTML = `
+                <span class="user-email-display">${roleEmoji} ${email || 'User'}</span>
+                <span class="role-badge ${role}">${roleDisplay}</span>
+                <button class="btn-logout" onclick="handleLogout()">🚪 Logout</button>
+            `;
+        }
+
+        async function handleLogout() {
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+            localStorage.removeItem('is_authenticated');
+            localStorage.removeItem('user_email');
+            localStorage.removeItem('user_role');
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('remember_me');
+            window.location.href = 'loginminutes.html';
+        }
 
         // ============================================================
         //  ROSTER DATA
@@ -1487,21 +1620,6 @@
         function dismissAllToasts() { document.getElementById('toastContainer').innerHTML = ''; }
 
         // ============================================================
-        //  SUPABASE CLIENT
-        // ============================================================
-        let supabaseClient = null;
-        try {
-            if (typeof supabase !== 'undefined' && supabase.createClient && SUPABASE_URL && SUPABASE_ANON_KEY) {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase client initialized.');
-            } else {
-                console.warn('⚠️ Supabase library not loaded.');
-            }
-        } catch (e) {
-            console.warn('⚠️ Supabase init error:', e.message);
-        }
-
-        // ============================================================
         //  MEETING MODE
         // ============================================================
         let meetingModeEnabled = true;
@@ -1564,7 +1682,6 @@
                     .select('id, data, created_at')
                     .order('created_at', { ascending: false });
                 if (error) {
-                    // fallback without ordering
                     const { data: fallback, error: fallbackError } = await supabaseClient
                         .from('meeting_minutes')
                         .select('id, data');
@@ -1622,7 +1739,6 @@
             const payload = item.data;
             document.getElementById('searchMeetingNo').value = payload.meeting_number || '';
             populateFormFromData(payload);
-            // Display version info
             if (payload._version) {
                 document.getElementById('versionDisplay').textContent = payload._version;
             } else {
@@ -1687,7 +1803,6 @@
             document.getElementById('meetVenue').value = payload.venue || 'Club Office, Galkot';
             document.getElementById('meetChair').value = payload.chairperson || 'Rtr. Nabin Chalise';
 
-            // clear checkboxes
             document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
             document.querySelectorAll('.add-member-checkbox').forEach(cb => {
                 const row = cb.parentElement;
@@ -1811,7 +1926,6 @@
             const membersPresent = parseInt(document.getElementById('countPresent').value) || 0;
             const guestsCount = parseInt(document.getElementById('countGuests').value) || 0;
 
-            // Members
             const members = [];
             document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
                 members.push({ name: cb.getAttribute('data-name'), role: cb.getAttribute('data-role') });
@@ -1823,14 +1937,12 @@
                 if (name) members.push({ name: name.toUpperCase(), role: role.toUpperCase() });
             });
 
-            // Guests
             const guests = [];
             document.querySelectorAll('.guest-input-name').forEach(inp => {
                 const val = inp.value.trim();
                 if (val) guests.push(val);
             });
 
-            // Agendas
             const agendas = [];
             document.querySelectorAll('.agenda-group').forEach(block => {
                 const title = block.querySelector('.agenda-title').value.trim();
@@ -1839,7 +1951,6 @@
                         'No resolution recorded.' });
             });
 
-            // Discussions
             const discussions = {
                 saa: document.getElementById('saaReport').value.trim(),
                 happy: document.getElementById('happyMoments').value.trim(),
@@ -1849,7 +1960,6 @@
                 openFloor: document.getElementById('openFloor').value.trim()
             };
 
-            // Action Items
             const actionItems = [];
             document.querySelectorAll('.action-item-row').forEach(row => {
                 const task = row.querySelector('.ai-task').value.trim();
@@ -1859,7 +1969,6 @@
                 if (task || person) actionItems.push({ task, person, deadline, status });
             });
 
-            // Signatures with images
             const preparedImg = document.getElementById('autoPreparedImg');
             const approvedImg = document.getElementById('autoApprovedImg');
 
@@ -1871,14 +1980,11 @@
                 approvedImage: approvedImg && approvedImg.src ? approvedImg.src : null
             };
 
-            // Build version and savedAt
             const nowIso = new Date().toISOString();
-            // Increment version: check if we are editing an existing meeting (search loaded)
             const searchVal = document.getElementById('searchMeetingNo').value.trim();
             let version = 'v1.0';
             let savedAt = nowIso;
             if (searchVal) {
-                // Try to find existing version
                 const existing = allMeetings.find(item => {
                     const title = (item.data?.meeting_number || '').toLowerCase();
                     return title === searchVal.toLowerCase() || title.includes(searchVal.toLowerCase());
@@ -1937,7 +2043,6 @@
                     }
                     savedId = data?.id;
                     await fetchAllMeetings();
-                    // Update version display
                     document.getElementById('versionDisplay').textContent = version;
                     document.getElementById('savedAtDisplay').textContent = new Date(nowIso).toLocaleString();
                 } else {
@@ -2086,46 +2191,55 @@
         window.checkMeetingMode = checkMeetingMode;
         window.showModeOffOverlay = showModeOffOverlay;
         window.updateMeetingModeBadge = updateMeetingModeBadge;
+        window.handleLogout = handleLogout;
 
         // ============================================================
         //  INIT
         // ============================================================
-        calculateAttendanceCounts();
-        fetchAllMeetings();
+        async function init() {
+            // Check authentication first
+            const authCheck = await checkAuth();
+            if (!authCheck) return;
 
-        document.getElementById('searchMeetingNo').addEventListener('input', function(e) {
-            const searchTerm = this.value;
-            if (searchTimeout) clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { showAutocomplete(searchTerm); }, 300);
-        });
+            // Continue with initialization
+            calculateAttendanceCounts();
+            await fetchAllMeetings();
 
-        document.addEventListener('click', function(e) {
-            const wrapper = document.querySelector('.search-wrapper');
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById('autocompleteDropdown').classList.remove('active');
-            }
-        });
+            document.getElementById('searchMeetingNo').addEventListener('input', function(e) {
+                const searchTerm = this.value;
+                if (searchTimeout) clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => { showAutocomplete(searchTerm); }, 300);
+            });
 
-        document.getElementById('searchMeetingNo').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('autocompleteDropdown').classList.remove('active');
-                searchMeeting();
-            }
-        });
+            document.addEventListener('click', function(e) {
+                const wrapper = document.querySelector('.search-wrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    document.getElementById('autocompleteDropdown').classList.remove('active');
+                }
+            });
 
-        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('searchMeetingNo').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('autocompleteDropdown').classList.remove('active');
+                    searchMeeting();
+                }
+            });
+
             const modeEnabled = await updateMeetingModeBadge();
             if (!modeEnabled) showModeOffOverlay();
             console.log('✅ Minutes Builder ready (versioned saves).');
-        });
+        }
 
         setInterval(async () => {
             const modeEnabled = await updateMeetingModeBadge();
             if (!modeEnabled) showModeOffOverlay();
         }, 30000);
 
-        console.log('✅ Minutes Builder with versioned saves (date/time + version)');
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+
+        console.log('✅ Minutes Builder with authentication & auto-load');
     </script>
 </body>
 </html>

@@ -93,6 +93,11 @@
     .btn-accent { background: #06b6d4; box-shadow: 0 8px 24px -6px rgba(6,182,212,0.3); }
     .btn-accent:hover { background: #0891b2; }
     .btn-sm { padding: 8px 20px; font-size: 0.85rem; }
+    .btn-danger {
+      background: #ef4444;
+      box-shadow: 0 8px 24px -6px rgba(239,68,68,0.3);
+    }
+    .btn-danger:hover { background: #dc2626; }
 
     /* ====== NAVBAR ====== */
     .navbar {
@@ -692,6 +697,83 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* ====== ACCESS DENIED OVERLAY ====== */
+    .access-denied-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      animation: fadeInOverlay 0.5s ease;
+    }
+    .access-denied-overlay.active {
+      display: flex;
+    }
+    @keyframes fadeInOverlay {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .access-denied-card {
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 32px;
+      padding: 50px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .access-denied-card .icon-big {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .access-denied-card h2 {
+      color: #f1f5f9;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .access-denied-card p {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .access-denied-card .btn-redirect {
+      display: inline-block;
+      background: linear-gradient(135deg, #D70060, #b50051);
+      color: #fff;
+      padding: 14px 40px;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    .access-denied-card .btn-redirect:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(215,0,96,0.3);
+    }
+    .countdown-timer {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 16px;
+    }
+    .countdown-timer span {
+      font-weight: 700;
+      color: #D70060;
+      font-size: 1.2rem;
+    }
+
     /* ====== RESPONSIVE ====== */
     @media (max-width: 968px) {
       .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -716,6 +798,18 @@
 </head>
 <body>
   <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- ====== ACCESS DENIED OVERLAY ====== -->
+  <div class="access-denied-overlay" id="accessDeniedOverlay">
+    <div class="access-denied-card">
+      <span class="icon-big">⛔</span>
+      <h2>Access Restricted</h2>
+      <p>You do not have permission to access the Admin Portal.</p>
+      <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:20px;">Only users with <strong>Admin</strong> role can access this portal.</p>
+      <button class="btn-redirect" id="accessDeniedBtn">🏠 Return to Homepage</button>
+      <div class="countdown-timer">Redirecting in <span id="accessDeniedCountdown">10</span> seconds...</div>
+    </div>
+  </div>
 
   <!-- ====== NAVBAR ====== -->
   <nav class="navbar" id="navbar">
@@ -817,12 +911,11 @@
     </div>
   </section>
 
-  <!-- ====== PROJECTS with clickable cards ====== -->
+  <!-- ====== PROJECTS ====== -->
   <section class="section" id="projects">
     <div class="container">
       <h2 class="section-title">Projects</h2>
       <div class="projects-grid">
-        <!-- Galkot Municipality → g/index.html -->
         <div class="project-card">
           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%231e293b'/%3E%3Ctext x='30' y='120' fill='%2394a3b8' font-size='20' font-family='Inter'%3EGalkot%20Municipality%3C/text%3E%3C/svg%3E" alt="Project">
           <h4>Galkot Municipality</h4>
@@ -830,15 +923,15 @@
           <div class="tags"><span>Operations</span><span>Data</span></div>
           <a href="g/index.html" class="card-link">View Project →</a>
         </div>
-        <!-- Rotaract Club of Galkot Baglung r/index.html -->
+
+
         <div class="project-card">
           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%231e293b'/%3E%3Ctext x='30' y='120' fill='%2394a3b8' font-size='20' font-family='Inter'%3ERotaract%20Club%20of%20Galkot%20Baglung%3C/text%3E%3C/svg%3E" alt="Project">
           <h4>Rotaract Club of Galkot Baglung</h4>
           <p style="color:#94a3b8; font-size:0.9rem;">Community platform for events and member engagement, serving as Club Administration Committee President.</p>
           <div class="tags"><span>Community</span><span>Leadership</span></div>
-          <a href="r/index.html" class="card-link">View Project →</a>
+          <a href="/r/index.html" class="card-link">View Project →</a>
         </div>
-        <!-- Nabin Chalise . Blog → blog.html -->
         <div class="project-card">
           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%231e293b'/%3E%3Ctext x='30' y='120' fill='%2394a3b8' font-size='20' font-family='Inter'%3ENabin%20Chalise%20Blog%3C/text%3E%3C/svg%3E" alt="Project">
           <h4>Nabin Chalise . Blog</h4>
@@ -990,6 +1083,13 @@
       const successCheck = document.getElementById('successCheck');
       const togglePass = document.getElementById('togglePass');
       const rememberMe = document.getElementById('rememberMe');
+      const accessDeniedOverlay = document.getElementById('accessDeniedOverlay');
+      const accessDeniedBtn = document.getElementById('accessDeniedBtn');
+      const accessDeniedCountdown = document.getElementById('accessDeniedCountdown');
+
+      // ====== ACCESS DENIED STATE ======
+      let accessDeniedTimer = null;
+      let isAccessDenied = false;
 
       // ====== HELPERS ======
       function showError(text) {
@@ -1012,6 +1112,105 @@
         }
       }
 
+      // ====== CHECK IF USER IS ADMIN ======
+      async function checkUserIsAdmin() {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return false;
+
+          const { data, error } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          if (error) {
+            console.error('Error checking role:', error);
+            return false;
+          }
+
+          return data && data.role === 'admin';
+        } catch (err) {
+          console.error('Admin check error:', err);
+          return false;
+        }
+      }
+
+      // ====== SHOW ACCESS DENIED ======
+      function showAccessDenied() {
+        if (isAccessDenied) return;
+        isAccessDenied = true;
+        accessDeniedOverlay.classList.add('active');
+        
+        let countdown = 10;
+        accessDeniedCountdown.textContent = countdown;
+        
+        if (accessDeniedTimer) clearInterval(accessDeniedTimer);
+        
+        accessDeniedTimer = setInterval(() => {
+          countdown--;
+          accessDeniedCountdown.textContent = countdown;
+          if (countdown <= 0) {
+            clearInterval(accessDeniedTimer);
+            accessDeniedOverlay.classList.remove('active');
+            isAccessDenied = false;
+            // Redirect to homepage
+            window.location.href = window.location.pathname;
+          }
+        }, 1000);
+      }
+
+      // ====== HIDE ACCESS DENIED ======
+      function hideAccessDenied() {
+        if (accessDeniedTimer) {
+          clearInterval(accessDeniedTimer);
+          accessDeniedTimer = null;
+        }
+        accessDeniedOverlay.classList.remove('active');
+        isAccessDenied = false;
+      }
+
+      // ====== ACCESS DENIED BUTTON ======
+      accessDeniedBtn.addEventListener('click', () => {
+        hideAccessDenied();
+        window.location.href = window.location.pathname;
+      });
+
+      // ====== CLOSE ACCESS DENIED ON CLICK OUTSIDE ======
+      accessDeniedOverlay.addEventListener('click', (e) => {
+        if (e.target === accessDeniedOverlay) {
+          hideAccessDenied();
+          window.location.href = window.location.pathname;
+        }
+      });
+
+      // ====== CHECK EXISTING SESSION ======
+      async function checkExistingSession() {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (session) {
+            // Check if user is admin
+            const isAdmin = await checkUserIsAdmin();
+            
+            if (!isAdmin) {
+              // Non-admin user is logged in - show access denied
+              showAccessDenied();
+              // Also sign them out to clear session
+              await supabase.auth.signOut();
+              return false;
+            }
+            
+            // Admin is logged in - allow access
+            return true;
+          }
+          return false;
+        } catch (err) {
+          console.error('Session check error:', err);
+          return false;
+        }
+      }
+
       // ====== MODAL CONTROLS ======
       function openModal() {
         hideError();
@@ -1020,7 +1219,7 @@
         setLoading(false);
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        emailInput.focus();
+        setTimeout(() => emailInput.focus(), 100);
       }
       function closeModal() {
         modal.classList.remove('active');
@@ -1032,15 +1231,26 @@
         loginForm.style.display = 'block';
       }
 
-      portalBtn.addEventListener('click', (e) => {
+      // ====== PORTAL BUTTON CLICK ======
+      portalBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        supabase.auth.getSession().then(({ data }) => {
-          if (data.session) {
-            window.location.href = 'admin/admin.html';
-          } else {
-            openModal();
-          }
-        }).catch(() => openModal());
+        
+        // First check if already logged in
+        const hasSession = await checkExistingSession();
+        if (hasSession) {
+          // Admin is logged in, redirect to admin panel
+          window.location.href = 'admin/admin.html';
+          return;
+        }
+
+        // Check if access denied is active (non-admin logged in)
+        if (isAccessDenied) {
+          showAccessDenied();
+          return;
+        }
+
+        // No session - open login modal
+        openModal();
       });
 
       closeBtn.addEventListener('click', closeModal);
@@ -1104,6 +1314,18 @@
           }
 
           if (data.session) {
+            // Check if user is admin
+            const isAdmin = await checkUserIsAdmin();
+            
+            if (!isAdmin) {
+              // Not admin - show access denied
+              await supabase.auth.signOut();
+              setLoading(false);
+              showAccessDenied();
+              return;
+            }
+
+            // Admin - login successful
             showSuccess();
             loginForm.style.display = 'none';
             setTimeout(() => {
@@ -1194,7 +1416,6 @@
         }
       }
 
-      // Load quote when page loads
       loadDailyQuote();
 
       // ====== COPY & SHARE QUOTE ======
@@ -1318,6 +1539,10 @@
         observer.observe(el);
         setTimeout(() => el.style.setProperty('--pct', pct + '%'), 200);
       });
+
+      // ====== INIT: CHECK EXISTING SESSION ======
+      // Check if any user is logged in on page load
+      checkExistingSession();
 
     })();
   </script>

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login · RAC Galkot Minutes Builder</title>
+    
+    <meta name="description" content="Secure login for Rotaract Club of Galkot Baglung Minutes Builder." />
+    <meta name="author" content="Rotaract Club of Galkot Baglung" />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+    </script>
+
+    <style>
+        :root {
+            --primary: #D70060;
+            --primary-hover: #B50051;
+            --secondary: #015491;
+            --dark: #1E293B;
+            --text-muted: #64748B;
+            --light-bg: #F8FAFC;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --white: #FFFFFF;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 440px;
+            width: 100%;
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 48px 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .login-logo-marker {
+            width: 8px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .login-logo-text {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--dark);
+        }
+
+        .login-logo-text span {
+            color: var(--primary);
+        }
+
+        .login-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--dark);
+            outline: none;
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+
+        .input-with-icon input:focus {
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
+        }
+
+        .input-with-icon .icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .input-with-icon .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+        }
+
+        .input-with-icon .toggle-password:hover {
+            color: var(--dark);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .form-options label input[type="checkbox"] {
+            width: auto;
+            accent-color: var(--primary);
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .form-options a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-options a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
+            color: var(--white);
+            border: none;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #be0055 0%, #910040 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(215, 0, 96, 0.25);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-login.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-message .error-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message .success-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            gap: 16px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-badge.admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .role-badge.president {
+            background: #fce4ec;
+            color: #991b1b;
+        }
+        .role-badge.secretary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .role-badge.editor {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .role-badge.viewer {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .demo-credentials {
+            background: #f1f5f9;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .demo-credentials strong {
+            color: var(--dark);
+        }
+
+        .demo-credentials code {
+            background: var(--white);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Password Reset Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 100%;
+            animation: fadeInUp 0.4s ease;
+            position: relative;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-content .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .modal-content .modal-close:hover {
+            color: var(--dark);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+            margin-bottom: 16px;
+        }
+
+        .modal-content input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(215, 0, 96, 0.08);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .modal-actions .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .modal-actions .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .modal-actions .btn-secondary {
+            background: var(--border);
+            color: var(--dark);
+        }
+
+        .modal-actions .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 32px 24px;
+            }
+
+            .login-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .input-with-icon input {
+                padding: 12px 16px 12px 40px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 28px 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <div class="login-header">
+                <div class="login-logo">
+                    <div class="login-logo-marker"></div>
+                    <div class="login-logo-text">Rotaract<span>Galkot</span></div>
+                </div>
+                <h1>Minutes Builder</h1>
+                <p>Secure access for Rotaractors</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage">
+                <span class="error-icon">⚠️</span>
+                <span id="errorText">Invalid credentials. Please try again.</span>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <span class="success-icon">✅</span>
+                <span id="successText">Login successful! Redirecting...</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <span class="icon">📧</span>
+                        <input type="email" id="email" placeholder="your@email.com" required autofocus />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <span class="icon">🔒</span>
+                        <input type="password" id="password" placeholder="Enter your password" required />
+                        <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" id="rememberMe" />
+                        Remember me
+                    </label>
+                    <a href="#" onclick="openResetModal()">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-text">🔑 Sign In</span>
+                </button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="register-link">
+                Don't have an account? <a href="#" onclick="showRegister()">Request Access</a>
+            </div>
+
+            <!-- Demo Credentials -->
+            <div class="demo-credentials">
+                <strong>🔐 Official Access:</strong><br />
+                <strong>President:</strong> <code>nabinchaliseofficial@gmail.com</code><br />
+                <strong>Secretary:</strong> <code>madanbsharma98@gmail.com</code><br />
+                <span style="font-size:0.7rem;">Contact admin if you need access.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeResetModal()">✕</button>
+            <h3>🔑 Reset Password</h3>
+            <p>Enter your email address and we'll send you a password reset link.</p>
+            <input type="email" id="resetEmail" placeholder="your@email.com" />
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="sendResetLink()">Send Reset Link</button>
+                <button class="btn-secondary" onclick="closeResetModal()">Cancel</button>
+            </div>
+            <div id="resetStatus" style="margin-top:12px; font-size:0.9rem;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // SUPABASE CONFIG
+        // ============================================================
+        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+
+        // Redirect URL - Change this to your minutes builder page
+        const REDIRECT_URL = "minutes.html";
+
+        // ============================================================
+        // INIT SUPABASE
+        // ============================================================
+        let supabaseClient = null;
+
+        try {
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase client initialized.');
+            } else {
+                console.warn('⚠️ Supabase library not loaded.');
+            }
+        } catch (e) {
+            console.warn('⚠️ Supabase init error:', e.message);
+        }
+
+        // ============================================================
+        // DOM ELEMENTS
+        // ============================================================
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const rememberMe = document.getElementById('rememberMe');
+
+        // ============================================================
+        // TOGGLE PASSWORD VISIBILITY
+        // ============================================================
+        function togglePassword() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const btn = document.querySelector('.toggle-password');
+            btn.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        }
+
+        // ============================================================
+        // SHOW / HIDE MESSAGES
+        // ============================================================
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add('show');
+            successMessage.classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            successText.textContent = message;
+            successMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+        }
+
+        function hideMessages() {
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+        }
+
+        // ============================================================
+        // PASSWORD RESET MODAL
+        // ============================================================
+        function openResetModal() {
+            document.getElementById('resetModal').classList.add('active');
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('resetStatus').textContent = '';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        async function sendResetLink() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const status = document.getElementById('resetStatus');
+
+            if (!email) {
+                status.innerHTML = '⚠️ Please enter your email address.';
+                status.style.color = '#991b1b';
+                return;
+            }
+
+            if (!supabaseClient) {
+                status.innerHTML = '⚠️ Password reset is not available. Please contact admin.';
+                status.style.color = '#991b1b';
+                return;
+            }
+
+            status.innerHTML = '⏳ Sending reset link...';
+            status.style.color = '#64748B';
+
+            try {
+                const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/' + REDIRECT_URL,
+                });
+
+                if (error) {
+                    status.innerHTML = '❌ ' + error.message;
+                    status.style.color = '#991b1b';
+                    return;
+                }
+
+                status.innerHTML = '✅ Password reset link sent to ' + email + '! Check your inbox.';
+                status.style.color = '#065f46';
+
+                setTimeout(() => {
+                    closeResetModal();
+                }, 3000);
+            } catch (err) {
+                status.innerHTML = '❌ Something went wrong. Please try again.';
+                status.style.color = '#991b1b';
+            }
+        }
+
+        // ============================================================
+        // CHECK USER ROLE (Supports President & Secretary)
+        // ============================================================
+        async function checkUserRole(userId) {
+            if (!supabaseClient) return null;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_roles')
+                    .select('role')
+                    .eq('user_id', userId)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error('Error fetching role:', error);
+                    return null;
+                }
+
+                return data?.role || null;
+            } catch (err) {
+                console.error('Role check error:', err);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // CHECK IF USER HAS MEETING ACCESS (President & Secretary included)
+        // ============================================================
+        async function hasMeetingAccess(userId) {
+            const role = await checkUserRole(userId);
+            return role && ['admin', 'editor', 'president', 'secretary'].includes(role);
+        }
+
+        // ============================================================
+        // GET ROLE DISPLAY NAME
+        // ============================================================
+        function getRoleDisplayName(role) {
+            const roleMap = {
+                'admin': 'Administrator',
+                'editor': 'Editor',
+                'president': 'President',
+                'secretary': 'Secretary',
+                'viewer': 'Viewer'
+            };
+            return roleMap[role] || role;
+        }
+
+        // ============================================================
+        // GET ROLE BADGE CLASS
+        // ============================================================
+        function getRoleBadgeClass(role) {
+            const roleMap = {
+                'admin': 'admin',
+                'editor': 'editor',
+                'president': 'president',
+                'secretary': 'secretary',
+                'viewer': 'viewer'
+            };
+            return roleMap[role] || 'viewer';
+        }
+
+        // ============================================================
+        // LOGIN HANDLER
+        // ============================================================
+        async function handleLogin(email, password) {
+            // If Supabase is not available, use demo fallback
+            if (!supabaseClient) {
+                // Demo fallback for testing with actual credentials
+                if (email === 'nabinchaliseofficial@gmail.com' && password === 'President@2026') {
+                    localStorage.setItem('user_email', email);
+                    localStorage.setItem('user_role', 'president');
+                    localStorage.setItem('is_authenticated', 'true');
+                    showSuccess('✅ Welcome, President! Redirecting...');
+                    setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
+                    return;
+                } else if (email === 'madanbsharma98@gmail.com' && password === 'Secretary@2026') {
+                    localStorage.setItem('user_email', email);
+                    localStorage.setItem('user_role', 'secretary');
+                    localStorage.setItem('is_authenticated', 'true');
+                    showSuccess('✅ Welcome, Secretary! Redirecting...');
+                    setTimeout(() => { window.location.href = REDIRECT_URL; }, 1500);
+                    return;
+                } else {
+                    showError('❌ Invalid credentials. Please try again.');
+                    return;
+                }
+            }
+
+            try {
+                // Attempt login with Supabase
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    console.error('Login error:', error);
+                    showError('❌ ' + (error.message || 'Invalid email or password.'));
+                    return;
+                }
+
+                const user = data.user;
+                if (!user) {
+                    showError('❌ Login failed. Please try again.');
+                    return;
+                }
+
+                // Check user role
+                const role = await checkUserRole(user.id);
+
+                if (!role) {
+                    showError('⚠️ Your account is not yet approved. Please contact the admin.');
+                    await supabaseClient.auth.signOut();
+                    return;
+                }
+
+                // Check if user has meeting access (President & Secretary included)
+                const hasAccess = await hasMeetingAccess(user.id);
+                if (!hasAccess) {
+                    showError(`⚠️ Your role (${role}) does not have permission to access the Minutes Builder. Contact admin.`);
+                    await supabaseClient.auth.signOut();
+                    return;
+                }
+
+                // Store user info
+                localStorage.setItem('user_email', user.email);
+                localStorage.setItem('user_role', role);
+                localStorage.setItem('user_id', user.id);
+                localStorage.setItem('is_authenticated', 'true');
+
+                if (rememberMe.checked) {
+                    localStorage.setItem('remember_me', 'true');
+                }
+
+                // Success with role-specific message
+                const roleDisplay = getRoleDisplayName(role);
+                const emoji = role === 'president' ? '👑' : role === 'secretary' ? '📝' : '👤';
+                showSuccess(`${emoji} Welcome, ${roleDisplay}! Redirecting to Minutes Builder...`);
+
+                setTimeout(() => {
+                    window.location.href = REDIRECT_URL;
+                }, 1200);
+
+            } catch (err) {
+                console.error('Login error:', err);
+                showError('❌ An unexpected error occurred. Please try again.');
+            }
+        }
+
+        // ============================================================
+        // FORM SUBMISSION
+        // ============================================================
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!email || !password) {
+                showError('⚠️ Please enter both email and password.');
+                return;
+            }
+
+            hideMessages();
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+            loginBtn.querySelector('.btn-text').textContent = 'Signing in...';
+
+            try {
+                await handleLogin(email, password);
+            } catch (err) {
+                console.error('Login handler error:', err);
+                showError('❌ Something went wrong. Please try again.');
+            } finally {
+                setTimeout(() => {
+                    if (!loginBtn.disabled) return;
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                    loginBtn.querySelector('.btn-text').textContent = '🔑 Sign In';
+                }, 3000);
+            }
+        });
+
+        // ============================================================
+        // ENTER KEY SUPPORT
+        // ============================================================
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Also support Enter key in reset modal
+        document.getElementById('resetEmail').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendResetLink();
+            }
+        });
+
+        // ============================================================
+        // CHECK EXISTING SESSION
+        // ============================================================
+        async function checkExistingSession() {
+            const isAuthenticated = localStorage.getItem('is_authenticated') === 'true';
+            const userEmail = localStorage.getItem('user_email');
+            const userRole = localStorage.getItem('user_role');
+
+            if (isAuthenticated && userEmail && ['admin', 'editor', 'president', 'secretary'].includes(userRole)) {
+                // Try to verify with Supabase
+                if (supabaseClient) {
+                    try {
+                        const { data: { session } } = await supabaseClient.auth.getSession();
+                        if (session) {
+                            // Session is valid, redirect
+                            window.location.href = REDIRECT_URL;
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Session check failed:', err);
+                    }
+                }
+                // If no session but localStorage says authenticated, clear it
+                localStorage.removeItem('is_authenticated');
+                localStorage.removeItem('user_email');
+                localStorage.removeItem('user_role');
+                localStorage.removeItem('user_id');
+            }
+        }
+
+        // ============================================================
+        // REGISTER PLACEHOLDER
+        // ============================================================
+        function showRegister() {
+            showError('📝 Please contact the club secretary to request access.');
+        }
+
+        // ============================================================
+        // AUTO-FILL FROM REMEMBER ME
+        // ============================================================
+        function loadRememberedEmail() {
+            const remembered = localStorage.getItem('remember_me');
+            if (remembered === 'true') {
+                const email = localStorage.getItem('user_email');
+                if (email) {
+                    emailInput.value = email;
+                    rememberMe.checked = true;
+                    // Focus password field for convenience
+                    passwordInput.focus();
+                }
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+            loadRememberedEmail();
+
+            if (!emailInput.value) {
+                emailInput.focus();
+            }
+
+            console.log('✅ Login page ready (President & Secretary roles supported)');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('resetModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeResetModal();
+            }
+        });
+
+        // Expose functions globally
+        window.togglePassword = togglePassword;
+        window.openResetModal = openResetModal;
+        window.closeResetModal = closeResetModal;
+        window.sendResetLink = sendResetLink;
+        window.showRegister = showRegister;
+        window.showError = showError;
+        window.showSuccess = showSuccess;
+    </script>
+
+</body>
+</html>
