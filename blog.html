@@ -211,7 +211,6 @@
         .empty-state .icon { font-size: 4rem; margin-bottom: 15px; }
         .empty-state h3 { color: var(--text); margin-bottom: 8px; }
 
-        /* single post view */
         .single-post-back { margin-bottom: 20px; display: inline-block; }
         .single-post .blog-title { font-size: 2rem; }
         .single-post .blog-content-full { font-size: 1.05rem; }
@@ -222,7 +221,6 @@
         }
         .read-more-btn:hover { color: var(--brand-hover); text-decoration: underline; }
 
-        /* ===== HOME BUTTON STYLES ===== */
         .home-btn-container {
             display: inline-flex;
             align-items: center;
@@ -282,7 +280,6 @@
             100% { transform: translateY(-15px) scale(0.8); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
         }
 
-        /* ===== LOGIN MODAL ===== */
         .login-modal-overlay {
             display: none;
             position: fixed;
@@ -345,7 +342,6 @@
         .login-modal .auth-status.error { color: #ef4444; display: block; }
         .login-modal .auth-status.success { color: #10b981; display: block; }
 
-        /* Login Button in Nav */
         .login-nav-btn {
             background: var(--brand);
             color: #fff;
@@ -371,7 +367,6 @@
             background: #059669;
         }
 
-        /* Filter tabs */
         .filter-tabs {
             display: flex;
             gap: 8px;
@@ -457,7 +452,7 @@
                 <div class="form-group">
                     <input type="password" id="auth-password" class="form-control" placeholder="Password" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn btn-primary">Authenticate</button>
+                <button type="submit" class="btn btn-primary" id="loginSubmitBtn">Authenticate</button>
                 <div id="authStatusMessage" class="auth-status" role="status"></div>
             </form>
         </div>
@@ -512,414 +507,417 @@
 
     <footer><div class="container"><p>&copy; 2026 Nabin Chalise · All rights reserved.</p></div></footer>
 
-    <script>
-        (function() {
-            'use strict';
+    <!-- ============================================================ -->
+    <!-- ✅ AUTH.JS - Centralized Authentication -->
+    <!-- ============================================================ -->
+    <script src="auth.js"></script>
+    
+   <script>
+    (function() {
+        'use strict';
 
-            const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co/";
-            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+        // ============================================================
+        //  THEME
+        // ============================================================
+        const themeToggle = document.getElementById('themeToggle');
+        const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const applyTheme = (t) => {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+        };
+        applyTheme(getTheme());
+        themeToggle.addEventListener('click', () => {
+            const cur = document.documentElement.getAttribute('data-theme');
+            applyTheme(cur === 'dark' ? 'light' : 'dark');
+        });
 
-            let supabase;
+        // ============================================================
+        //  NAV
+        // ============================================================
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', () => {
+            const exp = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !exp);
+            navLinks.classList.toggle('active');
+        });
+
+        // ============================================================
+        //  REVEAL
+        // ============================================================
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); obs.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // ============================================================
+        //  DAILY QUOTE
+        // ============================================================
+        async function fetchQuote() {
+            const qText = document.getElementById('quoteText');
+            const qDay = document.getElementById('quoteDay');
+            const qMeta = document.getElementById('quoteMeta');
+            const fallbacks = [
+                "The only way to do great work is to love what you do.",
+                "In the middle of difficulty lies opportunity.",
+                "Life is what happens when you're busy making other plans.",
+                "The journey of a thousand miles begins with a single step.",
+                "What we think, we become."
+            ];
             try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('✅ Supabase connected');
-            } catch (e) {
-                console.error('❌ Supabase init failed:', e);
+                const now = new Date();
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                const dayOfYear = Math.floor(diff / (1000*60*60*24)) + 1;
+                const { data, error } = await supabaseClient
+                    .from('spiritual_quotes')
+                    .select('day, quote, author')
+                    .eq('day', dayOfYear)
+                    .maybeSingle();
+                if (error || !data) throw new Error('no quote');
+                qText.textContent = data.quote;
+                qDay.textContent = 'Day ' + data.day;
+                qMeta.textContent = data.author ? '— ' + data.author : '✨ spiritual';
+            } catch (err) {
+                const now = new Date();
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                const day = Math.floor(diff / (1000*60*60*24));
+                const idx = day % fallbacks.length;
+                qText.textContent = fallbacks[idx];
+                qDay.textContent = 'Day ' + (day + 1);
+                qMeta.textContent = '✨ inspiration';
+            }
+        }
+        fetchQuote();
+
+        // ============================================================
+        //  ✅ AUTH LOGIN - Using centralized login
+        // ============================================================
+        const authForm = document.getElementById('authForm');
+        const authStatus = document.getElementById('authStatusMessage');
+        const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if (!email || !password) {
+                authStatus.className = 'auth-status error';
+                authStatus.textContent = '⚠️ Please enter both email and password.';
+                authStatus.style.display = 'block';
+                return;
             }
 
-            // ===== THEME =====
-            const themeToggle = document.getElementById('themeToggle');
-            const getTheme = () => localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            const applyTheme = (t) => {
-                document.documentElement.setAttribute('data-theme', t);
-                localStorage.setItem('theme', t);
-            };
-            applyTheme(getTheme());
-            themeToggle.addEventListener('click', () => {
-                const cur = document.documentElement.getAttribute('data-theme');
-                applyTheme(cur === 'dark' ? 'light' : 'dark');
-            });
+            authStatus.className = 'auth-status success';
+            authStatus.textContent = '⏳ Authenticating...';
+            authStatus.style.display = 'block';
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.textContent = '⏳ Please wait...';
 
-            // ===== NAV =====
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            menuToggle.addEventListener('click', () => {
-                const exp = menuToggle.getAttribute('aria-expanded') === 'true';
-                menuToggle.setAttribute('aria-expanded', !exp);
-                navLinks.classList.toggle('active');
-            });
-
-            // ===== REVEAL =====
-            const obs = new IntersectionObserver((entries) => {
-                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); obs.unobserve(e.target); } });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-            // ===== DAILY QUOTE =====
-            async function fetchQuote() {
-                const qText = document.getElementById('quoteText');
-                const qDay = document.getElementById('quoteDay');
-                const qMeta = document.getElementById('quoteMeta');
-                const fallbacks = [
-                    "The only way to do great work is to love what you do.",
-                    "In the middle of difficulty lies opportunity.",
-                    "Life is what happens when you're busy making other plans.",
-                    "The journey of a thousand miles begins with a single step.",
-                    "What we think, we become."
-                ];
-                try {
-                    const now = new Date();
-                    const start = new Date(now.getFullYear(), 0, 0);
-                    const diff = now - start;
-                    const dayOfYear = Math.floor(diff / (1000*60*60*24)) + 1;
-                    const { data, error } = await supabase
-                        .from('spiritual_quotes')
-                        .select('day, quote, author')
-                        .eq('day', dayOfYear)
-                        .maybeSingle();
-                    if (error || !data) throw new Error('no quote');
-                    qText.textContent = data.quote;
-                    qDay.textContent = 'Day ' + data.day;
-                    qMeta.textContent = data.author ? '— ' + data.author : '✨ spiritual';
-                } catch (err) {
-                    const now = new Date();
-                    const start = new Date(now.getFullYear(), 0, 0);
-                    const diff = now - start;
-                    const day = Math.floor(diff / (1000*60*60*24));
-                    const idx = day % fallbacks.length;
-                    qText.textContent = fallbacks[idx];
-                    qDay.textContent = 'Day ' + (day + 1);
-                    qMeta.textContent = '✨ inspiration';
-                }
-            }
-            fetchQuote();
-
-            // ===== UPDATE DASHBOARD LINK BASED ON AUTH =====
-            function updateDashboardLink() {
-                const verified = sessionStorage.getItem('auth_verified') === 'true';
-                const dashboardLink = document.getElementById('dashboardLink');
-                const loginNavBtn = document.getElementById('loginNavBtn');
+            try {
+                const result = await login(email, password);
                 
-                if (verified) {
-                    dashboardLink.style.display = 'inline';
-                    loginNavBtn.textContent = '✅ Dashboard';
-                    loginNavBtn.classList.add('logged-in');
-                    loginNavBtn.onclick = () => { window.location.href = 'dashboard.html'; };
-                } else {
-                    dashboardLink.style.display = 'none';
-                    loginNavBtn.textContent = '🔐 Login';
-                    loginNavBtn.classList.remove('logged-in');
-                    loginNavBtn.onclick = openLoginModal;
-                }
+                console.log('✅ Login successful:', result);
+
+                authStatus.className = 'auth-status success';
+                authStatus.textContent = `✅ Welcome ${result.role.toUpperCase()}! Redirecting...`;
+                authStatus.style.display = 'block';
+
+                // Update navbar
+                updateNavbarAuth();
+
+                // Redirect based on role
+                setTimeout(() => {
+                    closeLoginModal();
+                    if (result.role === 'admin') {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+
+            } catch (err) {
+                console.error('Login error:', err);
+                authStatus.className = 'auth-status error';
+                authStatus.textContent = '❌ ' + (err.message || 'Invalid credentials.');
+                authStatus.style.display = 'block';
+                loginSubmitBtn.disabled = false;
+                loginSubmitBtn.textContent = 'Authenticate';
             }
+        });
 
-            // ===== LOGIN MODAL =====
-            const loginModal = document.getElementById('loginModal');
-            const modalCloseBtn = document.getElementById('modalCloseBtn');
-            const loginNavBtn = document.getElementById('loginNavBtn');
+        // ============================================================
+        //  ✅ MODAL CONTROLS
+        // ============================================================
+        const loginModal = document.getElementById('loginModal');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-            function openLoginModal(e) {
-                if (e) e.preventDefault();
-                loginModal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                const status = document.getElementById('authStatusMessage');
-                status.className = 'auth-status';
-                status.textContent = '';
-                document.getElementById('auth-email').value = '';
-                document.getElementById('auth-password').value = '';
-                document.getElementById('auth-email').focus();
+        function openLoginModal(e) {
+            if (e) e.preventDefault();
+            console.log('🔐 Opening login modal');
+            loginModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            authStatus.className = 'auth-status';
+            authStatus.textContent = '';
+            authStatus.style.display = 'none';
+            document.getElementById('auth-email').value = '';
+            document.getElementById('auth-password').value = '';
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.textContent = 'Authenticate';
+            document.getElementById('auth-email').focus();
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modalCloseBtn.addEventListener('click', closeLoginModal);
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && loginModal.classList.contains('active')) closeLoginModal();
+        });
+
+        // ============================================================
+        //  ✅ UPDATE NAVBAR
+        // ============================================================
+        // Call updateNavbarAuth from auth.js
+        updateNavbarAuth();
+
+        // Listen for storage changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'auth_verified' || e.key === 'auth_user_id' || e.key === 'auth_role') {
+                updateNavbarAuth();
             }
+        });
 
-            function closeLoginModal() {
-                loginModal.classList.remove('active');
-                document.body.style.overflow = '';
+        // ============================================================
+        //  BLOG POSTS
+        // ============================================================
+        let allPosts = [];
+        let currentSlug = null;
+        let currentFilter = 'published';
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getFilteredPosts(filter) {
+            const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
+            if (filter === 'all') {
+                return nonDraftPosts;
             }
+            return nonDraftPosts.filter(p => p.status === filter);
+        }
 
-            modalCloseBtn.addEventListener('click', closeLoginModal);
-            loginModal.addEventListener('click', (e) => {
-                if (e.target === loginModal) closeLoginModal();
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && loginModal.classList.contains('active')) closeLoginModal();
-            });
+        function updateFilterCounts() {
+            const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
+            const published = nonDraftPosts.filter(p => p.status === 'published').length;
+            const archived = nonDraftPosts.filter(p => p.status === 'archived').length;
+            document.getElementById('countPublished').textContent = `(${published})`;
+            document.getElementById('countArchived').textContent = `(${archived})`;
+        }
 
-            // ===== STATE =====
-            let allPosts = [];
-            let currentSlug = null;
-            let currentFilter = 'published';
+        function renderPostList(posts) {
+            const container = document.getElementById('postsContainer');
+            const empty = document.getElementById('emptyState');
+            const backWrapper = document.getElementById('backToBlogWrapper');
 
-            function escapeHtml(text) {
-                if (!text) return '';
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+            backWrapper.style.display = 'none';
+            if (!posts || posts.length === 0) {
+                empty.style.display = 'block';
+                container.innerHTML = '';
+                return;
             }
+            empty.style.display = 'none';
 
-            function getFilteredPosts(filter) {
-                const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
-                if (filter === 'all') {
-                    return nonDraftPosts;
-                }
-                return nonDraftPosts.filter(p => p.status === filter);
-            }
-
-            function updateFilterCounts() {
-                const nonDraftPosts = allPosts.filter(p => p.status !== 'draft');
-                const published = nonDraftPosts.filter(p => p.status === 'published').length;
-                const archived = nonDraftPosts.filter(p => p.status === 'archived').length;
-                document.getElementById('countPublished').textContent = `(${published})`;
-                document.getElementById('countArchived').textContent = `(${archived})`;
-            }
-
-            function renderPostList(posts) {
-                const container = document.getElementById('postsContainer');
-                const empty = document.getElementById('emptyState');
-                const backWrapper = document.getElementById('backToBlogWrapper');
-
-                backWrapper.style.display = 'none';
-                if (!posts || posts.length === 0) {
-                    empty.style.display = 'block';
-                    container.innerHTML = '';
-                    return;
-                }
-                empty.style.display = 'none';
-
-                container.innerHTML = posts.map(post => {
-                    const excerpt = post.excerpt || (post.content || '').substring(0, 160) + '...';
-                    const hasMore = (post.content || '').length > 160;
-                    return `
-                        <article class="blog-card reveal" data-slug="${escapeHtml(post.slug || '')}">
-                            <div class="blog-meta">
-                                <span>📅 ${post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}</span>
-                                <span>⏱ ${Math.ceil((post.content || '').length / 1000)} min read</span>
-                                <span class="blog-status ${post.status || 'draft'}">${post.status || 'draft'}</span>
-                            </div>
-                            <h2 class="blog-title"><a href="#" class="post-link" data-slug="${escapeHtml(post.slug || '')}">${escapeHtml(post.title || 'Untitled')}</a></h2>
-                            <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
-                            ${hasMore ? `<button class="read-more-btn post-link" data-slug="${escapeHtml(post.slug || '')}">Read more →</button>` : ''}
-                            <div class="blog-tags">
-                                ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('') : '<span>uncategorized</span>'}
-                            </div>
-                        </article>
-                    `;
-                }).join('');
-
-                document.querySelectorAll('.post-link').forEach(el => {
-                    el.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const slug = el.dataset.slug;
-                        if (slug) showSinglePost(slug);
-                    });
-                });
-
-                document.querySelectorAll('.blog-card.reveal').forEach(el => obs.observe(el));
-            }
-
-            function renderSinglePost(post) {
-                const container = document.getElementById('postsContainer');
-                const empty = document.getElementById('emptyState');
-                const backWrapper = document.getElementById('backToBlogWrapper');
-                backWrapper.style.display = 'block';
-                empty.style.display = 'none';
-
-                container.innerHTML = `
-                    <article class="blog-card single-post reveal active">
+            container.innerHTML = posts.map(post => {
+                const excerpt = post.excerpt || (post.content || '').substring(0, 160) + '...';
+                const hasMore = (post.content || '').length > 160;
+                return `
+                    <article class="blog-card reveal" data-slug="${escapeHtml(post.slug || '')}">
                         <div class="blog-meta">
                             <span>📅 ${post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}</span>
                             <span>⏱ ${Math.ceil((post.content || '').length / 1000)} min read</span>
                             <span class="blog-status ${post.status || 'draft'}">${post.status || 'draft'}</span>
                         </div>
-                        <h1 class="blog-title">${escapeHtml(post.title || 'Untitled')}</h1>
-                        <div class="blog-content-full">${post.content || ''}</div>
+                        <h2 class="blog-title"><a href="#" class="post-link" data-slug="${escapeHtml(post.slug || '')}">${escapeHtml(post.title || 'Untitled')}</a></h2>
+                        <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
+                        ${hasMore ? `<button class="read-more-btn post-link" data-slug="${escapeHtml(post.slug || '')}">Read more →</button>` : ''}
                         <div class="blog-tags">
                             ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('') : '<span>uncategorized</span>'}
                         </div>
                     </article>
                 `;
-                document.querySelector('.main-blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            }).join('');
 
-            function showSinglePost(slug) {
-                const post = allPosts.find(p => p.slug === slug && p.status !== 'draft');
-                if (!post) {
-                    showBlogList();
-                    return;
-                }
-                currentSlug = slug;
-                document.getElementById('filterTabs').style.display = 'none';
-                renderSinglePost(post);
-                if (history.pushState) {
-                    history.pushState(null, null, '#' + slug);
-                }
-            }
-
-            function showBlogList() {
-                currentSlug = null;
-                document.getElementById('filterTabs').style.display = 'flex';
-                const filtered = getFilteredPosts(currentFilter);
-                renderPostList(filtered);
-                if (history.pushState) {
-                    history.pushState(null, null, ' ');
-                }
-            }
-
-            // ===== FETCH POSTS =====
-            async function fetchBlogPosts() {
-                const loadingState = document.getElementById('loadingState');
-                const blogContent = document.getElementById('blogContent');
-
-                try {
-                    loadingState.style.display = 'block';
-                    blogContent.style.display = 'none';
-
-                    const { data, error } = await supabase
-                        .from('blogs')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-
-                    if (error) throw error;
-
-                    allPosts = data || [];
-                    updateFilterCounts();
-                    loadingState.style.display = 'none';
-                    blogContent.style.display = 'block';
-
-                    const hash = window.location.hash.replace('#', '');
-                    if (hash) {
-                        const post = allPosts.find(p => p.slug === hash && p.status !== 'draft');
-                        if (post) {
-                            showSinglePost(hash);
-                            return;
-                        }
-                    }
-                    showBlogList();
-
-                } catch (err) {
-                    console.error('Fetch error:', err);
-                    loadingState.style.display = 'none';
-                    blogContent.style.display = 'block';
-                    document.getElementById('postsContainer').innerHTML = `<p style="color:#ef4444;text-align:center;">Failed to load posts: ${err.message}</p>`;
-                }
-            }
-
-            // ===== FILTER TABS =====
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFilter = this.dataset.filter;
-                    if (!currentSlug) {
-                        const filtered = getFilteredPosts(currentFilter);
-                        renderPostList(filtered);
-                    }
+            document.querySelectorAll('.post-link').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const slug = el.dataset.slug;
+                    if (slug) showSinglePost(slug);
                 });
             });
 
-            // ===== BACK TO BLOG =====
-            document.getElementById('backToBlogLink').addEventListener('click', (e) => {
-                e.preventDefault();
+            document.querySelectorAll('.blog-card.reveal').forEach(el => obs.observe(el));
+        }
+
+        function renderSinglePost(post) {
+            const container = document.getElementById('postsContainer');
+            const empty = document.getElementById('emptyState');
+            const backWrapper = document.getElementById('backToBlogWrapper');
+            backWrapper.style.display = 'block';
+            empty.style.display = 'none';
+
+            container.innerHTML = `
+                <article class="blog-card single-post reveal active">
+                    <div class="blog-meta">
+                        <span>📅 ${post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}</span>
+                        <span>⏱ ${Math.ceil((post.content || '').length / 1000)} min read</span>
+                        <span class="blog-status ${post.status || 'draft'}">${post.status || 'draft'}</span>
+                    </div>
+                    <h1 class="blog-title">${escapeHtml(post.title || 'Untitled')}</h1>
+                    <div class="blog-content-full">${post.content || ''}</div>
+                    <div class="blog-tags">
+                        ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('') : '<span>uncategorized</span>'}
+                    </div>
+                </article>
+            `;
+            document.querySelector('.main-blog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showSinglePost(slug) {
+            const post = allPosts.find(p => p.slug === slug && p.status !== 'draft');
+            if (!post) {
                 showBlogList();
-            });
+                return;
+            }
+            currentSlug = slug;
+            document.getElementById('filterTabs').style.display = 'none';
+            renderSinglePost(post);
+            if (history.pushState) {
+                history.pushState(null, null, '#' + slug);
+            }
+        }
 
-            // ===== AUTH LOGIN (with Role Check) =====
-            const authForm = document.getElementById('authForm');
-            const authStatus = document.getElementById('authStatusMessage');
+        function showBlogList() {
+            currentSlug = null;
+            document.getElementById('filterTabs').style.display = 'flex';
+            const filtered = getFilteredPosts(currentFilter);
+            renderPostList(filtered);
+            if (history.pushState) {
+                history.pushState(null, null, ' ');
+            }
+        }
 
-            authForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('auth-email').value.trim();
-                const password = document.getElementById('auth-password').value;
+        // ===== FETCH POSTS =====
+        async function fetchBlogPosts() {
+            const loadingState = document.getElementById('loadingState');
+            const blogContent = document.getElementById('blogContent');
 
-                authStatus.className = 'auth-status success';
-                authStatus.textContent = '⏳ Authenticating...';
+            try {
+                loadingState.style.display = 'block';
+                blogContent.style.display = 'none';
 
-                try {
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                    if (error) throw new Error(error.message);
+                const { data, error } = await supabaseClient
+                    .from('blogs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                    const userId = data.user.id;
+                if (error) throw error;
 
-                    const { data: roleData, error: roleError } = await supabase
-                        .from('user_roles')
-                        .select('role')
-                        .eq('user_id', userId)
-                        .maybeSingle();
+                allPosts = data || [];
+                updateFilterCounts();
+                loadingState.style.display = 'none';
+                blogContent.style.display = 'block';
 
-                    if (roleError) {
-                        console.error('Role check error:', roleError);
-                        throw new Error('Failed to verify user permissions');
-                    }
-
-                    if (!roleData || roleData.role !== 'admin') {
-                        throw new Error('Access denied. Admin privileges required.');
-                    }
-
-                    sessionStorage.setItem('auth_user_id', userId);
-                    sessionStorage.setItem('auth_timestamp', Date.now().toString());
-                    sessionStorage.setItem('auth_verified', 'true');
-                    sessionStorage.setItem('auth_role', roleData.role);
-
-                    authStatus.className = 'auth-status success';
-                    authStatus.textContent = '✅ Admin authenticated! Redirecting...';
-
-                    document.getElementById('auth-email').value = '';
-                    document.getElementById('auth-password').value = '';
-
-                    // ✅ Update dashboard link after login
-                    updateDashboardLink();
-
-                    setTimeout(() => {
-                        closeLoginModal();
-                        window.location.href = 'dashboard.html';
-                    }, 800);
-
-                } catch (err) {
-                    authStatus.className = 'auth-status error';
-                    authStatus.textContent = '❌ ' + (err.message || 'Invalid credentials.');
-                    console.error('Login error:', err);
-                }
-            });
-
-            // ===== HANDLE HASH CHANGE =====
-            window.addEventListener('hashchange', () => {
                 const hash = window.location.hash.replace('#', '');
                 if (hash) {
                     const post = allPosts.find(p => p.slug === hash && p.status !== 'draft');
-                    if (post) showSinglePost(hash);
-                } else {
-                    showBlogList();
+                    if (post) {
+                        showSinglePost(hash);
+                        return;
+                    }
+                }
+                showBlogList();
+
+            } catch (err) {
+                console.error('Fetch error:', err);
+                loadingState.style.display = 'none';
+                blogContent.style.display = 'block';
+                document.getElementById('postsContainer').innerHTML = `<p style="color:#ef4444;text-align:center;">Failed to load posts: ${err.message}</p>`;
+            }
+        }
+
+        // ===== FILTER TABS =====
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                if (!currentSlug) {
+                    const filtered = getFilteredPosts(currentFilter);
+                    renderPostList(filtered);
                 }
             });
+        });
 
-            // ===== HOME BUTTON with Click Animation =====
-            document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetUrl = this.getAttribute('href');
-                const button = this;
+        // ===== BACK TO BLOG =====
+        document.getElementById('backToBlogLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            showBlogList();
+        });
 
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                const rect = button.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                ripple.style.width = ripple.style.height = `${size}px`;
-                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-                button.appendChild(ripple);
+        // ===== HANDLE HASH CHANGE =====
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash) {
+                const post = allPosts.find(p => p.slug === hash && p.status !== 'draft');
+                if (post) showSinglePost(hash);
+            } else {
+                showBlogList();
+            }
+        });
 
-                button.classList.add('clicked-exit');
+        // ===== HOME BUTTON with Click Animation =====
+        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.getAttribute('href');
+            const button = this;
 
-                setTimeout(() => {
-                    window.location.href = targetUrl;
-                }, 450);
-            });
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            button.appendChild(ripple);
 
-            // ===== INIT =====
-            // ✅ Only update the dashboard link based on existing session
-            // ✅ NO auto-login, NO auto-redirect
-            updateDashboardLink();
-            fetchBlogPosts();
+            button.classList.add('clicked-exit');
 
-        })();
-    </script>
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 450);
+        });
+
+        // ============================================================
+        //  ✅ INIT
+        // ============================================================
+        // Update navbar from auth.js
+        updateNavbarAuth();
+        // Load blog posts
+        fetchBlogPosts();
+
+    })();
+</script>
 </body>
 </html>

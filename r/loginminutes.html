@@ -88,7 +88,6 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
-        /* Home Button */
         .home-link {
             position: absolute;
             top: 16px;
@@ -343,37 +342,6 @@
             flex-shrink: 0;
         }
 
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .role-badge.admin {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .role-badge.president {
-            background: #fce4ec;
-            color: #991b1b;
-        }
-        .role-badge.secretary {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .role-badge.editor {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .role-badge.viewer {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
         @media (max-width: 480px) {
             .login-card {
                 padding: 32px 24px;
@@ -464,15 +432,15 @@
 
     <script>
         // ============================================================
-        // SUPABASE CONFIG
+        //  SUPABASE CONFIG - CORRECT ANON KEY
         // ============================================================
-         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
-        // Redirect URL - Change this to your minutes builder page
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU';
+        
         const REDIRECT_URL = "minutes.html";
 
         // ============================================================
-        // INIT SUPABASE
+        //  INIT SUPABASE
         // ============================================================
         let supabaseClient = null;
 
@@ -488,7 +456,7 @@
         }
 
         // ============================================================
-        // DOM ELEMENTS
+        //  DOM ELEMENTS
         // ============================================================
         const form = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -501,7 +469,7 @@
         const rememberMe = document.getElementById('rememberMe');
 
         // ============================================================
-        // TOGGLE PASSWORD VISIBILITY
+        //  TOGGLE PASSWORD VISIBILITY
         // ============================================================
         function togglePassword() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -511,7 +479,7 @@
         }
 
         // ============================================================
-        // SHOW / HIDE MESSAGES
+        //  SHOW / HIDE MESSAGES
         // ============================================================
         function showError(message) {
             errorText.textContent = message;
@@ -531,24 +499,40 @@
         }
 
         // ============================================================
-        // CHECK USER ROLE
+        //  ✅ FIXED: CHECK USER ROLE - Search by user_id AND email
         // ============================================================
-        async function checkUserRole(userId) {
+        async function checkUserRole(userId, email) {
             if (!supabaseClient) return null;
 
             try {
-                const { data, error } = await supabaseClient
+                // Try by user_id first
+                let { data, error } = await supabaseClient
                     .from('user_roles')
-                    .select('role')
+                    .select('role, status')
                     .eq('user_id', userId)
                     .maybeSingle();
+
+                // If not found by user_id, try by email
+                if (!data && email) {
+                    console.log('🔍 Searching by email:', email);
+                    const { data: emailData, error: emailError } = await supabaseClient
+                        .from('user_roles')
+                        .select('role, status')
+                        .eq('email', email)
+                        .maybeSingle();
+                    
+                    if (!emailError && emailData) {
+                        data = emailData;
+                        console.log('✅ Found by email:', emailData);
+                    }
+                }
 
                 if (error) {
                     console.error('Error fetching role:', error);
                     return null;
                 }
 
-                return data?.role || null;
+                return data || null;
             } catch (err) {
                 console.error('Role check error:', err);
                 return null;
@@ -556,15 +540,27 @@
         }
 
         // ============================================================
-        // CHECK IF USER HAS MEETING ACCESS
+        //  CHECK IF USER HAS MEETING ACCESS
         // ============================================================
-        async function hasMeetingAccess(userId) {
-            const role = await checkUserRole(userId);
-            return role && ['admin', 'editor', 'president', 'secretary'].includes(role);
+        async function hasMeetingAccess(userId, email) {
+            const userData = await checkUserRole(userId, email);
+            if (!userData) {
+                console.log('❌ No user data found for:', userId, email);
+                return false;
+            }
+            
+            console.log('📊 User data:', userData);
+            
+            const hasAllowedRole = ['admin', 'editor', 'president', 'secretary'].includes(userData.role);
+            const isActive = userData.status === 'active';
+            
+            console.log('✅ Role allowed:', hasAllowedRole, 'Status active:', isActive);
+            
+            return hasAllowedRole && isActive;
         }
 
         // ============================================================
-        // GET ROLE DISPLAY NAME
+        //  GET ROLE DISPLAY NAME
         // ============================================================
         function getRoleDisplayName(role) {
             const roleMap = {
@@ -578,7 +574,7 @@
         }
 
         // ============================================================
-        // LOGIN HANDLER
+        //  LOGIN HANDLER
         // ============================================================
         async function handleLogin(email, password) {
             if (!supabaseClient) {
@@ -604,31 +600,42 @@
                     return;
                 }
 
-                const role = await checkUserRole(user.id);
+                console.log('✅ User authenticated:', user.id, user.email);
 
-                if (!role) {
+                // ✅ Pass both userId AND email
+                const userData = await checkUserRole(user.id, user.email);
+
+                if (!userData) {
                     showError('⚠️ Your account is not yet approved. Please contact the admin.');
                     await supabaseClient.auth.signOut();
                     return;
                 }
 
-                const hasAccess = await hasMeetingAccess(user.id);
-                if (!hasAccess) {
-                    showError(`⚠️ Your role (${role}) does not have permission to access the Minutes Builder.`);
+                if (userData.status !== 'active') {
+                    showError(`⚠️ Your account is inactive (${userData.status}). Please contact the admin.`);
                     await supabaseClient.auth.signOut();
                     return;
                 }
 
+                const allowedRoles = ['admin', 'editor', 'president', 'secretary'];
+                if (!allowedRoles.includes(userData.role)) {
+                    showError(`⚠️ Your role (${userData.role}) does not have permission to access the Minutes Builder.`);
+                    await supabaseClient.auth.signOut();
+                    return;
+                }
+
+                // ✅ Store session
                 localStorage.setItem('user_email', user.email);
-                localStorage.setItem('user_role', role);
+                localStorage.setItem('user_role', userData.role);
                 localStorage.setItem('user_id', user.id);
+                localStorage.setItem('user_status', userData.status);
                 localStorage.setItem('is_authenticated', 'true');
 
                 if (rememberMe.checked) {
                     localStorage.setItem('remember_me', 'true');
                 }
 
-                const roleDisplay = getRoleDisplayName(role);
+                const roleDisplay = getRoleDisplayName(userData.role);
                 showSuccess(`✅ Welcome, ${roleDisplay}! Redirecting to Minutes Builder...`);
 
                 setTimeout(() => {
@@ -642,7 +649,7 @@
         }
 
         // ============================================================
-        // FORM SUBMISSION
+        //  FORM SUBMISSION
         // ============================================================
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -676,7 +683,7 @@
         });
 
         // ============================================================
-        // ENTER KEY SUPPORT
+        //  ENTER KEY SUPPORT
         // ============================================================
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -686,14 +693,17 @@
         });
 
         // ============================================================
-        // CHECK EXISTING SESSION
+        //  CHECK EXISTING SESSION
         // ============================================================
         async function checkExistingSession() {
             const isAuthenticated = localStorage.getItem('is_authenticated') === 'true';
             const userEmail = localStorage.getItem('user_email');
             const userRole = localStorage.getItem('user_role');
+            const userStatus = localStorage.getItem('user_status');
 
-            if (isAuthenticated && userEmail && ['admin', 'editor', 'president', 'secretary'].includes(userRole)) {
+            if (isAuthenticated && userEmail && 
+                ['admin', 'editor', 'president', 'secretary'].includes(userRole) &&
+                userStatus === 'active') {
                 if (supabaseClient) {
                     try {
                         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -709,11 +719,12 @@
                 localStorage.removeItem('user_email');
                 localStorage.removeItem('user_role');
                 localStorage.removeItem('user_id');
+                localStorage.removeItem('user_status');
             }
         }
 
         // ============================================================
-        // AUTO-FILL FROM REMEMBER ME
+        //  AUTO-FILL FROM REMEMBER ME
         // ============================================================
         function loadRememberedEmail() {
             const remembered = localStorage.getItem('remember_me');
@@ -728,7 +739,7 @@
         }
 
         // ============================================================
-        // INIT
+        //  INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             checkExistingSession();
@@ -743,8 +754,6 @@
 
         // Expose functions globally
         window.togglePassword = togglePassword;
-        window.showError = showError;
-        window.showSuccess = showSuccess;
     </script>
 
 </body>
