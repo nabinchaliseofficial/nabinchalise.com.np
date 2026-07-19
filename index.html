@@ -935,10 +935,10 @@
   </div>
 
   <!-- ====== CHOOSE PORTAL POPUP ====== -->
-  <div class="portal-popup-overlay" id="portalPopup">
+  <div class="portal-popup-overlay" id="portalPopup" role="dialog" aria-modal="true" aria-labelledby="popupGreeting" aria-hidden="true">
     <div class="portal-popup-card" style="position:relative;">
-      <button class="popup-close" id="popupClose">&times;</button>
-      <div class="popup-greeting">Welcome 👋</div>
+      <button class="popup-close" id="popupClose" aria-label="Close popup">&times;</button>
+      <div class="popup-greeting" id="popupGreeting">Welcome 👋</div>
       <div class="popup-sub">Where would you like to go?</div>
       <div class="portal-grid">
         <a href="g/index.html" class="portal-item">
@@ -1244,18 +1244,28 @@
       const popupContinue = document.getElementById('popupContinue');
       const popupHome = document.getElementById('portalPopupHome');
 
+      let lastFocusedEl = null;
+
       function openPopup() {
+        lastFocusedEl = document.activeElement;
         portalPopup.classList.add('active');
+        portalPopup.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        popupClose.focus();
       }
       function closePopup() {
         portalPopup.classList.remove('active');
+        portalPopup.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        sessionStorage.setItem('portalPopupSeen', '1');
+        if (lastFocusedEl) lastFocusedEl.focus();
       }
 
-      // Show popup on load
+      // Show popup only once per browser session (not on every reload)
       window.addEventListener('load', () => {
-        setTimeout(openPopup, 600);
+        if (!sessionStorage.getItem('portalPopupSeen')) {
+          setTimeout(openPopup, 600);
+        }
       });
 
       popupClose.addEventListener('click', closePopup);
@@ -1270,6 +1280,11 @@
       });
       portalPopup.addEventListener('click', (e) => {
         if (e.target === portalPopup) closePopup();
+      });
+
+      // Close on ESC key, and allow manual reopen via the "Portal" nav link
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && portalPopup.classList.contains('active')) closePopup();
       });
 
       // ====== ACCESS DENIED STATE ======
