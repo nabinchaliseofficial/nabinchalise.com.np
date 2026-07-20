@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apply Now · Galkot Tech</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+
+    <!-- Fonts & Tailwind -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: { DEFAULT: '#2563EB', 600: '#2563EB', 700: '#1d4ed8' }, accent: '#06B6D4',
+                        success: '#10B981', danger: '#EF4444', ink: '#0F172A' },
+                    fontFamily: { display: ['Manrope', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.0/dist/umd/supabase.min.js">
+    </script>
+
+    <style>
+        body {
+            background: #080D18;
+            color: #E6EAF2;
+            font-family: 'Inter', sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        html.light body {
+            background: #FAFBFF;
+            color: #0F172A;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        html.light .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        html.light .card {
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+        .grad-text {
+            background: linear-gradient(90deg, #60A5FA, #06B6D4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB, #06B6D4);
+        }
+        .btn-primary:hover {
+            filter: brightness(1.08);
+        }
+        .btn-success {
+            background: #10B981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2b45;
+            border-radius: 8px;
+        }
+        html.light ::-webkit-scrollbar-thumb {
+            background: #dbe3f5;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .photo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(6, 182, 212, 0.3);
+        }
+        .photo-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 2.2rem;
+            border: 3px dashed rgba(148, 163, 184, 0.2);
+        }
+        html.light .photo-placeholder {
+            background: #f1f5f9;
+        }
+
+        #notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            padding: 14px 24px;
+            border-radius: 14px;
+            background: #1a2332;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            color: #E6EAF2;
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 420px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+        }
+        #notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #notification.success {
+            border-color: #10B981;
+            border-left: 4px solid #10B981;
+        }
+        #notification.error {
+            border-color: #EF4444;
+            border-left: 4px solid #EF4444;
+        }
+        #notification.info {
+            border-color: #2563EB;
+            border-left: 4px solid #2563EB;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.10);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: #E6EAF2;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        .form-input option {
+            background: #0F172A;
+            color: #E6EAF2;
+        }
+        html.light .form-input {
+            background: #f8fafc;
+            color: #0F172A;
+        }
+        html.light .form-input option {
+            background: #fff;
+            color: #0F172A;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #successOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        #successOverlay.active {
+            display: flex;
+        }
+        #successOverlay .box {
+            max-width: 480px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        html.light #successOverlay .box {
+            background: #fff;
+            border-color: #10B981;
+        }
+        #successOverlay .icon {
+            font-size: 4rem;
+            color: #10B981;
+            margin-bottom: 1rem;
+        }
+        #successOverlay h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        html.light #successOverlay h2 {
+            color: #0F172A;
+        }
+        #successOverlay p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        #successOverlay .app-id {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #60A5FA;
+            margin: 1rem 0;
+            display: inline-block;
+            border: 1px solid rgba(96, 165, 250, 0.15);
+        }
+        html.light #successOverlay .app-id {
+            background: #f0f7ff;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Security: prevent right-click context menu */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Drop zone */
+        .drop-zone {
+            border: 2px dashed rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .drop-zone:hover {
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(6, 182, 212, 0.03);
+        }
+        .drop-zone.dragover {
+            border-color: #06B6D4;
+            background: rgba(6, 182, 212, 0.06);
+        }
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased" oncontextmenu="return false;" onkeydown="return disableKeys(event);">
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="notification"></div>
+
+    <!-- SUCCESS OVERLAY -->
+    <div id="successOverlay">
+        <div class="box">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <h2>Application Submitted! 🎉</h2>
+            <p>Your course application has been successfully submitted. Our admin team will review it shortly.</p>
+            <div class="app-id" id="appIdDisplay">#APP-0000</div>
+            <p style="font-size:0.8rem; color:#64748b;">You will receive a confirmation once your application is approved.</p>
+            <button onclick="window.location.href='index.html'" class="btn-primary text-white font-semibold px-8 py-3 rounded-xl mt-4 transition">
+                <i class="fas fa-home mr-2"></i>Return to Home
+            </button>
+            <button onclick="document.getElementById('successOverlay').classList.remove('active'); window.location.reload();" class="text-slate-400 hover:text-white text-sm mt-3 block">
+                <i class="fas fa-plus-circle mr-1"></i>Submit Another Application
+            </button>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="fixed top-0 inset-x-0 z-50 no-print">
+        <div class="glass mx-auto mt-3 max-w-6xl rounded-2xl px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-2 font-display font-extrabold text-lg">
+                    <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-sm">GT</span>
+                    <span>Galkot <span class="grad-text">Tech</span></span>
+                </a>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 flex items-center gap-2">
+                        <span class="live-indicator"></span>
+                        <span id="liveStatus">Live</span>
+                    </span>
+                    <a href="index.html" class="text-sm text-slate-400 hover:text-white transition"><i class="fas fa-arrow-left mr-2"></i>Back</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="max-w-4xl mx-auto px-4 pt-28 pb-20">
+        <div class="text-center mb-10 no-print">
+            <h1 class="font-display font-extrabold text-4xl sm:text-5xl text-white">
+                <i class="fas fa-pen-fancy text-accent mr-3"></i>Apply for a Course
+            </h1>
+            <p class="text-slate-400 mt-3">Fill out the form below to enroll in your desired program at Galkot Tech</p>
+        </div>
+
+        <!-- APPLICATION FORM -->
+        <div class="glass rounded-3xl p-6 sm:p-8 fade-in" id="applyFormContainer">
+            <form id="applyForm" class="space-y-5">
+
+                <!-- Personal Info -->
+                <div class="border-b border-white/5 pb-4">
+                    <h3 class="font-display font-bold text-lg text-white mb-4"><i class="fas fa-user-circle text-accent mr-2"></i>Personal Information</h3>
+                    <div class="form-grid">
+                        <div>
+                            <label class="form-label" for="studentName">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" id="studentName" class="form-input" placeholder="e.g. Ram Prasad Sharma" required>
+                        </div>
+                        <div>
+                            <label class="form-label" for="studentId">Student ID <span class="text-danger">*</span></label>
+                            <input type="text" id="studentId" class="form-input" placeholder="e.g. GT-2025-011" required>
+                            <p class="text-[10px] text-slate-500 mt-1">Unique ID. We recommend GT-YYYY-NNN format.</p>
+                        </div>
+                        <div>
+                            <label class="form-label" for="fatherName">Father's Name</label>
+                            <input type="text" id="fatherName" class="form-input" placeholder="e.g. Krishna Prasad Sharma">
+                        </div>
+                        <div>
+                            <label class="form-label" for="motherName">Mother's Name</label>
+                            <input type="text" id="motherName" class="form-input" placeholder="e.g. Gita Sharma">
+                        </div>
+                        <div>
+                            <label class="form-label" for="dob">Date of Birth</label>
+                            <input type="date" id="dob" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label" for="gender">Gender</label>
+                            <select id="gender" class="form-input">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="form-label" for="address">Address <span class="text-danger">*</span></label>
+                            <input type="text" id="address" class="form-input" placeholder="e.g. Galkot, Baglung, Nepal" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course & Enrollment -->
+                <div class="border-b border-white/5 pb-4">
+                    <h3 class="font-display font-bold text-lg text-white mb-4"><i class="fas fa-graduation-cap text-accent mr-2"></i>Course Details</h3>
+                    <div class="form-grid">
+                        <div>
+                            <label class="form-label" for="course">Select Course <span class="text-danger">*</span></label>
+                            <select id="course" class="form-input" required>
+                                <option value="">— Select a Course —</option>
+                                <option value="Basic Computer & MS Office">Basic Computer & MS Office</option>
+                                <option value="Computer Operator Preparation">Computer Operator Preparation</option>
+                                <option value="Web Design & Development">Web Design & Development</option>
+                                <option value="Python Programming & DB">Python Programming & DB</option>
+                                <option value="Graphic Design & Editing">Graphic Design & Editing</option>
+                                <option value="Hardware, CCTV & Networking">Hardware, CCTV & Networking</option>
+                                <option value="Advanced Web Development (Full Stack)">Advanced Web Development (Full Stack)</option>
+                                <option value="Data Science & AI Fundamentals">Data Science & AI Fundamentals</option>
+                                <option value="Digital Marketing & SEO">Digital Marketing & SEO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="mode">Learning Mode <span class="text-danger">*</span></label>
+                            <select id="mode" class="form-input" required>
+                                <option value="">— Select Mode —</option>
+                                <option value="Offline">Offline (In-Person)</option>
+                                <option value="Online">Online (Remote)</option>
+                                <option value="Hybrid">Hybrid (Mix)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="enrollmentDate">Enrollment Date</label>
+                            <input type="date" id="enrollmentDate" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label" for="completionDate">Expected Completion Date</label>
+                            <input type="date" id="completionDate" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="border-b border-white/5 pb-4">
+                    <h3 class="font-display font-bold text-lg text-white mb-4"><i class="fas fa-tools text-accent mr-2"></i>Skills & Experience</h3>
+                    <div>
+                        <label class="form-label" for="skills">Skills (comma separated)</label>
+                        <input type="text" id="skills" class="form-input" placeholder="e.g. MS Word, Excel, Typing, Internet">
+                        <p class="text-[10px] text-slate-500 mt-1">List any relevant skills you already have.</p>
+                    </div>
+                </div>
+
+                <!-- Photo Upload -->
+                <div class="border-b border-white/5 pb-4">
+                    <h3 class="font-display font-bold text-lg text-white mb-4"><i class="fas fa-camera text-accent mr-2"></i>Student Photo</h3>
+                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                        <div id="photoPreviewContainer">
+                            <div id="photoPreview" class="photo-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1 w-full">
+                            <div class="drop-zone" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-slate-500 mb-2 block"></i>
+                                <p class="text-sm text-slate-400">Drag & drop your photo here, or click to browse</p>
+                                <p class="text-[10px] text-slate-500 mt-1">JPG, PNG, WEBP · Max 5MB</p>
+                                <input type="file" id="photoInput" accept="image/*">
+                            </div>
+                            <p id="photoFileName" class="text-xs text-slate-500 mt-2 hidden"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <button type="submit" id="submitBtn" class="btn-primary text-white font-semibold px-8 py-3.5 rounded-xl flex-1 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Submit Application</span>
+                    </button>
+                    <button type="reset" class="bg-white/5 hover:bg-white/10 text-slate-300 px-6 py-3.5 rounded-xl transition text-sm">
+                        <i class="fas fa-undo-alt mr-1"></i>Reset
+                    </button>
+                </div>
+
+                <p class="text-xs text-slate-500 text-center mt-4">
+                    <i class="fas fa-lock text-slate-600 mr-1"></i>
+                    Your information is secure and will only be used for course administration.
+                </p>
+            </form>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 py-6 text-center text-xs text-slate-500 no-print">
+        © 2026 Galkot Tech · Course Application · Powered by Supabase
+    </footer>
+
+    <script>
+        // =============================================
+        // SECURITY
+        // =============================================
+        function disableKeys(e) {
+            const key = e.keyCode || e.which;
+            if (key === 123 ||
+                (e.ctrlKey && e.shiftKey && (key === 73 || key === 74)) ||
+                (e.ctrlKey && key === 85) ||
+                (e.ctrlKey && key === 83)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        }
+        document.addEventListener('keydown', disableKeys);
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('dragstart', e => e.preventDefault());
+        document.addEventListener('drop', e => e.preventDefault());
+
+        // =============================================
+        // SUPABASE
+        // =============================================
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const STORAGE_BUCKET = 'student-photos';
+
+        // =============================================
+        // DOM REFS
+        // =============================================
+        const form = document.getElementById('applyForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const notification = document.getElementById('notification');
+        const successOverlay = document.getElementById('successOverlay');
+        const appIdDisplay = document.getElementById('appIdDisplay');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const dropZone = document.getElementById('dropZone');
+        const photoFileName = document.getElementById('photoFileName');
+
+        // =============================================
+        // NOTIFICATION
+        // =============================================
+        let notifTimeout = null;
+
+        function showNotif(msg, type = 'info', duration = 3500) {
+            notification.textContent = msg;
+            notification.className = type;
+            notification.classList.add('show');
+            clearTimeout(notifTimeout);
+            notifTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // =============================================
+        // PHOTO HANDLING
+        // =============================================
+        let selectedFile = null;
+
+        function previewPhoto(file) {
+            if (!file) {
+                photoPreview.innerHTML = '<i class="fas fa-user"></i>';
+                photoPreview.className = 'photo-placeholder';
+                photoFileName.classList.add('hidden');
+                selectedFile = null;
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photoPreview.innerHTML = `<img src="${e.target.result}" class="photo-preview" alt="Student photo" />`;
+                photoPreview.className = '';
+                photoFileName.textContent = `📎 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                photoFileName.classList.remove('hidden');
+                selectedFile = file;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Click drop zone to open file picker
+        dropZone.addEventListener('click', () => photoInput.click());
+
+        // File input change
+        photoInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                previewPhoto(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    previewPhoto(file);
+                    // Sync the input
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    photoInput.files = dt.files;
+                } else {
+                    showNotif('⚠️ Please drop an image file.', 'error');
+                }
+            }
+        });
+
+        // =============================================
+        // UPLOAD PHOTO TO STORAGE
+        // =============================================
+        async function uploadStudentPhoto(studentId, file) {
+            if (!file || !studentId) return null;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${studentId}.${fileExt}`;
+
+            try {
+                const { data, error } = await supabase.storage
+                    .from(STORAGE_BUCKET)
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    showNotif('⚠️ Photo upload failed: ' + error.message, 'error', 3000);
+                    return null;
+                }
+
+                const { data: urlData } = supabase.storage
+                    .from(STORAGE_BUCKET)
+                    .getPublicUrl(fileName);
+
+                return urlData.publicUrl;
+
+            } catch (err) {
+                console.error('Upload error:', err);
+                showNotif('⚠️ Photo upload failed.', 'error', 3000);
+                return null;
+            }
+        }
+
+        // =============================================
+        // FORM SUBMISSION
+        // =============================================
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Gather data
+            const student_id = document.getElementById('studentId').value.trim();
+            const student_name = document.getElementById('studentName').value.trim();
+            const father_name = document.getElementById('fatherName').value.trim();
+            const mother_name = document.getElementById('motherName').value.trim();
+            const dob = document.getElementById('dob').value;
+            const gender = document.getElementById('gender').value;
+            const address = document.getElementById('address').value.trim();
+            const course = document.getElementById('course').value;
+            const mode = document.getElementById('mode').value;
+            const enrollment_date = document.getElementById('enrollmentDate').value;
+            const completion_date = document.getElementById('completionDate').value;
+            const skillsInput = document.getElementById('skills').value.trim();
+
+            // Validate required
+            if (!student_id || !student_name || !course || !mode || !address) {
+                showNotif('⚠️ Please fill in all required fields (*).', 'error');
+                return;
+            }
+
+            // Validate Student ID format (simple check)
+            if (student_id.length < 3) {
+                showNotif('⚠️ Student ID must be at least 3 characters.', 'error');
+                return;
+            }
+
+            // Check if Student ID already exists
+            try {
+                const { data: existing, error: checkErr } = await supabase
+                    .from('course_records')
+                    .select('student_id')
+                    .eq('student_id', student_id)
+                    .maybeSingle();
+
+                if (existing) {
+                    showNotif('⚠️ This Student ID is already registered. Please use a unique ID.', 'error');
+                    return;
+                }
+                if (checkErr && checkErr.code !== 'PGRST116') {
+                    console.error('Check error:', checkErr);
+                    // Continue anyway
+                }
+            } catch (err) {
+                console.warn('Check error:', err);
+            }
+
+            // Disable submit
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+            try {
+                // Prepare record
+                const record = {
+                    student_id,
+                    student_name,
+                    father_name: father_name || null,
+                    mother_name: mother_name || null,
+                    dob: dob || null,
+                    gender: gender || null,
+                    address: address || null,
+                    course,
+                    mode: mode || null,
+                    enrollment_date: enrollment_date || null,
+                    completion_date: completion_date || null,
+                    skills: skillsInput || null,
+                    grade: null, // pending, will be set by admin
+                    certificate: null, // pending
+                    issue_date: null,
+                    last_verified_at: null,
+                    status: 'pending' // ← NEW column: pending | approved | rejected
+                };
+
+                // Insert into Supabase
+                const { data: inserted, error: insertErr } = await supabase
+                    .from('course_records')
+                    .insert([record])
+                    .select();
+
+                if (insertErr) {
+                    console.error('Insert error:', insertErr);
+                    showNotif('❌ Failed to submit application: ' + insertErr.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+                    return;
+                }
+
+                const newRecord = inserted?.[0];
+                if (!newRecord) {
+                    throw new Error('No record returned after insert.');
+                }
+
+                // Upload photo if provided
+                let photoUrl = null;
+                if (selectedFile) {
+                    photoUrl = await uploadStudentPhoto(student_id, selectedFile);
+                    if (photoUrl) {
+                        // Update the record with photo URL
+                        const { error: updateErr } = await supabase
+                            .from('course_records')
+                            .update({ photo_url: photoUrl })
+                            .eq('id', newRecord.id);
+
+                        if (updateErr) {
+                            console.warn('Photo URL update failed:', updateErr);
+                        }
+                    }
+                }
+
+                // Show success
+                const appId = `APP-${String(newRecord.id).padStart(4, '0')}`;
+                appIdDisplay.textContent = `#${appId}`;
+                successOverlay.classList.add('active');
+
+                // Reset form
+                form.reset();
+                photoPreview.innerHTML = '<i class="fas fa-user"></i>';
+                photoPreview.className = 'photo-placeholder';
+                photoFileName.classList.add('hidden');
+                photoInput.value = '';
+                selectedFile = null;
+
+            } catch (err) {
+                console.error('Submission error:', err);
+                showNotif('❌ Something went wrong. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+            }
+        });
+
+        // =============================================
+        // LIVE STATUS
+        // =============================================
+        const liveStatus = document.getElementById('liveStatus');
+        // Just a cosmetic indicator
+        setInterval(() => {
+            liveStatus.textContent = 'Live';
+        }, 5000);
+
+        // =============================================
+        // AUTO-GENERATE STUDENT ID SUGGESTION
+        // =============================================
+        (function suggestStudentId() {
+            const year = new Date().getFullYear();
+            const idInput = document.getElementById('studentId');
+            if (idInput && !idInput.value) {
+                // Generate a random 3-digit number
+                const num = String(Math.floor(Math.random() * 900) + 100).padStart(3, '0');
+                idInput.placeholder = `e.g. GT-${year}-${num}`;
+            }
+        })();
+
+        // =============================================
+        // THEME TOGGLE (minimal, consistent with other pages)
+        // =============================================
+        // Check if theme toggle exists in page, if not, we can add a small one
+        // But we'll just use the system preference
+        const root = document.documentElement;
+        const storedTheme = localStorage.getItem('galkot-theme');
+        if (storedTheme === 'light') {
+            root.classList.add('light');
+            root.classList.remove('dark');
+        } else if (storedTheme === 'dark') {
+            root.classList.add('dark');
+            root.classList.remove('light');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            root.classList.add('light');
+            root.classList.remove('dark');
+        }
+
+        console.log('%c✅ Galkot Tech — Course Application', 'font-size:16px;font-weight:bold;color:#06B6D4;');
+        console.log('%c📝 Form submits to course_records with status="pending"', 'font-size:12px;color:#94a3b8;');
+        console.log('%c🔐 Admin can approve/reject from stuadmin.html', 'font-size:12px;color:#94a3b8;');
+    </script>
+</body>
+</html>

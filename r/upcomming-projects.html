@@ -185,17 +185,21 @@
 
   <!-- Stats -->
   <div class="stats-grid">
-    <div class="stat-card"><span class="stat-label"><i class="fas fa-folder" style="color:#2563EB;"></i> Total</span><span class="stat-number" id="statTotal">0</span><span class="stat-trend">+2</span></div>
-    <div class="stat-card"><span class="stat-label"><i class="fas fa-door-open" style="color:#10B981;"></i> Open</span><span class="stat-number" id="statOpen">0</span><span class="stat-trend">+1</span></div>
-    <div class="stat-card"><span class="stat-label"><i class="fas fa-users" style="color:#C2185B;"></i> Volunteers</span><span class="stat-number" id="statVol">0</span><span class="stat-trend">↑12</span></div>
-    <div class="stat-card"><span class="stat-label"><i class="fas fa-hourglass-end" style="color:#eab308;"></i> Closing</span><span class="stat-number" id="statClosing">0</span><span class="stat-trend">soon</span></div>
+    <div class="stat-card"><span class="stat-label"><i class="fas fa-folder" style="color:#2563EB;"></i> Total</span><span class="stat-number" id="statTotal">0</span></div>
+    <div class="stat-card"><span class="stat-label"><i class="fas fa-door-open" style="color:#10B981;"></i> Open</span><span class="stat-number" id="statOpen">0</span></div>
+    <div class="stat-card"><span class="stat-label"><i class="fas fa-users" style="color:#C2185B;"></i> Registrations</span><span class="stat-number" id="statVol">0</span></div>
+    <div class="stat-card"><span class="stat-label"><i class="fas fa-hourglass-end" style="color:#eab308;"></i> Closing</span><span class="stat-number" id="statClosing">0</span></div>
   </div>
 
   <!-- Filter -->
   <div class="filter-bar">
     <input type="text" placeholder="🔍 Search projects..." id="searchInput" />
-    <select id="categoryFilter"><option value="">All categories</option><option>Community</option><option>Education</option><option>Health</option></select>
-    <select id="locationFilter"><option value="">All locations</option><option>Kathmandu</option><option>Lalitpur</option></select>
+    <select id="categoryFilter">
+      <option value="">All statuses</option>
+      <option value="open">Open</option>
+      <option value="closing">Closing</option>
+    </select>
+    <select id="locationFilter"><option value="">All locations</option></select>
     <select id="sortSelect"><option value="latest">Latest</option><option value="closing">Closing</option></select>
     <div class="view-toggle"><button class="active" id="gridView"><i class="fas fa-th"></i></button><button id="listView"><i class="fas fa-list"></i></button></div>
   </div>
@@ -300,6 +304,17 @@
       grid.innerHTML = html;
     }
 
+    // Helper: escape text before injecting into HTML (prevents broken layout / injection from stored data)
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     // Helper: check if date is past (expired)
     function isDateExpired(dateStr) {
       if (!dateStr) return false;
@@ -322,9 +337,6 @@
 
       let html = '';
       list.forEach(p => {
-        const filled = Math.floor(Math.random() * 30) + 10;
-        const total = 50;
-        const progress = Math.min(100, Math.round((filled / total) * 100));
         let status = p.status || 'open';
         const isExpired = isDateExpired(p.date);
         if (isExpired) status = 'expired';
@@ -333,30 +345,25 @@
 
         html += `<div class="project-card">
           <div class="project-badge-row" style="display:flex;gap:0.4rem;flex-wrap:wrap;">
-            <span class="badge ${badgeClass}">${status.toUpperCase()}</span>
-            <span class="badge">${p.category || 'Community'}</span>
+            <span class="badge ${badgeClass}">${escapeHTML(status.toUpperCase())}</span>
             ${isExpired ? '<span class="badge badge-expired"><i class="fas fa-clock"></i> Expired</span>' : ''}
           </div>
-          <div class="project-title">${p.name || 'Untitled'}</div>
+          <div class="project-title">${escapeHTML(p.name || 'Untitled')}</div>
           <div class="project-meta">
-            <span><i class="fas fa-calendar"></i> ${p.date || 'TBD'}</span>
-            <span><i class="fas fa-map-pin"></i> ${p.location || '—'}</span>
-            <span><i class="fas fa-users"></i> ${p.audience || 'All'}</span>
+            <span><i class="fas fa-calendar"></i> ${escapeHTML(p.date || 'TBD')}</span>
+            <span><i class="fas fa-map-pin"></i> ${escapeHTML(p.location || '—')}</span>
+            <span><i class="fas fa-users"></i> ${escapeHTML(p.target_audience || 'All')}</span>
           </div>
-          <div class="description-box">${p.description || 'No description'}</div>
-          <div class="progress-section">
-            <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
-            <span class="seats-text">${filled}/${total} seats</span>
-          </div>
+          <div class="description-box">${escapeHTML(p.description || 'No description')}</div>
           <div class="organizer">
             <span class="organizer-avatar"><i class="fas fa-user"></i></span>
-            ${p.organizer || 'Rotaract Club'} · <span style="color:#64748b;">${p.contact || '—'}</span>
+            Rotaract Club of Galkot Baglung
           </div>
           <div class="card-actions">
-            <button class="btn-register register-btn" data-id="${p.id}" data-name="${p.name || 'Project'}" data-date="${p.date || ''}" ${isDisabled ? 'disabled' : ''}>
+            <button class="btn-register register-btn" data-id="${escapeHTML(p.id)}" data-name="${escapeHTML(p.name || 'Project')}" data-date="${escapeHTML(p.date || '')}" ${isDisabled ? 'disabled' : ''}>
               <i class="fas fa-hand-peace"></i> ${isDisabled ? 'Expired' : 'Register'}
             </button>
-            <button class="btn-outline view-detail" data-id="${p.id}"><i class="fas fa-eye"></i></button>
+            <button class="btn-outline view-detail" data-id="${escapeHTML(p.id)}"><i class="fas fa-eye"></i></button>
             <button class="btn-outline"><i class="fas fa-share-alt"></i></button>
           </div>
         </div>`;
@@ -408,9 +415,9 @@
 
       let list = projects.filter(p => {
         const matchName = (p.name || '').toLowerCase().includes(search);
-        const matchCat = cat ? (p.category || '').includes(cat) : true;
+        const matchStatus = cat ? (p.status || '').toLowerCase() === cat.toLowerCase() : true;
         const matchLoc = loc ? (p.location || '').includes(loc) : true;
-        return matchName && matchCat && matchLoc;
+        return matchName && matchStatus && matchLoc;
       });
 
       if (sort === 'closing') list.sort((a, b) => (a.status === 'closing' ? -1 : 1));
@@ -540,8 +547,21 @@
         document.getElementById('totalCount').textContent = projects.length;
         document.getElementById('statTotal').textContent = projects.length;
         document.getElementById('statOpen').textContent = projects.filter(p => p.status === 'open' && !isDateExpired(p.date)).length;
-        document.getElementById('statVol').textContent = Math.floor(Math.random() * 80) + 20;
         document.getElementById('statClosing').textContent = projects.filter(p => p.status === 'closing' && !isDateExpired(p.date)).length;
+
+        // Real registration count from project_applications (instead of a random placeholder)
+        const { count: appCount, error: countError } = await supabase
+          .from('project_applications')
+          .select('*', { count: 'exact', head: true });
+        document.getElementById('statVol').textContent = countError ? '—' : (appCount || 0);
+
+        // Populate the location filter from the locations that actually exist in the data
+        const locationFilter = document.getElementById('locationFilter');
+        const existingValue = locationFilter.value;
+        const uniqueLocations = [...new Set(projects.map(p => p.location).filter(Boolean))].sort();
+        locationFilter.innerHTML = '<option value="">All locations</option>' +
+          uniqueLocations.map(loc => `<option value="${escapeHTML(loc)}">${escapeHTML(loc)}</option>`).join('');
+        locationFilter.value = existingValue;
 
         currentPage = 1;
         filterAndPaginate();

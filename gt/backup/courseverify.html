@@ -795,41 +795,11 @@
       });
     }
 
-    // ===== Log this verification & show the real historical count =====
-    async function logVerification(studentId, certificateId) {
-      try {
-        await supabase.from('verification_logs').insert([{
-          student_id: studentId,
-          certificate: certificateId,
-          verified_at: new Date().toISOString(),
-          user_agent: navigator.userAgent
-        }]);
-
-        // Keep course_records.last_verified_at current too
-        supabase.from('course_records')
-          .update({ last_verified_at: new Date().toISOString() })
-          .eq('student_id', studentId)
-          .eq('certificate', certificateId)
-          .then(() => {});
-
-        const { count } = await supabase
-          .from('verification_logs')
-          .select('*', { count: 'exact', head: true })
-          .eq('student_id', studentId)
-          .eq('certificate', certificateId);
-
-        safeSetText(verifyCountDisplay, count ?? verifyCount);
-      } catch (e) {
-        console.warn('Verification logging failed:', e);
-        safeSetText(verifyCountDisplay, verifyCount);
-      }
-    }
-
     // ===== Show result =====
     function showResult(data) {
       currentData = data;
-      safeSetText(verifyCountDisplay, '…');
-      logVerification(data.student_id, data.certificate);
+      verifyCount++;
+      safeSetText(verifyCountDisplay, verifyCount);
       
       const grade = Number(data.grade);
       const isPass = grade >= 40;

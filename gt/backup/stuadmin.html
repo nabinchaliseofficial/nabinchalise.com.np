@@ -157,34 +157,6 @@
       </div>
     </header>
 
-    <!-- Stats Overview (calculated from course_records) -->
-    <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8 no-print fade-in">
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Total Students</p>
-        <p class="text-2xl font-display font-bold text-white mt-1" id="statTotalStudents">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Passed</p>
-        <p class="text-2xl font-display font-bold text-success mt-1" id="statPassed">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Failed</p>
-        <p class="text-2xl font-display font-bold text-danger mt-1" id="statFailed">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Pass Rate</p>
-        <p class="text-2xl font-display font-bold text-accent mt-1" id="statPassRate">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Certificates Issued</p>
-        <p class="text-2xl font-display font-bold text-white mt-1" id="statCertsIssued">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-[11px] text-slate-400 uppercase tracking-wide">Last Updated</p>
-        <p class="text-sm font-semibold text-slate-300 mt-2" id="statLastUpdated">—</p>
-      </div>
-    </div>
-
     <!-- Add new record -->
     <div class="glass rounded-2xl p-5 mb-8 no-print fade-in">
       <h2 class="font-display font-bold text-lg text-white mb-3"><i class="fas fa-plus-circle text-accent mr-2"></i>Add New Record</h2>
@@ -378,21 +350,19 @@
     document.addEventListener('selectstart', e => e.preventDefault());
 
     // =============================================
-    // AUTHENTICATION with ADMIN ROLE CHECK
+    // AUTHENTICATION
     // =============================================
     function checkSession() {
       const session = sessionStorage.getItem('adminSession');
-      const role = sessionStorage.getItem('adminRole');
-      if (!session || session !== 'active' || role !== 'admin') {
+      const sessionTime = sessionStorage.getItem('adminSessionTime');
+      if (!session || session !== 'active') {
         window.location.href = 'index.html';
         return false;
       }
-      const sessionTime = sessionStorage.getItem('adminSessionTime');
       if (sessionTime) {
         const elapsed = (Date.now() - parseInt(sessionTime)) / 1000;
         if (elapsed > 300) {
           sessionStorage.removeItem('adminSession');
-          sessionStorage.removeItem('adminRole');
           sessionStorage.removeItem('adminSessionTime');
           showSessionExpired();
           return false;
@@ -474,7 +444,6 @@
         if (timeLeft <= 0) {
           clearInterval(sessionTimer);
           sessionStorage.removeItem('adminSession');
-          sessionStorage.removeItem('adminRole');
           sessionStorage.removeItem('adminSessionTime');
           showSessionExpired();
         }
@@ -490,7 +459,6 @@
     function logout() {
       if (confirm('Are you sure you want to logout?')) {
         sessionStorage.removeItem('adminSession');
-        sessionStorage.removeItem('adminRole');
         sessionStorage.removeItem('adminSessionTime');
         clearInterval(sessionTimer);
         window.location.href = 'index.html';
@@ -603,7 +571,6 @@
         if (data && data.length) {
           if (!records.find(r => r.id === data[0].id)) { records.unshift(data[0]); applyFilter(); }
           showNotification(`✅ Added: ${record.student_name}`, 'success');
-          loadStats();
         }
         return true;
       } catch(err) { showNotification('❌ Failed to add', 'error'); return false; }
@@ -618,7 +585,6 @@
           if (idx !== -1) records[idx] = data[0];
           applyFilter();
           showNotification(`✅ Record updated`, 'success');
-          loadStats();
         }
         return true;
       } catch(err) { showNotification('❌ Update failed', 'error'); return false; }
@@ -632,7 +598,6 @@
         records = records.filter(r => r.id !== id);
         applyFilter();
         showNotification(`🗑️ Record deleted`, 'error');
-        loadStats();
       } catch(err) { showNotification('❌ Delete failed', 'error'); }
     }
 
@@ -885,44 +850,11 @@
     clearFilterBtn.addEventListener('click', () => { filterInput.value = ''; applyFilter(); });
 
     // =============================================
-    // STATS OVERVIEW (calculated from course_records)
-    // =============================================
-    async function loadStats() {
-      try {
-        const { data, error } = await supabase
-          .from('course_records')
-          .select('grade, certificate');
-
-        if (error) throw error;
-
-        const total = data.length;
-        const passed = data.filter(r => r.grade !== null && r.grade >= 40).length;
-        const failed = data.filter(r => r.grade !== null && r.grade < 40).length;
-        const withGrade = data.filter(r => r.grade !== null).length;
-        const passRate = withGrade > 0 ? Math.round((passed / withGrade) * 100) : 0;
-        const certs = data.filter(r => r.certificate).length;
-
-        document.getElementById('statTotalStudents').textContent = total;
-        document.getElementById('statPassed').textContent = passed;
-        document.getElementById('statFailed').textContent = failed;
-        document.getElementById('statPassRate').textContent = passRate + '%';
-        document.getElementById('statCertsIssued').textContent = certs;
-        document.getElementById('statLastUpdated').textContent =
-          new Date().toLocaleString('en-US', { month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-      } catch (err) {
-        console.warn('Stats load failed:', err);
-        ['statTotalStudents','statPassed','statFailed','statPassRate','statCertsIssued','statLastUpdated']
-          .forEach(id => document.getElementById(id).textContent = '—');
-      }
-    }
-
-    // =============================================
     // REFRESH
     // =============================================
     refreshBtn.addEventListener('click', async () => {
       refreshBtn.querySelector('i').classList.add('fa-spin');
       await fetchRecords();
-      await loadStats();
       refreshBtn.querySelector('i').classList.remove('fa-spin');
       showNotification('🔄 Records refreshed', 'info');
     });
@@ -935,10 +867,8 @@
       startTimer();
       showNotification('🔄 Loading records...', 'info', 1500);
       await fetchRecords();
-      await loadStats();
       setupRealtimeSubscription();
       setInterval(updateLastUpdated, 5000);
-      setInterval(loadStats, 60000);
       ['click','keydown','scroll','mousemove'].forEach(event => {
         document.addEventListener(event, () => {
           if (!document.getElementById('sessionExpiredOverlay').classList.contains('active')) {
@@ -957,7 +887,7 @@
     });
 
     console.log('%c⚠️ SECURITY NOTICE', 'font-size:20px;font-weight:bold;color:red;');
-    console.log('%cSecure Admin Panel — Admin role required', 'font-size:14px;color:orange;');
+    console.log('%cSecure Admin Panel — Manage applications with status', 'font-size:14px;color:orange;');
   </script>
 </body>
 </html>
