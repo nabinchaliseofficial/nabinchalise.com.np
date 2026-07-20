@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enrollment Status · Galkot Tech</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+
+    <!-- Fonts & Tailwind -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: { DEFAULT: '#2563EB', 600: '#2563EB', 700: '#1d4ed8' }, accent: '#06B6D4',
+                        success: '#10B981', danger: '#EF4444', warning: '#F59E0B', ink: '#0F172A' },
+                    fontFamily: { display: ['Manrope', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.47.0/dist/umd/supabase.min.js">
+    </script>
+
+    <style>
+        body {
+            background: #080D18;
+            color: #E6EAF2;
+            font-family: 'Inter', sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        html.light body {
+            background: #FAFBFF;
+            color: #0F172A;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        html.light .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        html.light .card {
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+        .grad-text {
+            background: linear-gradient(90deg, #60A5FA, #06B6D4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB, #06B6D4);
+        }
+        .btn-primary:hover {
+            filter: brightness(1.08);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2b45;
+            border-radius: 8px;
+        }
+        html.light ::-webkit-scrollbar-thumb {
+            background: #dbe3f5;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(148, 163, 184, 0.10);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: #E6EAF2;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        html.light .form-input {
+            background: #f8fafc;
+            color: #0F172A;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        html.light .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        html.light .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        html.light .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Mode badge */
+        .mode-badge {
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mode-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .mode-offline {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .mode-hybrid {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8B5CF6;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        html.light .mode-online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        html.light .mode-offline {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        html.light .mode-hybrid {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 1.5rem;
+        }
+        @media (max-width: 640px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.06);
+        }
+        .detail-item .label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .detail-item .value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #E6EAF2;
+            margin-top: 2px;
+        }
+        html.light .detail-item .value {
+            color: #0F172A;
+        }
+
+        /* Skill tags */
+        .skill-tag {
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            color: #b0d4f0;
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+        html.light .skill-tag {
+            color: #0F172A;
+            background: #f0f7ff;
+            border-color: #cbd5e1;
+        }
+
+        /* Notification toast */
+        #notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            padding: 14px 22px;
+            border-radius: 14px;
+            background: #1a2332;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            color: #E6EAF2;
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 420px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+        }
+        #notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #notification.success {
+            border-color: #10B981;
+            border-left: 4px solid #10B981;
+        }
+        #notification.error {
+            border-color: #EF4444;
+            border-left: 4px solid #EF4444;
+        }
+        #notification.info {
+            border-color: #2563EB;
+            border-left: 4px solid #2563EB;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Security */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        button,
+        a,
+        input,
+        select,
+        textarea {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased" oncontextmenu="return false;" onkeydown="return disableKeys(event);">
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="notification"></div>
+
+    <!-- NAVBAR -->
+    <header class="fixed top-0 inset-x-0 z-50 no-print">
+        <div class="glass mx-auto mt-3 max-w-5xl rounded-2xl px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-2 font-display font-extrabold text-lg">
+                    <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-sm">GT</span>
+                    <span>Galkot <span class="grad-text">Tech</span></span>
+                </a>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 flex items-center gap-2">
+                        <span class="live-indicator"></span>
+                        <span id="liveStatus">Live</span>
+                    </span>
+                    <a href="index.html" class="text-sm text-slate-400 hover:text-white transition"><i class="fas fa-arrow-left mr-2"></i>Back</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="max-w-4xl mx-auto px-4 pt-28 pb-20">
+        <div class="text-center mb-10 no-print">
+            <h1 class="font-display font-extrabold text-4xl sm:text-5xl text-white">
+                <i class="fas fa-clipboard-check text-accent mr-3"></i>Enrollment Status
+            </h1>
+            <p class="text-slate-400 mt-3">Enter your full name and date of birth to check your application status</p>
+        </div>
+
+        <!-- SEARCH FORM -->
+        <div class="glass rounded-2xl p-6 mb-8 no-print">
+            <form id="searchForm" class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="form-label" for="searchName">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" id="searchName" class="form-input" placeholder="e.g. Ram Prasad Sharma" required>
+                </div>
+                <div class="flex-1">
+                    <label class="form-label" for="searchDob">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" id="searchDob" class="form-input" required>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" id="searchBtn" class="btn-primary text-white font-semibold px-8 py-2.5 rounded-xl transition w-full sm:w-auto flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i>
+                        <span>Check Status</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- LOADING -->
+        <div id="loadingState" class="hidden text-center py-12 no-print">
+            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent"></div>
+            <p class="text-slate-400 mt-3">Searching...</p>
+        </div>
+
+        <!-- ERROR STATE -->
+        <div id="errorState" class="hidden glass rounded-2xl p-6 text-center border border-danger/30 no-print fade-in">
+            <i class="fas fa-exclamation-circle text-3xl text-danger mb-3"></i>
+            <p class="text-white font-semibold" id="errorMessage">No record found</p>
+            <p class="text-slate-400 text-sm mt-1" id="errorSubMessage">Please check your name and date of birth.</p>
+        </div>
+
+        <!-- RESULT CARD -->
+        <div id="resultContainer" class="hidden fade-in">
+            <div class="glass rounded-3xl p-6 sm:p-8">
+                <!-- Status Header -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 pb-4 border-b border-white/5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-2xl text-white font-display font-bold" id="resultInitials">RP</div>
+                        <div>
+                            <h2 class="font-display font-bold text-xl text-white" id="resultName">—</h2>
+                            <p class="text-xs text-slate-400 font-mono" id="resultStudentId">—</p>
+                        </div>
+                    </div>
+                    <div id="resultStatusBadge">
+                        <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                    </div>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-graduation-cap text-accent mr-1"></i> Course</span>
+                        <span class="value" id="resultCourse">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-wifi text-green-500 mr-1"></i> Mode</span>
+                        <span class="value" id="resultMode">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-user text-accent mr-1"></i> Father's Name</span>
+                        <span class="value" id="resultFather">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-user text-pink-500 mr-1"></i> Mother's Name</span>
+                        <span class="value" id="resultMother">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-venus-mars text-purple-500 mr-1"></i> Gender</span>
+                        <span class="value" id="resultGender">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-map-marker-alt text-red-500 mr-1"></i> Address</span>
+                        <span class="value" id="resultAddress">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-calendar-plus text-indigo-500 mr-1"></i> Enrollment Date</span>
+                        <span class="value" id="resultEnrollment">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-calendar-check text-emerald-500 mr-1"></i> Completion Date</span>
+                        <span class="value" id="resultCompletion">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-star text-yellow-500 mr-1"></i> Grade</span>
+                        <span class="value" id="resultGrade">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-id-card text-orange-500 mr-1"></i> Certificate ID</span>
+                        <span class="value font-mono" id="resultCertificate">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-calendar text-teal-500 mr-1"></i> Issue Date</span>
+                        <span class="value" id="resultIssueDate">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label"><i class="fas fa-clock text-slate-400 mr-1"></i> Last Verified</span>
+                        <span class="value" id="resultLastVerified">—</span>
+                    </div>
+                    <div class="detail-item sm:col-span-2">
+                        <span class="label"><i class="fas fa-tools text-accent mr-1"></i> Skills</span>
+                        <div class="flex flex-wrap gap-1.5 mt-1" id="resultSkills"></div>
+                    </div>
+                    <div class="detail-item sm:col-span-2">
+                        <span class="label"><i class="fas fa-calendar mr-1"></i> Submitted On</span>
+                        <span class="value" id="resultCreatedAt">—</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 pt-4 border-t border-white/5 flex flex-wrap gap-3 no-print">
+                    <a href="courseverify.html" class="text-sm bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fas fa-id-card"></i> Verify Certificate
+                    </a>
+                    <a href="gtregister.html" class="text-sm bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fas fa-pen-fancy"></i> Apply for Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 py-6 text-center text-xs text-slate-500 no-print">
+        © 2026 Galkot Tech · Enrollment Status · Powered by Supabase
+    </footer>
+
+    <script>
+        // =============================================
+        // SECURITY
+        // =============================================
+        function disableKeys(e) {
+            const key = e.keyCode || e.which;
+            if (key === 123 ||
+                (e.ctrlKey && e.shiftKey && (key === 73 || key === 74 || key === 67)) ||
+                (e.ctrlKey && key === 85) ||
+                (e.ctrlKey && key === 83) ||
+                (e.ctrlKey && key === 72)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        }
+        document.addEventListener('keydown', disableKeys);
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+        document.addEventListener('paste', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('dragstart', e => e.preventDefault());
+        document.addEventListener('drop', e => e.preventDefault());
+
+        // =============================================
+        // SUPABASE
+        // =============================================
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =============================================
+        // DOM REFS
+        // =============================================
+        const searchForm = document.getElementById('searchForm');
+        const searchName = document.getElementById('searchName');
+        const searchDob = document.getElementById('searchDob');
+        const searchBtn = document.getElementById('searchBtn');
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorSubMessage = document.getElementById('errorSubMessage');
+        const resultContainer = document.getElementById('resultContainer');
+        const notification = document.getElementById('notification');
+
+        // Result display elements
+        const resultInitials = document.getElementById('resultInitials');
+        const resultName = document.getElementById('resultName');
+        const resultStudentId = document.getElementById('resultStudentId');
+        const resultStatusBadge = document.getElementById('resultStatusBadge');
+        const resultCourse = document.getElementById('resultCourse');
+        const resultMode = document.getElementById('resultMode');
+        const resultFather = document.getElementById('resultFather');
+        const resultMother = document.getElementById('resultMother');
+        const resultGender = document.getElementById('resultGender');
+        const resultAddress = document.getElementById('resultAddress');
+        const resultEnrollment = document.getElementById('resultEnrollment');
+        const resultCompletion = document.getElementById('resultCompletion');
+        const resultGrade = document.getElementById('resultGrade');
+        const resultCertificate = document.getElementById('resultCertificate');
+        const resultIssueDate = document.getElementById('resultIssueDate');
+        const resultLastVerified = document.getElementById('resultLastVerified');
+        const resultSkills = document.getElementById('resultSkills');
+        const resultCreatedAt = document.getElementById('resultCreatedAt');
+
+        let notifTimeout = null;
+
+        // =============================================
+        // NOTIFICATION
+        // =============================================
+        function showNotif(msg, type = 'info', duration = 3500) {
+            notification.textContent = msg;
+            notification.className = type;
+            notification.classList.add('show');
+            clearTimeout(notifTimeout);
+            notifTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // =============================================
+        // FORMAT HELPERS
+        // =============================================
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function getInitials(name) {
+            if (!name || name === '—') return '??';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return name.slice(0, 2).toUpperCase();
+        }
+
+        function getModeBadge(mode) {
+            if (!mode) return '<span class="text-slate-400 text-sm">—</span>';
+            const m = mode.toLowerCase();
+            let cls = 'mode-online';
+            if (m === 'offline') cls = 'mode-offline';
+            else if (m === 'hybrid') cls = 'mode-hybrid';
+            return `<span class="mode-badge ${cls}">${mode}</span>`;
+        }
+
+        function getStatusBadge(status) {
+            const s = (status || 'pending').toLowerCase();
+            let cls = 'status-pending';
+            let icon = '<i class="fas fa-clock"></i>';
+            let label = 'Pending';
+            if (s === 'approved') { cls = 'status-approved';
+                icon = '<i class="fas fa-check-circle"></i>';
+                label = 'Approved'; } else if (s === 'rejected') { cls = 'status-rejected';
+                icon = '<i class="fas fa-times-circle"></i>';
+                label = 'Rejected'; }
+            return `<span class="status-badge ${cls}">${icon} ${label}</span>`;
+        }
+
+        function renderSkills(skillsStr) {
+            if (!skillsStr) return '<span class="text-sm text-slate-400">No skills listed</span>';
+            const skills = skillsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            if (skills.length === 0) return '<span class="text-sm text-slate-400">No skills listed</span>';
+            return skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+        }
+
+        // =============================================
+        // SEARCH FUNCTION
+        // =============================================
+        async function searchStudent(name, dob) {
+            // Show loading
+            loadingState.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+
+            const trimmedName = name.trim();
+            const dobStr = dob;
+
+            if (!trimmedName || !dobStr) {
+                loadingState.classList.add('hidden');
+                showNotif('⚠️ Please enter both name and date of birth.', 'error');
+                return;
+            }
+
+            try {
+                // Search by exact name match (case insensitive) and DOB
+                let { data, error } = await supabase
+                    .from('course_records')
+                    .select('*')
+                    .ilike('student_name', trimmedName)
+                    .eq('dob', dobStr)
+                    .maybeSingle();
+
+                // If not found, try partial match (contains)
+                if (!data && !error) {
+                    const { data: partialData, error: partialError } = await supabase
+                        .from('course_records')
+                        .select('*')
+                        .ilike('student_name', `%${trimmedName}%`)
+                        .eq('dob', dobStr)
+                        .maybeSingle();
+                    data = partialData;
+                    error = partialError;
+                }
+
+                if (error) {
+                    console.error('Search error:', error);
+                    loadingState.classList.add('hidden');
+                    showNotif('❌ Database error: ' + error.message, 'error');
+                    return;
+                }
+
+                if (!data) {
+                    loadingState.classList.add('hidden');
+                    errorState.classList.remove('hidden');
+                    errorMessage.textContent = '❌ No record found';
+                    errorSubMessage.textContent = 'Please check your name and date of birth. If you haven\'t applied yet, click "Apply for Course" below.';
+                    return;
+                }
+
+                // Display result
+                displayResult(data);
+                loadingState.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                errorState.classList.add('hidden');
+
+            } catch (err) {
+                console.error('Search error:', err);
+                loadingState.classList.add('hidden');
+                showNotif('❌ Something went wrong. Please try again.', 'error');
+            }
+        }
+
+        // =============================================
+        // DISPLAY RESULT
+        // =============================================
+        function displayResult(data) {
+            const status = data.status || 'pending';
+            const grade = data.grade !== null && data.grade !== undefined ? data.grade + '%' : '—';
+
+            // Header
+            resultInitials.textContent = getInitials(data.student_name);
+            resultName.textContent = data.student_name || '—';
+            resultStudentId.textContent = data.student_id || '—';
+            resultStatusBadge.innerHTML = getStatusBadge(status);
+
+            // Details
+            resultCourse.textContent = data.course || '—';
+            resultMode.innerHTML = getModeBadge(data.mode);
+            resultFather.textContent = data.father_name || '—';
+            resultMother.textContent = data.mother_name || '—';
+            resultGender.textContent = data.gender || '—';
+            resultAddress.textContent = data.address || '—';
+            resultEnrollment.textContent = formatDate(data.enrollment_date);
+            resultCompletion.textContent = formatDate(data.completion_date);
+            resultGrade.textContent = grade;
+            resultCertificate.textContent = data.certificate || '—';
+            resultIssueDate.textContent = formatDate(data.issue_date);
+            resultLastVerified.textContent = formatDate(data.last_verified_at);
+            resultSkills.innerHTML = renderSkills(data.skills);
+            resultCreatedAt.textContent = formatDate(data.created_at) || '—';
+
+            // Scroll to result
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showNotif(`✅ Found record for ${data.student_name}`, 'success', 3000);
+        }
+
+        // =============================================
+        // FORM EVENTS
+        // =============================================
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            searchStudent(searchName.value, searchDob.value);
+        });
+
+        // Enter key support
+        searchDob.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBtn.click();
+            }
+        });
+        searchName.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!searchDob.value) {
+                    searchDob.focus();
+                } else {
+                    searchBtn.click();
+                }
+            }
+        });
+
+        // =============================================
+        // THEME
+        // =============================================
+        const root = document.documentElement;
+        const storedTheme = localStorage.getItem('galkot-theme');
+        if (storedTheme === 'light') {
+            root.classList.add('light');
+            root.classList.remove('dark');
+        } else if (storedTheme === 'dark') {
+            root.classList.add('dark');
+            root.classList.remove('light');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            root.classList.add('light');
+            root.classList.remove('dark');
+        }
+
+        // =============================================
+        // LIVE STATUS
+        // =============================================
+        const liveStatus = document.getElementById('liveStatus');
+        setInterval(() => {
+            liveStatus.textContent = 'Live';
+        }, 5000);
+
+        // =============================================
+        // INIT - Focus on name field
+        // =============================================
+        window.addEventListener('load', () => {
+            setTimeout(() => searchName.focus(), 300);
+        });
+
+        console.log('%c✅ Galkot Tech — Enrollment Status', 'font-size:16px;font-weight:bold;color:#06B6D4;');
+        console.log('%c🔍 Search by Student Name + Date of Birth', 'font-size:12px;color:#94a3b8;');
+        console.log('%c📋 Shows: Pending / Approved / Rejected', 'font-size:12px;color:#94a3b8;');
+    </script>
+</body>
+</html>

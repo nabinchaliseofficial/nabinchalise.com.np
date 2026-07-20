@@ -173,7 +173,6 @@
         <a href="#courses" class="nav-link hover:text-white">Courses</a>
         <a href="enrollmentverify.html" class="nav-link hover:text-white text-accent font-semibold">Student Verify</a>
         <a href="#facilities" class="nav-link hover:text-white">Lab & Facilities</a>
-        <a href="#certifications" class="nav-link hover:text-white">Certifications</a>
         <a href="#testimonials" class="nav-link hover:text-white">Success Stories</a>
         <a href="#contact" class="nav-link hover:text-white">Contact</a>
       </nav>
@@ -196,7 +195,6 @@
     <a href="#courses" class="block py-2 border-b border-white/5">Courses</a>
     <a href="courseverify.html" class="block py-2 border-b border-white/5 text-accent font-semibold">Student Verify</a>
     <a href="#facilities" class="block py-2 border-b border-white/5">Lab & Facilities</a>
-    <a href="#certifications" class="block py-2 border-b border-white/5">Certifications</a>
     <a href="#testimonials" class="block py-2 border-b border-white/5">Success Stories</a>
     <a href="#contact" class="block py-2">Contact</a>
     <button id="mobile-login-btn" class="w-full mt-2 border border-white/20 text-white font-semibold py-2.5 rounded-xl text-center">Login</button>
@@ -350,7 +348,7 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Course cards -->
+      <!-- Course cards (same as before, kept brief) -->
       <div class="card rounded-2xl p-7 flex flex-col justify-between" data-aos="fade-up">
         <div>
           <div class="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center text-xl mb-4">🖥️</div>
@@ -460,20 +458,6 @@
   </div>
 </section>
 
-<!-- ========== CERTIFICATIONS & ACCREDITATIONS ========== -->
-<section id="certifications" class="py-28 px-6 max-w-7xl mx-auto">
-  <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
-    <span class="text-accent text-xs font-bold tracking-widest">RECOGNITION</span>
-    <h2 class="font-display font-extrabold text-4xl mt-3 mb-4 text-white">Certifications & Accreditations</h2>
-    <p class="text-slate-400">Registrations and partnerships that back the credentials we issue.</p>
-  </div>
-  <div id="certificationsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-    <div class="card rounded-2xl p-6 animate-pulse h-32"></div>
-    <div class="card rounded-2xl p-6 animate-pulse h-32"></div>
-    <div class="card rounded-2xl p-6 animate-pulse h-32"></div>
-  </div>
-</section>
-
 <!-- ========== TESTIMONIALS ========== -->
 <section id="testimonials" class="py-28 px-6 bg-white/[0.02]">
   <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
@@ -526,7 +510,7 @@
       </div>
     </div>
 
-    <!-- ===== INQUIRY FORM ===== -->
+    <!-- ===== INQUIRY FORM (NOW FUNCTIONAL) ===== -->
     <form id="inquiry-form" class="card rounded-2xl p-8" data-aos="fade-left">
       <h3 class="font-display font-bold text-xl text-white mb-6">Course Inquiry Form</h3>
       
@@ -585,15 +569,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 
 <script>
 // =============================================
 // SECURITY — ENHANCED
 // =============================================
 
+// 1. Disable keyboard shortcuts for dev tools
 function disableKeys(e) {
   const key = e.keyCode || e.which;
+  // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S, Ctrl+Shift+C
   if (key === 123 || 
       (e.ctrlKey && e.shiftKey && (key === 73 || key === 74 || key === 67)) ||
       (e.ctrlKey && key === 85) ||
@@ -605,14 +590,21 @@ function disableKeys(e) {
   return true;
 }
 document.addEventListener('keydown', disableKeys);
+
+// 2. Disable right-click
 document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 3. Prevent copying, cutting, pasting
 document.addEventListener('copy', e => e.preventDefault());
 document.addEventListener('cut', e => e.preventDefault());
 document.addEventListener('paste', e => e.preventDefault());
 document.addEventListener('selectstart', e => e.preventDefault());
+
+// 4. Prevent drag and drop
 document.addEventListener('dragstart', e => e.preventDefault());
 document.addEventListener('drop', e => e.preventDefault());
 
+// 5. Disable print screen (keyboard)
 document.addEventListener('keyup', (e) => {
   if (e.key === 'PrintScreen') {
     navigator.clipboard.writeText('').catch(() => {});
@@ -620,16 +612,29 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
+// 6. Prevent view source via context menu
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 7. Block developer tools detection (console clear)
 console.clear = function() {};
 console.log = function() {};
 console.warn = function() {};
 console.error = function() {};
 console.info = function() {};
 
+// 8. Prevent page from being framed (clickjacking)
 if (window.top !== window.self) {
   document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:20%;">🔒 Security: This page cannot be loaded in an iframe.</h1>';
   throw new Error('Framing blocked.');
 }
+
+// 9. Disable accessibility inspector (Chrome)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && e.key === 'J') e.preventDefault();
+  if (e.ctrlKey && e.key === 'U') e.preventDefault();
+  if (e.ctrlKey && e.key === 'S') e.preventDefault();
+});
 
 // =============================================
 // SUPABASE — INQUIRY FORM
@@ -663,65 +668,15 @@ function showNotif(msg, type = 'info', duration = 4000) {
   }, duration);
 }
 
-// =============================================
-// CERTIFICATIONS & ACCREDITATIONS
-// =============================================
-async function loadCertifications() {
-  const grid = document.getElementById('certificationsGrid');
-  if (!grid) return;
-  try {
-    const { data, error } = await supabaseClient
-      .from('certifications')
-      .select('*')
-      .order('issued_date', { ascending: false });
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      grid.innerHTML = `<p class="text-sm text-slate-500 col-span-full text-center">Certification records will appear here soon.</p>`;
-      return;
-    }
-
-    grid.innerHTML = data.map(c => `
-      <div class="card rounded-2xl p-6" data-aos="fade-up">
-        <div class="flex items-start justify-between gap-3 mb-3">
-          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-lg">📜</div>
-          ${c.category ? `<span class="text-[10px] font-semibold uppercase tracking-wide text-accent bg-accent/10 px-2.5 py-1 rounded-full">${escapeHTML(c.category)}</span>` : ''}
-        </div>
-        <h3 class="font-display font-bold text-white mb-1">${escapeHTML(c.title || 'Certification')}</h3>
-        ${c.issuer ? `<p class="text-xs text-slate-400 mb-2">Issued by ${escapeHTML(c.issuer)}</p>` : ''}
-        ${c.description ? `<p class="text-sm text-slate-300 leading-relaxed mb-3">${escapeHTML(c.description)}</p>` : ''}
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-white/5">
-          <span>${c.issued_date ? new Date(c.issued_date).getFullYear() : ''}</span>
-          ${c.verify_url ? `<a href="${escapeHTML(c.verify_url)}" target="_blank" rel="noopener" class="text-accent font-semibold hover:underline">Verify ↗</a>` : ''}
-        </div>
-      </div>
-    `).join('');
-  } catch (err) {
-    console.warn('Certifications load failed:', err);
-    grid.innerHTML = `<p class="text-sm text-slate-500 col-span-full text-center">Unable to load certifications right now.</p>`;
-  }
-}
-
-function escapeHTML(str) {
-  if (str === null || str === undefined) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-loadCertifications();
-
 // ===== FORM SUBMISSION =====
 inquiryForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  // Hide previous messages
   inqError.classList.add('hidden');
   inqSuccess.classList.add('hidden');
 
+  // Validate
   const name = inqName.value.trim();
   const phone = inqPhone.value.trim();
   const course = inqCourse.value;
@@ -742,6 +697,7 @@ inquiryForm.addEventListener('submit', async (e) => {
     return;
   }
 
+  // Disable button
   inqSubmitBtn.disabled = true;
   inqSubmitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
 
@@ -767,10 +723,12 @@ inquiryForm.addEventListener('submit', async (e) => {
       return;
     }
 
+    // Success
     inqSuccess.classList.remove('hidden');
     showNotif('✅ Inquiry submitted successfully!', 'success');
     inquiryForm.reset();
 
+    // Auto-hide success after 8 seconds
     setTimeout(() => {
       inqSuccess.classList.add('hidden');
     }, 8000);
@@ -787,7 +745,7 @@ inquiryForm.addEventListener('submit', async (e) => {
 });
 
 // =============================================
-// AUTHENTICATION & SESSION MANAGEMENT (WITH ADMIN ROLE CHECK)
+// AUTHENTICATION & SESSION MANAGEMENT
 // =============================================
 
 const loginModal = document.getElementById('login-modal');
@@ -808,7 +766,6 @@ function checkExistingSession() {
       return true;
     } else {
       sessionStorage.removeItem('adminSession');
-      sessionStorage.removeItem('adminRole');
       sessionStorage.removeItem('adminSessionTime');
       showSessionExpired();
       return false;
@@ -835,58 +792,21 @@ loginForm.addEventListener('submit', async function(e) {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
   loginError.classList.add('hidden');
-  const submitBtn = document.getElementById('login-submit-btn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+  document.getElementById('login-submit-btn').disabled = true;
+  document.getElementById('login-submit-btn').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
 
   try {
-    // 1. Sign in with Supabase Auth
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
-    // 2. Get the authenticated user
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
-    if (userError) throw userError;
-    const userId = userData.user.id;
-
-    // 3. Check user's role in the user_roles table
-    const { data: roleData, error: roleError } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (roleError) throw roleError;
-
-    // 4. Only allow access if role is 'admin'
-    if (roleData && roleData.role === 'admin') {
-      // Set admin session
-      sessionStorage.setItem('adminRole', 'admin');
-      sessionStorage.setItem('adminSession', 'active');
-      sessionStorage.setItem('adminSessionTime', Date.now().toString());
-      closeModal();
-      window.location.href = 'stuadmin.html';
-    } else {
-      // Not admin — show error and sign out
-      loginError.textContent = '❌ You are not authorized as an admin.';
-      loginError.classList.remove('hidden');
-      // Clear any existing session
-      sessionStorage.removeItem('adminRole');
-      sessionStorage.removeItem('adminSession');
-      sessionStorage.removeItem('adminSessionTime');
-      // Sign out to be safe
-      await supabaseClient.auth.signOut();
-      // Re-enable button
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = 'Login & Access Admin Panel';
-      // Keep modal open
-    }
-
+    sessionStorage.setItem('adminSession', 'active');
+    sessionStorage.setItem('adminSessionTime', Date.now().toString());
+    closeModal();
+    window.location.href = 'stuadmin.html';
   } catch (err) {
     loginError.textContent = err.message || 'Login failed. Please check credentials.';
     loginError.classList.remove('hidden');
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = 'Login & Access Admin Panel';
+    document.getElementById('login-submit-btn').disabled = false;
+    document.getElementById('login-submit-btn').innerHTML = 'Login & Access Admin Panel';
   }
 });
 
@@ -934,7 +854,6 @@ new Swiper('.testimonials-swiper', {
 console.log('%c🔒 SECURITY ACTIVE', 'font-size:20px;font-weight:bold;color:#10B981;');
 console.log('%cDev tools, right-click, copy, paste, drag, and framing are disabled.', 'font-size:12px;color:#94a3b8;');
 console.log('%c📝 Course Inquiry Form → Supabase: course_inquiries', 'font-size:12px;color:#06B6D4;');
-console.log('%c🔐 Admin login checks user_roles for "admin" role.', 'font-size:12px;color:#F59E0B;');
 </script>
 </body>
 </html>

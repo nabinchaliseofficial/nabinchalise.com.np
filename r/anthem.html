@@ -491,6 +491,9 @@
     <!-- Hidden Native Audio Processor -->
     <audio id="mainAudio"></audio>
 
+    <!-- Playback error feedback -->
+    <div id="audioToast" role="status" aria-live="polite" style="position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#ef4444; color:#fff; padding:0.7rem 1.4rem; border-radius:50px; font-size:0.9rem; font-weight:500; opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:999;"></div>
+
     <!-- Footer Segment Component -->
     <footer>
         <div class="footer-content">
@@ -568,8 +571,28 @@
         const audio = document.getElementById('mainAudio');
         const trackItems = document.querySelectorAll('.track-item');
         const lyricsContainer = document.getElementById('lyricsContainer');
+        const audioToast = document.getElementById('audioToast');
 
         let currentTrackIndex = null;
+
+        function showAudioError(msg) {
+            audioToast.textContent = msg;
+            audioToast.style.opacity = '1';
+            clearTimeout(audioToast._t);
+            audioToast._t = setTimeout(() => { audioToast.style.opacity = '0'; }, 4000);
+        }
+
+        // Reset a track's play/pause icon back to "play"
+        function resetTrackIcon(item) {
+            item.classList.remove('playing');
+            item.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
+        }
+
+        audio.addEventListener('error', () => {
+            if (currentTrackIndex === null) return;
+            showAudioError(`⚠️ Couldn't load "${trackData[currentTrackIndex].title}". The audio file may be missing.`);
+            resetTrackIcon(trackItems[currentTrackIndex]);
+        });
 
         // Custom Exit Animation & Material Ripple Context Effect on Navigation Button
         document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
@@ -623,13 +646,17 @@
             }
 
             if (audio.paused) {
-                audio.play().catch(err => console.log("Audio pipeline failed to engage: ", err));
-                item.classList.add('playing');
-                item.querySelector('.icon-control path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
+                audio.play().then(() => {
+                    item.classList.add('playing');
+                    item.querySelector('.icon-control path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
+                }).catch(err => {
+                    console.log("Audio pipeline failed to engage: ", err);
+                    showAudioError(`⚠️ Couldn't play "${trackData[index].title}". The audio file may be missing.`);
+                    resetTrackIcon(item);
+                });
             } else {
                 audio.pause();
-                item.classList.remove('playing');
-                item.querySelector('.icon-control path').setAttribute('d', 'M8 5v14l11-7z');
+                resetTrackIcon(item);
             }
         }
 

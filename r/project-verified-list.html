@@ -545,6 +545,39 @@
       }
     }
 
+    /* Card-style table for small screens instead of horizontal scrolling */
+    @media (max-width: 640px) {
+      table { min-width: 0; }
+      thead { display: none; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      tr {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid var(--border-light);
+      }
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.35rem 0;
+        border-bottom: none;
+        text-align: right;
+      }
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        text-align: left;
+      }
+      td:first-child {
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.3rem;
+        border-bottom: 1px dashed var(--border-light);
+      }
+    }
+
     /* loader */
     .loader-shimmer {
       display: flex;
@@ -598,9 +631,9 @@
     <div class="table-glass" id="tablePrintArea">
       <div class="table-scroll" id="tableWrap">
         <table>
-          <thead><tr><th>Project</th><th>Applicant</th><th>Email</th><th>Status</th><th>Approved By</th><th>Approved On</th></tr></thead>
+          <thead><tr><th>Project</th><th>Applicant</th><th>Email</th><th>Status</th><th>Approved On</th></tr></thead>
           <tbody id="tableBody">
-            <tr><td colspan="6" class="loader-shimmer"><i class="fa-regular fa-spinner fa-spin"></i> Loading approved applications...</td></tr>
+            <tr><td colspan="5" class="loader-shimmer"><i class="fa-regular fa-spinner fa-spin"></i> Loading approved applications...</td></tr>
           </tbody>
         </table>
       </div>
@@ -652,6 +685,16 @@
       let currentPage = 1;
       const rowsPerPage = 10;
 
+      const escapeHTML = (str) => {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
+
       const formatDate = (iso) => {
         if (!iso) return '—';
         const d = new Date(iso);
@@ -691,7 +734,7 @@
 
         if (!apps || apps.length === 0) {
           tbody.innerHTML =
-            `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text-muted);"><i class="fa-regular fa-circle-check" style="font-size:1.8rem;display:block;margin-bottom:0.5rem;"></i>No approved applications yet</td></tr>`;
+            `<tr><td colspan="5" style="text-align:center;padding:2.5rem;color:var(--text-muted);"><i class="fa-regular fa-circle-check" style="font-size:1.8rem;display:block;margin-bottom:0.5rem;"></i>No approved applications yet</td></tr>`;
           totalNum.textContent = '0';
           todayNum.textContent = '0';
           weekNum.textContent = '0';
@@ -730,23 +773,42 @@
           const applicant = app.applicant_name || app.name || '—';
           const email = app.email || '—';
           const status = app.status || 'approved';
-          const approvedBy = app.approved_by || 'System';
-          const created = app.created_at || app.approved_at || null;
+          const created = app.created_at || null;
 
           html += `<tr>
-              <td><strong>${project}</strong></td>
-              <td>${applicant}</td>
-              <td>${email}</td>
-              <td><span class="status-badge"><i class="fa-regular fa-circle-check"></i> ${status}</span></td>
-              <td>${approvedBy}</td>
-              <td><span class="timestamp-sm"><i class="fa-regular fa-calendar-plus"></i> ${formatDate(created)}</span></td>
+              <td data-label="Project"><strong>${escapeHTML(project)}</strong></td>
+              <td data-label="Applicant">${escapeHTML(applicant)}</td>
+              <td data-label="Email">${escapeHTML(email)}</td>
+              <td data-label="Status"><span class="status-badge"><i class="fa-regular fa-circle-check"></i> ${escapeHTML(status)}</span></td>
+              <td data-label="Approved On"><span class="timestamp-sm"><i class="fa-regular fa-calendar-plus"></i> ${formatDate(created)}</span></td>
             </tr>`;
         });
         tbody.innerHTML = html;
 
-        document.getElementById('page1').textContent = currentPage;
-        document.getElementById('page2').textContent = Math.min(currentPage + 1, totalPages);
-        document.getElementById('page3').textContent = Math.min(currentPage + 2, totalPages);
+        const page1Btn = document.getElementById('page1');
+        const page2Btn = document.getElementById('page2');
+        const page3Btn = document.getElementById('page3');
+
+        const page2Num = currentPage + 1;
+        const page3Num = currentPage + 2;
+
+        page1Btn.textContent = currentPage;
+        page1Btn.style.display = '';
+
+        if (page2Num <= totalPages) {
+          page2Btn.textContent = page2Num;
+          page2Btn.style.display = '';
+        } else {
+          page2Btn.style.display = 'none';
+        }
+
+        if (page3Num <= totalPages) {
+          page3Btn.textContent = page3Num;
+          page3Btn.style.display = '';
+        } else {
+          page3Btn.style.display = 'none';
+        }
+
         document.getElementById('prevPage').disabled = currentPage === 1;
         document.getElementById('nextPage').disabled = currentPage === totalPages;
       }
@@ -767,7 +829,7 @@
           if (error) {
             if (error.message.includes('does not exist')) {
               tbody.innerHTML =
-                `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">⚠️ Table not ready. Run SQL to create approved_applications.</td></tr>`;
+                `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">⚠️ Table not ready. Run SQL to create approved_applications.</td></tr>`;
               return;
             }
             throw error;
@@ -776,7 +838,7 @@
           refreshDisplay();
         } catch (e) {
           tbody.innerHTML =
-            `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#b91c1c;">❌ ${e.message}</td></tr>`;
+            `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#b91c1c;">❌ ${e.message}</td></tr>`;
         }
       };
 
@@ -795,6 +857,14 @@
         const totalPages = Math.ceil(filterAndSort(allApps).length / rowsPerPage);
         if (currentPage < totalPages) { currentPage++;
           refreshDisplay(); }
+      });
+
+      // Numbered page buttons weren't clickable before — wire them up to jump pages.
+      ['page1', 'page2', 'page3'].forEach((id, offset) => {
+        document.getElementById(id).addEventListener('click', () => {
+          currentPage = currentPage + offset;
+          refreshDisplay();
+        });
       });
 
       // print: only table area
