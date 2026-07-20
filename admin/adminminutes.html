@@ -1119,7 +1119,7 @@
     <!-- ===== PRINT PREVIEW - Same design as minutes.html ===== -->
     <div id="print-preview" style="display:none;">
         <div class="letterhead">
-            <img src="rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
+            <img src="/r/rotaract.jpg" alt="Rotaract Logo" class="letterhead-logo" />
             <div class="letterhead-text">
                 <h1>ROTARACT CLUB OF GALKOT BAGLUNG</h1>
                 <h2>Rotary International District 3292 Nepal-Bhutan</h2>
@@ -1166,6 +1166,11 @@
             <div id="outActionItems">No action items recorded.</div>
         </div>
 
+        <div class="content-section" id="print-section-closing" style="display:none;">
+            <h4>Closing Remarks</h4>
+            <div id="outClosingRemarks"></div>
+        </div>
+
         <div class="content-section">
             <h4>Approval &amp; Signatures</h4>
             <table class="print-table" style="width:100%;">
@@ -1173,12 +1178,12 @@
                 <tr>
                     <td style="text-align:center;">
                         <div id="outSigPrepared">Rtr. Madan Subedi</div>
-                        <img id="outSigPreparedImg" src="secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                        <img id="outSigPreparedImg" src="/r/secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
                     </td>
                     <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
                     <td style="text-align:center;">
                         <div id="outSigApproved">Rtr. Nabin Chalise</div>
-                        <img id="outSigApprovedImg" src="presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
+                        <img id="outSigApprovedImg" src="/r/presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
                     </td>
                 </tr>
             </table>
@@ -1296,8 +1301,7 @@
             "use strict";
 
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-            const SUPABASE_KEY =
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+            const SUPABASE_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             // ============================================================
@@ -1761,6 +1765,16 @@
                 }
                 document.getElementById('outActionItems').innerHTML = aiHTML;
 
+                // Closing Remarks
+                const closingSection = document.getElementById('print-section-closing');
+                const closingRemarks = m.closing_remarks || '';
+                if (closingRemarks) {
+                    document.getElementById('outClosingRemarks').innerHTML = `<p>${escapeHtml(closingRemarks)}</p>`;
+                    closingSection.style.display = 'block';
+                } else {
+                    closingSection.style.display = 'none';
+                }
+
                 // Signatures
                 const sig = m.signatures || {};
                 document.getElementById('outSigPrepared').innerText = sig.prepared || 'Rtr. Madan Subedi';
@@ -1783,6 +1797,7 @@
                 const found = allMinutesData.find(item => item.id == id);
                 if (found) {
                     const m = found.data || found;
+                    if (!m.closing_remarks && found.closing_remarks) m.closing_remarks = found.closing_remarks;
                     const preview = document.getElementById('print-preview');
                     preview.style.display = 'block';
                     populatePrintPreviewFromData(m);

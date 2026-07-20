@@ -1121,7 +1121,8 @@
         }
         @media print {
             body {
-                background: white;
+                background: #fff !important;
+                color: #000 !important;
                 padding: 0;
                 margin: 0;
             }
@@ -1142,7 +1143,11 @@
                 position: relative;
                 min-height: 100vh;
                 padding: 40px 50px;
-                background: white;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background: #fff;
+                color: #000;
+                max-width: 1000px;
+                margin: 0 auto;
             }
             #print-preview::before {
                 content: "";
@@ -1242,6 +1247,15 @@
                 margin-bottom: 14px;
                 font-size: 13.5px;
             }
+            .agenda-item strong {
+                color: #1e293b;
+                font-weight: 700;
+            }
+            .agenda-item p {
+                margin: 3px 0 0 15px;
+                color: #334155;
+                font-size: 12.5px;
+            }
             .print-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -1267,6 +1281,36 @@
             }
             .col-role {
                 width: 40%;
+            }
+            .footer-sign {
+                margin-top: 40px;
+                display: flex;
+                justify-content: space-between;
+                page-break-inside: avoid;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
+            }
+            .sign-line {
+                text-align: center;
+                min-width: 200px;
+            }
+            .sign-line p {
+                margin: 0;
+                font-size: 13px;
+                color: #1e293b;
+            }
+            .sign-line p:first-child {
+                font-weight: 700;
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+            .sign-line .sign-role {
+                font-size: 11px;
+                color: #64748b;
+                font-weight: 500;
+            }
+            .page-break {
+                page-break-before: always;
             }
         }
 
@@ -1537,12 +1581,25 @@
             </div>
         </div>
 
-        <!-- CARD 6: SIGNATURES -->
+        <!-- CARD 6: CLOSING REMARKS -->
+        <div class="form-card">
+            <div class="card-header-wrapper">
+                <div class="card-title-group">
+                    <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <h2>7. Closing Remarks</h2>
+                </div>
+            </div>
+            <div class="form-group">
+                <textarea id="closingRemarks" placeholder="Any closing remarks for this meeting..." rows="3" style="width:100%;"></textarea>
+            </div>
+        </div>
+
+        <!-- CARD 7: SIGNATURES -->
         <div class="form-card">
             <div class="card-header-wrapper">
                 <div class="card-title-group">
                     <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-                    <h2>7. Digital Signatures</h2>
+                    <h2>8. Digital Signatures</h2>
                 </div>
             </div>
             <div class="signature-grid">
@@ -1597,6 +1654,10 @@
             </div>
         </div>
         <h3 id="outTitle">MINUTES OF MEETING</h3>
+        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+            <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
+            <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
+        </div>
         <table class="meta-table">
             <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
             <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
@@ -1607,6 +1668,7 @@
         <div class="content-section"><h4>Meeting Discussions</h4><div id="outDiscussions"></div></div>
         <div class="content-section"><h4>Agendas &amp; Resolutions</h4><div id="outAgendas"></div></div>
         <div class="content-section"><h4>Action Items</h4><div id="outActionItems"></div></div>
+        <div class="content-section" id="print-section-closing" style="display:none;"><h4>Closing Remarks</h4><div id="outClosingRemarks"></div></div>
         <div class="content-section"><h4>Approval &amp; Signatures</h4>
             <table class="print-table" style="width:100%;">
                 <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
@@ -1621,6 +1683,16 @@
                 </tr>
             </table>
         </div>
+        <div class="footer-sign">
+            <div class="sign-line">
+                <p id="outChairSign">Rtr. Nabin Chalise</p>
+                <p class="sign-role">Meeting Chairperson</p>
+            </div>
+            <div class="sign-line">
+                <p id="outSecretarySign">Rtr. Madan Subedi</p>
+                <p class="sign-role">Club Secretary</p>
+            </div>
+        </div>
     </div>
 
     <!-- ===== TOAST ===== -->
@@ -1633,8 +1705,8 @@
         // ============================================================
         //  SUPABASE CONFIG
         // ============================================================
-        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co/";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+        const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
 
         // ============================================================
         //  SUPABASE CLIENT - FIXED
@@ -2437,6 +2509,9 @@
             if (sigReviewed) sigReviewed.value = sig.reviewed || 'Rtr. Anil Shrestha';
             if (sigApproved) sigApproved.value = sig.approved || 'Rtr. Nabin Chalise';
 
+            const closingRemarks = document.getElementById('closingRemarks');
+            if (closingRemarks) closingRemarks.value = payload.closing_remarks || '';
+
             calculateAttendanceCounts();
         }
 
@@ -2503,6 +2578,8 @@
                 approved: document.getElementById('sigApproved')?.value.trim() || ''
             };
 
+            const closingRemarks = document.getElementById('closingRemarks')?.value.trim() || '';
+
             return {
                 meeting_number: meetNo,
                 meeting_date: meetDateRaw ? new Date(meetDateRaw).toISOString() : null,
@@ -2513,7 +2590,8 @@
                 agendas,
                 discussions,
                 actionItems,
-                signatures
+                signatures,
+                closing_remarks: closingRemarks
             };
         }
 
@@ -2523,10 +2601,14 @@
         function populatePrintPreview(payload) {
             const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
+            setText('outVersion', payload._version || 'v1.0');
+            setText('outSavedAt', payload._savedAt ? new Date(payload._savedAt).toLocaleString() : '---');
+
             setText('outMeetNo', payload.meeting_number || '—');
             setText('outDate', payload.meeting_date ? new Date(payload.meeting_date).toLocaleString() : '—');
             setText('outVenue', payload.venue || '—');
             setText('outChair', payload.chairperson || '—');
+            setText('outChairSign', payload.chairperson || '—');
             setText('outPres', payload.members.length);
             setText('outGst', payload.guests.length);
 
@@ -2579,6 +2661,15 @@
             setText('outSigPrepared', payload.signatures.prepared || '—');
             setText('outSigReviewed', payload.signatures.reviewed || '—');
             setText('outSigApproved', payload.signatures.approved || '—');
+
+            const closingSection = document.getElementById('print-section-closing');
+            const closingEl = document.getElementById('outClosingRemarks');
+            if (payload.closing_remarks && closingSection && closingEl) {
+                closingSection.style.display = 'block';
+                closingEl.innerHTML = `<p>${escapeHtml(payload.closing_remarks)}</p>`;
+            } else if (closingSection) {
+                closingSection.style.display = 'none';
+            }
         }
 
         // ============================================================
@@ -2648,12 +2739,12 @@
                 if (existing) {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .update({ data: payload })
+                        .update({ data: payload, closing_remarks: payload.closing_remarks, updated_at: payload._savedAt })
                         .eq('id', existing.id));
                 } else {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .insert([{ data: payload }]));
+                        .insert([{ data: payload, closing_remarks: payload.closing_remarks }]));
                 }
                 if (error) throw error;
 
