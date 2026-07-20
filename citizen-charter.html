@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>नागरिक वडापत्र - आन्तरिक राजस्व कार्यालय, गलकोट</title>
+<meta name="description" content="आन्तरिक राजस्व कार्यालय, गलकोटको नागरिक वडापत्र - सेवाहरू, लाग्ने समय, आवश्यक कागजात, दस्तुर र जिम्मेवार अधिकारीको विवरण।">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root{
+        --paper:#f5efe2;
+        --paper-2:#fffdf7;
+        --ink:#241f18;
+        --ink-soft:#5a5346;
+        --blue:#0e2c52;
+        --blue-2:#1c4a86;
+        --vermillion:#a91f2c;
+        --vermillion-deep:#7d1420;
+        --gold:#b3892f;
+        --line:#d9cfb8;
+        --radius:4px;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+        font-family:'Noto Sans Devanagari','Inter',sans-serif;
+        background:var(--paper);
+        color:var(--ink);
+        line-height:1.65;
+    }
+
+    a{color:inherit;}
+
+    /* ============ MASTHEAD / NAV ============ */
+    .masthead{
+        position:sticky;
+        top:0;
+        z-index:100;
+        background:rgba(245,239,226,0.92);
+        backdrop-filter:blur(6px);
+        border-bottom:3px double var(--gold);
+    }
+
+    .masthead-inner{
+        max-width:1080px;
+        margin:0 auto;
+        padding:1rem 2rem;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:1.5rem;
+        flex-wrap:wrap;
+    }
+
+    .office-id{ display:flex; align-items:center; gap:12px; }
+
+    .office-id i{
+        font-size:1.6rem;
+        color:var(--vermillion-deep);
+        width:38px; height:38px;
+        display:flex; align-items:center; justify-content:center;
+        border:1px solid var(--vermillion-deep);
+        border-radius:50%;
+    }
+
+    .office-id h1{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:1.05rem;
+        font-weight:700;
+        color:var(--blue);
+    }
+
+    .office-id p{
+        font-size:0.78rem;
+        color:var(--ink-soft);
+        text-transform:uppercase;
+        letter-spacing:0.5px;
+        font-family:'Inter',sans-serif;
+    }
+
+    .nav-contact{ display:flex; gap:1.4rem; flex-wrap:wrap; }
+
+    .nav-link{
+        text-decoration:none;
+        color:var(--ink-soft);
+        font-weight:500;
+        display:flex;
+        align-items:center;
+        gap:7px;
+        font-size:0.88rem;
+        transition:color 0.2s;
+    }
+
+    .nav-link:hover{ color:var(--vermillion-deep); }
+
+    /* ============ HERO ============ */
+    .hero{
+        max-width:1080px;
+        margin:0 auto;
+        padding:2.6rem 2rem 1.6rem;
+        text-align:center;
+        position:relative;
+    }
+
+    .hero-tag{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        font-family:'Inter',sans-serif;
+        font-size:0.75rem;
+        letter-spacing:1.6px;
+        text-transform:uppercase;
+        color:var(--gold);
+        font-weight:600;
+        margin-bottom:1rem;
+    }
+
+    .hero-tag::before, .hero-tag::after{ content:''; width:26px; height:1px; background:var(--gold); }
+
+    .hero h2{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:2rem;
+        color:var(--blue);
+        font-weight:700;
+        margin-bottom:0.7rem;
+    }
+
+    .hero p{
+        color:var(--ink-soft);
+        max-width:640px;
+        margin:0 auto;
+        font-size:1rem;
+    }
+
+    /* ============ HOME BUTTON ============ */
+    .home-btn-container{
+        text-align:center;
+        padding:0.4rem 2rem 2.2rem;
+    }
+
+    .home-btn{
+        position:relative;
+        overflow:hidden;
+        display:inline-flex;
+        align-items:center;
+        gap:9px;
+        background:transparent;
+        color:var(--vermillion-deep);
+        text-decoration:none;
+        padding:9px 20px;
+        border:1px solid var(--vermillion-deep);
+        border-radius:2px;
+        font-weight:600;
+        font-size:0.88rem;
+        letter-spacing:0.3px;
+        cursor:pointer;
+        transition:background 0.25s, color 0.25s;
+    }
+
+    .home-btn:hover{ background:var(--vermillion-deep); color:#fff; }
+
+    .home-btn .ripple{
+        position:absolute; border-radius:50%;
+        background:rgba(255,255,255,0.5);
+        transform:scale(0);
+        animation:ripple-effect 0.45s linear;
+        pointer-events:none;
+    }
+
+    @keyframes ripple-effect{ to{ transform:scale(6); opacity:0; } }
+
+    .home-btn.clicked-exit{ animation:exit-fade 0.4s ease forwards; }
+    @keyframes exit-fade{ to{ opacity:0; transform:translateY(-6px); } }
+
+    @media print{ .home-btn-container{ display:none !important; } }
+
+    /* ============ DOCUMENT CARDS ============ */
+    .main-content{
+        max-width:1080px;
+        margin:0 auto 4rem;
+        padding:0 2rem;
+    }
+
+    .grid-container{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:1.8rem;
+    }
+
+    @media (max-width:640px){ .grid-container{ grid-template-columns:1fr; } }
+
+    .card{
+        position:relative;
+        background:var(--paper-2);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        overflow:hidden;
+        display:flex;
+        flex-direction:column;
+        box-shadow:0 1px 2px rgba(36,31,24,0.05), 0 20px 30px -22px rgba(14,44,82,0.3);
+        transition:transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+    }
+
+    /* perforated tear-off edge, like a document register */
+    .card::before{
+        content:'';
+        position:absolute;
+        top:0; left:0; right:0;
+        height:4px;
+        background-image:radial-gradient(circle, var(--paper) 2.4px, transparent 2.6px);
+        background-size:14px 4px;
+        background-repeat:repeat-x;
+        background-position:center;
+        z-index:2;
+    }
+
+    .card:hover{
+        transform:translateY(-4px);
+        box-shadow:0 1px 2px rgba(36,31,24,0.07), 0 30px 40px -20px rgba(14,44,82,0.34);
+    }
+
+    .card-tab{
+        position:absolute;
+        top:14px; right:0;
+        background:var(--blue);
+        color:#fff;
+        font-family:'Inter',sans-serif;
+        font-size:0.72rem;
+        font-weight:600;
+        letter-spacing:0.5px;
+        padding:5px 12px 5px 16px;
+        border-radius:3px 0 0 3px;
+    }
+
+    .card-header{
+        padding:1.9rem 2rem 1.4rem;
+        display:flex;
+        align-items:center;
+        gap:15px;
+        border-bottom:1px dashed var(--line);
+    }
+
+    .card-icon{
+        width:46px; height:46px;
+        border-radius:50%;
+        border:2px solid var(--vermillion);
+        color:var(--vermillion);
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.2rem;
+        flex-shrink:0;
+    }
+
+    .card:nth-child(2) .card-icon{ border-color:#0e7c5c; color:#0e7c5c; }
+    .card:nth-child(3) .card-icon{ border-color:var(--gold); color:var(--gold); }
+    .card:nth-child(4) .card-icon{ border-color:var(--blue-2); color:var(--blue-2); }
+
+    .card-header h3{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:1.18rem;
+        color:var(--blue);
+        font-weight:700;
+    }
+
+    .card-body{ padding:1.7rem 2rem; flex-grow:1; }
+
+    .doc-list{ list-style:none; }
+
+    .doc-list li{
+        position:relative;
+        padding-left:1.9rem;
+        margin-bottom:0.9rem;
+        color:var(--ink-soft);
+        font-size:1rem;
+        text-align:left;
+    }
+
+    .doc-list li::before{
+        content:"\f00c";
+        font-family:"Font Awesome 6 Free";
+        font-weight:900;
+        position:absolute;
+        left:0; top:2px;
+        color:var(--blue);
+        font-size:0.75rem;
+    }
+
+    /* ============ FEE TABLE ============ */
+    .fee-table{
+        width:100%;
+        border-collapse:collapse;
+        font-size:0.92rem;
+    }
+
+    .fee-table th, .fee-table td{
+        text-align:left;
+        padding:0.7rem 0.9rem;
+        border-bottom:1px dashed var(--line);
+        color:var(--ink-soft);
+    }
+
+    .fee-table th{
+        font-family:'Inter',sans-serif;
+        font-size:0.78rem;
+        letter-spacing:0.4px;
+        text-transform:uppercase;
+        color:var(--blue);
+        background:rgba(14,44,82,0.04);
+        font-weight:700;
+    }
+
+    .fee-table tr:last-child td{ border-bottom:none; }
+
+    .fee-table td.amount{ color:var(--vermillion-deep); font-weight:600; white-space:nowrap; }
+
+    .fee-note{
+        display:flex;
+        gap:12px;
+        align-items:flex-start;
+        margin-top:1.4rem;
+        padding:1rem 1.2rem;
+        border:1px solid var(--gold);
+        border-left:4px solid var(--gold);
+        background:rgba(179,137,47,0.06);
+        border-radius:2px;
+        font-size:0.86rem;
+        color:#7a5c1a;
+    }
+
+    .fee-note i{ font-size:1.05rem; color:var(--gold); margin-top:2px; }
+
+    .table-wrap{ overflow-x:auto; }
+    .table-wrap .fee-table{ min-width:720px; }
+
+    .card-actions{
+        padding:0 2rem 1.4rem;
+    }
+
+    .btn-print{
+        background:var(--blue);
+        color:#fff;
+        border:none;
+        padding:9px 18px;
+        border-radius:2px;
+        cursor:pointer;
+        font-family:inherit;
+        font-weight:600;
+        font-size:0.88rem;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        transition:background 0.25s, transform 0.2s;
+    }
+
+    .btn-print:hover{ background:var(--vermillion-deep); transform:translateY(-1px); }
+
+    .card-footer{
+        padding:1.1rem 2rem;
+        background:rgba(179,137,47,0.06);
+        border-top:1px dashed var(--line);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+
+    .contact-pill{
+        font-size:0.82rem;
+        color:var(--ink-soft);
+        display:flex;
+        align-items:center;
+        gap:6px;
+        text-decoration:none;
+        transition:color 0.2s;
+    }
+
+    .contact-pill:hover{ color:var(--vermillion-deep); }
+
+    /* ============ PRINT LETTERHEAD ============ */
+    #print-letterhead{ display:none; }
+
+    /* ============ FOOTER ============ */
+    .main-footer{
+        background:var(--blue);
+        color:#c9d3e0;
+        padding:2.6rem 2rem;
+        text-align:center;
+        border-top:4px solid var(--vermillion-deep);
+    }
+
+    .footer-container{ max-width:800px; margin:0 auto; }
+
+    .footer-container h4{
+        font-family:'Noto Serif Devanagari',serif;
+        color:#fff;
+        font-size:1.15rem;
+        margin-bottom:0.3rem;
+    }
+
+    .footer-info{
+        display:flex; justify-content:center; gap:2rem;
+        margin-top:1.3rem; flex-wrap:wrap;
+    }
+
+    .footer-info a{
+        color:#c9d3e0; text-decoration:none;
+        display:flex; align-items:center; gap:8px;
+        font-size:0.95rem; transition:color 0.2s;
+    }
+
+    .footer-info a:hover{ color:#fff; }
+
+    .copyright{ margin-top:1.6rem; font-size:0.82rem; color:#8fa0bb; }
+
+    /* ============ A4 PRINT ============ */
+    @media print{
+        @page{ size:A4; margin:20mm 15mm; }
+
+        body{ background:#fff !important; color:#000 !important; font-size:13pt; }
+
+        .masthead, .hero, .card-actions, .card-footer, .main-footer, .home-btn-container, .card-tab, .card::before{
+            display:none !important;
+        }
+
+        #print-letterhead{
+            display:block !important;
+            width:100%;
+            margin-bottom:32px;
+        }
+
+        .lh-container{ display:flex; justify-content:space-between; align-items:flex-start; }
+        .lh-left{ width:20%; }
+        .lh-left img{ width:110px; height:auto; }
+        .lh-center{ text-align:center; width:60%; margin-top:5px; }
+        .lh-center h2{ color:var(--vermillion) !important; font-size:22pt; font-weight:700; margin-bottom:4px; font-family:'Noto Serif Devanagari',serif; }
+        .lh-center h3{ color:var(--vermillion) !important; font-size:16pt; font-weight:700; margin-bottom:4px; }
+        .lh-center p{ color:var(--vermillion) !important; font-size:12pt; font-weight:500; margin-bottom:2px; }
+        .lh-right{ text-align:right; width:20%; font-size:11pt; color:#000; font-weight:500; line-height:1.5; margin-top:5px; }
+        .lh-border{ margin-top:14px; border-top:3px double var(--gold); height:4px; width:100%; }
+
+        .main-content{ margin:0 !important; padding:0 !important; max-width:100% !important; }
+        .grid-container{ display:block !important; }
+        .card{ box-shadow:none !important; border:none !important; margin-bottom:0 !important; padding:0 !important; width:100% !important; }
+        .card-header{ border-bottom:2px dashed var(--blue) !important; padding:0 0 10px 0 !important; margin-bottom:18px; }
+        .card-icon{ display:none !important; }
+        .card-header h3{ font-size:16pt !important; color:var(--blue) !important; font-weight:bold !important; }
+        .card-body{ padding:4px 0 0 0 !important; }
+        .doc-list li{ color:#000 !important; font-size:13pt !important; padding-left:1.8rem !important; margin-bottom:13px !important; line-height:1.5; }
+        .doc-list li::before{ content:"✔" !important; font-family:inherit !important; color:var(--blue) !important; font-size:12pt !important; top:1px !important; font-weight:bold !important; }
+        .fee-table th, .fee-table td{ color:#000 !important; font-size:12pt !important; }
+        .fee-table td.amount{ color:#000 !important; }
+        .fee-note{ display:none !important; }
+
+        .print-single-card .card{ display:none !important; }
+        .print-single-card .card.active-print{ display:block !important; }
+    }
+
+    @media (max-width:768px){
+        .masthead-inner{ flex-direction:column; gap:0.8rem; text-align:center; }
+        .hero h2{ font-size:1.5rem; }
+        .hero p{ font-size:0.92rem; }
+        .card-body{ padding:1.4rem; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Official Letterhead Layout for PDF/Printing (A4 Fit) -->
+<div id="print-letterhead">
+    <div class="lh-container">
+        <div class="lh-left">
+            <img src="goverment-logo.jpg" alt="नेपाल सरकार लोगो">
+        </div>
+        <div class="lh-center">
+            <h2>गलकोट नगरपालिका</h2>
+            <h3>नगर कार्यपालिकाको कार्यालय</h3>
+            <p>गलकोट, बागलुङ</p>
+            <p>गण्डकी प्रदेश, नेपाल</p>
+        </div>
+        <div class="lh-right">
+            <div><strong>फोन नं:</strong> ०६८-४१२१११</div>
+            <div style="margin-top:8px;"><strong>मिति:</strong> <span id="print-date"></span></div>
+            <div><strong>समय:</strong> <span id="print-time"></span></div>
+        </div>
+    </div>
+    <div class="lh-border"></div>
+</div>
+
+<!-- Masthead -->
+<header class="masthead">
+    <div class="masthead-inner">
+        <div class="office-id">
+            <i class="fa-solid fa-building-columns"></i>
+            <div>
+                <h1>गलकोट नगरपालिका</h1>
+                <p>Galkot &middot; Baglung</p>
+            </div>
+        </div>
+        <div class="nav-contact">
+            <a href="tel:068412111" class="nav-link"><i class="fa-solid fa-phone"></i> 068-412111</a>
+            <a href="mailto:irdgalkot@gmail.com" class="nav-link"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+        </div>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <span class="hero-tag">सार्वजनिक सेवा प्रत्याभूति</span>
+    <h2>नागरिक वडापत्र</h2>
+    <p>यस कार्यालयबाट प्रवाह हुने प्रमुख सेवाहरू, आवश्यक कागजात, लाग्ने समय, दस्तुर र जिम्मेवार अधिकारीको विवरण।</p>
+</section>
+
+<div class="home-btn-container">
+    <a href="https://nabinchalise.com.np/" class="home-btn" id="interactiveHomeBtn">
+        <i class="fa-solid fa-house"></i> गृहपृष्ठ
+    </a>
+</div>
+
+<main class="main-content">
+    <div class="grid-container">
+
+        <section class="card" id="card-1">
+            <span class="card-tab">वडापत्र</span>
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-scroll"></i></div>
+                <h3>सेवा प्रवाह विवरण</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-wrap">
+                <table class="fee-table">
+                    <thead>
+                        <tr>
+                            <th>सेवाको नाम</th>
+                            <th>आवश्यक कागजात</th>
+                            <th>लाग्ने समय</th>
+                            <th>दस्तुर</th>
+                            <th>जिम्मेवार अधिकारी</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>नयाँ प्यान (PAN) दर्ता</td>
+                            <td>नागरिकता, दर्ता प्रमाणपत्र, घरभाडा सम्झौता आदि</td>
+                            <td>सोही दिन</td>
+                            <td class="amount">कार्यालय दस्तुर अनुसार</td>
+                            <td>सम्बन्धित कर अधिकृत</td>
+                        </tr>
+                        <tr>
+                            <td>प्यान नवीकरण</td>
+                            <td>प्यान प्रमाणपत्र, अघिल्लो नवीकरण विवरण</td>
+                            <td>सोही दिन</td>
+                            <td class="amount">कार्यालय दस्तुर अनुसार</td>
+                            <td>सम्बन्धित कर अधिकृत</td>
+                        </tr>
+                        <tr>
+                            <td>करचुक्ता प्रमाणपत्र</td>
+                            <td>प्यान प्रमाणपत्र, कर विवरण</td>
+                            <td>१-३ दिन</td>
+                            <td class="amount">कार्यालय दस्तुर अनुसार</td>
+                            <td>प्रमुख कर अधिकृत</td>
+                        </tr>
+                        <tr>
+                            <td>प्यान विवरण संशोधन</td>
+                            <td>निवेदन, प्रमाण खुल्ने कागजात</td>
+                            <td>सोही दिन</td>
+                            <td class="amount">कार्यालय दस्तुर अनुसार</td>
+                            <td>सम्बन्धित कर अधिकृत</td>
+                        </tr>
+                        <tr>
+                            <td>सुझाव / गुनासो सुनुवाई</td>
+                            <td>निवेदन पत्र</td>
+                            <td>३-७ दिन</td>
+                            <td class="amount">निःशुल्क</td>
+                            <td>प्रमुख कर अधिकृत</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div class="fee-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>माथिको समय-सीमा सामान्य अवस्थाका लागि हो। कागजात अपूर्ण भएमा वा थप जाँचबुझ आवश्यक परेमा लाग्ने समय फरक हुन सक्नेछ।</p>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-print" onclick="printCard('card-1')"><i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड</button>
+            </div>
+            <div class="card-footer">
+                <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+            </div>
+        </section>
+
+        <section class="card" id="card-2">
+            <span class="card-tab">गुनासो</span>
+            <div class="card-header">
+                <div class="card-icon"><i class="fa-solid fa-gavel"></i></div>
+                <h3>गुनासो सुन्ने अधिकारी तथा प्रक्रिया</h3>
+            </div>
+            <div class="card-body">
+                <ul class="doc-list">
+                    <li>सेवाग्राहीले सेवा प्राप्त गर्न कुनै कठिनाइ भएमा प्रमुख कर अधिकृत समक्ष लिखित निवेदन दिन सकिनेछ।</li>
+                    <li>यस कार्यालयबाट सन्तोषजनक सेवा प्राप्त नभएमा माथिल्लो निकाय (आन्तरिक राजस्व विभाग) मा उजुरी गर्न सकिनेछ।</li>
+                    <li>गुनासो दर्ता पुस्तिका कार्यालयको सूचना कक्षमा उपलब्ध रहनेछ।</li>
+                    <li>अनलाइन गुनासोका लागि "सम्पर्क / गुनासो" पृष्ठमा रहेको फारम प्रयोग गर्न सकिनेछ।</li>
+                </ul>
+            </div>
+            <div class="card-actions">
+                <button class="btn-print" onclick="printCard('card-2')"><i class="fa-solid fa-print"></i> प्रिन्ट / PDF डाउनलोड</button>
+            </div>
+            <div class="card-footer">
+                <a href="tel:068412111" class="contact-pill"><i class="fa-solid fa-phone"></i> 068-412111</a>
+                <a href="mailto:irdgalkot@gmail.com" class="contact-pill"><i class="fa-solid fa-envelope"></i> irdgalkot@gmail.com</a>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <h4>गलकोट नगरपालिका, गलकोट</h4>
+        <div class="footer-info">
+            <a href="tel:068412111"><i class="fa-solid fa-phone"></i> फोन: 068-412111</a>
+            <a href="mailto:irdgalkot@gmail.com"><i class="fa-solid fa-envelope"></i> इमेल: irdgalkot@gmail.com</a>
+        </div>
+        <div class="copyright">&copy; 2026 गलकोट नगरपालिका, गलकोट बागलुङ । सम्पूर्ण अधिकार सुरक्षित।</div>
+    </div>
+</footer>
+
+<script>
+    function printCard(cardId){
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth()+1).padStart(2,'0');
+        const day = String(now.getDate()).padStart(2,'0');
+        document.getElementById('print-date').innerText = `${year}-${month}-${day}`;
+
+        const hours = String(now.getHours()).padStart(2,'0');
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('print-time').innerText = `${hours}:${minutes}`;
+
+        document.body.classList.add('print-single-card');
+        const card = document.getElementById(cardId);
+        card.classList.add('active-print');
+
+        window.print();
+
+        document.body.classList.remove('print-single-card');
+        card.classList.remove('active-print');
+    }
+
+    document.getElementById('interactiveHomeBtn').addEventListener('click', function(e){
+        e.preventDefault();
+        const targetUrl = this.getAttribute('href');
+        const button = this;
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+        ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+        button.appendChild(ripple);
+        button.classList.add('clicked-exit');
+        setTimeout(()=>{ window.location.href = targetUrl; }, 400);
+    });
+</script>
+
+</body>
+</html>
