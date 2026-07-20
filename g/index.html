@@ -1,373 +1,434 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>आन्तरिक राजस्व कार्यालय - गलकोट, बागलुङ</title>
-    <meta name="description" content="आन्तरिक राजस्व कार्यालय, गलकोटको आधिकारिक वेब पोर्टल। करदाता सेवा, प्यान दर्ता र अन्य जानकारी।">
-    
-    <!-- Google Fonts: Inter & Noto Sans Devanagari -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>प्यान दर्ता सहायता गाइड (अनौपचारिक) - गलकोट, बागलुङ</title>
+<meta name="description" content="गलकोट क्षेत्रमा प्यान दर्ताका लागि चाहिने कागजातहरूको बारेमा अनौपचारिक सन्दर्भ सामग्री। यो कुनै सरकारी निकायको आधिकारिक साइट होइन।">
 
-    <style>
-        /* 60-30-10 Color System & Custom Variables */
-        :root {
-            --bg-neutral: #f8fafc;       /* 60% Neutral Background */
-            --primary-brand: #1e3a8a;    /* 30% Primary Brand */
-            --primary-light: #3b82f6;    /* Supporting Interactive Accent */
-            --accent-cta: #ef4444;       /* 10% Action / Warning Element */
-            --text-dark: #0f172a;        /* High-contrast Text (WCAG Compliant) */
-            --text-light: #475569;
-            --card-bg: #ffffff;
-            --border-radius: 12px;
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* Reset & Base Rules */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    :root{
+        --paper:#f5efe2;
+        --paper-2:#fffdf7;
+        --ink:#241f18;
+        --ink-soft:#5a5346;
+        --blue:#0e2c52;
+        --blue-2:#1c4a86;
+        --vermillion:#a91f2c;
+        --vermillion-deep:#7d1420;
+        --gold:#b3892f;
+        --line:#d9cfb8;
+        --radius:4px;
+    }
 
-        body {
-            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
-            background-color: var(--bg-neutral);
-            color: var(--text-dark);
-            line-height: 1.6;
-            font-size: 16px; /* Desktop Base Font */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
+    *{margin:0;padding:0;box-sizing:border-box;}
 
-        /* Main Component Area */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            width: 100%;
-        }
+    html{scroll-behavior:smooth;}
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr; 
-            max-width: 700px;
-            margin: 0 auto;
-        }
+    body{
+        font-family:'Noto Sans Devanagari','Inter',sans-serif;
+        background:
+            radial-gradient(circle at 12% 8%, rgba(14,44,82,0.05), transparent 40%),
+            radial-gradient(circle at 90% 92%, rgba(169,31,44,0.05), transparent 45%),
+            var(--paper);
+        color:var(--ink);
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        line-height:1.65;
+    }
 
-        /* Component Design: Interactive Card Section */
-        .portal-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
-            padding: 3.5rem 2.5rem;
-            text-align: center;
-            transition: var(--transition-smooth);
-            border: 1px solid #e2e8f0;
-            border-top: 5px solid var(--primary-light); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-        }
+    /* faint decorative watermark (no government emblem) */
+    body::before{
+        content:'';
+        position:fixed;
+        top:50%; left:50%;
+        width:640px; height:640px;
+        background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="%23000" stroke-width="1"/><circle cx="50" cy="50" r="36" fill="none" stroke="%23000" stroke-width="1"/></svg>') center/contain no-repeat;
+        transform:translate(-50%,-50%);
+        opacity:0.035;
+        pointer-events:none;
+        z-index:0;
+    }
 
-        .portal-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 30px -10px rgba(30, 58, 138, 0.12);
-            border-color: var(--primary-light);
-        }
+    /* disclaimer strip */
+    .disclaimer-strip{
+        position:relative;
+        z-index:3;
+        background:var(--ink);
+        color:#f2ede0;
+        text-align:center;
+        font-size:0.8rem;
+        padding:0.5rem 1rem;
+        letter-spacing:0.2px;
+    }
 
-        .icon-box {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            background-color: rgba(59, 130, 246, 0.08); 
-            color: var(--primary-light);
-            transition: var(--transition-smooth);
-        }
+    a{color:inherit;}
 
-        .portal-card:hover .icon-box {
-            background-color: var(--primary-brand);
-            color: #ffffff;
-        }
+    /* ============ MASTHEAD ============ */
+    .masthead{
+        position:relative;
+        z-index:2;
+        padding:1.4rem 2rem 1.1rem;
+        border-bottom:3px double var(--gold);
+        background:linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
+    }
 
-        .portal-card h2 {
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-            color: var(--primary-brand);
-            font-weight: 700;
-        }
+    .masthead-inner{
+        max-width:960px;
+        margin:0 auto;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:1.5rem;
+        flex-wrap:wrap;
+    }
 
-        .portal-card p {
-            color: var(--text-light);
-            font-size: 1.1rem;
-            margin-bottom: 2.5rem;
-            max-width: 550px;
-        }
+    .office-id{
+        display:flex;
+        align-items:center;
+        gap:14px;
+    }
 
-        /* Touch-Target Compliant CTA */
-        .btn-go {
-            min-height: 48px;
-            padding: 0.75rem 2.5rem;
-            background-color: var(--primary-brand);
-            color: #ffffff;
-            border-radius: 8px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1rem;
-            transition: var(--transition-smooth);
-            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.2);
-        }
+    .office-id img{
+        width:52px;
+        height:52px;
+        object-fit:contain;
+    }
 
-        .portal-card:hover .btn-go {
-            background-color: var(--primary-light);
-            gap: 15px; 
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-        }
+    .office-id h1{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:1.15rem;
+        font-weight:700;
+        color:var(--blue);
+        letter-spacing:0.2px;
+    }
 
-        /* Notification Layout Grid System */
-        .notice-section {
-            max-width: 700px;
-            margin: 2rem auto 0 auto;
-            padding: 0 2rem;
-            width: 100%;
-        }
+    .office-id p{
+        font-size:0.82rem;
+        color:var(--ink-soft);
+        text-transform:uppercase;
+        letter-spacing:0.6px;
+        font-family:'Inter',sans-serif;
+    }
 
-        .notice-box {
-            background-color: #fffdf5;
-            border-left: 4px solid #eab308;
-            padding: 1.5rem;
-            border-radius: 8px;
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            border-right: 1px solid #fef08a;
-            border-top: 1px solid #fef08a;
-            border-bottom: 1px solid #fef08a;
-        }
+    .home-link{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        font-size:0.85rem;
+        font-weight:600;
+        color:var(--vermillion-deep);
+        text-decoration:none;
+        padding:8px 16px;
+        border:1px solid var(--vermillion-deep);
+        border-radius:2px;
+        transition:background 0.25s, color 0.25s;
+        position:relative;
+        overflow:hidden;
+    }
 
-        .notice-box i {
-            font-size: 1.5rem;
-            color: #ca8a04;
-        }
+    .home-link:hover{
+        background:var(--vermillion-deep);
+        color:#fff;
+    }
 
-        .notice-box h3 {
-            font-size: 1.15rem;
-            color: #854d0e;
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
+    .home-link .ripple{
+        position:absolute;
+        border-radius:50%;
+        background:rgba(255,255,255,0.5);
+        transform:scale(0);
+        animation:ripple-effect 0.5s linear;
+        pointer-events:none;
+    }
 
-        .notice-box p {
-            color: #a16207;
-            font-size: 0.975rem;
-        }
+    @keyframes ripple-effect{ to{ transform:scale(6); opacity:0; } }
 
-        /* ----------------------------- */
-        /* HOME BUTTON STYLES (inserted)  */
-        /* ----------------------------- */
-        .home-btn-container {
-            text-align: center;
-            margin-bottom: 20px;
-            perspective: 1000px; /* Gives the click-flip room to look 3D */
-        }
+    .home-link.clicked-exit{
+        animation:exit-fade 0.4s ease forwards;
+    }
 
-        .home-btn {
-            position: relative;
-            overflow: hidden; /* Keeps the click ripple inside the button boundaries */
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #015491; /* Rotary Blue */
-            color: white;
-            text-decoration: none;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            
-            /* Smooth hover transitions */
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 3px 6px rgba(1, 84, 145, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
+    @keyframes exit-fade{
+        to{ opacity:0; transform:translateY(-6px); }
+    }
 
-        .home-btn .icon {
-            display: inline-block;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    /* ============ MAIN ============ */
+    .main-content{
+        position:relative;
+        z-index:2;
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        padding:3.5rem 1.5rem;
+    }
 
-        /* --- Hover States --- */
-        .home-btn:hover {
-            background-color: #D70060; /* Rotaract Pink */
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(215, 0, 96, 0.35);
-        }
+    .eyebrow{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Inter',sans-serif;
+        font-size:0.78rem;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--gold);
+        font-weight:600;
+        margin-bottom:1rem;
+    }
 
-        .home-btn:hover .icon {
-            transform: scale(1.15) rotate(-5deg);
-        }
+    .eyebrow::before, .eyebrow::after{
+        content:'';
+        width:28px;
+        height:1px;
+        background:var(--gold);
+    }
 
-        /* --- JavaScript Triggered Animation Classes --- */
-        
-        /* 1. The Expanding Ripple Circle */
-        .home-btn .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0);
-            animation: ripple-effect 0.45s linear;
-            pointer-events: none;
-        }
+    .hero-title{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:2.1rem;
+        font-weight:700;
+        color:var(--blue);
+        text-align:center;
+        max-width:620px;
+        margin-bottom:0.6rem;
+    }
 
-        /* 2. Button Exit Animation */
-        .home-btn.clicked-exit {
-            animation: exit-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+    .hero-sub{
+        text-align:center;
+        color:var(--ink-soft);
+        max-width:520px;
+        font-size:0.98rem;
+        margin-bottom:2.4rem;
+    }
 
-        /* --- Keyframe Definitions --- */
-        @keyframes ripple-effect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
+    /* Seal-styled service card, resembling an official stamped document */
+    .portal-card{
+        position:relative;
+        width:100%;
+        max-width:600px;
+        background:var(--paper-2);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        padding:2.6rem 2.4rem 2.2rem;
+        text-align:center;
+        text-decoration:none;
+        color:inherit;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        box-shadow:0 1px 2px rgba(36,31,24,0.06), 0 18px 34px -20px rgba(14,44,82,0.28);
+        transition:transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s;
+    }
 
-        @keyframes exit-bounce {
-            0% {
-                transform: scale(1);
-            }
-            20% {
-                transform: scale(0.92);
-                background-color: #D70060;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-15px) scale(0.8);
-                opacity: 0;
-                box-shadow: 0 0 0 rgba(0,0,0,0);
-            }
-        }
+    .portal-card::before{
+        content:'';
+        position:absolute;
+        inset:9px;
+        border:1px solid var(--line);
+        border-radius:2px;
+        pointer-events:none;
+    }
 
-        @media print {
-            .home-btn-container { display: none !important; }
-        }
+    .portal-card:hover{
+        transform:translateY(-4px);
+        box-shadow:0 1px 2px rgba(36,31,24,0.08), 0 30px 44px -22px rgba(14,44,82,0.34);
+    }
 
-        /* Mobile-First Responsive Adjustments */
-        @media (max-width: 768px) {
-            body {
-                font-size: 14px; 
-                padding: 1.5rem 0;
-            }
-            .main-content {
-                padding: 0 1rem;
-            }
-            .portal-card {
-                padding: 2.5rem 1.5rem;
-            }
-            .portal-card h2 {
-                font-size: 1.5rem;
-            }
-            .notice-section {
-                padding: 0 1rem;
-            }
-        }
-    </style>
+    .seal{
+        width:78px;
+        height:78px;
+        border-radius:50%;
+        border:2px solid var(--vermillion);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        margin-bottom:1.4rem;
+        position:relative;
+        color:var(--vermillion);
+        transform:rotate(-6deg);
+    }
+
+    .seal::before{
+        content:'';
+        position:absolute;
+        inset:5px;
+        border:1px dashed var(--vermillion);
+        border-radius:50%;
+    }
+
+    .seal i{ font-size:1.7rem; }
+
+    .portal-card:hover .seal{
+        transform:rotate(0deg) scale(1.04);
+        transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .portal-card h2{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:1.5rem;
+        color:var(--blue);
+        font-weight:700;
+        margin-bottom:0.9rem;
+    }
+
+    .portal-card p{
+        color:var(--ink-soft);
+        font-size:1rem;
+        max-width:460px;
+        margin-bottom:2rem;
+    }
+
+    .btn-go{
+        min-height:46px;
+        padding:0.7rem 2.1rem;
+        background:var(--blue);
+        color:#fff;
+        border-radius:2px;
+        font-weight:600;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        font-size:0.95rem;
+        letter-spacing:0.3px;
+        transition:background 0.25s, gap 0.25s;
+    }
+
+    .portal-card:hover .btn-go{
+        background:var(--vermillion-deep);
+        gap:14px;
+    }
+
+    /* ============ NOTICE ============ */
+    .notice-wrap{
+        width:100%;
+        max-width:600px;
+        margin-top:1.8rem;
+    }
+
+    .notice-box{
+        display:flex;
+        gap:14px;
+        align-items:flex-start;
+        padding:1.15rem 1.3rem;
+        border:1px solid var(--gold);
+        border-left:4px solid var(--gold);
+        background:rgba(179,137,47,0.06);
+        border-radius:2px;
+    }
+
+    .notice-box i{
+        font-size:1.2rem;
+        color:var(--gold);
+        margin-top:2px;
+    }
+
+    .notice-box h3{
+        font-family:'Noto Serif Devanagari',serif;
+        font-size:1.02rem;
+        color:#7a5c1a;
+        margin-bottom:4px;
+        font-weight:700;
+    }
+
+    .notice-box p{
+        color:#7a5c1a;
+        font-size:0.9rem;
+        opacity:0.9;
+    }
+
+    /* ============ FOOTER ============ */
+    footer{
+        position:relative;
+        z-index:2;
+        border-top:3px double var(--gold);
+        padding:1.6rem 2rem;
+        text-align:center;
+        font-size:0.85rem;
+        color:var(--ink-soft);
+    }
+
+    footer strong{ color:var(--blue); }
+
+    @media print{ .masthead, footer{ display:none !important; } }
+
+    @media (max-width:640px){
+        .hero-title{ font-size:1.6rem; }
+        .portal-card{ padding:2.2rem 1.5rem 1.8rem; }
+        .masthead-inner{ justify-content:center; text-align:center; }
+    }
+</style>
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- HOME BUTTON (inserted at top)              -->
-    <!-- ========================================== -->
-    <div class="home-btn-container">
-        <a href="https://nabinchalise.com.np/" class="home-btn" id="interactiveHomeBtn">
-            <span class="icon">🏠</span> HOME
-        </a>
-    </div>
+<div class="disclaimer-strip">
+    <i class="fa-solid fa-circle-info"></i> यो कुनै सरकारी निकायको आधिकारिक साइट होइन — नागरिकलाई मद्दत गर्न बनाइएको स्वतन्त्र/व्यक्तिगत सन्दर्भ सामग्री मात्र हो।
+</div>
 
-    <!-- Core Main Content Area -->
-    <main class="main-content">
-        <div class="grid-container">
-            
-            <!-- Focused Call-to-Action Card -->
-            <a href="pan.html" class="portal-card">
-                <div class="icon-box">
-                    <i class="fa-solid fa-address-card" aria-hidden="true"></i>
-                </div>
-                <h2>स्थायी लेखा नम्बर (PAN) दर्ता</h2>
-                <p>व्यावसायिक, व्यक्तिगत, प्रा.लि., र संयुक्त उपक्रम (J.V.) प्यान दर्ताका लागि आवश्यक पर्ने सम्पूर्ण कागजातहरूको विवरण र अनलाइन फारम मार्गदर्शन।</p>
-                <span class="btn-go">
-                    अगाडि बढ्नुहोस् 
-                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </span>
-            </a>
-
-        </div>
-    </main>
-
-    <!-- Contextual Notification Section -->
-    <section class="notice-section" aria-label="महत्वपूर्ण सूचना">
-        <div class="notice-box">
-            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+<header class="masthead">
+    <div class="masthead-inner">
+        <div class="office-id">
+            <i class="fa-solid fa-address-card" style="font-size:1.9rem;color:var(--blue);width:52px;height:52px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:50%;"></i>
             <div>
-                <h3>महत्वपूर्ण सूचना !</h3>
-                <p>नयाँ प्यान (PAN) दर्ताको लागि अनलाइन फारम भर्नु अघि आफूसँग सम्बन्धित सबै आवश्यक सक्कल कागजातहरू साथमा राख्नुहुन अनुरोध गरिन्छ। विस्तृत जानकारीको लागि 'प्यान दर्ता' मार्गदर्शनमा जानुहोस्।</p>
+                <h1>प्यान दर्ता सहायता गाइड</h1>
+                <p>Unofficial Reference &middot; Galkot, Baglung</p>
             </div>
         </div>
-    </section>
+        <a href="https://nabinchalise.com.np/" class="home-link" id="interactiveHomeBtn">
+            <i class="fa-solid fa-house"></i> लेखकको वेबसाइट
+        </a>
+    </div>
+</header>
 
-    <!-- ========================================== -->
-    <!-- HOME BUTTON JAVASCRIPT (interactive)       -->
-    <!-- ========================================== -->
-    <script>
-        document.getElementById('interactiveHomeBtn').addEventListener('click', function(e) {
-            // 1. Prevent instant page jump so the user actually sees the animation
-            e.preventDefault();
-            const targetUrl = this.getAttribute('href');
-            const button = this;
+<main class="main-content">
+    <span class="eyebrow">अनौपचारिक सन्दर्भ गाइड</span>
+    <h1 class="hero-title">गलकोट, बागलुङमा प्यान दर्ता</h1>
+    <p class="hero-sub">प्यान दर्ताका लागि सामान्यतया चाहिने कागजातहरूको बारेमा सजिलो जानकारीका लागि तयार पारिएको स्वतन्त्र गाइड। सही र अद्यावधिक जानकारीका लागि सम्बन्धित सरकारी कार्यालयमै सम्पर्क गर्नुहोस्।</p>
 
-            // 2. Create the ink ripple element right where the cursor clicked
-            const ripple = document.createElement('span');
-            ripple.classList.add('ripple');
-            
-            // Calculate click coordinates relative to button dimensions
-            const rect = button.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
-            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
-            
-            button.appendChild(ripple);
+    <a href="pan.html" class="portal-card">
+        <div class="seal"><i class="fa-solid fa-address-card"></i></div>
+        <h2>स्थायी लेखा नम्बर (PAN) दर्ता</h2>
+        <p>व्यावसायिक, व्यक्तिगत, प्रा.लि., र संयुक्त उपक्रम (J.V.) प्यान दर्ताका लागि आवश्यक पर्ने सम्पूर्ण कागजातहरूको विवरण र अनलाइन फारम मार्गदर्शन।</p>
+        <span class="btn-go">अगाडि बढ्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
 
-            // 3. Trigger the button's shrinking/exit animation sequence
-            button.classList.add('clicked-exit');
+    <div class="notice-wrap">
+        <div class="notice-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                <h3>महत्वपूर्ण सूचना !</h3>
+                <p>यहाँ दिइएको सूची सामान्य जानकारीका लागि मात्र हो र यो कुनै सरकारी कार्यालयको आधिकारिक अभिलेख होइन। कागजात पेश गर्नुअघि नजिकको सम्बन्धित सरकारी कार्यालयमा अद्यावधिक र सही आवश्यकता अवश्य बुझ्नुहोस्।</p>
+            </div>
+        </div>
+    </div>
+</main>
 
-            // 4. Redirect to home page exactly when the animation reaches its exit point
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 450); // Matches the visual completion curve of our CSS keyframes
-        });
-    </script>
+<footer>
+    <strong>प्यान दर्ता सहायता गाइड</strong> &nbsp;·&nbsp; एउटा अनौपचारिक/स्वतन्त्र सन्दर्भ साइट &nbsp;·&nbsp; <a href="https://nabinchalise.com.np/" style="text-decoration:underline;">nabinchalise.com.np</a>
+</footer>
+
+<script>
+document.getElementById('interactiveHomeBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    const targetUrl = this.getAttribute('href');
+    const button = this;
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+    button.appendChild(ripple);
+    button.classList.add('clicked-exit');
+    setTimeout(()=>{ window.location.href = targetUrl; }, 400);
+});
+</script>
 
 </body>
 </html>

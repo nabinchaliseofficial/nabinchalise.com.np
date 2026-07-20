@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ne">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rotaract Club · Galkot Baglung · Membership</title>
+  <title>Rotaract Club · Galkot Baglung · Membership / सदस्यता फारम</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231a3c5e' stroke='%23d4af37' stroke-width='6'/%3E%3Ctext x='50' y='66' font-size='55' text-anchor='middle' fill='%23d4af37' font-family='Georgia,serif'%3ER%3C/text%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@remotemerge/nepali-date-converter@1/dist/ndc-browser.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      font-family: 'Poppins', 'Mukta', 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    .np {
+      font-family: 'Mukta', 'Poppins', sans-serif;
     }
 
     body {
@@ -133,7 +141,7 @@
       color: #2c3e4e;
       letter-spacing: 0.3px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 6px;
     }
 
@@ -141,6 +149,15 @@
       color: #a67c3b;
       width: 18px;
       font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .form-group label .np-sub {
+      display: block;
+      font-weight: 400;
+      font-size: 0.72rem;
+      color: #8a7a63;
+      margin-top: 1px;
     }
 
     .form-group input, 
@@ -177,9 +194,28 @@
       padding-left: 6px;
     }
 
+    .bs-hint {
+      font-size: 0.78rem;
+      color: #a67c3b;
+      margin-top: 2px;
+      padding-left: 6px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .bs-hint.show { display: block; }
+
+    .required-note {
+      text-align: right;
+      font-size: 0.78rem;
+      color: #a12b2b;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
     .btn-submit {
       background: #1a3c5e;
-      border: none;
+      border: 1px solid #d4af37;
       padding: 14px 32px;
       border-radius: 60px;
       color: white;
@@ -194,7 +230,6 @@
       transition: 0.2s;
       width: 100%;
       box-shadow: 0 6px 14px rgba(26, 60, 94, 0.25);
-      border: 1px solid #d4af37;
     }
 
     .btn-submit:hover:not(:disabled) {
@@ -389,71 +424,84 @@
     </div>
     <h1>
       ROTARACT CLUB OF GALKOT BAGLUNG
-      <small>Membership Registration</small>
+      <small>Membership Registration &nbsp;·&nbsp; <span class="np">सदस्यता दर्ता फारम</span></small>
     </h1>
   </div>
 
   <!-- FORM BODY -->
   <div class="form-body">
+    <div class="required-note">* <span class="np">आवश्यक फिल्ड</span> / required field</div>
     <form id="membershipForm">
       <div class="form-row">
         <div class="form-group">
-          <label><i class="fas fa-user"></i> Full Name *</label>
+          <label for="name"><i class="fas fa-user"></i> <span>Full Name *<span class="np-sub np">पूरा नाम *</span></span></label>
           <input type="text" id="name" placeholder="e.g. Ram Kumar Sharma" required>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-map-pin"></i> Address *</label>
+          <label for="address"><i class="fas fa-map-pin"></i> <span>Address *<span class="np-sub np">ठेगाना *</span></span></label>
           <input type="text" id="address" placeholder="Galkot, Baglung" required>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label><i class="fas fa-phone-alt"></i> Phone Number *</label>
-          <input type="tel" id="phone" placeholder="98XXXXXXXX" required>
+          <label for="phone"><i class="fas fa-phone-alt"></i> <span>Phone Number *<span class="np-sub np">फोन नम्बर *</span></span></label>
+          <input type="tel" id="phone" placeholder="98XXXXXXXX" inputmode="numeric" maxlength="10" required>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-tint"></i> Blood Group</label>
-          <input type="text" id="bloodGroup" placeholder="A+ / B- / O+ ...">
+          <label for="bloodGroup"><i class="fas fa-tint"></i> <span>Blood Group<span class="np-sub np">रक्त समूह</span></span></label>
+          <select id="bloodGroup">
+            <option value="">Select / छान्नुहोस्</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="Unknown">Don't know / थाहा छैन</option>
+          </select>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label><i class="fas fa-venus-mars"></i> Gender</label>
+          <label for="gender"><i class="fas fa-venus-mars"></i> <span>Gender<span class="np-sub np">लिङ्ग</span></span></label>
           <select id="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-            <option value="Prefer not to say">Prefer not to say</option>
+            <option value="Male">Male / पुरुष</option>
+            <option value="Female">Female / महिला</option>
+            <option value="Other">Other / अन्य</option>
+            <option value="Prefer not to say">Prefer not to say / भन्न नचाहने</option>
           </select>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-envelope"></i> Email *</label>
+          <label for="email"><i class="fas fa-envelope"></i> <span>Email *<span class="np-sub np">इमेल *</span></span></label>
           <input type="email" id="email" placeholder="you@example.com" required>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label><i class="fas fa-calendar-alt"></i> Date of Birth (AD) *</label>
+          <label for="dob"><i class="fas fa-calendar-alt"></i> <span>Date of Birth (AD) *<span class="np-sub np">जन्म मिति (ई.) *</span></span></label>
           <input type="date" id="dob" required>
+          <span class="bs-hint" id="bsHint"></span>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-badge"></i> Designation (पद)</label>
+          <label for="designation"><i class="fas fa-id-badge"></i> <span>Designation<span class="np-sub np">पद</span></span></label>
           <input type="text" id="designation" placeholder="President / Secretary / ...">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label><i class="fas fa-briefcase"></i> Profession (पेसामा आबद्ध)</label>
+          <label for="profession"><i class="fas fa-briefcase"></i> <span>Profession<span class="np-sub np">पेसा</span></span></label>
           <input type="text" id="profession" placeholder="Doctor, Engineer, Student ...">
         </div>
         <div class="form-group">
-          <label><i class="fas fa-image"></i> PP size photo / profile image</label>
+          <label for="profileImage"><i class="fas fa-image"></i> <span>PP size photo<span class="np-sub np">पासपोर्ट साइज फोटो</span></span></label>
           <input type="file" id="profileImage" accept="image/*">
-          <span class="inline-hint">Upload to Supabase Storage (max 2MB)</span>
+          <span class="inline-hint">Max 2MB · JPEG, PNG, GIF, WEBP, SVG</span>
           <div class="image-preview" id="imagePreview">
             <img id="previewImg" src="#" alt="Preview">
             <span class="file-name" id="fileName">file.jpg</span>
@@ -464,14 +512,14 @@
 
       <div class="form-row">
         <div class="form-group full-width">
-          <label><i class="fas fa-star"></i> Mentor (Who encouraged you to join)</label>
+          <label for="mentor"><i class="fas fa-star"></i> <span>Mentor (Who encouraged you to join)<span class="np-sub np">प्रेरणा दिने व्यक्ति (मार्गदर्शक)</span></span></label>
           <input type="text" id="mentor" placeholder="Name of the person who inspired you">
         </div>
       </div>
 
       <button type="submit" class="btn-submit" id="submitBtn">
         <span class="loading-spinner"></span>
-        <span class="btn-text"><i class="fas fa-pen-fancy"></i> Register & Save to Database</span>
+        <span class="btn-text"><i class="fas fa-pen-fancy"></i> Register & Save &nbsp;/&nbsp; <span class="np">दर्ता गर्नुहोस्</span></span>
       </button>
     </form>
 
@@ -482,8 +530,8 @@
     </div>
 
     <div class="footnote">
-      <i class="fas fa-database" style="margin-right: 6px;"></i> Data stored securely in Database
-      <i class="fas fa-cloud" style="margin-left: 12px;"></i> Images stored in Supabase Storage
+      <i class="fas fa-database" style="margin-right: 6px;"></i> Data stored securely / <span class="np">डाटा सुरक्षित राखिन्छ</span>
+      <i class="fas fa-cloud" style="margin-left: 12px;"></i> Images in Supabase Storage
     </div>
   </div>
 
@@ -514,7 +562,7 @@
     // ✅ SUPABASE CREDENTIALS
     // ============================================================
     const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtieWZ2cWtmY3hxZ2pqdGZ2dnhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NDM1MzMsImV4cCI6MjA5NjIxOTUzM30.TQQZJJi27pNcXMlD0m8MsrAbqjLHGgVnw-L3bNDR2bU";
+    const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
     
     // Storage bucket name
     const STORAGE_BUCKET = "members-profile";
@@ -531,8 +579,35 @@
     const previewImg = document.getElementById('previewImg');
     const fileName = document.getElementById('fileName');
     const removeImageBtn = document.getElementById('removeImageBtn');
+    const dobInput = document.getElementById('dob');
+    const bsHint = document.getElementById('bsHint');
+    const phoneInput = document.getElementById('phone');
 
     let selectedFile = null;
+
+    // ===== DATE OF BIRTH: cap at today, show live BS (Bikram Sambat) date =====
+    dobInput.max = new Date().toISOString().split('T')[0];
+
+    dobInput.addEventListener('change', function() {
+      if (!dobInput.value) {
+        bsHint.classList.remove('show');
+        return;
+      }
+      try {
+        if (typeof DateConverter === 'undefined') throw new Error('converter not loaded');
+        const bs = new DateConverter(dobInput.value).toBs();
+        bsHint.textContent = `BS: ${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`;
+        bsHint.classList.add('show');
+      } catch (err) {
+        // Conversion library unavailable or year out of supported range — fail silently
+        bsHint.classList.remove('show');
+      }
+    });
+
+    // ===== PHONE: digits only while typing =====
+    phoneInput.addEventListener('input', function() {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
 
     // ===== IMAGE PREVIEW =====
     fileInput.addEventListener('change', function(e) {
@@ -544,7 +619,7 @@
       
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        setStatus('Image size exceeds 2MB limit. Please choose a smaller image.', true);
+        setStatus('Image size exceeds 2MB limit / फोटो साइज २MB भन्दा ठूलो छ।', true);
         fileInput.value = '';
         hidePreview();
         return;
@@ -553,7 +628,7 @@
       // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
       if (!validTypes.includes(file.type)) {
-        setStatus('Please upload a valid image (JPEG, PNG, GIF, WEBP, SVG).', true);
+        setStatus('Please upload a valid image (JPEG, PNG, GIF, WEBP, SVG) / मान्य फोटो अपलोड गर्नुहोस्।', true);
         fileInput.value = '';
         hidePreview();
         return;
@@ -707,21 +782,21 @@
 
         // Validation
         if (!name || !address || !phone || !email || !dob) {
-          setStatus('Please fill all required fields (Name, Address, Phone, Email, DOB).', true);
+          setStatus('Please fill all required fields (Name, Address, Phone, Email, DOB) / कृपया सबै आवश्यक फिल्ड भर्नुहोस्।', true);
           setLoading(false);
           return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-          setStatus('Please enter a valid email address.', true);
+          setStatus('Please enter a valid email address / मान्य इमेल ठेगाना राख्नुहोस्।', true);
           setLoading(false);
           return;
         }
 
-        const phoneRegex = /^[0-9]{10}$/;
+        const phoneRegex = /^9[0-9]{9}$/;
         if (!phoneRegex.test(phone)) {
-          setStatus('Please enter a valid 10-digit phone number.', true);
+          setStatus('Please enter a valid 10-digit Nepali mobile number starting with 9 / मान्य १०-अंकको फोन नम्बर राख्नुहोस्।', true);
           setLoading(false);
           return;
         }
@@ -750,7 +825,7 @@
 
         if (insertError) {
           console.error('❌ Insert error:', insertError);
-          setStatus('❌ Error saving to database: ' + insertError.message, true);
+          setStatus('❌ Error saving to database / डाटाबेसमा सेभ गर्न सकिएन: ' + insertError.message, true);
           setLoading(false);
           return;
         }
@@ -786,15 +861,16 @@
           }
         }
 
-        setStatus('🎉 Registration successful! Welcome to Rotaract Club of Galkot Baglung! Your application has been submitted.', false);
+        setStatus('🎉 Registration successful! Welcome to Rotaract Club of Galkot Baglung! / सदस्यता दर्ता सफल भयो, स्वागत छ!', false);
         form.reset();
         fileInput.value = '';
         hidePreview();
+        bsHint.classList.remove('show');
         setLoading(false);
 
       } catch (err) {
         console.error('❌ Unexpected error:', err);
-        setStatus('⚠️ Unexpected error: ' + err.message, true);
+        setStatus('⚠️ Unexpected error / अप्रत्याशित त्रुटि: ' + err.message, true);
         setLoading(false);
       }
     });
