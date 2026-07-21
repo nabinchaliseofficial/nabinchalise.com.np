@@ -852,6 +852,215 @@
             .birthday-chip { font-size: 0.75rem; padding: 0.1rem 0.6rem; }
         }
 
+        /* ===== RECOGNITION POPUP ===== */
+        .recognition-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            padding: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .recognition-popup-overlay.active {
+            display: flex;
+        }
+
+        .recognition-popup {
+            background: linear-gradient(160deg, #ffffff, #f8fafc);
+            border-radius: 28px;
+            padding: 2rem 1.8rem;
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid #1e293b;
+            position: relative;
+        }
+
+        .recognition-popup .rp-header {
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .recognition-popup .rp-header .rp-icon {
+            font-size: 2.6rem;
+            color: #b45309;
+        }
+
+        .recognition-popup .rp-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 0.3rem;
+        }
+
+        .recognition-popup .rp-header p {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+
+        .rp-award-block {
+            background: #fafcff;
+            border: 1px solid #eef2f6;
+            border-radius: 20px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .rp-award-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #78350f;
+            margin-bottom: 0.7rem;
+        }
+
+        .rp-award-title i { color: #b45309; }
+
+        .rp-award-title .rp-sub {
+            margin-left: auto;
+            background: #f1f5f9;
+            padding: 0.15rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #334155;
+            text-transform: uppercase;
+        }
+
+        .rp-winner-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: white;
+            padding: 0.6rem 0.9rem;
+            border-radius: 50px;
+            border: 1px solid #eef2f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .rp-winner-item:last-child { margin-bottom: 0; }
+
+        .rp-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 40px;
+            background: #d9e2ef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .rp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .rp-winner-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rp-winner-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0f172a;
+            display: block;
+        }
+
+        .rp-winner-designation {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        .rp-winner-score {
+            background: #b45309;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            flex-shrink: 0;
+        }
+
+        .rp-no-winner {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 0.4rem 0.2rem;
+        }
+
+        .rp-loading, .rp-error {
+            text-align: center;
+            color: #64748b;
+            padding: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .rp-error { color: #b91c1c; }
+
+        .recognition-popup .rp-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .recognition-popup .rp-actions .close-btn {
+            margin-top: 0;
+        }
+
+        /* Floating trigger button to reopen recognition popup */
+        .recognition-btn-container {
+            position: fixed;
+            bottom: 24px;
+            right: 150px;
+            z-index: 900;
+        }
+        .recognition-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #b45309;
+            color: #fff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+            transition: 0.2s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        .recognition-btn:hover, .recognition-btn:focus {
+            background: #92400e;
+            transform: translateY(-3px);
+            outline: none;
+        }
+        @media (max-width: 480px) {
+            .recognition-btn { padding: 0.55rem 1rem; font-size: 0.8rem; }
+            .recognition-btn-container { bottom: 76px; right: 16px; }
+            .recognition-popup { padding: 1.4rem 1.1rem; }
+            .recognition-popup .rp-header h2 { font-size: 1.2rem; }
+        }
+
         /* ===== BACK TO DASHBOARD BUTTON ===== */
         .home-btn-container {
             position: fixed;
@@ -982,6 +1191,31 @@
 
             <button class="close-btn" onclick="closePopup()"><i class="fas fa-heart"></i> Thank You!</button>
         </div>
+    </div>
+
+    <!-- ===== RECOGNITION POPUP ===== -->
+    <div id="recognitionPopup" class="recognition-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="rpHeaderTitle" aria-hidden="true">
+        <div class="recognition-popup" id="recognitionPopupContent">
+            <div class="rp-header">
+                <div class="rp-icon"><i class="fas fa-trophy"></i></div>
+                <h2 id="rpHeaderTitle">Recognition · Rotary Year 2026-27</h2>
+                <p>Outstanding Club Leader &amp; Rising Star</p>
+            </div>
+
+            <div id="rpBody">
+                <div class="rp-loading"><i class="fas fa-spinner fa-spin"></i> Loading recognition data...</div>
+            </div>
+
+            <div class="rp-actions">
+                <a class="close-btn" href="recognition.html"><i class="fas fa-arrow-up-right-from-square"></i> Full Page</a>
+                <button class="close-btn" onclick="closeRecognitionPopup()"><i class="fas fa-check"></i> Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RECOGNITION TRIGGER BUTTON ===== -->
+    <div class="recognition-btn-container">
+        <button class="recognition-btn" id="recognitionBtn"><i class="fas fa-trophy"></i> Recognition</button>
     </div>
 
     <script>
@@ -1137,6 +1371,225 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && popup.classList.contains('active')) closePopup();
             });
+
+            // ===== RECOGNITION POPUP (Outstanding Club Leader / Rising Star) =====
+            // Same scoring logic as recognition.html: fixed board roster for the
+            // Leader award (President excluded), everyone else is the Rising Star
+            // pool. Score = attendance% (from published meeting_minutes) + bonus
+            // (+1 per completed action item).
+            const recognitionPopup = document.getElementById('recognitionPopup');
+            const rpBody = document.getElementById('rpBody');
+            const recognitionBtn = document.getElementById('recognitionBtn');
+            let recognitionLastFocusedEl = null;
+            let recognitionDataCache = null;
+            let recognitionShownAutomatically = false;
+
+            const BOARD_ROSTER = [
+                { name: 'Nabin Chalise',      designation: 'President',              isPresident: true },
+                { name: 'Madan Sharma',       designation: 'Secretary' },
+                { name: 'Manish Kandel',      designation: 'Treasurer' },
+                { name: 'Nabin Subedi',       designation: 'IPP / Mentor' },
+                { name: 'Tika Ram Gautam',    designation: 'President Elect' },
+                { name: 'Vikash Subedi',      designation: 'Vice President' },
+                { name: 'Sagar Chalise',      designation: 'Joint Secretary' },
+                { name: 'Bipin Chalise',      designation: 'Membership Chair' },
+                { name: 'Manish Gurung',      designation: 'Public Image Chair' },
+                { name: 'Smriti Budhathoki',  designation: 'Service Projects Chair' },
+                { name: 'Manoj Karki',        designation: 'Health Program Chair' },
+                { name: 'Manjeela Shrestha',  designation: 'Rotary Foundation Chair' },
+                { name: 'Lokendra Gaire',     designation: 'Sergeant At Arms' },
+                { name: 'Raju Sahani',        designation: 'IT Officer' },
+                { name: 'Melina Kharel',      designation: 'Young Leaders Contact' },
+                { name: 'Laxmi Pun',          designation: 'PP/Learning Facilitator' },
+                { name: 'Anil Shrestha',      designation: 'PP/ISD/Advisor' },
+                { name: 'Kamal Kharel',       designation: 'PP/Club Advisor' }
+            ];
+
+            function rpNormalizeKey(str) {
+                return (str || '').toString().trim().toLowerCase()
+                    .replace(/^rtr\.?\s+/, '')
+                    .replace(/^dr\.?\s+/, '')
+                    .replace(/\s+/g, ' ');
+            }
+
+            const rpBoardByName = {};
+            BOARD_ROSTER.forEach(b => { rpBoardByName[rpNormalizeKey(b.name)] = b; });
+
+            function rpClassifyMember(m) {
+                const boardEntry = rpBoardByName[rpNormalizeKey(m.name)];
+                if (boardEntry) {
+                    return { designation: boardEntry.designation, isPresident: !!boardEntry.isPresident, isBoard: true };
+                }
+                return {
+                    designation: (m.designation || m.position || 'Member').toString().trim() || 'Member',
+                    isPresident: false,
+                    isBoard: false
+                };
+            }
+
+            function rpAvatarHtml(name, photoUrl) {
+                if (photoUrl) return `<img src="${photoUrl}" alt="${name}">`;
+                const initials = (name || 'M').split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                return initials || 'M';
+            }
+
+            function rpWinnerItemHtml(member) {
+                const name = member.fullName || 'Member';
+                return `
+                    <div class="rp-winner-item">
+                        <div class="rp-avatar">${rpAvatarHtml(name, member.photoUrl)}</div>
+                        <div class="rp-winner-info">
+                            <span class="rp-winner-name">${name}</span>
+                            <span class="rp-winner-designation">${member.designation || 'Member'}</span>
+                        </div>
+                        <div class="rp-winner-score"><i class="fas fa-star"></i> ${member.finalScore.toFixed(1)}</div>
+                    </div>
+                `;
+            }
+
+            function rpWinnerListHtml(winners) {
+                if (!winners || winners.length === 0) {
+                    return `<div class="rp-no-winner"><i class="fas fa-circle-exclamation"></i> No eligible winner</div>`;
+                }
+                return winners.map(rpWinnerItemHtml).join('');
+            }
+
+            async function fetchRecognitionWinners() {
+                const { data: minutes, error: mError } = await supabase
+                    .from('meeting_minutes')
+                    .select('*');
+                if (mError) throw new Error('Minutes fetch failed: ' + mError.message);
+
+                if (!minutes || minutes.length === 0) {
+                    return { noData: 'No meetings found in meeting_minutes.' };
+                }
+
+                const { data: members, error: memError } = await supabase
+                    .from('members')
+                    .select('id, name, designation, position, status, mentor, photo_url, photo, profile_image');
+                if (memError) throw new Error('Members fetch failed: ' + memError.message);
+
+                const publishedMinutes = (minutes || []).filter(m => (m.status || '').toLowerCase() === 'published');
+                if (publishedMinutes.length === 0) {
+                    return { noData: 'No Published meetings found (only Draft minutes exist so far).' };
+                }
+
+                const totalMeetings = publishedMinutes.length;
+
+                const presentSets = publishedMinutes.map(meeting => {
+                    const list = Array.isArray((meeting.data || {}).members) ? meeting.data.members : [];
+                    return new Set(list.map(p => rpNormalizeKey(p && (p.name || p.full_name || p))));
+                });
+
+                const bonusMap = {};
+                publishedMinutes.forEach(meeting => {
+                    const items = Array.isArray((meeting.data || {}).actionItems) ? meeting.data.actionItems : [];
+                    items.forEach(item => {
+                        const isCompleted = (item.status || '').toString().toLowerCase() === 'completed' || item.completed === true;
+                        if (!isCompleted) return;
+                        const personRaw = item.person || item.responsible_person || item.assignee || item.assigned_to || item.responsible;
+                        const personName = typeof personRaw === 'string' ? personRaw : (personRaw && (personRaw.name || personRaw.full_name));
+                        if (!personName) return;
+                        const key = rpNormalizeKey(personName);
+                        bonusMap[key] = (bonusMap[key] || 0) + 1;
+                    });
+                });
+
+                const memberScores = (members || []).map(m => {
+                    const key = rpNormalizeKey(m.name);
+                    const attended = presentSets.filter(s => s.has(key)).length;
+                    const attendancePct = Math.round((attended / totalMeetings) * 1000) / 10;
+                    const bonus = bonusMap[key] || 0;
+                    const classification = rpClassifyMember(m);
+                    const photoUrl = m.photo_url || m.photo || m.profile_image || null;
+                    const finalScore = attendancePct + bonus;
+                    return {
+                        id: m.id,
+                        fullName: m.name,
+                        designation: classification.designation,
+                        photoUrl,
+                        attendancePct,
+                        bonus,
+                        finalScore,
+                        isBoard: classification.isBoard,
+                        isPresident: classification.isPresident
+                    };
+                });
+
+                const leaders = memberScores
+                    .filter(m => m.isBoard === true && !m.isPresident)
+                    .sort((a, b) => b.finalScore - a.finalScore);
+                const topLeaderScore = leaders.length > 0 ? leaders[0].finalScore : -Infinity;
+                const leaderWinners = leaders.filter(m => m.finalScore === topLeaderScore);
+
+                const rising = memberScores
+                    .filter(m => m.isBoard === false)
+                    .sort((a, b) => b.finalScore - a.finalScore);
+                const topRisingScore = rising.length > 0 ? rising[0].finalScore : -Infinity;
+                const risingWinners = rising.filter(m => m.finalScore === topRisingScore);
+
+                return { leaderWinners, risingWinners };
+            }
+
+            async function renderRecognitionPopup() {
+                rpBody.innerHTML = `<div class="rp-loading"><i class="fas fa-spinner fa-spin"></i> Loading recognition data...</div>`;
+                try {
+                    if (!recognitionDataCache) {
+                        recognitionDataCache = await fetchRecognitionWinners();
+                    }
+                    const result = recognitionDataCache;
+                    if (result.noData) {
+                        rpBody.innerHTML = `<div class="rp-error"><i class="fas fa-info-circle"></i> ${result.noData}</div>`;
+                        return;
+                    }
+                    rpBody.innerHTML = `
+                        <div class="rp-award-block">
+                            <div class="rp-award-title"><i class="fas fa-crown"></i> Outstanding Club Leader <span class="rp-sub">Board</span></div>
+                            ${rpWinnerListHtml(result.leaderWinners)}
+                        </div>
+                        <div class="rp-award-block">
+                            <div class="rp-award-title"><i class="fas fa-star"></i> Rising Star <span class="rp-sub">Member</span></div>
+                            ${rpWinnerListHtml(result.risingWinners)}
+                        </div>
+                    `;
+                } catch (err) {
+                    console.error('Recognition popup error:', err);
+                    rpBody.innerHTML = `<div class="rp-error"><i class="fas fa-triangle-exclamation"></i> Failed to load: ${err.message}</div>`;
+                }
+            }
+
+            window.showRecognitionPopup = function() {
+                recognitionLastFocusedEl = document.activeElement;
+                recognitionPopup.classList.add('active');
+                recognitionPopup.setAttribute('aria-hidden', 'false');
+                renderRecognitionPopup();
+            };
+
+            window.closeRecognitionPopup = function() {
+                recognitionPopup.classList.remove('active');
+                recognitionPopup.setAttribute('aria-hidden', 'true');
+                if (recognitionLastFocusedEl) recognitionLastFocusedEl.focus();
+            };
+
+            recognitionPopup.addEventListener('click', function(e) {
+                if (e.target === this) closeRecognitionPopup();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && recognitionPopup.classList.contains('active')) closeRecognitionPopup();
+            });
+
+            recognitionBtn.addEventListener('click', showRecognitionPopup);
+
+            // Auto-show the recognition popup once, shortly after the member
+            // list has finished its first load (so it doesn't collide with the
+            // birthday popup, which takes priority if both fire on load).
+            setTimeout(() => {
+                if (!recognitionShownAutomatically && !popup.classList.contains('active')) {
+                    recognitionShownAutomatically = true;
+                    showRecognitionPopup();
+                }
+            }, 2500);
 
             // ===== PDF DOWNLOAD for the popup card =====
             document.getElementById('downloadCardBtn').addEventListener('click', function(e) {
