@@ -778,8 +778,41 @@
             width: 35%;
         }
         .agenda-width-desc {
-            width: 65%;
+            width: calc(65% - 46px);
             resize: vertical;
+        }
+        .btn-ai-resolution {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--primary) 0%, #b50051 100%);
+            color: var(--white);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: flex-start;
+        }
+        .btn-ai-resolution:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-ai-resolution:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+        .btn-ai-resolution .spinner-small {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.7s linear infinite;
         }
 
         /* Checklist */
@@ -1334,6 +1367,10 @@
             .agenda-width-desc {
                 width: 100%;
             }
+            .btn-ai-resolution {
+                width: 100%;
+                height: 40px;
+            }
             .checklist-item label {
                 flex-direction: column;
                 align-items: flex-start;
@@ -1557,6 +1594,7 @@
                 <div class="dynamic-row agenda-group">
                     <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title" />
                     <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution / Action points..." rows="1"></textarea>
+                    <button type="button" class="btn-ai-resolution" title="Generate resolution with AI" onclick="generateResolutionAI(this)">✨</button>
                 </div>
             </div>
         </div>
@@ -2148,8 +2186,57 @@
             row.innerHTML = `
                 <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title">
                 <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution / Action points..." rows="1"></textarea>
+                <button type="button" class="btn-ai-resolution" title="Generate resolution with AI" onclick="generateResolutionAI(this)">✨</button>
             `;
             container.appendChild(row);
+        }
+
+        // ============================================================
+        //  AI RESOLUTION GENERATOR (click-to-generate)
+        //  Calls a Postgres function (generate_resolution) via RPC.
+        //  The OpenRouter key lives in Supabase Vault, server-side only.
+        // ============================================================
+        async function generateResolutionAI(button) {
+            const row = button.closest('.agenda-group');
+            if (!row) return;
+            const titleEl = row.querySelector('.agenda-title');
+            const descEl = row.querySelector('.agenda-desc');
+            const agendaTitle = (titleEl?.value || '').trim();
+
+            if (!agendaTitle) {
+                showToast('⚠️ Agenda needed', 'Type the Agenda item first, then click ✨ to generate its resolution.', 'error');
+                return;
+            }
+
+            if (!supabaseClient) {
+                showToast('❌ Error', 'Supabase not configured. Please refresh the page.', 'error');
+                return;
+            }
+
+            const originalHTML = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-small"></span>';
+
+            try {
+                const agendaNotes = (descEl?.value || '').trim();
+
+                const { data, error } = await supabaseClient.rpc('generate_resolution', {
+                    agenda_title: agendaTitle,
+                    agenda_notes: agendaNotes
+                });
+
+                if (error) throw new Error(error.message || 'AI service request failed.');
+                if (!data) throw new Error('Empty response from AI service.');
+
+                if (descEl) descEl.value = data;
+                showToast('✅ Resolution generated', 'Review the wording before saving.', 'success');
+            } catch (err) {
+                console.error('AI resolution error:', err);
+                showToast('❌ AI generation failed', err.message || 'Please try again.', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalHTML;
+            }
         }
 
         function addActionItem() {
@@ -2444,6 +2531,7 @@
                     row.innerHTML = `
                         <input type="text" class="agenda-title agenda-width-title" value="${a.title || ''}">
                         <textarea class="agenda-desc agenda-width-desc" rows="1">${a.description || ''}</textarea>
+                        <button type="button" class="btn-ai-resolution" title="Generate resolution with AI" onclick="generateResolutionAI(this)">✨</button>
                     `;
                     agendaContainer.appendChild(row);
                 });
@@ -2453,6 +2541,7 @@
                 row.innerHTML = `
                     <input type="text" class="agenda-title agenda-width-title" placeholder="Agenda Title">
                     <textarea class="agenda-desc agenda-width-desc" placeholder="Resolution..." rows="1"></textarea>
+                    <button type="button" class="btn-ai-resolution" title="Generate resolution with AI" onclick="generateResolutionAI(this)">✨</button>
                 `;
                 agendaContainer.appendChild(row);
             }
