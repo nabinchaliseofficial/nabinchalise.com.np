@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Banner Settings with Nepali Date/Time</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Mukta', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaf0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 850px;
+            transition: all 0.3s ease;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #d32f2f;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 3px solid #d32f2f;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], 
+        input[type="email"], 
+        input[type="password"], 
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d32f2f;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #555;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .msg {
+            text-align: center;
+            margin-top: 12px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .success { 
+            color: #155724; 
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .error { 
+            color: #721c24; 
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            color: #0c5460;
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+        }
+
+        .saved-data-section {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #e0e0e0;
+            padding-bottom: 25px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .edit-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn:hover {
+            background: #1b5e20;
+            transform: scale(1.05);
+        }
+
+        .preview-img {
+            max-height: 80px;
+            max-width: 200px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            padding: 3px;
+            background: white;
+        }
+
+        .date-time-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .nepali-date-display {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .nepali-date-display strong {
+            color: #d32f2f;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-picker select {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .date-time-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .row {
+                flex-direction: column;
+            }
+            
+            .time-picker {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* ===== LOGIN POPUP MODAL ===== */
+        .locked-backdrop {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaf0 100%);
+        }
+
+        .locked-backdrop .locked-hint {
+            text-align: center;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .login-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 20, 25, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            animation: fadeInOverlay 0.25s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-modal-box {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            width: 100%;
+            max-width: 400px;
+            animation: popIn 0.25s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(-15px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Locked state background, visible behind the login popup -->
+    <div class="locked-backdrop" id="lockedBackdrop">
+        <p class="locked-hint">🔒 ब्यानर एडमिन प्यानल पहुँच गर्न लगइन गर्नुहोस्...</p>
+    </div>
+
+    <!-- Login Popup Modal -->
+    <div class="login-modal-overlay" id="loginSection">
+        <div class="login-modal-box">
+            <h2>🔐 Admin Login</h2>
+            <div class="form-group">
+                <label>📧 इमेल (Email)</label>
+                <input type="email" id="adminEmail" placeholder="admin@example.com">
+            </div>
+            <div class="form-group">
+                <label>🔑 पासवर्ड (Password)</label>
+                <input type="password" id="adminPassword" placeholder="********" onkeydown="if(event.key==='Enter') loginAdmin()">
+            </div>
+            <button class="btn btn-primary" onclick="loginAdmin()" id="loginBtn">लगइन गर्नुहोस् (Login)</button>
+            <p id="loginMsg" class="msg"></p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="hidden">
+            
+            <div class="saved-data-section">
+                <h3>📋 सेभ भएका ब्यानरहरूको सूची</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>बैठकको नाम</th>
+                                <th>आयोजक</th>
+                                <th>मिति</th>
+                                <th>समय</th>
+                                <th>कार्य</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <tr><td colspan="5" style="color: #999;">लोड हुँदै...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2>✏️ Banner <strong>Update Form</strong></h2>
+            <input type="hidden" id="recordId" value="1">
+            <input type="hidden" id="bgUrl">
+            <input type="hidden" id="logoUrl">
+
+            <div class="form-group">
+                <label>🏛️ बैठकको नाम (Meeting Name)</label>
+                <input type="text" id="meetingName" placeholder="e.g., कर्मचारी मासिक बैठक">
+            </div>
+            <div class="form-group">
+                <label>🏢 आयोजक (Organized By)</label>
+                <input type="text" id="organizedBy" placeholder="e.g., गलकोट नगरपालिका">
+            </div>
+
+            <!-- Nepali Date and Time Selector -->
+            <div class="form-group">
+                <label>📅 नेपाली मिति (Nepali Date)</label>
+                <div class="date-time-selector">
+                    <div>
+                        <select id="nepaliYear" onchange="updateNepaliDateDisplay()">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <label style="font-size:0.85rem;font-weight:400;">वर्ष (Year)</label>
+                    </div>
+                    <div>
+                        <select id="nepaliMonth" onchange="updateNepaliDateDisplay(); updateNepaliDays()">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <label style="font-size:0.85rem;font-weight:400;">महिना (Month)</label>
+                    </div>
+                    <div>
+                        <select id="nepaliDay" onchange="updateNepaliDateDisplay()">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <label style="font-size:0.85rem;font-weight:400;">दिन (Day)</label>
+                    </div>
+                    <div>
+                        <select id="nepaliWeekday" disabled>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <label style="font-size:0.85rem;font-weight:400;">बार (Weekday)</label>
+                    </div>
+                </div>
+                <div class="nepali-date-display" id="nepaliDateDisplay">
+                    <strong>📆</strong> <span id="selectedNepaliDate">२०८१ बैशाख १, सोमबार</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🕐 नेपाली समय (Nepali Time)</label>
+                <div class="time-picker">
+                    <select id="nepaliHour">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                    <span>:</span>
+                    <select id="nepaliMinute">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                    <select id="nepaliPeriod">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+                <div style="margin-top:8px;font-size:0.9rem;color:#666;">
+                    ⏰ हालको समय: <span id="currentNepaliTime">--:-- --</span>
+                    <button class="btn" style="width:auto;padding:4px 12px;font-size:0.8rem;background:#d32f2f;color:white;border:none;border-radius:4px;cursor:pointer;margin-left:10px;" onclick="setCurrentNepaliTime()">हालको समय सेट गर्नुहोस्</button>
+                </div>
+            </div>
+
+            <!-- Hidden fields for formatted text -->
+            <input type="hidden" id="dateText">
+            <input type="hidden" id="timeText">
+
+            <div class="form-group">
+                <label>🖼️ Background Image (JPG, PNG, WebP - Max 5MB)</label>
+                <input type="file" id="bgFile" accept="image/jpeg,image/png,image/webp">
+                <div class="preview-wrapper">
+                    <img id="bgPreview" class="preview-img" src="" alt="Background Preview">
+                    <span id="bgStatus" class="badge badge-warning">No image</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🏷️ Logo Image (JPG, PNG, WebP - Max 2MB)</label>
+                <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp">
+                <div class="preview-wrapper">
+                    <img id="logoPreview" class="preview-img" src="" alt="Logo Preview">
+                    <span id="logoStatus" class="badge badge-warning">No image</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="updateBannerData()" id="updateBtn">
+                💾 सेभ र अपडेट गर्नुहोस् (Save & Update)
+            </button>
+            <p id="updateMsg" class="msg"></p>
+
+            <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 लगआउट (Logout)</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== NEPALI DATE SYSTEM =====
+        const NepaliDate = {
+            // Nepali months data (days in each month for different years)
+            months: [
+                'बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 
+                'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'
+            ],
+            weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
+            // Days in each month for years 2070-2090 (approximate)
+            monthDays: {
+                2070: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2071: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2072: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2073: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2074: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2075: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2076: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2077: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2078: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2079: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2081: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2082: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2083: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2084: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2085: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2086: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2087: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2088: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2089: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
+                2090: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30]
+            },
+            // Starting reference: 2070 Baisakh 1 = 2013 April 14 (approx)
+            referenceYear: 2070,
+            referenceMonth: 0, // Baisakh = 0
+            referenceDay: 1,
+            referenceEnglishDate: new Date(2013, 3, 14) // April 14, 2013
+        };
+
+        // Convert ASCII digits to Nepali (Devanagari) digits, for display/storage.
+        function toNepaliDigits(input) {
+            const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+            return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
+        }
+
+        // Reverse conversion, so text previously saved with Nepali digits can
+        // still be parsed back into the date/time selectors when editing.
+        function fromNepaliDigits(input) {
+            const nepaliDigits = '०१२३४५६७८९';
+            return String(input).replace(/[०-९]/g, d => String(nepaliDigits.indexOf(d)));
+        }
+
+        // Initialize Nepali date selectors
+        function initializeNepaliDateSelectors() {
+            const yearSelect = document.getElementById('nepaliYear');
+            const monthSelect = document.getElementById('nepaliMonth');
+            
+            // Populate years (2070-2090)
+            yearSelect.innerHTML = '';
+            for (let year = 2070; year <= 2090; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+            
+            // Populate months
+            monthSelect.innerHTML = '';
+            NepaliDate.months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+            
+            // Set default to current date
+            const currentNepali = getCurrentNepaliDate();
+            yearSelect.value = currentNepali.year;
+            monthSelect.value = currentNepali.month;
+            updateNepaliDays();
+            document.getElementById('nepaliDay').value = currentNepali.day;
+            updateNepaliWeekday();
+            updateNepaliDateDisplay();
+            
+            // Initialize time
+            initializeTimeSelectors();
+            setCurrentNepaliTime();
+            
+            // Update time every second
+            setInterval(updateCurrentTimeDisplay, 1000);
+        }
+
+        function updateNepaliDays() {
+            const year = parseInt(document.getElementById('nepaliYear').value);
+            const month = parseInt(document.getElementById('nepaliMonth').value);
+            const daySelect = document.getElementById('nepaliDay');
+            
+            const daysInMonth = NepaliDate.monthDays[year] ? NepaliDate.monthDays[year][month] : 31;
+            
+            daySelect.innerHTML = '';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day;
+                daySelect.appendChild(option);
+            }
+        }
+
+        function updateNepaliWeekday() {
+            const year = parseInt(document.getElementById('nepaliYear').value);
+            const month = parseInt(document.getElementById('nepaliMonth').value);
+            const day = parseInt(document.getElementById('nepaliDay').value);
+            
+            const weekday = getNepaliWeekday(year, month, day);
+            document.getElementById('nepaliWeekday').value = weekday;
+        }
+
+        function getNepaliWeekday(year, month, day) {
+            // Calculate days difference from reference date
+            let daysDiff = 0;
+            for (let y = NepaliDate.referenceYear; y < year; y++) {
+                const days = NepaliDate.monthDays[y];
+                if (days) {
+                    daysDiff += days.reduce((a, b) => a + b, 0);
+                }
+            }
+            for (let m = 0; m < month; m++) {
+                const days = NepaliDate.monthDays[year];
+                if (days) {
+                    daysDiff += days[m];
+                }
+            }
+            daysDiff += (day - NepaliDate.referenceDay);
+            
+            // Reference day: 2070 Baisakh 1 = Monday (1)
+            const weekdayIndex = (1 + daysDiff) % 7;
+            return weekdayIndex;
+        }
+
+        function getCurrentNepaliDate() {
+            const now = new Date();
+            const refDate = NepaliDate.referenceEnglishDate;
+            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
+            
+            let remainingDays = diffDays;
+            let year = NepaliDate.referenceYear;
+            let month = NepaliDate.referenceMonth;
+            
+            while (remainingDays > 0) {
+                const daysInYear = NepaliDate.monthDays[year];
+                if (!daysInYear) break;
+                
+                const totalDaysInYear = daysInYear.reduce((a, b) => a + b, 0);
+                if (remainingDays >= totalDaysInYear) {
+                    remainingDays -= totalDaysInYear;
+                    year++;
+                } else {
+                    for (let m = 0; m < daysInYear.length; m++) {
+                        if (remainingDays >= daysInYear[m]) {
+                            remainingDays -= daysInYear[m];
+                            month = m + 1;
+                        } else {
+                            month = m;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            return {
+                year: year,
+                month: month,
+                day: remainingDays + 1
+            };
+        }
+
+        function updateNepaliDateDisplay() {
+            const year = document.getElementById('nepaliYear').value;
+            const month = parseInt(document.getElementById('nepaliMonth').value);
+            const day = document.getElementById('nepaliDay').value;
+            const weekdayIndex = getNepaliWeekday(parseInt(year), month, parseInt(day));
+            const weekdayName = NepaliDate.weekdays[weekdayIndex];
+            
+            const display = document.getElementById('selectedNepaliDate');
+            display.textContent = `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${weekdayName}`;
+            
+            // Update hidden date text (Nepali digits — this is what banner.html displays)
+            document.getElementById('dateText').value = `मिति: ${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)} गते, ${weekdayName}`;
+        }
+
+        // ===== NEPALI TIME SYSTEM =====
+        function initializeTimeSelectors() {
+            const hourSelect = document.getElementById('nepaliHour');
+            const minuteSelect = document.getElementById('nepaliMinute');
+            
+            hourSelect.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                hourSelect.appendChild(option);
+            }
+            
+            minuteSelect.innerHTML = '';
+            for (let i = 0; i < 60; i += 5) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                minuteSelect.appendChild(option);
+            }
+        }
+
+        function setCurrentNepaliTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const period = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12 || 12;
+            
+            document.getElementById('nepaliHour').value = hours;
+            document.getElementById('nepaliMinute').value = Math.floor(minutes / 5) * 5;
+            document.getElementById('nepaliPeriod').value = period;
+            
+            updateTimeDisplay();
+            updateCurrentTimeDisplay();
+        }
+
+        function updateCurrentTimeDisplay() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const period = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12 || 12;
+            
+            const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${period}`;
+            document.getElementById('currentNepaliTime').textContent = timeStr;
+        }
+
+        function updateTimeDisplay() {
+            const hour = document.getElementById('nepaliHour').value;
+            const minute = document.getElementById('nepaliMinute').value;
+            const period = document.getElementById('nepaliPeriod').value;
+            
+            document.getElementById('timeText').value = `समय: ${toNepaliDigits(hour)}:${toNepaliDigits(minute.toString().padStart(2, '0'))} ${period}`;
+        }
+
+        // ===== SUPABASE CONFIGURATION =====
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+        const SUPABASE_BUCKET = 'banner-assets';
+        const MAX_BG_SIZE = 5 * 1024 * 1024;
+        const MAX_LOGO_SIZE = 2 * 1024 * 1024;
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== AUTHENTICATION =====
+        window.addEventListener('DOMContentLoaded', async () => {
+            initializeNepaliDateSelectors();
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                showDashboard();
+            }
+            
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') {
+                    logoutAdmin();
+                }
+            });
+        });
+
+        async function loginAdmin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const msgEl = document.getElementById('loginMsg');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!email || !password) {
+                msgEl.innerText = "कृपया इमेल र पासवर्ड दुवै भर्नुहोस्";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '⏳ लगइन हुँदै...';
+            msgEl.innerText = "";
+            msgEl.className = "msg";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
+
+            if (error) {
+                msgEl.innerText = "❌ लगइन असफल: " + error.message;
+                msgEl.className = "msg error";
+            } else {
+                msgEl.innerText = "✅ लगइन सफल भयो!";
+                msgEl.className = "msg success";
+                setTimeout(showDashboard, 800);
+            }
+        }
+
+        async function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('lockedBackdrop').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            await loadSavedData();
+        }
+
+        // ===== LOAD DATA =====
+        async function loadSavedData() {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="color: #999;">लोड हुँदै...</td></tr>';
+
+            const { data, error } = await supabaseClient
+                .from('banner_settings')
+                .select('*')
+                .order('id', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching data:', error);
+                tbody.innerHTML = '<tr><td colspan="5" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                // No row exists yet — create a sensible default so the admin has
+                // something to edit instead of hitting a dead end.
+                await createDefaultBannerRow();
+                return;
+            }
+
+            // Stash the loaded records so edit buttons can reference them by index
+            // instead of stuffing JSON into an HTML attribute (which breaks on quotes).
+            window.__bannerRecords = data;
+
+            fillForm(data[0]);
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(item.meeting_name)}</strong></td>
+                    <td>${escapeHtml(item.organized_by)}</td>
+                    <td>${escapeHtml(item.date_text)}</td>
+                    <td>${escapeHtml(item.time_text)}</td>
+                    <td>
+                        <button class="edit-btn" data-index="${index}">✏️ Edit</button>
+                    </td>
+                `;
+                row.querySelector('.edit-btn').addEventListener('click', () => {
+                    editRecord(window.__bannerRecords[index]);
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        // Creates a starter row (id=1) the first time the admin logs in and the
+        // table is empty, so banner.html and the admin form both have something
+        // to display/edit instead of silently doing nothing.
+        async function createDefaultBannerRow() {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="color: #999;">सुरुवाती डाटा बनाइँदै...</td></tr>';
+
+            const nowNepali = getCurrentNepaliDate();
+            const defaultRow = {
+                meeting_name: 'बैठकको नाम',
+                organized_by: 'आयोजकको नाम',
+                date_text: `मिति: ${toNepaliDigits(nowNepali.year)} ${NepaliDate.months[nowNepali.month]} ${toNepaliDigits(nowNepali.day)} गते`,
+                time_text: `समय: ${toNepaliDigits('10:00')} AM`,
+                background_url: '',
+                logo_url: ''
+            };
+
+            const { data, error } = await supabaseClient
+                .from('banner_settings')
+                .insert(defaultRow)
+                .select();
+
+            if (error) {
+                console.error('Error creating default row:', error);
+                tbody.innerHTML = `<tr><td colspan="5" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल: ${escapeHtml(error.message)}</td></tr>`;
+                return;
+            }
+
+            await loadSavedData();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        window.editRecord = function(item) {
+            document.getElementById('recordId').value = item.id;
+            fillForm(item);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function fillForm(item) {
+            document.getElementById('recordId').value = item.id;
+            document.getElementById('meetingName').value = item.meeting_name || '';
+            document.getElementById('organizedBy').value = item.organized_by || '';
+            
+            // Parse date and time from text fields (normalize Nepali digits to ASCII first)
+            if (item.date_text) {
+                const dateMatch = fromNepaliDigits(item.date_text).match(/(\d{4})\s+([^\d]+)\s+(\d+)/);
+                if (dateMatch) {
+                    const year = parseInt(dateMatch[1]);
+                    const monthName = dateMatch[2].trim();
+                    const day = parseInt(dateMatch[3]);
+                    const monthIndex = NepaliDate.months.indexOf(monthName);
+                    if (monthIndex !== -1) {
+                        document.getElementById('nepaliYear').value = year;
+                        document.getElementById('nepaliMonth').value = monthIndex;
+                        updateNepaliDays();
+                        document.getElementById('nepaliDay').value = day;
+                        updateNepaliWeekday();
+                        updateNepaliDateDisplay();
+                    }
+                }
+            }
+            
+            if (item.time_text) {
+                const timeMatch = fromNepaliDigits(item.time_text).match(/(\d{1,2}):(\d{2})\s+(AM|PM)/);
+                if (timeMatch) {
+                    document.getElementById('nepaliHour').value = parseInt(timeMatch[1]);
+                    document.getElementById('nepaliMinute').value = parseInt(timeMatch[2]);
+                    document.getElementById('nepaliPeriod').value = timeMatch[3];
+                    updateTimeDisplay();
+                }
+            }
+            
+            document.getElementById('bgUrl').value = item.background_url || '';
+            updatePreview('bgPreview', item.background_url, 'bgStatus');
+            
+            document.getElementById('logoUrl').value = item.logo_url || '';
+            updatePreview('logoPreview', item.logo_url, 'logoStatus');
+        }
+
+        function updatePreview(imgId, url, statusId) {
+            const img = document.getElementById(imgId);
+            const status = document.getElementById(statusId);
+            if (url && url !== '') {
+                img.src = url;
+                img.style.display = 'block';
+                status.textContent = '✅ Image loaded';
+                status.className = 'badge badge-success';
+            } else {
+                img.src = '';
+                img.style.display = 'none';
+                status.textContent = 'No image';
+                status.className = 'badge badge-warning';
+            }
+        }
+
+        // ===== IMAGE UPLOAD =====
+        async function uploadImage(fileInputId, existingUrl, maxSize) {
+            const fileInput = document.getElementById(fileInputId);
+            if (fileInput.files.length === 0) {
+                return existingUrl;
+            }
+
+            const file = fileInput.files[0];
+            
+            // Validate file size
+            if (file.size > maxSize) {
+                const sizeMB = (maxSize / (1024 * 1024)).toFixed(0);
+                alert(`फाइल साइज ${sizeMB}MB भन्दा बढी हुन सक्दैन। कृपया सानो फाइल चयन गर्नुहोस्।`);
+                return existingUrl;
+            }
+
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('कृपया JPG, PNG, वा WebP फाइल मात्र चयन गर्नुहोस्।');
+                return existingUrl;
+            }
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+            const filePath = `banners/${fileName}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from(SUPABASE_BUCKET)
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                console.error('Upload error:', error);
+                alert('फाइल अपलोड गर्न असफल: ' + error.message);
+                return existingUrl;
+            }
+
+            const { data: publicURLData } = supabaseClient.storage
+                .from(SUPABASE_BUCKET)
+                .getPublicUrl(filePath);
+
+            return publicURLData.publicUrl;
+        }
+
+        // ===== UPDATE BANNER =====
+        async function updateBannerData() {
+            const recordId = document.getElementById('recordId').value;
+            const meetingName = document.getElementById('meetingName').value.trim();
+            const organizedBy = document.getElementById('organizedBy').value.trim();
+            const dateText = document.getElementById('dateText').value;
+            const timeText = document.getElementById('timeText').value;
+            
+            const msgEl = document.getElementById('updateMsg');
+            const updateBtn = document.getElementById('updateBtn');
+
+            if (!meetingName || !organizedBy) {
+                msgEl.innerText = "कृपया बैठकको नाम र आयोजक भर्नुहोस्";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '⏳ अपलोड र सेभ हुँदै...';
+            msgEl.innerText = "⏳ कृपया पर्खनुहोस्...";
+            msgEl.className = "msg info";
+
+            let currentBgUrl = document.getElementById('bgUrl').value;
+            let currentLogoUrl = document.getElementById('logoUrl').value;
+
+            // Upload images if new files selected
+            if (document.getElementById('bgFile').files.length > 0) {
+                const newBgUrl = await uploadImage('bgFile', currentBgUrl, MAX_BG_SIZE);
+                if (newBgUrl !== currentBgUrl) {
+                    currentBgUrl = newBgUrl;
+                }
+            }
+
+            if (document.getElementById('logoFile').files.length > 0) {
+                const newLogoUrl = await uploadImage('logoFile', currentLogoUrl, MAX_LOGO_SIZE);
+                if (newLogoUrl !== currentLogoUrl) {
+                    currentLogoUrl = newLogoUrl;
+                }
+            }
+
+            const { data, error } = await supabaseClient
+                .from('banner_settings')
+                .upsert({
+                    id: recordId ? Number(recordId) : undefined,
+                    meeting_name: meetingName,
+                    organized_by: organizedBy,
+                    date_text: dateText,
+                    time_text: timeText,
+                    background_url: currentBgUrl,
+                    logo_url: currentLogoUrl,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' })
+                .select();
+
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = '💾 सेभ र अपडेट गर्नुहोस् (Save & Update)';
+
+            if (error) {
+                msgEl.innerText = "❌ अपडेट गर्न असफल: " + error.message;
+                msgEl.className = "msg error";
+            } else {
+                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! ब्यानरमा लाइभ परिवर्तन भयो।";
+                msgEl.className = "msg success";
+                
+                document.getElementById('bgFile').value = '';
+                document.getElementById('logoFile').value = '';
+
+                await loadSavedData();
+            }
+        }
+
+        async function logoutAdmin() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // ===== EVENT LISTENERS FOR TIME =====
+        document.getElementById('nepaliHour').addEventListener('change', updateTimeDisplay);
+        document.getElementById('nepaliMinute').addEventListener('change', updateTimeDisplay);
+        document.getElementById('nepaliPeriod').addEventListener('change', updateTimeDisplay);
+    </script>
+</body>
+</html>

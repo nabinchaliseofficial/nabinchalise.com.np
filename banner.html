@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Banner - Live Supabase with Nepali Date/Time</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Mukta', 'Segoe UI', sans-serif;
+            background-color: #000;
+        }
+
+        .banner-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border: 12px solid #d4af37;
+            transition: background-image 0.5s ease;
+        }
+
+        /* Top Header for Clock */
+        .header-section {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .live-clock {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #111;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+        }
+
+        .live-clock .time-label {
+            font-size: 0.8rem;
+            display: block;
+            text-align: center;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Center Logo Box */
+        .center-logo-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(3px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .center-logo-container img {
+            height: 90px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+
+        /* Center Content */
+        .content-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .meeting-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: #d32f2f;
+            text-shadow: 3px 3px 0px rgba(255,255,255,0.8), 
+                        -3px -3px 0px rgba(255,255,255,0.8),
+                        3px -3px 0px rgba(255,255,255,0.8),
+                        -3px 3px 0px rgba(255,255,255,0.8),
+                        0px 0px 20px rgba(255,255,255,0.5);
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        .organized-by {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #b71c1c;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8), 
+                        -2px -2px 0px rgba(255,255,255,0.8),
+                        2px -2px 0px rgba(255,255,255,0.8),
+                        -2px 2px 0px rgba(255,255,255,0.8);
+        }
+
+        /* Footer Section */
+        .footer-section {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #b71c1c;
+            padding: 0 20px 10px 20px;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-section span {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .footer-section .nepali-date-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 25px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            font-size: 1.6rem;
+        }
+
+        .footer-section .nepali-date-display .date-label {
+            font-size: 0.8rem;
+            display: block;
+            text-align: center;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .footer-section .time-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 25px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            font-size: 1.6rem;
+        }
+
+        .footer-section .time-display .time-label {
+            font-size: 0.8rem;
+            display: block;
+            text-align: center;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Fullscreen Button */
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .fullscreen-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(211, 47, 47, 0.4);
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 12px;
+            border-radius: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .status-indicator .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .meeting-title {
+                font-size: 3.5rem;
+            }
+            .organized-by {
+                font-size: 2.2rem;
+            }
+            .footer-section {
+                font-size: 1.4rem;
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: 1.2rem;
+                padding: 6px 18px;
+            }
+            .live-clock {
+                font-size: 1.4rem;
+                padding: 8px 15px;
+            }
+            .center-logo-container img {
+                height: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .banner-container {
+                padding: 15px 15px;
+                border-width: 8px;
+            }
+            .meeting-title {
+                font-size: 2.5rem;
+            }
+            .organized-by {
+                font-size: 1.6rem;
+            }
+            .content-section {
+                padding: 15px 20px;
+            }
+            .footer-section {
+                font-size: 1rem;
+                justify-content: center;
+                gap: 8px;
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+            }
+            .live-clock {
+                font-size: 1rem;
+                padding: 5px 12px;
+            }
+            .center-logo-container {
+                top: 10px;
+                padding: 5px 12px;
+            }
+            .center-logo-container img {
+                height: 50px;
+                max-width: 120px;
+            }
+            .header-section {
+                justify-content: center;
+            }
+            .fullscreen-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+                bottom: 10px;
+                right: 10px;
+            }
+            .status-indicator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .meeting-title {
+                font-size: 1.8rem;
+            }
+            .organized-by {
+                font-size: 1.2rem;
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+            .live-clock {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .center-logo-container img {
+                height: 40px;
+            }
+            .content-section {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner-container" id="bannerBg">
+        
+        <!-- Logo - Center Top -->
+        <div class="center-logo-container">
+            <img id="centerLogo" src="" alt="Logo">
+        </div>
+
+        <!-- Top Header with Live Clock -->
+        <div class="header-section">
+            <div class="live-clock" id="liveClock">
+                <span id="clockTime">--:--:--</span>
+                <span class="time-label" id="clockDate">नेपाली समय</span>
+            </div>
+        </div>
+
+        <!-- Center Main Content -->
+        <div class="content-section">
+            <h1 class="meeting-title" id="meetingName">Loading...</h1>
+            <h2 class="organized-by" id="organizedBy">Loading...</h2>
+        </div>
+
+        <!-- Footer: Date & Time in Nepali -->
+        <div class="footer-section">
+            <span class="nepali-date-display" id="dateDisplay">
+                <span id="dateText">मिति: --</span>
+                <span class="date-label">नेपाली मिति</span>
+            </span>
+            <span class="time-display" id="timeDisplay">
+                <span id="timeText">समय: --</span>
+                <span class="time-label">बैठक समय</span>
+            </span>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="status-indicator">
+            <span class="dot"></span>
+            <span id="statusText">लाइभ</span>
+        </div>
+    </div>
+
+    <!-- Fullscreen Toggle Button -->
+    <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ पूर्ण स्क्रिन</button>
+
+    <script>
+        // ===== SUPABASE CONFIGURATION =====
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== NEPALI DATE SYSTEM =====
+        const NepaliDate = {
+            months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
+            weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
+            monthDays: {
+                2070: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2071: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2072: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2073: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2074: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2075: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2076: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2077: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2078: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2079: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2080: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2081: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2082: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2083: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2084: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2085: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2086: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2087: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2088: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2089: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2090: [31,32,31,32,31,30,30,30,29,30,29,30]
+            },
+            referenceYear: 2070,
+            referenceMonth: 0,
+            referenceDay: 1,
+            referenceEnglishDate: new Date(2013, 3, 14)
+        };
+
+        // Convert any string/number's ASCII digits (0-9) to Nepali (Devanagari) digits.
+        function toNepaliDigits(input) {
+            const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+            return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
+        }
+
+        function getCurrentNepaliDate() {
+            const now = new Date();
+            const refDate = NepaliDate.referenceEnglishDate;
+            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
+            
+            let remainingDays = diffDays;
+            let year = NepaliDate.referenceYear;
+            let month = NepaliDate.referenceMonth;
+            
+            while (remainingDays > 0) {
+                const daysInYear = NepaliDate.monthDays[year];
+                if (!daysInYear) break;
+                
+                const totalDaysInYear = daysInYear.reduce((a, b) => a + b, 0);
+                if (remainingDays >= totalDaysInYear) {
+                    remainingDays -= totalDaysInYear;
+                    year++;
+                } else {
+                    for (let m = 0; m < daysInYear.length; m++) {
+                        if (remainingDays >= daysInYear[m]) {
+                            remainingDays -= daysInYear[m];
+                            month = m + 1;
+                        } else {
+                            month = m;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            const day = remainingDays + 1;
+            const weekdayIndex = (1 + diffDays) % 7;
+            
+            return {
+                year: year,
+                month: month,
+                day: day,
+                weekday: NepaliDate.weekdays[weekdayIndex],
+                monthName: NepaliDate.months[month]
+            };
+        }
+
+        function getCurrentNepaliTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const periodNepali = hours >= 12 ? 'बेलुका' : 'बिहान';
+            const period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+
+            const digitsFormatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            return {
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
+                period: period,
+                periodNepali: periodNepali,
+                formatted: `${digitsFormatted} ${period}`,
+                formattedNepali: `${toNepaliDigits(digitsFormatted)} ${periodNepali}`
+            };
+        }
+
+        // ===== FETCH BANNER DATA =====
+        async function fetchBannerData() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('banner_settings')
+                    .select('*')
+                    .order('id', { ascending: true })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('statusText').textContent = 'त्रुटि';
+                    return;
+                }
+
+                if (!data) {
+                    // No row exists yet — friendly placeholder instead of stuck "Loading..."
+                    document.getElementById('meetingName').innerText = 'बैनर डाटा उपलब्ध छैन';
+                    document.getElementById('organizedBy').innerText = 'कृपया एडमिन प्यानलबाट सेट अप गर्नुहोस्';
+                    document.getElementById('statusText').textContent = 'डाटा छैन';
+                    return;
+                }
+
+                if (data) {
+                    // Remember which row id is live so the realtime filter can target it
+                    window.__liveBannerId = data.id;
+                    document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
+                    document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
+                    
+                    // Update date and time from stored text
+                    if (data.date_text) {
+                        document.getElementById('dateText').innerHTML = data.date_text;
+                    }
+                    if (data.time_text) {
+                        document.getElementById('timeText').innerHTML = data.time_text;
+                    }
+                    
+                    if (data.background_url && data.background_url !== '') {
+                        document.getElementById('bannerBg').style.backgroundImage = `url('${data.background_url}')`;
+                    } else {
+                        document.getElementById('bannerBg').style.backgroundImage = '';
+                    }
+                    if (data.logo_url && data.logo_url !== '') {
+                        document.getElementById('centerLogo').src = data.logo_url;
+                        document.getElementById('centerLogo').style.display = 'block';
+                    } else {
+                        document.getElementById('centerLogo').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // ===== REALTIME SUBSCRIPTION =====
+        let realtimeChannel = null;
+
+        function setupRealtime() {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = supabaseClient
+                .channel('public:banner_settings')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'banner_settings' },
+                    payload => {
+                        console.log('🔄 Realtime event received:', payload.eventType, payload);
+
+                        // Ignore changes to rows other than the one currently on display,
+                        // unless we don't have a live row yet (first data ever inserted).
+                        if (window.__liveBannerId && payload.new && payload.new.id !== window.__liveBannerId) {
+                            return;
+                        }
+                        if (!window.__liveBannerId && payload.new && payload.new.id) {
+                            window.__liveBannerId = payload.new.id;
+                        }
+
+                        const newData = payload.new;
+                        if (!newData) return;
+
+                        if (newData.meeting_name) {
+                            document.getElementById('meetingName').innerText = newData.meeting_name;
+                        }
+                        if (newData.organized_by) {
+                            document.getElementById('organizedBy').innerText = newData.organized_by;
+                        }
+                        if (newData.date_text) {
+                            document.getElementById('dateText').innerHTML = newData.date_text;
+                        }
+                        if (newData.time_text) {
+                            document.getElementById('timeText').innerHTML = newData.time_text;
+                        }
+                        if (newData.background_url) {
+                            document.getElementById('bannerBg').style.backgroundImage = `url('${newData.background_url}')`;
+                        } else {
+                            document.getElementById('bannerBg').style.backgroundImage = '';
+                        }
+                        if (newData.logo_url) {
+                            document.getElementById('centerLogo').src = newData.logo_url;
+                            document.getElementById('centerLogo').style.display = 'block';
+                        } else {
+                            document.getElementById('centerLogo').style.display = 'none';
+                        }
+                        
+                        // Update status
+                        document.getElementById('statusText').textContent = 'अपडेट भयो!';
+                        setTimeout(() => {
+                            document.getElementById('statusText').textContent = 'लाइभ';
+                        }, 2000);
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Realtime channel status:', status);
+                    if (status === 'SUBSCRIBED') {
+                        document.getElementById('statusText').textContent = 'लाइभ';
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                        document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
+                        // Re-fetch current data and retry the subscription after a short delay
+                        setTimeout(() => {
+                            fetchBannerData();
+                            setupRealtime();
+                        }, 3000);
+                    }
+                });
+        }
+
+        // ===== LIVE CLOCK =====
+        function updateClock() {
+            const time = getCurrentNepaliTime();
+            document.getElementById('clockTime').textContent = time.formattedNepali;
+
+            // Live current Nepali date, shown under the clock
+            const date = getCurrentNepaliDate();
+            const dayNepali = toNepaliDigits(date.day);
+            document.getElementById('clockDate').textContent = `${date.weekday}, ${date.monthName} ${dayNepali}`;
+        }
+
+        // ===== FULLSCREEN TOGGLE =====
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        window.onload = () => {
+            // Fetch data
+            fetchBannerData();
+            
+            // Setup realtime
+            setupRealtime();
+            
+            // Start clock
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Also update status indicator periodically
+            setInterval(() => {
+                document.getElementById('statusText').textContent = 'लाइभ';
+            }, 5000);
+            
+            console.log('✅ Banner initialized successfully!');
+        };
+    </script>
+</body>
+</html>
