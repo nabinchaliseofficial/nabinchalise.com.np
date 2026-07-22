@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Banner Settings</title>
-    <link rel="preconnect" href="https://kbyfvqkfcxqgjjtfvvxf.supabase.co">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -14,7 +12,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background: linear-gradient(135deg, #f0f2f5 0%, #e8eaf0 100%);
             display: flex;
@@ -23,33 +20,29 @@
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             background: #ffffff;
             padding: 35px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
-
-        h2, h3 {
+        h2,
+        h3 {
             text-align: center;
             color: #d32f2f;
             margin-bottom: 20px;
             font-weight: 700;
         }
-
         h2 {
             font-size: 1.8rem;
             border-bottom: 3px solid #d32f2f;
             padding-bottom: 10px;
         }
-
         .form-group {
             margin-bottom: 18px;
         }
-
         label {
             display: block;
             font-weight: 600;
@@ -57,11 +50,11 @@
             color: #333;
             font-size: 0.95rem;
         }
-
         input[type="text"],
         input[type="email"],
         input[type="password"],
         input[type="file"],
+        input[type="number"],
         select,
         textarea {
             width: 100%;
@@ -72,19 +65,18 @@
             transition: border-color 0.3s ease;
             background: #fafafa;
         }
-
         textarea {
             resize: vertical;
             min-height: 60px;
         }
-
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #d32f2f;
             background: #ffffff;
             box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
         }
-
         .btn {
             width: 100%;
             padding: 12px;
@@ -97,31 +89,25 @@
             margin-top: 10px;
             letter-spacing: 0.5px;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #d32f2f, #b71c1c);
             color: white;
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
         }
-
         .btn-secondary {
             background: #555;
             color: white;
         }
-
         .btn-secondary:hover {
             background: #333;
             transform: translateY(-2px);
         }
-
         .hidden {
             display: none !important;
         }
-
         .msg {
             text-align: center;
             margin-top: 12px;
@@ -129,50 +115,43 @@
             padding: 10px;
             border-radius: 6px;
         }
-
         .success {
             color: #155724;
             background: #d4edda;
             border: 1px solid #c3e6cb;
         }
-
         .error {
             color: #721c24;
             background: #f8d7da;
             border: 1px solid #f5c6cb;
         }
-
         .info {
             color: #0c5460;
             background: #d1ecf1;
             border: 1px solid #bee5eb;
         }
-
         .saved-data-section {
             margin-bottom: 30px;
             border-bottom: 3px solid #e0e0e0;
             padding-bottom: 25px;
         }
-
         .table-wrapper {
             overflow-x: auto;
             margin-top: 15px;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.95rem;
         }
-
-        th, td {
+        th,
+        td {
             padding: 12px 15px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
         }
-
         th {
             background: linear-gradient(135deg, #d32f2f, #b71c1c);
             color: white;
@@ -181,11 +160,9 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
         }
-
         tr:hover {
             background: #f5f5f5;
         }
-
         .edit-btn {
             background: #2e7d32;
             color: white;
@@ -196,12 +173,10 @@
             font-weight: 600;
             transition: all 0.2s ease;
         }
-
         .edit-btn:hover {
             background: #1b5e20;
             transform: scale(1.05);
         }
-
         .preview-img {
             max-height: 80px;
             max-width: 200px;
@@ -210,15 +185,12 @@
             border: 2px solid #e0e0e0;
             padding: 3px;
             background: white;
-            display: none;
         }
-
         .date-time-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-
         .nepali-date-display {
             background: #f8f9fa;
             padding: 12px;
@@ -229,22 +201,18 @@
             font-size: 1.1rem;
             color: #333;
         }
-
         .nepali-date-display strong {
             color: #d32f2f;
         }
-
         .time-picker {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-
         .time-picker select {
             flex: 1;
             min-width: 80px;
         }
-
         .badge {
             display: inline-block;
             padding: 2px 12px;
@@ -252,22 +220,18 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
-
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        .badge-danger { background: #f8d7da; color: #721c24; }
-
-        .row {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
         }
-
-        .row .form-group {
-            flex: 1;
-            min-width: 200px;
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
         }
-
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
         .font-size-section {
             background: #f8f9fa;
             border: 2px solid #e0e0e0;
@@ -275,16 +239,64 @@
             padding: 20px 25px;
             margin-bottom: 25px;
         }
-
-        .font-size-control {
+        .font-size-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .font-size-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .font-size-item label {
+            margin: 0;
+            font-size: 0.85rem;
+            min-width: 100px;
+            color: #555;
+        }
+        .font-size-item input[type="number"] {
+            width: 70px;
+            padding: 6px 10px;
+            border: 2px solid #d32f2f;
+            border-radius: 6px;
+            font-weight: 700;
+            text-align: center;
+            background: white;
+        }
+        .font-size-item .unit {
+            font-weight: 700;
+            color: #d32f2f;
+            font-size: 0.9rem;
+        }
+        .font-size-item .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            background: #d32f2f;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .font-size-item .btn-sm:hover {
+            background: #b71c1c;
+            transform: scale(1.05);
+        }
+        .global-scale-control {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 20px;
             padding: 12px 0;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 15px;
         }
-
-        .font-size-btn {
+        .global-scale-control button {
             width: 48px;
             height: 48px;
             border-radius: 50%;
@@ -300,13 +312,11 @@
             justify-content: center;
             box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
         }
-
-        .font-size-btn:hover {
+        .global-scale-control button:hover {
             transform: scale(1.08);
             box-shadow: 0 6px 18px rgba(211, 47, 47, 0.4);
         }
-
-        .font-size-value {
+        .global-scale-control .font-size-value {
             font-size: 1.6rem;
             font-weight: 700;
             color: #d32f2f;
@@ -317,7 +327,6 @@
             border-radius: 8px;
             border: 2px solid #d32f2f;
         }
-
         .login-modal-overlay {
             position: fixed;
             inset: 0;
@@ -329,7 +338,6 @@
             z-index: 2000;
             padding: 20px;
         }
-
         .login-modal-box {
             background: #ffffff;
             padding: 35px;
@@ -338,17 +346,85 @@
             width: 100%;
             max-width: 400px;
         }
-
-        @media (max-width: 600px) {
-            .container { padding: 20px; }
-            h2 { font-size: 1.4rem; }
-            .date-time-selector { grid-template-columns: 1fr; }
+        .file-upload-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .file-upload-wrapper input[type="file"] {
+            flex: 1;
+            min-width: 150px;
+        }
+        .file-status {
+            font-size: 0.85rem;
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+        .file-status.uploaded {
+            background: #d4edda;
+            color: #155724;
+        }
+        .file-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .image-preview-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .image-preview-container .preview-box {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fafafa;
+            flex: 1;
+            min-width: 200px;
+        }
+        .image-preview-container .preview-box label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .image-preview-container .preview-box img {
+            max-height: 100px;
+            max-width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 3px;
+            background: white;
+        }
+        .image-preview-container .preview-box .url-text {
+            font-size: 0.75rem;
+            color: #888;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+        @media (max-width: 768px) {
+            .font-size-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+            .date-time-selector {
+                grid-template-columns: 1fr;
+            }
+            .image-preview-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Login Popup Modal -->
+    <!-- Login Popup -->
     <div class="login-modal-overlay" id="loginSection">
         <div class="login-modal-box">
             <h2>🔐 Admin Login</h2>
@@ -366,7 +442,6 @@
     </div>
 
     <div class="container">
-        <!-- Dashboard Section -->
         <div id="dashboardSection" class="hidden">
 
             <div class="saved-data-section">
@@ -377,6 +452,7 @@
                             <tr>
                                 <th>लाइभ</th>
                                 <th>बैठकको नाम</th>
+                                <th>उप-बैठक</th>
                                 <th>आयोजक</th>
                                 <th>मिति</th>
                                 <th>समय</th>
@@ -384,64 +460,95 @@
                             </tr>
                         </thead>
                         <tbody id="dataTableBody">
-                            <tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>
+                            <tr><td colspan="7" style="color: #999;">लोड हुँदै...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <h2>✏️ Banner <strong>Update Form</strong></h2>
+            <h2>✏️ Banner Update Form</h2>
             <input type="hidden" id="recordId" value="1">
 
-            <!-- FONT SIZE SECTION -->
+            <!-- Font Size Controls -->
             <div class="font-size-section">
-                <h3>🔠 लाइभ पेजमा अक्षरको साइज (Live Page Text Size)</h3>
-                <div class="font-size-control">
-                    <button type="button" class="font-size-btn" onclick="adjustFontScale(-10)">−</button>
-                    <span class="font-size-value" id="fontScaleDisplay">100%</span>
-                    <button type="button" class="font-size-btn" onclick="adjustFontScale(10)">+</button>
+                <h3>🔠 प्रत्येक बाक्सको फन्ट साइज</h3>
+                <div class="font-size-grid">
+                    <div class="font-size-item">
+                        <label>🏛️ बैठकको नाम</label>
+                        <input type="number" id="meetingNameFontSize" value="4.5" min="1" max="10" step="0.1">
+                        <span class="unit">rem</span>
+                    </div>
+                    <div class="font-size-item">
+                        <label>📌 उप-बैठक</label>
+                        <input type="number" id="subMeetingFontSize" value="2.5" min="1" max="8" step="0.1">
+                        <span class="unit">rem</span>
+                    </div>
+                    <div class="font-size-item">
+                        <label>🏢 आयोजक</label>
+                        <input type="number" id="organizedByFontSize" value="2.8" min="1" max="8" step="0.1">
+                        <span class="unit">rem</span>
+                    </div>
+                    <div class="font-size-item">
+                        <label>📅 मिति</label>
+                        <input type="number" id="dateFontSize" value="1.6" min="0.5" max="5" step="0.1">
+                        <span class="unit">rem</span>
+                    </div>
+                    <div class="font-size-item">
+                        <label>🕐 समय</label>
+                        <input type="number" id="timeFontSize" value="1.6" min="0.5" max="5" step="0.1">
+                        <span class="unit">rem</span>
+                    </div>
                 </div>
-                <input type="hidden" id="fontScale" value="100">
+                <div class="global-scale-control">
+                    <span style="font-weight:600; color:#555;">🌍 Global Scale:</span>
+                    <button onclick="adjustGlobalScale(-10)">−</button>
+                    <span class="font-size-value" id="globalScaleDisplay">100%</span>
+                    <button onclick="adjustGlobalScale(10)">+</button>
+                    <input type="hidden" id="fontScale" value="100">
+                </div>
             </div>
 
-            <!-- MEETING NAME & ORGANIZED BY -->
+            <!-- Meeting Details -->
             <div class="form-group">
-                <h3 style="margin-bottom:15px;">🏛️ बैठकको नाम र आयोजक (Meeting Name & Organized By)</h3>
+                <h3 style="margin-bottom:15px;">🏛️ बैठकको विवरण</h3>
                 <label>🏛️ बैठकको नाम (Meeting Name)</label>
                 <textarea id="meetingName" rows="2" placeholder="e.g., कर्मचारी मासिक बैठक"></textarea>
+
+                <label style="margin-top:14px;">📌 उप-बैठकको नाम (Sub-Meeting Name)</label>
+                <input type="text" id="subMeetingName" placeholder="e.g., विशेष समिति बैठक">
 
                 <label style="margin-top:14px;">🏢 आयोजक (Organized By)</label>
                 <input type="text" id="organizedBy" placeholder="e.g., गलकोट नगरपालिका">
             </div>
 
-            <!-- Nepali Date and Time Selector -->
+            <!-- Nepali Date & Time -->
             <div class="form-group">
-                <label>📅 नेपाली मिति (Nepali Date)</label>
+                <label>📅 नेपाली मिति</label>
                 <div class="date-time-selector">
                     <div>
-                        <select id="nepaliYear" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
-                        <label style="font-size:0.85rem;">वर्ष (Year)</label>
+                        <select id="nepaliYear" onchange="updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">वर्ष</label>
                     </div>
                     <div>
-                        <select id="nepaliMonth" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
-                        <label style="font-size:0.85rem;">महिना (Month)</label>
+                        <select id="nepaliMonth" onchange="updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">महिना</label>
                     </div>
                     <div>
-                        <select id="nepaliDay" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
-                        <label style="font-size:0.85rem;">दिन (Day)</label>
+                        <select id="nepaliDay" onchange="updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">दिन</label>
                     </div>
                     <div>
                         <select id="nepaliWeekday" onchange="updateNepaliDateDisplay()"></select>
-                        <label style="font-size:0.85rem;">बार (Weekday)</label>
+                        <label style="font-size:0.85rem;">बार</label>
                     </div>
                 </div>
-                <div class="nepali-date-display" id="nepaliDateDisplay">
+                <div class="nepali-date-display">
                     <strong>📆</strong> <span id="selectedNepaliDate">--</span>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>🕐 नेपाली समय (Nepali Time)</label>
+                <label>🕐 नेपाली समय</label>
                 <div class="time-picker">
                     <select id="nepaliHour"></select>
                     <span>:</span>
@@ -456,30 +563,55 @@
             <input type="hidden" id="dateText">
             <input type="hidden" id="timeText">
 
+            <!-- BACKGROUND IMAGE -->
             <div class="form-group">
-                <label>🖼️ Background Image (JPG, PNG, WebP - Max 5MB)</label>
-                <input type="file" id="bgFile" accept="image/jpeg,image/png,image/webp">
-                <img id="bgPreview" class="preview-img" alt="Background Preview">
-                <span id="bgStatus" class="badge badge-warning">No image</span>
+                <label>🖼️ Background Image</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="bgFile" accept="image/*">
+                    <span class="file-status pending" id="bgStatus">📤 फाइल छान्नुहोस्</span>
+                </div>
+                <div class="image-preview-container">
+                    <div class="preview-box">
+                        <label>हालको Background:</label>
+                        <img id="bgPreview" style="display:none;" alt="Background Preview">
+                        <div class="url-text" id="bgUrlDisplay">कुनै छैन</div>
+                    </div>
+                </div>
             </div>
 
+            <!-- LOGO IMAGE -->
             <div class="form-group">
-                <label>🏷️ Logo Image (JPG, PNG, WebP - Max 2MB)</label>
-                <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp">
-                <img id="logoPreview" class="preview-img" alt="Logo Preview">
-                <span id="logoStatus" class="badge badge-warning">No image</span>
+                <label>🏷️ Logo Image</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="logoFile" accept="image/*">
+                    <span class="file-status pending" id="logoStatus">📤 फाइल छान्नुहोस्</span>
+                </div>
+                <div class="image-preview-container">
+                    <div class="preview-box">
+                        <label>हालको Logo:</label>
+                        <img id="logoPreview" style="display:none;" alt="Logo Preview">
+                        <div class="url-text" id="logoUrlDisplay">कुनै छैन</div>
+                    </div>
+                </div>
             </div>
 
             <button class="btn btn-primary" onclick="updateBannerData()" id="updateBtn">
-                💾 सेभ र अपडेट गर्नुहोस् (Save & Update)
+                💾 सेभ र अपडेट गर्नुहोस्
             </button>
             <p id="updateMsg" class="msg"></p>
 
-            <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 लगआउट (Logout)</button>
+            <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 लगआउट</button>
         </div>
     </div>
 
     <script>
+        // ===== SUPABASE CONFIG =====
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+        const STORAGE_BUCKET = 'banner-assets';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // ===== NEPALI DATE SYSTEM =====
         const NepaliDate = {
             months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
@@ -499,147 +631,132 @@
             referenceEnglishDate: new Date(2023, 3, 14)
         };
 
+        // Nepali to English digits conversion
+        function toEnglishDigits(input) {
+            const map = {
+                '०': '0',
+                '१': '1',
+                '२': '2',
+                '३': '3',
+                '४': '4',
+                '५': '5',
+                '६': '6',
+                '७': '7',
+                '८': '8',
+                '९': '9'
+            };
+            return String(input).replace(/[०-९]/g, d => map[d] || d);
+        }
+
         function toNepaliDigits(input) {
-            const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-            return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
+            const digits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+            return String(input).replace(/[0-9]/g, d => digits[d]);
         }
 
         function initializeNepaliDateSelectors() {
             const yearSelect = document.getElementById('nepaliYear');
             const monthSelect = document.getElementById('nepaliMonth');
             const weekdaySelect = document.getElementById('nepaliWeekday');
+            const daySelect = document.getElementById('nepaliDay');
 
-            weekdaySelect.innerHTML = '';
-            NepaliDate.weekdays.forEach((day, index) => {
-                const opt = document.createElement('option');
-                opt.value = index; opt.textContent = day;
-                weekdaySelect.appendChild(opt);
+            for (let y = 2080; y <= 2086; y++) {
+                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            }
+            NepaliDate.months.forEach((m, i) => {
+                monthSelect.innerHTML += `<option value="${i}">${m}</option>`;
+            });
+            NepaliDate.weekdays.forEach((d, i) => {
+                weekdaySelect.innerHTML += `<option value="${i}">${d}</option>`;
             });
 
-            yearSelect.innerHTML = '';
-            for (let y = 2080; y <= 2086; y++) {
-                const opt = document.createElement('option');
-                opt.value = y; opt.textContent = y;
-                yearSelect.appendChild(opt);
+            // Days (1-32)
+            for (let d = 1; d <= 32; d++) {
+                daySelect.innerHTML += `<option value="${d}">${toNepaliDigits(d)}</option>`;
             }
 
-            monthSelect.innerHTML = '';
-            NepaliDate.months.forEach((m, index) => {
-                const opt = document.createElement('option');
-                opt.value = index; opt.textContent = m;
-                monthSelect.appendChild(opt);
-            });
+            // Hour & Minute
+            for (let i = 1; i <= 12; i++) {
+                document.getElementById('nepaliHour').innerHTML +=
+                    `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
+            }
+            for (let i = 0; i < 60; i += 5) {
+                document.getElementById('nepaliMinute').innerHTML +=
+                    `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
+            }
 
             yearSelect.value = 2081;
             monthSelect.value = 0;
-            updateNepaliDays();
-            updateNepaliWeekday();
+            daySelect.value = 1;
             updateNepaliDateDisplay();
-
-            const hourSelect = document.getElementById('nepaliHour');
-            for (let i = 1; i <= 12; i++) {
-                hourSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
-            }
-            const minSelect = document.getElementById('nepaliMinute');
-            for (let i = 0; i < 60; i += 5) {
-                minSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
-            }
-        }
-
-        function updateNepaliDays() {
-            const year = parseInt(document.getElementById('nepaliYear').value);
-            const month = parseInt(document.getElementById('nepaliMonth').value);
-            const daySelect = document.getElementById('nepaliDay');
-            const daysInMonth = (NepaliDate.monthDays[year] && NepaliDate.monthDays[year][month]) || 31;
-            
-            daySelect.innerHTML = '';
-            for (let d = 1; d <= daysInMonth; d++) {
-                daySelect.innerHTML += `<option value="${d}">${toNepaliDigits(d)}</option>`;
-            }
-        }
-
-        function updateNepaliWeekday() {
-            const year = parseInt(document.getElementById('nepaliYear').value);
-            const month = parseInt(document.getElementById('nepaliMonth').value);
-            const day = parseInt(document.getElementById('nepaliDay').value);
-            let daysDiff = 0;
-            for (let y = NepaliDate.referenceYear; y < year; y++) {
-                const days = NepaliDate.monthDays[y];
-                if (days) {
-                    daysDiff += days.reduce((a, b) => a + b, 0);
-                }
-            }
-            for (let m = 0; m < month; m++) {
-                const days = NepaliDate.monthDays[year];
-                if (days) {
-                    daysDiff += days[m];
-                }
-            }
-            daysDiff += (day - NepaliDate.referenceDay);
-            const weekdayIndex = (1 + daysDiff) % 7;
-            document.getElementById('nepaliWeekday').value = weekdayIndex;
         }
 
         function updateNepaliDateDisplay() {
             const year = document.getElementById('nepaliYear').value;
             const month = parseInt(document.getElementById('nepaliMonth').value);
-            const day = document.getElementById('nepaliDay').value;
-            const weekdayIndex = parseInt(document.getElementById('nepaliWeekday').value);
-            const weekdayName = NepaliDate.weekdays[weekdayIndex];
+            const day = document.getElementById('nepaliDay').value || 1;
+            const weekday = document.getElementById('nepaliWeekday').value;
 
-            document.getElementById('selectedNepaliDate').textContent = `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${weekdayName}`;
-            document.getElementById('dateText').value = `मिति: ${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)} गते, ${weekdayName}`;
-            
+            document.getElementById('selectedNepaliDate').textContent =
+                `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${NepaliDate.weekdays[weekday]}`;
+
+            document.getElementById('dateText').value =
+                `मिति: ${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)} गते, ${NepaliDate.weekdays[weekday]}`;
+
             const hour = document.getElementById('nepaliHour').value;
             const minute = document.getElementById('nepaliMinute').value;
             const period = document.getElementById('nepaliPeriod').value;
-            document.getElementById('timeText').value = `बैठक सुरु समय: ${toNepaliDigits(hour)}:${toNepaliDigits(minute.toString().padStart(2, '0'))} बजे`;
+            const hour12 = parseInt(hour);
+            document.getElementById('timeText').value =
+                `बैठक सुरु समय: ${toNepaliDigits(hour12)}:${toNepaliDigits(minute.padStart(2, '0'))} बजे`;
         }
 
-        function adjustFontScale(delta) {
+        function adjustGlobalScale(delta) {
             const input = document.getElementById('fontScale');
-            let current = parseInt(input.value) || 100;
-            let newVal = Math.min(Math.max(current + delta, 50), 200);
-            input.value = newVal;
-            document.getElementById('fontScaleDisplay').textContent = newVal + '%';
+            let val = Math.min(Math.max(parseInt(input.value) + delta, 50), 200);
+            input.value = val;
+            document.getElementById('globalScaleDisplay').textContent = val + '%';
         }
 
-        // ===== SUPABASE CONFIGURATION =====
-        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ===== IMAGE UPLOAD =====
+        async function uploadImage(file, folder) {
+            if (!file) return null;
 
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${folder}/${Date.now()}.${fileExt}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (error) {
+                console.error('Upload error:', error);
+                return null;
+            }
+
+            const { data: urlData } = supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(fileName);
+
+            return urlData.publicUrl;
+        }
+
+        // ===== AUTH FUNCTIONS =====
         async function isAdminUser(user) {
             try {
-                const email = user.email;
-                if (!email) return false;
-
                 const { data, error } = await supabaseClient
                     .from('user_roles')
                     .select('role, status')
-                    .eq('email', email)
+                    .eq('email', user.email)
                     .eq('role', 'admin')
                     .eq('status', 'active')
                     .maybeSingle();
 
-                if (error) {
-                    console.error('Error checking admin role by email:', error);
-                    const { data: data2, error: error2 } = await supabaseClient
-                        .from('user_roles')
-                        .select('role, status')
-                        .eq('user_id', user.id)
-                        .eq('role', 'admin')
-                        .eq('status', 'active')
-                        .maybeSingle();
-                    
-                    if (error2 || !data2) return false;
-                    return true;
-                }
-
-                if (!data) return false;
+                if (error || !data) return false;
                 return true;
             } catch (err) {
-                console.error('Role check error:', err);
                 return false;
             }
         }
@@ -679,22 +796,19 @@
 
             if (error) {
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
+                loginBtn.innerHTML = 'लगइन गर्नुहोस्';
                 msgEl.innerText = "❌ लगइन असफल: " + error.message;
                 msgEl.className = "msg error";
                 return;
             }
 
-            msgEl.innerText = "⏳ पहुँच जाँच हुँदै...";
-            msgEl.className = "msg info";
-
             const allowed = await isAdminUser(data.user);
             loginBtn.disabled = false;
-            loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
+            loginBtn.innerHTML = 'लगइन गर्नुहोस्';
 
             if (!allowed) {
                 await supabaseClient.auth.signOut();
-                msgEl.innerText = "❌ पहुँच अस्वीकृत: तपाईंको एडमिन (admin) रोल छैन!";
+                msgEl.innerText = "❌ पहुँच अस्वीकृत: एडमिन रोल छैन!";
                 msgEl.className = "msg error";
                 return;
             }
@@ -708,9 +822,9 @@
             loadSavedData();
         }
 
+        // ===== LOAD SAVED DATA =====
         async function loadSavedData() {
             const tableBody = document.getElementById('dataTableBody');
-            tableBody.innerHTML = '<tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>';
 
             const { data, error } = await supabaseClient
                 .from('banner_settings')
@@ -718,27 +832,24 @@
                 .order('id', { ascending: true });
 
             if (error) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
                 return;
             }
 
             if (!data || data.length === 0) {
+                // Create default entry
                 const defaultData = {
                     meeting_name: 'बैठकको नाम',
+                    sub_meeting_name: '',
                     organized_by: 'आयोजकको नाम',
                     date_text: 'मिति: २०८१ बैशाख १ गते, सोमबार',
                     time_text: 'बैठक सुरु समय: १०:०० बजे',
                     is_active: true,
-                    font_scale: 100
+                    font_scale: 100,
+                    background_url: '',
+                    logo_url: ''
                 };
-                const { error: insertError } = await supabaseClient
-                    .from('banner_settings')
-                    .insert(defaultData);
-                
-                if (insertError) {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल</td></tr>';
-                    return;
-                }
+                await supabaseClient.from('banner_settings').insert(defaultData);
                 loadSavedData();
                 return;
             }
@@ -750,10 +861,11 @@
                     <tr>
                         <td><input type="radio" name="activeRadio" ${isActive} onclick="setActiveBanner(${item.id})"></td>
                         <td><strong>${item.meeting_name || ''}</strong></td>
+                        <td>${item.sub_meeting_name || ''}</td>
                         <td>${item.organized_by || ''}</td>
                         <td>${item.date_text || ''}</td>
                         <td>${item.time_text || ''}</td>
-                        <td><button class="edit-btn" onclick='editRecord(${JSON.stringify(item)})'>✏️ Edit</button></td>
+                        <td><button class="edit-btn" onclick='editRecord(${JSON.stringify(item).replace(/'/g, "&#39;")})'>✏️ Edit</button></td>
                     </tr>
                 `;
             });
@@ -765,24 +877,160 @@
             loadSavedData();
         }
 
+        // ===== PARSE DATE FROM TEXT =====
+        function parseDateFromText(dateText) {
+            if (!dateText) return null;
+
+            // Format: "मिति: २०८१ बैशाख १ गते, सोमबार"
+            const match = dateText.match(/मिति:\s*([\d]+)\s*([^,]+)\s*([\d]+)\s*गते,\s*([^,]+)/);
+            if (match) {
+                const year = toEnglishDigits(match[1]);
+                const monthName = match[2].trim();
+                const day = toEnglishDigits(match[3]);
+                const weekday = match[4].trim();
+
+                const monthIndex = NepaliDate.months.indexOf(monthName);
+                const weekdayIndex = NepaliDate.weekdays.indexOf(weekday);
+
+                return { year, month: monthIndex, day, weekday: weekdayIndex };
+            }
+            return null;
+        }
+
+        // ===== PARSE TIME FROM TEXT =====
+        function parseTimeFromText(timeText) {
+            if (!timeText) return null;
+
+            // Format: "बैठक सुरु समय: १०:०० बजे"
+            const match = timeText.match(/बैठक सुरु समय:\s*([\d]+):([\d]+)\s*बजे/);
+            if (match) {
+                let hour = parseInt(toEnglishDigits(match[1]));
+                const minute = toEnglishDigits(match[2]);
+
+                // Determine AM/PM (12-hour format, assume PM if hour > 6)
+                const period = hour >= 6 ? 'PM' : 'AM';
+                if (hour > 12) hour = hour - 12;
+                if (hour === 0) hour = 12;
+
+                return { hour, minute, period };
+            }
+            return null;
+        }
+
+        // ===== EDIT RECORD - Fetches ALL data including Date/Time =====
         window.editRecord = function(item) {
+            // Set ID
             document.getElementById('recordId').value = item.id;
+
+            // Set text fields
             document.getElementById('meetingName').value = item.meeting_name || '';
+            document.getElementById('subMeetingName').value = item.sub_meeting_name || '';
             document.getElementById('organizedBy').value = item.organized_by || '';
+
+            // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
-            document.getElementById('fontScaleDisplay').textContent = (item.font_scale || 100) + '%';
+            document.getElementById('globalScaleDisplay').textContent = (item.font_scale || 100) + '%';
+
+            // ===== PARSE AND SET DATE =====
+            const dateData = parseDateFromText(item.date_text);
+            if (dateData) {
+                // Set Year
+                const yearSelect = document.getElementById('nepaliYear');
+                for (let opt of yearSelect.options) {
+                    if (opt.value === dateData.year) { opt.selected = true; break; }
+                }
+
+                // Set Month
+                if (dateData.month !== -1) {
+                    document.getElementById('nepaliMonth').value = dateData.month;
+                }
+
+                // Set Day
+                const daySelect = document.getElementById('nepaliDay');
+                for (let opt of daySelect.options) {
+                    if (opt.value === dateData.day) { opt.selected = true; break; }
+                }
+
+                // Set Weekday
+                if (dateData.weekday !== -1) {
+                    document.getElementById('nepaliWeekday').value = dateData.weekday;
+                }
+            }
+
+            // ===== PARSE AND SET TIME =====
+            const timeData = parseTimeFromText(item.time_text);
+            if (timeData) {
+                // Set Hour
+                const hourSelect = document.getElementById('nepaliHour');
+                for (let opt of hourSelect.options) {
+                    if (parseInt(opt.value) === timeData.hour) { opt.selected = true; break; }
+                }
+
+                // Set Minute
+                const minSelect = document.getElementById('nepaliMinute');
+                for (let opt of minSelect.options) {
+                    if (parseInt(opt.value) === parseInt(timeData.minute)) { opt.selected = true; break; }
+                }
+
+                // Set Period
+                document.getElementById('nepaliPeriod').value = timeData.period;
+            }
+
+            // Update date display
+            updateNepaliDateDisplay();
+
+            // Set background image
+            if (item.background_url && item.background_url !== '') {
+                const bgPreview = document.getElementById('bgPreview');
+                bgPreview.src = item.background_url;
+                bgPreview.style.display = 'block';
+                document.getElementById('bgUrlDisplay').textContent = '✅ ' + item.background_url;
+                document.getElementById('bgStatus').textContent = '✅ अपलोड भएको';
+                document.getElementById('bgStatus').className = 'file-status uploaded';
+            } else {
+                document.getElementById('bgPreview').style.display = 'none';
+                document.getElementById('bgUrlDisplay').textContent = 'कुनै छैन';
+                document.getElementById('bgStatus').textContent = '📤 फाइल छान्नुहोस्';
+                document.getElementById('bgStatus').className = 'file-status pending';
+            }
+
+            // Set logo image
+            if (item.logo_url && item.logo_url !== '') {
+                const logoPreview = document.getElementById('logoPreview');
+                logoPreview.src = item.logo_url;
+                logoPreview.style.display = 'block';
+                document.getElementById('logoUrlDisplay').textContent = '✅ ' + item.logo_url;
+                document.getElementById('logoStatus').textContent = '✅ अपलोड भएको';
+                document.getElementById('logoStatus').className = 'file-status uploaded';
+            } else {
+                document.getElementById('logoPreview').style.display = 'none';
+                document.getElementById('logoUrlDisplay').textContent = 'कुनै छैन';
+                document.getElementById('logoStatus').textContent = '📤 फाइल छान्नुहोस्';
+                document.getElementById('logoStatus').className = 'file-status pending';
+            }
+
+            // Update message
+            document.getElementById('updateMsg').innerText = '📝 एडिट मोड: ID ' + item.id;
+            document.getElementById('updateMsg').className = 'msg info';
+
+            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ===== UPDATE BANNER DATA =====
         async function updateBannerData() {
             const recordId = document.getElementById('recordId').value;
             const meetingName = document.getElementById('meetingName').value.trim();
+            const subMeetingName = document.getElementById('subMeetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
             const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
+            const dateText = document.getElementById('dateText').value;
+            const timeText = document.getElementById('timeText').value;
+
             const msgEl = document.getElementById('updateMsg');
 
             if (!meetingName || !organizedBy) {
-                msgEl.innerText = "कृपया सबै विवरण भर्नुहोस्";
+                msgEl.innerText = "कृपया बैठकको नाम र आयोजक भर्नुहोस्";
                 msgEl.className = "msg error";
                 return;
             }
@@ -790,14 +1038,54 @@
             msgEl.innerText = "⏳ सेभ हुँदैछ...";
             msgEl.className = "msg info";
 
+            // Upload background if new file selected
+            const bgFile = document.getElementById('bgFile').files[0];
+            let bgUrl = document.getElementById('bgUrlDisplay').textContent.replace('✅ ', '');
+            if (bgUrl === 'कुनै छैन') bgUrl = '';
+
+            if (bgFile) {
+                const uploaded = await uploadImage(bgFile, 'backgrounds');
+                if (uploaded) {
+                    bgUrl = uploaded;
+                    document.getElementById('bgStatus').textContent = '✅ अपलोड भयो';
+                    document.getElementById('bgStatus').className = 'file-status uploaded';
+                } else {
+                    msgEl.innerText = "❌ Background अपलोड असफल";
+                    msgEl.className = "msg error";
+                    return;
+                }
+            }
+
+            // Upload logo if new file selected
+            const logoFile = document.getElementById('logoFile').files[0];
+            let logoUrl = document.getElementById('logoUrlDisplay').textContent.replace('✅ ', '');
+            if (logoUrl === 'कुनै छैन') logoUrl = '';
+
+            if (logoFile) {
+                const uploaded = await uploadImage(logoFile, 'logos');
+                if (uploaded) {
+                    logoUrl = uploaded;
+                    document.getElementById('logoStatus').textContent = '✅ अपलोड भयो';
+                    document.getElementById('logoStatus').className = 'file-status uploaded';
+                } else {
+                    msgEl.innerText = "❌ Logo अपलोड असफल";
+                    msgEl.className = "msg error";
+                    return;
+                }
+            }
+
+            // Update database
             const { error } = await supabaseClient
                 .from('banner_settings')
                 .update({
                     meeting_name: meetingName,
+                    sub_meeting_name: subMeetingName,
                     organized_by: organizedBy,
-                    date_text: document.getElementById('dateText').value,
-                    time_text: document.getElementById('timeText').value,
+                    date_text: dateText,
+                    time_text: timeText,
                     font_scale: fontScale,
+                    background_url: bgUrl,
+                    logo_url: logoUrl,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', recordId);
@@ -809,6 +1097,10 @@
                 msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो!";
                 msgEl.className = "msg success";
                 loadSavedData();
+
+                // Clear file inputs
+                document.getElementById('bgFile').value = '';
+                document.getElementById('logoFile').value = '';
             }
         }
 
@@ -817,9 +1109,14 @@
             location.reload();
         }
 
+        // Event listeners for date/time update
         document.getElementById('nepaliHour').addEventListener('change', updateNepaliDateDisplay);
         document.getElementById('nepaliMinute').addEventListener('change', updateNepaliDateDisplay);
         document.getElementById('nepaliPeriod').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliDay').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliMonth').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliYear').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliWeekday').addEventListener('change', updateNepaliDateDisplay);
     </script>
 </body>
 </html>

@@ -95,7 +95,7 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
             z-index: 10;
             background: rgba(255, 255, 255, 0.1);
             padding: 20px 40px;
@@ -122,6 +122,22 @@
             margin: 0 auto;
         }
 
+        .sub-meeting-title {
+            font-size: calc(2.5rem * var(--font-scale, 1));
+            font-weight: 700;
+            color: #e65100;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.7), 
+                        -2px -2px 0px rgba(255,255,255,0.7),
+                        2px -2px 0px rgba(255,255,255,0.7),
+                        -2px 2px 0px rgba(255,255,255,0.7);
+            letter-spacing: 1px;
+            line-height: 1.2;
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
         .organized-by {
             font-size: calc(2.8rem * var(--font-scale, 1));
             font-weight: 700;
@@ -130,6 +146,7 @@
                         -2px -2px 0px rgba(255,255,255,0.8),
                         2px -2px 0px rgba(255,255,255,0.8),
                         -2px 2px 0px rgba(255,255,255,0.8);
+            margin-top: 5px;
         }
 
         .footer-section {
@@ -227,6 +244,9 @@
             .meeting-title {
                 font-size: calc(3.5rem * var(--font-scale, 1));
             }
+            .sub-meeting-title {
+                font-size: calc(2rem * var(--font-scale, 1));
+            }
             .organized-by {
                 font-size: calc(2.2rem * var(--font-scale, 1));
             }
@@ -256,6 +276,9 @@
             }
             .meeting-title {
                 font-size: calc(2.5rem * var(--font-scale, 1));
+            }
+            .sub-meeting-title {
+                font-size: calc(1.5rem * var(--font-scale, 1));
             }
             .organized-by {
                 font-size: calc(1.6rem * var(--font-scale, 1));
@@ -303,6 +326,9 @@
         @media (max-width: 480px) {
             .meeting-title {
                 font-size: calc(1.8rem * var(--font-scale, 1));
+            }
+            .sub-meeting-title {
+                font-size: calc(1.2rem * var(--font-scale, 1));
             }
             .organized-by {
                 font-size: calc(1.2rem * var(--font-scale, 1));
@@ -352,6 +378,7 @@
         <!-- Center Main Content -->
         <div class="content-section">
             <h1 class="meeting-title" id="meetingName">Loading...</h1>
+            <h2 class="sub-meeting-title" id="subMeetingName"></h2>
             <h2 class="organized-by" id="organizedBy">Loading...</h2>
         </div>
 
@@ -507,7 +534,15 @@
 
             window.__liveBannerId = data.id;
             document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
+            document.getElementById('subMeetingName').innerText = data.sub_meeting_name || '';
             document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
+
+            // Hide sub-meeting if empty
+            if (!data.sub_meeting_name || data.sub_meeting_name.trim() === '') {
+                document.getElementById('subMeetingName').style.display = 'none';
+            } else {
+                document.getElementById('subMeetingName').style.display = 'block';
+            }
 
             if (data.date_text) {
                 document.getElementById('dateText').innerHTML = data.date_text;
