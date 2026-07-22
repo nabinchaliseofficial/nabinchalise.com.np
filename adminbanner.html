@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Banner Settings with Nepali Date/Time</title>
+    <title>Admin Panel - Banner Settings</title>
     <link rel="preconnect" href="https://kbyfvqkfcxqgjjtfvvxf.supabase.co">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,7 +12,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Mukta', 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
@@ -30,8 +30,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 850px;
-            transition: all 0.3s ease;
+            max-width: 900px;
         }
 
         h2, h3 {
@@ -63,7 +62,8 @@
         input[type="email"],
         input[type="password"],
         input[type="file"],
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 10px 14px;
             border: 2px solid #e0e0e0;
@@ -73,7 +73,12 @@
             background: #fafafa;
         }
 
-        input:focus, select:focus {
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #d32f2f;
             background: #ffffff;
@@ -103,12 +108,6 @@
             box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .btn-secondary {
             background: #555;
             color: white;
@@ -130,16 +129,19 @@
             padding: 10px;
             border-radius: 6px;
         }
+
         .success {
             color: #155724;
             background: #d4edda;
             border: 1px solid #c3e6cb;
         }
+
         .error {
             color: #721c24;
             background: #f8d7da;
             border: 1px solid #f5c6cb;
         }
+
         .info {
             color: #0c5460;
             background: #d1ecf1;
@@ -266,18 +268,12 @@
             min-width: 200px;
         }
 
-        /* FONT SIZE CONTROL SECTION */
         .font-size-section {
             background: #f8f9fa;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             padding: 20px 25px;
             margin-bottom: 25px;
-        }
-
-        .font-size-section h3 {
-            margin-bottom: 12px;
-            font-size: 1.3rem;
         }
 
         .font-size-control {
@@ -322,27 +318,10 @@
             border: 2px solid #d32f2f;
         }
 
-        /* LOGIN POPUP MODAL */
-        .locked-backdrop {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaf0 100%);
-            z-index: 999;
-        }
-
-        .locked-backdrop .locked-hint {
-            text-align: center;
-            color: #999;
-            font-size: 1.1rem;
-        }
-
         .login-modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(20, 20, 25, 0.6);
+            background: rgba(20, 20, 25, 0.8);
             backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
@@ -368,11 +347,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Locked state background -->
-    <div class="locked-backdrop" id="lockedBackdrop">
-        <p class="locked-hint">🔒 ब्यानर एडमिन प्यानल पहुँच गर्न लगइन गर्नुहोस्...</p>
-    </div>
 
     <!-- Login Popup Modal -->
     <div class="login-modal-overlay" id="loginSection">
@@ -418,8 +392,6 @@
 
             <h2>✏️ Banner <strong>Update Form</strong></h2>
             <input type="hidden" id="recordId" value="1">
-            <input type="hidden" id="bgUrl">
-            <input type="hidden" id="logoUrl">
 
             <!-- FONT SIZE SECTION -->
             <div class="font-size-section">
@@ -436,7 +408,7 @@
             <div class="form-group">
                 <h3 style="margin-bottom:15px;">🏛️ बैठकको नाम र आयोजक (Meeting Name & Organized By)</h3>
                 <label>🏛️ बैठकको नाम (Meeting Name)</label>
-                <input type="text" id="meetingName" placeholder="e.g., कर्मचारी मासिक बैठक">
+                <textarea id="meetingName" rows="2" placeholder="e.g., कर्मचारी मासिक बैठक"></textarea>
 
                 <label style="margin-top:14px;">🏢 आयोजक (Organized By)</label>
                 <input type="text" id="organizedBy" placeholder="e.g., गलकोट नगरपालिका">
@@ -508,6 +480,7 @@
     </div>
 
     <script>
+        // ===== NEPALI DATE SYSTEM =====
         const NepaliDate = {
             months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
             weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
@@ -529,11 +502,6 @@
         function toNepaliDigits(input) {
             const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
             return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
-        }
-
-        function fromNepaliDigits(input) {
-            const nepaliDigits = '०१२३४५६७८९';
-            return String(input).replace(/[०-९]/g, d => String(nepaliDigits.indexOf(d)));
         }
 
         function initializeNepaliDateSelectors() {
@@ -622,11 +590,9 @@
             document.getElementById('selectedNepaliDate').textContent = `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${weekdayName}`;
             document.getElementById('dateText').value = `मिति: ${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)} गते, ${weekdayName}`;
             
-            // FIXED: Time format without AM/PM
             const hour = document.getElementById('nepaliHour').value;
             const minute = document.getElementById('nepaliMinute').value;
             const period = document.getElementById('nepaliPeriod').value;
-            // Store time without AM/PM in the hidden field
             document.getElementById('timeText').value = `बैठक सुरु समय: ${toNepaliDigits(hour)}:${toNepaliDigits(minute.toString().padStart(2, '0'))} बजे`;
         }
 
@@ -638,10 +604,9 @@
             document.getElementById('fontScaleDisplay').textContent = newVal + '%';
         }
 
-        // SUPABASE CONFIGURATION
+        // ===== SUPABASE CONFIGURATION =====
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
-        const SUPABASE_BUCKET = 'banner-assets';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function isAdminUser(user) {
@@ -693,7 +658,6 @@
                 }
             }
             document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('lockedBackdrop').classList.remove('hidden');
         });
 
         async function loginAdmin() {
@@ -740,7 +704,6 @@
 
         function showDashboard() {
             document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('lockedBackdrop').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
             loadSavedData();
         }
@@ -760,7 +723,6 @@
             }
 
             if (!data || data.length === 0) {
-                const now = new Date();
                 const defaultData = {
                     meeting_name: 'बैठकको नाम',
                     organized_by: 'आयोजकको नाम',

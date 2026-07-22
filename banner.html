@@ -39,6 +39,7 @@
             padding: 20px 30px;
             border: 12px solid #d4af37;
             transition: background-image 0.5s ease, border-color 0.3s ease;
+            background-color: #1a1a2e;
         }
 
         .banner-container.is-fullscreen {
@@ -83,8 +84,10 @@
         }
 
         .center-logo-container img {
-            height: 90px;
-            max-width: 200px;
+            max-height: 70px;
+            max-width: 180px;
+            width: auto;
+            height: auto;
             object-fit: contain;
         }
 
@@ -99,6 +102,7 @@
             border-radius: 20px;
             backdrop-filter: blur(5px);
             border: 2px solid rgba(212, 175, 55, 0.2);
+            max-width: 90%;
         }
 
         .meeting-title {
@@ -111,7 +115,11 @@
                         -3px 3px 0px rgba(255,255,255,0.8),
                         0px 0px 20px rgba(255,255,255,0.5);
             letter-spacing: 2px;
-            line-height: 1.2;
+            line-height: 1.3;
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 100%;
+            margin: 0 auto;
         }
 
         .organized-by {
@@ -163,7 +171,6 @@
             font-size: calc(1.6rem * var(--font-scale, 1));
         }
 
-        /* FIXED: Smaller, semi-transparent fullscreen button */
         .fullscreen-btn {
             position: absolute;
             bottom: 20px;
@@ -237,7 +244,8 @@
                 padding: 8px 15px;
             }
             .center-logo-container img {
-                height: 70px;
+                max-height: 50px;
+                max-width: 130px;
             }
         }
 
@@ -275,8 +283,8 @@
                 padding: 5px 12px;
             }
             .center-logo-container img {
-                height: 50px;
-                max-width: 120px;
+                max-height: 40px;
+                max-width: 100px;
             }
             .header-section {
                 justify-content: center;
@@ -310,7 +318,8 @@
                 padding: 4px 10px;
             }
             .center-logo-container img {
-                height: 40px;
+                max-height: 30px;
+                max-width: 80px;
             }
             .content-section {
                 padding: 10px 15px;
@@ -363,7 +372,7 @@
         </div>
     </div>
 
-    <!-- Fullscreen Toggle Button - Smaller and subtle -->
+    <!-- Fullscreen Toggle Button -->
     <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
 
     <script>
