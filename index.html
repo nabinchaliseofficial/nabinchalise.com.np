@@ -1758,6 +1758,33 @@
       #lc-panel { right: 16px; left: 16px; width: auto; bottom: 88px; height: calc(100vh - 160px); }
       #lc-launcher { bottom: 18px; right: 18px; }
     }
+
+    /* ===== call buttons (widget header) ===== */
+    .lc-call-btn { background: rgba(255,255,255,0.16); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; flex-shrink: 0; transition: background 0.2s; }
+    .lc-call-btn:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
+    .lc-call-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== call overlay ===== */
+    #lc-call-overlay { position: fixed; inset: 0; background: rgba(5,8,15,0.96); z-index: 10010; display: none; align-items: center; justify-content: center; padding: 20px; }
+    #lc-call-overlay.active { display: flex; }
+    .lc-call-card { width: 100%; max-width: 380px; background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 34px 26px; text-align: center; }
+    .lc-call-status { color: #94a3b8; font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 18px; }
+    .lc-call-avatar-wrap { position: relative; width: 92px; height: 92px; margin: 0 auto 16px; }
+    .lc-call-avatar { width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: #fff; position: relative; z-index: 2; }
+    .lc-call-pulse { position: absolute; inset: 0; border-radius: 50%; border: 2px solid #2563eb; animation: lc-call-pulse 1.6s ease-out infinite; }
+    @keyframes lc-call-pulse { 0% { transform: scale(0.95); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
+    .lc-call-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+    .lc-call-timer { display: none; color: #10b981; font-size: 0.88rem; font-weight: 600; margin-bottom: 18px; font-variant-numeric: tabular-nums; }
+    .lc-call-video-wrap { display: none; position: relative; width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 16px; overflow: hidden; margin-bottom: 18px; }
+    .lc-call-video-wrap video#lc-remote-video { width: 100%; height: 100%; object-fit: cover; background: #000; }
+    .lc-call-video-wrap video#lc-local-video { position: absolute; bottom: 10px; right: 10px; width: 92px; height: 68px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); background: #111; }
+    .lc-call-actions { display: flex; gap: 16px; justify-content: center; }
+    .lc-call-action-btn { width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.1rem; color: #fff; display: flex; align-items: center; justify-content: center; transition: transform 0.15s; }
+    .lc-call-action-btn:hover { transform: scale(1.06); }
+    .lc-call-action-btn.accept { background: #10b981; }
+    .lc-call-action-btn.decline { background: #ef4444; }
+    .lc-call-action-btn.mute, .lc-call-action-btn.camera { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); }
+    .lc-call-action-btn.mute.active, .lc-call-action-btn.camera.active { background: rgba(239,68,68,0.25); border-color: #ef4444; }
   </style>
 
   <button id="lc-launcher" aria-label="Open live chat">💬<span id="lc-badge">Live</span></button>
@@ -1769,6 +1796,8 @@
         <strong>Live Chat</strong>
         <span><span id="lc-status-dot"></span><span id="lc-status-text">Connecting…</span></span>
       </div>
+      <button class="lc-call-btn" id="lc-audio-call" title="Audio call" disabled><i class="fa-solid fa-phone"></i></button>
+      <button class="lc-call-btn" id="lc-video-call" title="Video call" disabled><i class="fa-solid fa-video"></i></button>
       <button id="lc-restart" title="New chat">↺</button>
       <button id="lc-close" title="Close">✕</button>
     </div>
@@ -1787,6 +1816,35 @@
       <input id="lc-input" type="text" placeholder="Type a message…" maxlength="1000" />
       <button id="lc-send" type="submit" aria-label="Send">➤</button>
     </form>
+  </div>
+
+  <div id="lc-call-overlay">
+    <div class="lc-call-card">
+      <div class="lc-call-status" id="lc-call-status">Calling…</div>
+      <div class="lc-call-avatar-wrap" id="lc-call-avatar-wrap">
+        <div class="lc-call-avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="lc-call-pulse"></div>
+      </div>
+      <div class="lc-call-name" id="lc-call-peer-name">—</div>
+      <div class="lc-call-timer" id="lc-call-timer">00:00</div>
+      <div class="lc-call-video-wrap" id="lc-call-video-wrap">
+        <video id="lc-remote-video" autoplay playsinline></video>
+        <video id="lc-local-video" autoplay playsinline muted></video>
+      </div>
+      <audio id="lc-remote-audio" autoplay></audio>
+      <div class="lc-call-actions" id="lc-call-actions-ringing" style="display:none;">
+        <button class="lc-call-action-btn decline" id="lc-call-decline-btn" title="Decline"><i class="fa-solid fa-phone-slash"></i></button>
+        <button class="lc-call-action-btn accept" id="lc-call-accept-btn" title="Accept"><i class="fa-solid fa-phone"></i></button>
+      </div>
+      <div class="lc-call-actions" id="lc-call-actions-outgoing" style="display:none;">
+        <button class="lc-call-action-btn decline" id="lc-call-cancel-btn" title="Cancel"><i class="fa-solid fa-phone-slash"></i></button>
+      </div>
+      <div class="lc-call-actions" id="lc-call-actions-active" style="display:none;">
+        <button class="lc-call-action-btn mute" id="lc-call-mute-btn" title="Mute"><i class="fa-solid fa-microphone"></i></button>
+        <button class="lc-call-action-btn camera" id="lc-call-camera-btn" title="Camera"><i class="fa-solid fa-video"></i></button>
+        <button class="lc-call-action-btn decline" id="lc-call-hangup-btn" title="Hang up"><i class="fa-solid fa-phone-slash"></i></button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1822,6 +1880,8 @@
     var form = document.getElementById('lc-inputbar');
     var input = document.getElementById('lc-input');
     var sendBtn = document.getElementById('lc-send');
+    var audioCallBtn = document.getElementById('lc-audio-call');
+    var videoCallBtn = document.getElementById('lc-video-call');
 
     var opened = false;
     var sessionId = null;
@@ -1871,6 +1931,10 @@
       bodyEl.innerHTML = '';
       if (messagesChannel) { db.removeChannel(messagesChannel); messagesChannel = null; }
       if (sessionChannel) { db.removeChannel(sessionChannel); sessionChannel = null; }
+      if (callState !== 'idle') { sendCallSignal({ kind: 'end' }); cleanupCall(); }
+      teardownCallChannel();
+      audioCallBtn.disabled = true;
+      videoCallBtn.disabled = true;
       form.style.display = 'none';
       bodyEl.style.display = 'none';
       prechat.style.display = 'flex';
@@ -1883,6 +1947,9 @@
       addRow('system', 'This chat has ended. Thanks for reaching out! 👋');
       input.disabled = true;
       sendBtn.disabled = true;
+      audioCallBtn.disabled = true;
+      videoCallBtn.disabled = true;
+      if (callState !== 'idle') { sendCallSignal({ kind: 'end' }); cleanupCall(); }
       setTimeout(clearChatState, 2200);
     }
 
@@ -1901,6 +1968,10 @@
           if (payload.new && payload.new.status === 'closed') handleSessionClosed();
         })
         .subscribe();
+
+      setupCallChannel(id);
+      audioCallBtn.disabled = false;
+      videoCallBtn.disabled = false;
     }
 
     function openConversation(id, isNew) {
@@ -1967,6 +2038,275 @@
         }
       });
     }
+
+    // ============================================================
+    // AUDIO/VIDEO CALLING — WebRTC signaled over a Supabase Realtime
+    // broadcast channel scoped to the current session (call-<sessionId>).
+    // Note: uses public STUN only (no TURN), so calls may not connect
+    // across some restrictive corporate/mobile NATs.
+    // ============================================================
+    var ICE_SERVERS = { iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' }
+    ] };
+
+    var callChannel = null;
+    var pc = null;
+    var localStream = null;
+    var callState = 'idle'; // idle | outgoing | incoming | active
+    var currentCallType = null; // audio | video
+    var pendingCandidates = [];
+    var callTimerHandle = null;
+    var callStartedAt = null;
+    var micMuted = false;
+    var camOff = false;
+    var ringtoneHandle = null;
+    var callAudioCtx = null;
+
+    var callOverlay = document.getElementById('lc-call-overlay');
+    var callStatusText = document.getElementById('lc-call-status');
+    var callAvatarWrap = document.getElementById('lc-call-avatar-wrap');
+    var callPeerNameEl = document.getElementById('lc-call-peer-name');
+    var callTimerEl = document.getElementById('lc-call-timer');
+    var callVideoWrap = document.getElementById('lc-call-video-wrap');
+    var remoteVideoEl = document.getElementById('lc-remote-video');
+    var localVideoEl = document.getElementById('lc-local-video');
+    var remoteAudioEl = document.getElementById('lc-remote-audio');
+    var callActionsRinging = document.getElementById('lc-call-actions-ringing');
+    var callActionsOutgoing = document.getElementById('lc-call-actions-outgoing');
+    var callActionsActive = document.getElementById('lc-call-actions-active');
+    var callAcceptBtn = document.getElementById('lc-call-accept-btn');
+    var callDeclineBtn = document.getElementById('lc-call-decline-btn');
+    var callCancelBtn = document.getElementById('lc-call-cancel-btn');
+    var callHangupBtn = document.getElementById('lc-call-hangup-btn');
+    var callMuteBtn = document.getElementById('lc-call-mute-btn');
+    var callCameraBtn = document.getElementById('lc-call-camera-btn');
+
+    function setupCallChannel(id) {
+      if (callChannel) { db.removeChannel(callChannel); callChannel = null; }
+      if (!db) return;
+      callChannel = db.channel('call-' + id, { config: { broadcast: { self: false } } })
+        .on('broadcast', { event: 'signal' }, function(msg) { handleCallSignal(msg.payload); })
+        .subscribe();
+    }
+    function teardownCallChannel() {
+      if (callChannel) { db.removeChannel(callChannel); callChannel = null; }
+    }
+    function sendCallSignal(data) {
+      if (!callChannel) return;
+      var payload = Object.assign({ from: 'visitor' }, data);
+      callChannel.send({ type: 'broadcast', event: 'signal', payload: payload });
+    }
+
+    function playChime() {
+      try {
+        callAudioCtx = callAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (callAudioCtx.state === 'suspended') callAudioCtx.resume();
+        [880, 1175].forEach(function(freq, i) {
+          var osc = callAudioCtx.createOscillator();
+          var gain = callAudioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          var start = callAudioCtx.currentTime + i * 0.12;
+          gain.gain.setValueAtTime(0, start);
+          gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+          osc.connect(gain).connect(callAudioCtx.destination);
+          osc.start(start);
+          osc.stop(start + 0.32);
+        });
+      } catch (e) {}
+    }
+    function ringtoneStart() { if (ringtoneHandle) return; ringtoneHandle = setInterval(playChime, 1600); playChime(); }
+    function ringtoneStop() { if (ringtoneHandle) { clearInterval(ringtoneHandle); ringtoneHandle = null; } }
+
+    function fmtTime(sec) {
+      var m = Math.floor(sec / 60).toString().padStart(2, '0');
+      var s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return m + ':' + s;
+    }
+    function startCallTimer() {
+      callStartedAt = Date.now();
+      callTimerEl.style.display = 'block';
+      callTimerHandle = setInterval(function() { callTimerEl.textContent = fmtTime((Date.now() - callStartedAt) / 1000); }, 1000);
+    }
+    function stopCallTimer() {
+      if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
+      callTimerEl.style.display = 'none';
+      callTimerEl.textContent = '00:00';
+    }
+
+    function resetCallActionsUI() {
+      callActionsRinging.style.display = 'none';
+      callActionsOutgoing.style.display = 'none';
+      callActionsActive.style.display = 'none';
+      callVideoWrap.style.display = 'none';
+      callAvatarWrap.style.display = 'block';
+    }
+    function renderOutgoingUI(name) {
+      resetCallActionsUI();
+      callState = 'outgoing';
+      callStatusText.textContent = 'Calling…';
+      callPeerNameEl.textContent = name;
+      callActionsOutgoing.style.display = 'flex';
+      callOverlay.classList.add('active');
+    }
+    function renderIncomingUI(type, name) {
+      resetCallActionsUI();
+      callState = 'incoming';
+      callStatusText.textContent = type === 'video' ? 'Incoming video call' : 'Incoming call';
+      callPeerNameEl.textContent = name;
+      callActionsRinging.style.display = 'flex';
+      callOverlay.classList.add('active');
+      ringtoneStart();
+      if (!opened) { opened = true; panel.classList.add('open'); }
+    }
+    function renderActiveUI(type) {
+      resetCallActionsUI();
+      callState = 'active';
+      callStatusText.textContent = 'Connecting…';
+      if (type === 'video') { callVideoWrap.style.display = 'block'; callAvatarWrap.style.display = 'none'; }
+      callActionsActive.style.display = 'flex';
+      startCallTimer();
+    }
+
+    function startCall(type) {
+      if (!sessionId || callState !== 'idle') return;
+      currentCallType = type;
+      renderOutgoingUI('Nabin');
+      sendCallSignal({ kind: 'ring', callType: type });
+    }
+
+    function acceptCall() {
+      ringtoneStop();
+      navigator.mediaDevices.getUserMedia({ audio: true, video: currentCallType === 'video' }).then(function(stream) {
+        localStream = stream;
+        if (currentCallType === 'video') localVideoEl.srcObject = localStream;
+        sendCallSignal({ kind: 'accept' });
+        renderActiveUI(currentCallType);
+      }).catch(function() {
+        prechatErr.textContent = '';
+        sendCallSignal({ kind: 'decline' });
+        cleanupCall();
+      });
+    }
+    function declineCall() { ringtoneStop(); sendCallSignal({ kind: 'decline' }); cleanupCall(); }
+    function cancelOutgoingCall() { sendCallSignal({ kind: 'cancel' }); cleanupCall(); }
+    function hangupCall() { sendCallSignal({ kind: 'end' }); cleanupCall(); }
+
+    function cleanupCall() {
+      ringtoneStop();
+      stopCallTimer();
+      if (pc) { pc.close(); pc = null; }
+      if (localStream) { localStream.getTracks().forEach(function(t) { t.stop(); }); localStream = null; }
+      remoteVideoEl.srcObject = null;
+      localVideoEl.srcObject = null;
+      remoteAudioEl.srcObject = null;
+      pendingCandidates = [];
+      micMuted = false; camOff = false;
+      callMuteBtn.classList.remove('active');
+      callMuteBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+      callCameraBtn.classList.remove('active');
+      callCameraBtn.innerHTML = '<i class="fa-solid fa-video"></i>';
+      callState = 'idle';
+      currentCallType = null;
+      callOverlay.classList.remove('active');
+    }
+
+    function createPeerConnection() {
+      var conn = new RTCPeerConnection(ICE_SERVERS);
+      localStream.getTracks().forEach(function(track) { conn.addTrack(track, localStream); });
+      conn.onicecandidate = function(e) { if (e.candidate) sendCallSignal({ kind: 'ice', candidate: e.candidate }); };
+      conn.ontrack = function(e) {
+        if (currentCallType === 'video') remoteVideoEl.srcObject = e.streams[0];
+        else remoteAudioEl.srcObject = e.streams[0];
+        callStatusText.textContent = 'Connected';
+      };
+      return conn;
+    }
+
+    function handleCallSignal(data) {
+      if (!data || data.from === 'visitor') return;
+      switch (data.kind) {
+        case 'ring':
+          if (callState !== 'idle') { sendCallSignal({ kind: 'decline' }); return; }
+          currentCallType = data.callType;
+          renderIncomingUI(currentCallType, 'Nabin');
+          break;
+        case 'accept':
+          if (callState !== 'outgoing') return;
+          ringtoneStop();
+          navigator.mediaDevices.getUserMedia({ audio: true, video: currentCallType === 'video' }).then(function(stream) {
+            localStream = stream;
+            if (currentCallType === 'video') localVideoEl.srcObject = localStream;
+            pc = createPeerConnection();
+            renderActiveUI(currentCallType);
+            return pc.createOffer();
+          }).then(function(offer) {
+            return pc.setLocalDescription(offer).then(function() { return offer; });
+          }).then(function(offer) {
+            sendCallSignal({ kind: 'offer', sdp: offer });
+          }).catch(function() {
+            sendCallSignal({ kind: 'end' });
+            cleanupCall();
+          });
+          break;
+        case 'decline':
+          cleanupCall();
+          break;
+        case 'cancel':
+          ringtoneStop();
+          cleanupCall();
+          break;
+        case 'offer':
+          if (!localStream) return;
+          pc = createPeerConnection();
+          pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(function() {
+            return Promise.all(pendingCandidates.map(function(c) { return pc.addIceCandidate(c).catch(function(){}); }));
+          }).then(function() {
+            pendingCandidates = [];
+            return pc.createAnswer();
+          }).then(function(answer) {
+            return pc.setLocalDescription(answer).then(function() { return answer; });
+          }).then(function(answer) {
+            sendCallSignal({ kind: 'answer', sdp: answer });
+          });
+          break;
+        case 'answer':
+          if (!pc) return;
+          pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+          break;
+        case 'ice':
+          if (!data.candidate) return;
+          if (pc && pc.remoteDescription) { pc.addIceCandidate(data.candidate).catch(function(){}); }
+          else pendingCandidates.push(data.candidate);
+          break;
+        case 'end':
+          cleanupCall();
+          break;
+      }
+    }
+
+    audioCallBtn.addEventListener('click', function() { startCall('audio'); });
+    videoCallBtn.addEventListener('click', function() { startCall('video'); });
+    callAcceptBtn.addEventListener('click', acceptCall);
+    callDeclineBtn.addEventListener('click', declineCall);
+    callCancelBtn.addEventListener('click', cancelOutgoingCall);
+    callHangupBtn.addEventListener('click', hangupCall);
+    callMuteBtn.addEventListener('click', function() {
+      if (!localStream) return;
+      micMuted = !micMuted;
+      localStream.getAudioTracks().forEach(function(t) { t.enabled = !micMuted; });
+      callMuteBtn.classList.toggle('active', micMuted);
+      callMuteBtn.innerHTML = micMuted ? '<i class="fa-solid fa-microphone-slash"></i>' : '<i class="fa-solid fa-microphone"></i>';
+    });
+    callCameraBtn.addEventListener('click', function() {
+      if (!localStream || currentCallType !== 'video') return;
+      camOff = !camOff;
+      localStream.getVideoTracks().forEach(function(t) { t.enabled = !camOff; });
+      callCameraBtn.classList.toggle('active', camOff);
+      callCameraBtn.innerHTML = camOff ? '<i class="fa-solid fa-video-slash"></i>' : '<i class="fa-solid fa-video"></i>';
+    });
 
     // ---------- Wiring ----------
     startBtn.addEventListener('click', startNewChat);

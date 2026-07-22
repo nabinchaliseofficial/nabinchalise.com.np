@@ -156,17 +156,104 @@
     .back-mobile { display: inline-flex !important; }
   }
   .back-mobile { display: none; background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+
+  /* ===== login overlay ===== */
+  .login-overlay { position: fixed; inset:0; background: rgba(5,8,15,0.97); z-index: 10002; display:none; align-items:center; justify-content:center; padding:24px; }
+  .login-overlay.active { display:flex; }
+  .login-card { width:100%; max-width:360px; background: var(--panel-2); border:1px solid var(--border); border-radius:18px; padding:32px 28px; text-align:center; }
+  .login-card i.fa-lock { font-size:2.2rem; color: var(--accent); }
+  .login-card h2 { margin-top:12px; font-size:1.25rem; }
+  .login-card p { color: var(--muted); font-size:0.85rem; margin: 8px 0 20px; }
+  .login-card form { display:flex; flex-direction:column; gap:12px; text-align:left; }
+  .login-card input { background: rgba(255,255,255,0.05); border:1px solid var(--border); color: var(--text); padding:12px 14px; border-radius:12px; font-size:0.9rem; outline:none; font-family:inherit; }
+  .login-card input:focus { border-color: var(--accent); }
+  .login-card .login-err { color: var(--danger); font-size:0.8rem; min-height:1em; }
+  .login-card button[type="submit"] { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; color:#fff; padding:12px; border-radius:12px; font-weight:700; font-size:0.9rem; cursor:pointer; margin-top:4px; }
+  .login-card button[type="submit"]:disabled { opacity:0.6; cursor:not-allowed; }
+  .link-btn { background:none; border:none; color: var(--accent-2); font-size:0.8rem; cursor:pointer; margin-top:14px; text-decoration:underline; }
+
+  /* ===== call buttons (header) ===== */
+  .btn-call { background: rgba(255,255,255,0.05); border:1px solid var(--border); color: var(--text); width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:0.9rem; flex-shrink:0; }
+  .btn-call:hover:not(:disabled) { background: rgba(37,99,235,0.2); border-color: var(--accent); }
+  .btn-call:disabled { opacity:0.4; cursor:not-allowed; }
+
+  /* ===== call overlay ===== */
+  .call-overlay { position: fixed; inset:0; background: rgba(5,8,15,0.96); z-index: 10003; display:none; align-items:center; justify-content:center; padding:20px; }
+  .call-overlay.active { display:flex; }
+  .call-card { width:100%; max-width:420px; background: var(--panel-2); border:1px solid var(--border); border-radius:24px; padding:36px 28px; text-align:center; position:relative; overflow:hidden; }
+  .call-status { color: var(--muted); font-size:0.8rem; letter-spacing:0.03em; text-transform:uppercase; margin-bottom:18px; }
+  .call-avatar-wrap { position:relative; width:100px; height:100px; margin:0 auto 16px; }
+  .call-avatar { width:100px; height:100px; border-radius:50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display:flex; align-items:center; justify-content:center; font-size:2.4rem; color:#fff; position:relative; z-index:2; }
+  .call-pulse-ring { position:absolute; inset:0; border-radius:50%; border:2px solid var(--accent); animation: call-pulse 1.6s ease-out infinite; }
+  @keyframes call-pulse { 0% { transform:scale(0.95); opacity:0.9; } 100% { transform:scale(1.5); opacity:0; } }
+  .call-name { font-size:1.2rem; font-weight:700; margin-bottom:4px; }
+  .call-timer { display:none; color: var(--success); font-size:0.9rem; font-weight:600; margin-bottom:18px; font-variant-numeric: tabular-nums; }
+  .call-video-wrap { display:none; position:relative; width:100%; aspect-ratio: 4/3; background:#000; border-radius:16px; overflow:hidden; margin-bottom:18px; }
+  .call-video-wrap video#remoteVideo { width:100%; height:100%; object-fit:cover; background:#000; }
+  .call-video-wrap video#localVideo { position:absolute; bottom:10px; right:10px; width:96px; height:72px; border-radius:10px; object-fit:cover; border:2px solid rgba(255,255,255,0.2); background:#111; }
+  .call-actions { display:flex; gap:18px; justify-content:center; }
+  .call-btn { width:56px; height:56px; border-radius:50%; border:none; cursor:pointer; font-size:1.2rem; color:#fff; display:flex; align-items:center; justify-content:center; transition: transform 0.15s; }
+  .call-btn:hover { transform: scale(1.06); }
+  .call-btn.accept { background: var(--success); }
+  .call-btn.decline { background: var(--danger); }
+  .call-btn.mute, .call-btn.camera { background: rgba(255,255,255,0.08); border:1px solid var(--border); }
+  .call-btn.mute.active, .call-btn.camera.active { background: rgba(239,68,68,0.25); border-color: var(--danger); }
 </style>
 </head>
 <body>
 
   <div id="authLoading"><i class="fa-solid fa-circle-notch fa-spin"></i><span>Checking admin access…</span></div>
 
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <i class="fa-solid fa-lock"></i>
+      <h2>Admin Sign In</h2>
+      <p>Sign in with your admin account to open the Live Chat console.</p>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
+        <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password" />
+        <div class="login-err" id="loginErr"></div>
+        <button type="submit" id="loginSubmitBtn">Sign In</button>
+      </form>
+      <button class="link-btn" id="loginBackBtn">Back to site</button>
+    </div>
+  </div>
+
   <div class="access-denied-overlay" id="accessDeniedOverlay">
     <i class="fa-solid fa-lock"></i>
     <h2>Access Denied</h2>
     <p>You need admin privileges to open the Live Chat console. Please sign in with an admin account.</p>
+    <button class="btn-go-back" id="switchAccountBtn" style="background: rgba(255,255,255,0.08);">Sign in as different user</button>
     <button class="btn-go-back" id="goBackBtn"><i class="fa-solid fa-arrow-left"></i> Back to site</button>
+  </div>
+
+  <div class="call-overlay" id="callOverlay">
+    <div class="call-card">
+      <div class="call-status" id="callStatusText">Calling…</div>
+      <div class="call-avatar-wrap" id="callAvatarWrap">
+        <div class="call-avatar" id="callAvatar"><i class="fa-solid fa-user"></i></div>
+        <div class="call-pulse-ring"></div>
+      </div>
+      <div class="call-name" id="callPeerName">—</div>
+      <div class="call-timer" id="callTimer">00:00</div>
+      <div class="call-video-wrap" id="callVideoWrap">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <video id="localVideo" autoplay playsinline muted></video>
+      </div>
+      <audio id="remoteAudio" autoplay></audio>
+      <div class="call-actions" id="callActionsRinging" style="display:none;">
+        <button class="call-btn decline" id="callDeclineBtn" title="Decline"><i class="fa-solid fa-phone-slash"></i></button>
+        <button class="call-btn accept" id="callAcceptBtn" title="Accept"><i class="fa-solid fa-phone"></i></button>
+      </div>
+      <div class="call-actions" id="callActionsOutgoing" style="display:none;">
+        <button class="call-btn decline" id="callCancelBtn" title="Cancel"><i class="fa-solid fa-phone-slash"></i></button>
+      </div>
+      <div class="call-actions" id="callActionsActive" style="display:none;">
+        <button class="call-btn mute" id="callMuteBtn" title="Mute"><i class="fa-solid fa-microphone"></i></button>
+        <button class="call-btn camera" id="callCameraBtn" title="Camera"><i class="fa-solid fa-video"></i></button>
+        <button class="call-btn decline" id="callHangupBtn" title="Hang up"><i class="fa-solid fa-phone-slash"></i></button>
+      </div>
+    </div>
   </div>
 
   <div id="app">
@@ -199,6 +286,8 @@
               <strong id="convoName">—</strong>
               <span id="convoMeta">—</span>
             </div>
+            <button class="btn-call" id="audioCallBtn" title="Audio call" disabled><i class="fa-solid fa-phone"></i></button>
+            <button class="btn-call" id="videoCallBtn" title="Video call" disabled><i class="fa-solid fa-video"></i></button>
             <button class="btn-close-chat" id="closeChatBtn"><i class="fa-solid fa-circle-xmark"></i> Close chat</button>
           </div>
           <div class="convo-messages" id="convoMessages"></div>
@@ -219,6 +308,7 @@
 
   const $ = (id) => document.getElementById(id);
   const authLoading = $('authLoading');
+  const loginOverlay = $('loginOverlay');
   const accessDeniedOverlay = $('accessDeniedOverlay');
   const app = $('app');
   const connDot = $('connDot');
@@ -249,18 +339,59 @@
   }
 
   $('goBackBtn').addEventListener('click', () => { window.location.href = '/index.html'; });
+  $('loginBackBtn').addEventListener('click', () => { window.location.href = '/index.html'; });
 
   // ============================================================
-  // AUTH GUARD — same pattern as other admin modules
+  // AUTH GUARD — login popup + role check (no redirect for signed-out users)
   // ============================================================
   async function checkAdminRole() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) { window.location.href = '/index.html'; return false; }
+    if (sessionError || !session) return 'no-session';
     const { data: roleData, error: roleError } = await supabase
       .from('user_roles').select('role').eq('user_id', session.user.id).maybeSingle();
-    if (roleError || !roleData || roleData.role !== 'admin') return false;
-    return true;
+    if (roleError || !roleData || roleData.role !== 'admin') return 'not-admin';
+    return 'admin';
   }
+
+  async function tryEnterApp() {
+    authLoading.style.display = 'flex';
+    const status = await checkAdminRole();
+    authLoading.style.display = 'none';
+    loginOverlay.classList.remove('active');
+    accessDeniedOverlay.classList.remove('active');
+    if (status === 'no-session') { loginOverlay.classList.add('active'); return; }
+    if (status === 'not-admin') { accessDeniedOverlay.classList.add('active'); return; }
+    app.classList.add('active');
+    pingDb();
+    setInterval(pingDb, 20000);
+    await loadSessions();
+    subscribeSessionsList();
+    subscribeGlobalMessages();
+    requestNotifPermission();
+  }
+
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    const btn = $('loginSubmitBtn');
+    const errEl = $('loginErr');
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+    if (error) { errEl.textContent = error.message || 'Invalid email or password.'; return; }
+    $('loginPassword').value = '';
+    await tryEnterApp();
+  });
+
+  $('switchAccountBtn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    accessDeniedOverlay.classList.remove('active');
+    loginOverlay.classList.add('active');
+  });
 
   // ============================================================
   // STATE
@@ -456,6 +587,8 @@
     $('convoInput').disabled = status !== 'open';
     $('convoSendBtn').disabled = status !== 'open';
     $('closeChatBtn').disabled = status !== 'open';
+    $('audioCallBtn').disabled = status !== 'open';
+    $('videoCallBtn').disabled = status !== 'open';
     $('closeChatBtn').textContent = status === 'open' ? '' : 'Chat closed';
     if (status === 'open') $('closeChatBtn').innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Close chat';
 
@@ -473,11 +606,16 @@
           $('convoInput').disabled = true;
           $('convoSendBtn').disabled = true;
           $('closeChatBtn').disabled = true;
+          $('audioCallBtn').disabled = true;
+          $('videoCallBtn').disabled = true;
           $('convoMeta').innerHTML = '<span class="status-chip closed" style="display:inline-block;"></span>Closed';
+          if (callState !== 'idle') { sendCallSignal({ kind: 'end' }); cleanupCall(); }
           clearSessionText(id);
         }
       })
       .subscribe();
+
+    setupCallChannel(id);
 
     document.body.classList.add('chat-open-mobile');
     $('sessionsPane').classList.add('hide-mobile');
@@ -534,8 +672,11 @@
 
   $('logoutBtn').addEventListener('click', async () => {
     if (confirm('Log out of the console?')) {
+      cleanupCall();
+      teardownCallChannel();
       await supabase.auth.signOut();
-      window.location.href = '/index.html';
+      app.classList.remove('active');
+      await tryEnterApp();
     }
   });
 
@@ -564,19 +705,255 @@
   }
 
   // ============================================================
+  // AUDIO/VIDEO CALLING — WebRTC signaled over a Supabase Realtime
+  // broadcast channel scoped to the current session (call-<sessionId>).
+  // Note: uses public STUN only (no TURN), so calls may not connect
+  // across some restrictive corporate/mobile NATs.
+  // ============================================================
+  const ICE_SERVERS = { iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' }
+  ] };
+
+  let callChannel = null;
+  let pc = null;
+  let localStream = null;
+  let callState = 'idle'; // idle | outgoing | incoming | active
+  let currentCallType = null; // audio | video
+  let callSessionId = null;
+  let callPeerName = '';
+  let pendingCandidates = [];
+  let callTimerHandle = null;
+  let callStartedAt = null;
+  let micMuted = false;
+  let camOff = false;
+  let ringtoneHandle = null;
+
+  const callOverlay = $('callOverlay');
+  const callVideoWrap = $('callVideoWrap');
+  const remoteVideoEl = $('remoteVideo');
+  const localVideoEl = $('localVideo');
+  const remoteAudioEl = $('remoteAudio');
+
+  function setupCallChannel(sessionId) {
+    if (callChannel) { supabase.removeChannel(callChannel); callChannel = null; }
+    callSessionId = sessionId;
+    callChannel = supabase.channel('call-' + sessionId, { config: { broadcast: { self: false } } })
+      .on('broadcast', { event: 'signal' }, msg => handleCallSignal(msg.payload))
+      .subscribe();
+  }
+  function teardownCallChannel() {
+    if (callChannel) { supabase.removeChannel(callChannel); callChannel = null; }
+    callSessionId = null;
+  }
+  function sendCallSignal(data) {
+    if (!callChannel) return;
+    callChannel.send({ type: 'broadcast', event: 'signal', payload: Object.assign({ from: 'admin' }, data) });
+  }
+
+  function ringtoneStart() { if (ringtoneHandle) return; ringtoneHandle = setInterval(playChime, 1600); playChime(); }
+  function ringtoneStop() { if (ringtoneHandle) { clearInterval(ringtoneHandle); ringtoneHandle = null; } }
+
+  function fmtTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+  function startCallTimer() {
+    callStartedAt = Date.now();
+    $('callTimer').style.display = 'block';
+    callTimerHandle = setInterval(() => { $('callTimer').textContent = fmtTime((Date.now() - callStartedAt) / 1000); }, 1000);
+  }
+  function stopCallTimer() {
+    if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
+    $('callTimer').style.display = 'none';
+    $('callTimer').textContent = '00:00';
+  }
+
+  function resetCallActionsUI() {
+    $('callActionsRinging').style.display = 'none';
+    $('callActionsOutgoing').style.display = 'none';
+    $('callActionsActive').style.display = 'none';
+    callVideoWrap.style.display = 'none';
+    $('callAvatarWrap').style.display = 'block';
+  }
+  function renderOutgoingUI(name) {
+    resetCallActionsUI();
+    callState = 'outgoing';
+    $('callStatusText').textContent = 'Calling…';
+    $('callPeerName').textContent = name;
+    $('callActionsOutgoing').style.display = 'flex';
+    callOverlay.classList.add('active');
+  }
+  function renderIncomingUI(type, name) {
+    resetCallActionsUI();
+    callState = 'incoming';
+    $('callStatusText').textContent = type === 'video' ? 'Incoming video call' : 'Incoming call';
+    $('callPeerName').textContent = name;
+    $('callActionsRinging').style.display = 'flex';
+    callOverlay.classList.add('active');
+    ringtoneStart();
+  }
+  function renderActiveUI(type) {
+    resetCallActionsUI();
+    callState = 'active';
+    $('callStatusText').textContent = 'Connecting…';
+    if (type === 'video') { callVideoWrap.style.display = 'block'; $('callAvatarWrap').style.display = 'none'; }
+    $('callActionsActive').style.display = 'flex';
+    startCallTimer();
+  }
+
+  async function startCall(type) {
+    if (!activeSessionId || callState !== 'idle') return;
+    const session = sessionsCache.find(s => s.id === activeSessionId);
+    if (!session || session.status !== 'open') { showToast('Chat must be open to start a call.', 'error'); return; }
+    currentCallType = type;
+    callPeerName = session.visitor_name;
+    renderOutgoingUI(callPeerName);
+    sendCallSignal({ kind: 'ring', callType: type });
+  }
+
+  async function acceptCall() {
+    ringtoneStop();
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: currentCallType === 'video' });
+    } catch (e) {
+      showToast('Could not access microphone/camera.', 'error');
+      sendCallSignal({ kind: 'decline' });
+      cleanupCall();
+      return;
+    }
+    if (currentCallType === 'video') localVideoEl.srcObject = localStream;
+    sendCallSignal({ kind: 'accept' });
+    renderActiveUI(currentCallType);
+  }
+  function declineCall() { ringtoneStop(); sendCallSignal({ kind: 'decline' }); cleanupCall(); }
+  function cancelOutgoingCall() { sendCallSignal({ kind: 'cancel' }); cleanupCall(); }
+  function hangupCall() { sendCallSignal({ kind: 'end' }); cleanupCall(); showToast('Call ended.', 'success'); }
+
+  function cleanupCall() {
+    ringtoneStop();
+    stopCallTimer();
+    if (pc) { pc.close(); pc = null; }
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    remoteVideoEl.srcObject = null;
+    localVideoEl.srcObject = null;
+    remoteAudioEl.srcObject = null;
+    pendingCandidates = [];
+    micMuted = false; camOff = false;
+    $('callMuteBtn').classList.remove('active');
+    $('callMuteBtn').innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    $('callCameraBtn').classList.remove('active');
+    $('callCameraBtn').innerHTML = '<i class="fa-solid fa-video"></i>';
+    callState = 'idle';
+    currentCallType = null;
+    callOverlay.classList.remove('active');
+  }
+
+  function createPeerConnection() {
+    const conn = new RTCPeerConnection(ICE_SERVERS);
+    localStream.getTracks().forEach(track => conn.addTrack(track, localStream));
+    conn.onicecandidate = e => { if (e.candidate) sendCallSignal({ kind: 'ice', candidate: e.candidate }); };
+    conn.ontrack = e => {
+      if (currentCallType === 'video') remoteVideoEl.srcObject = e.streams[0];
+      else remoteAudioEl.srcObject = e.streams[0];
+      $('callStatusText').textContent = 'Connected';
+    };
+    return conn;
+  }
+
+  async function handleCallSignal(data) {
+    if (!data || data.from === 'admin') return;
+    switch (data.kind) {
+      case 'ring': {
+        if (callState !== 'idle') { sendCallSignal({ kind: 'decline' }); return; }
+        currentCallType = data.callType;
+        const s = sessionsCache.find(x => x.id === callSessionId);
+        callPeerName = s ? s.visitor_name : 'Visitor';
+        renderIncomingUI(currentCallType, callPeerName);
+        break;
+      }
+      case 'accept': {
+        if (callState !== 'outgoing') return;
+        ringtoneStop();
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: currentCallType === 'video' });
+        } catch (e) {
+          showToast('Could not access microphone/camera.', 'error');
+          sendCallSignal({ kind: 'end' });
+          cleanupCall();
+          return;
+        }
+        if (currentCallType === 'video') localVideoEl.srcObject = localStream;
+        pc = createPeerConnection();
+        renderActiveUI(currentCallType);
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendCallSignal({ kind: 'offer', sdp: offer });
+        break;
+      }
+      case 'decline':
+        showToast(callPeerName + ' declined the call.', 'error');
+        cleanupCall();
+        break;
+      case 'cancel':
+        ringtoneStop();
+        showToast('Missed call.', 'error');
+        cleanupCall();
+        break;
+      case 'offer': {
+        if (!localStream) return;
+        pc = createPeerConnection();
+        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+        for (const c of pendingCandidates) { try { await pc.addIceCandidate(c); } catch (e) {} }
+        pendingCandidates = [];
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        sendCallSignal({ kind: 'answer', sdp: answer });
+        break;
+      }
+      case 'answer':
+        if (!pc) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+        break;
+      case 'ice':
+        if (!data.candidate) return;
+        if (pc && pc.remoteDescription) { try { await pc.addIceCandidate(data.candidate); } catch (e) {} }
+        else pendingCandidates.push(data.candidate);
+        break;
+      case 'end':
+        showToast('Call ended.', 'success');
+        cleanupCall();
+        break;
+    }
+  }
+
+  $('audioCallBtn').addEventListener('click', () => startCall('audio'));
+  $('videoCallBtn').addEventListener('click', () => startCall('video'));
+  $('callAcceptBtn').addEventListener('click', acceptCall);
+  $('callDeclineBtn').addEventListener('click', declineCall);
+  $('callCancelBtn').addEventListener('click', cancelOutgoingCall);
+  $('callHangupBtn').addEventListener('click', hangupCall);
+  $('callMuteBtn').addEventListener('click', () => {
+    if (!localStream) return;
+    micMuted = !micMuted;
+    localStream.getAudioTracks().forEach(t => t.enabled = !micMuted);
+    $('callMuteBtn').classList.toggle('active', micMuted);
+    $('callMuteBtn').innerHTML = micMuted ? '<i class="fa-solid fa-microphone-slash"></i>' : '<i class="fa-solid fa-microphone"></i>';
+  });
+  $('callCameraBtn').addEventListener('click', () => {
+    if (!localStream || currentCallType !== 'video') return;
+    camOff = !camOff;
+    localStream.getVideoTracks().forEach(t => t.enabled = !camOff);
+    $('callCameraBtn').classList.toggle('active', camOff);
+    $('callCameraBtn').innerHTML = camOff ? '<i class="fa-solid fa-video-slash"></i>' : '<i class="fa-solid fa-video"></i>';
+  });
+
+  // ============================================================
   // BOOT
   // ============================================================
   (async function boot() {
-    const ok = await checkAdminRole();
-    authLoading.style.display = 'none';
-    if (!ok) { accessDeniedOverlay.classList.add('active'); return; }
-    app.classList.add('active');
-    pingDb();
-    setInterval(pingDb, 20000);
-    await loadSessions();
-    subscribeSessionsList();
-    subscribeGlobalMessages();
-    requestNotifPermission();
+    await tryEnterApp();
   })();
 })();
 </script>
