@@ -72,6 +72,13 @@
   .conn-dot.offline { background: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
   .btn-logout { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
   .btn-logout:hover { background: rgba(239,68,68,0.2); }
+  .btn-sound {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted);
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .btn-sound:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+  .btn-sound.muted { color: var(--faint); }
 
   .layout { flex: 1; display: flex; min-height: 0; }
 
@@ -167,6 +174,7 @@
       <a class="back" href="admin.html"><i class="fa-solid fa-arrow-left"></i> Hub</a>
       <h1><i class="fa-solid fa-comments"></i> Live Chat</h1>
       <div class="conn-pill"><span class="conn-dot" id="connDot"></span><span id="connText">Connecting…</span></div>
+      <button class="btn-sound" id="soundToggleBtn" title="Mute notification sound"><i class="fa-solid fa-volume-high"></i></button>
       <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
     </div>
 
@@ -261,14 +269,113 @@
   let activeSessionId = null;
   let sessionsChannel = null;
   let messagesChannel = null;
+  let notifyChannel = null;
   let renderedMsgIds = {};
   let sessionsCache = [];
+  const baseTitle = document.title;
+  let unseenCount = 0;
 
   function pingDb() {
     supabase.from('live_chat_sessions').select('id', { count: 'exact', head: true }).then(res => {
       if (res.error) { connDot.className = 'conn-dot offline'; connText.textContent = 'Offline'; }
       else { connDot.className = 'conn-dot live'; connText.textContent = 'Live'; }
     }).catch(() => { connDot.className = 'conn-dot offline'; connText.textContent = 'Offline'; });
+  }
+
+  // ============================================================
+  // NOTIFICATIONS — sound + desktop popup for incoming visitor messages
+  // ============================================================
+  const soundToggleBtn = $('soundToggleBtn');
+  let soundEnabled = localStorage.getItem('lc_admin_sound') !== 'off';
+  function updateSoundBtn() {
+    soundToggleBtn.classList.toggle('muted', !soundEnabled);
+    soundToggleBtn.innerHTML = soundEnabled
+      ? '<i class="fa-solid fa-volume-high"></i>'
+      : '<i class="fa-solid fa-volume-xmark"></i>';
+    soundToggleBtn.title = soundEnabled ? 'Mute notification sound' : 'Unmute notification sound';
+  }
+  updateSoundBtn();
+  soundToggleBtn.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('lc_admin_sound', soundEnabled ? 'on' : 'off');
+    updateSoundBtn();
+    if (soundEnabled) playChime(); // quick confirmation beep
+  });
+
+  let audioCtx = null;
+  function playChime() {
+    if (!soundEnabled) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const notes = [880, 1175]; // two-tone "ding"
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = audioCtx.currentTime + i * 0.12;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + 0.32);
+      });
+    } catch (e) { /* audio not available — sound is a nice-to-have, fail silently */ }
+  }
+
+  function requestNotifPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  }
+
+  function showDesktopNotification(title, body, onClick) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      const n = new Notification(title, { body, icon: undefined, tag: 'live-chat-' + Date.now() });
+      n.onclick = () => {
+        window.focus();
+        if (onClick) onClick();
+        n.close();
+      };
+    } catch (e) { /* ignore */ }
+  }
+
+  function bumpUnseenTitle() {
+    unseenCount++;
+    document.title = '(' + unseenCount + ') ' + baseTitle;
+  }
+  function clearUnseenTitle() {
+    unseenCount = 0;
+    document.title = baseTitle;
+  }
+  window.addEventListener('focus', clearUnseenTitle);
+
+  function notifyIncomingMessage(msg) {
+    if (msg.sender !== 'visitor') return;
+    playChime();
+    const isViewingThisSession = document.hasFocus() && activeSessionId === msg.session_id;
+    if (isViewingThisSession) return; // already looking at it live, no popup needed
+    if (document.hidden || document.visibilityState !== 'visible') bumpUnseenTitle();
+    const session = sessionsCache.find(s => s.id === msg.session_id);
+    const who = session ? session.visitor_name : 'A visitor';
+    showToast(`💬 New message from ${who}`, 'success');
+    showDesktopNotification('New message — ' + who, msg.message.slice(0, 120), () => {
+      const s = sessionsCache.find(x => x.id === msg.session_id);
+      openSession(msg.session_id, s ? s.visitor_name : who, 'open');
+    });
+  }
+
+  function notifyNewChat(session) {
+    playChime();
+    if (document.hidden || document.visibilityState !== 'visible') bumpUnseenTitle();
+    showToast(`🟢 New chat request from ${session.visitor_name}`, 'success');
+    showDesktopNotification('New chat request', session.visitor_name + ' started a chat', () => {
+      openSession(session.id, session.visitor_name, 'open');
+    });
   }
 
   async function loadSessions() {
@@ -435,8 +542,24 @@
   function subscribeSessionsList() {
     if (sessionsChannel) supabase.removeChannel(sessionsChannel);
     sessionsChannel = supabase.channel('admin-sessions-list')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live_chat_sessions' }, () => loadSessions())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live_chat_sessions' }, payload => {
+        notifyNewChat(payload.new);
+        loadSessions();
+      })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'live_chat_sessions' }, () => loadSessions())
+      .subscribe();
+  }
+
+  // Global listener across ALL sessions so an incoming visitor message pops a
+  // sound + notification even if the admin has that chat closed or is
+  // looking at a different conversation. The per-session channel (opened in
+  // openSession) still handles actually rendering the bubble.
+  function subscribeGlobalMessages() {
+    if (notifyChannel) supabase.removeChannel(notifyChannel);
+    notifyChannel = supabase.channel('admin-global-messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live_chat_messages' }, payload => {
+        notifyIncomingMessage(payload.new);
+      })
       .subscribe();
   }
 
@@ -452,6 +575,8 @@
     setInterval(pingDb, 20000);
     await loadSessions();
     subscribeSessionsList();
+    subscribeGlobalMessages();
+    requestNotifPermission();
   })();
 })();
 </script>
