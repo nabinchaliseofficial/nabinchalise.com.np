@@ -1646,5 +1646,481 @@
       checkExistingSession();
     })();
   </script>
+
+  <!-- ====== AI CHAT ASSISTANT ====== -->
+  <style>
+    #aicb-launcher {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 30px -6px rgba(37,99,235,0.6);
+      z-index: 9998;
+      border: none;
+      font-size: 1.5rem;
+      color: #fff;
+      transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s;
+    }
+    #aicb-launcher:hover { transform: scale(1.08); box-shadow: 0 16px 36px -6px rgba(6,182,212,0.7); }
+    #aicb-launcher::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid rgba(37,99,235,0.45);
+      animation: aicb-pulse 2.2s ease-out infinite;
+    }
+    @keyframes aicb-pulse {
+      0% { transform: scale(0.9); opacity: 0.9; }
+      80% { transform: scale(1.35); opacity: 0; }
+      100% { opacity: 0; }
+    }
+    #aicb-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #10b981;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 20px;
+      border: 2px solid #0b1120;
+    }
+    #aicb-panel {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      width: 380px;
+      max-width: calc(100vw - 32px);
+      height: 560px;
+      max-height: calc(100vh - 140px);
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: 0 24px 70px -12px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(16px) scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    #aicb-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    #aicb-header {
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #aicb-header .aicb-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    #aicb-header .aicb-title { flex: 1; min-width: 0; }
+    #aicb-header .aicb-title strong { display: block; font-size: 0.95rem; color: #fff; }
+    #aicb-header .aicb-title span { display: block; font-size: 0.72rem; color: rgba(255,255,255,0.85); }
+    #aicb-header .aicb-status { display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981; margin-right:5px; box-shadow:0 0 0 2px rgba(16,185,129,0.3); }
+    #aicb-close, #aicb-restart {
+      background: rgba(255,255,255,0.16);
+      border: none;
+      color: #fff;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    #aicb-close:hover, #aicb-restart:hover { background: rgba(255,255,255,0.3); }
+    #aicb-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(37,99,235,0.08), transparent 40%),
+        #0b1120;
+    }
+    #aicb-body::-webkit-scrollbar { width: 5px; }
+    #aicb-body::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+    .aicb-row { display: flex; gap: 8px; max-width: 100%; }
+    .aicb-row.user { justify-content: flex-end; }
+    .aicb-bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.87rem;
+      line-height: 1.5;
+      max-width: 82%;
+      white-space: pre-wrap;
+    }
+    .aicb-row.bot .aicb-bubble {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #e2e8f0;
+      border-bottom-left-radius: 4px;
+    }
+    .aicb-row.user .aicb-bubble {
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .aicb-bubble a { color: #67e8f9; font-weight: 600; text-decoration: none; }
+    .aicb-bubble a:hover { text-decoration: underline; }
+    .aicb-bubble b { color: #93c5fd; }
+    .aicb-bot-icon {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(37,99,235,0.18); border: 1px solid rgba(37,99,235,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+    }
+    .aicb-typing { display: flex; gap: 4px; padding: 6px 4px; }
+    .aicb-typing span {
+      width: 6px; height: 6px; border-radius: 50%; background: #64748b;
+      animation: aicb-blink 1.2s infinite ease-in-out;
+    }
+    .aicb-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .aicb-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes aicb-blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+    #aicb-questions {
+      padding: 10px 14px 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(15,23,42,0.9);
+      flex-shrink: 0;
+    }
+    #aicb-questions .aicb-hint {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .aicb-chips { display: flex; flex-wrap: wrap; gap: 7px; max-height: 150px; overflow-y: auto; }
+    .aicb-chips::-webkit-scrollbar { width: 4px; }
+    .aicb-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      padding: 7px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .aicb-chip:hover { background: rgba(37,99,235,0.25); border-color: #2563eb; color: #fff; transform: translateY(-1px); }
+    .aicb-chip.aicb-menu-chip { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.35); color: #6ee7b7; }
+    .aicb-chip.aicb-menu-chip:hover { background: rgba(16,185,129,0.25); }
+    @media (max-width: 480px) {
+      #aicb-panel { right: 16px; left: 16px; width: auto; bottom: 88px; height: calc(100vh - 160px); }
+      #aicb-launcher { bottom: 18px; right: 18px; }
+    }
+  </style>
+
+  <button id="aicb-launcher" aria-label="Open chat assistant">
+    💬<span id="aicb-badge">AI</span>
+  </button>
+
+  <div id="aicb-panel" role="dialog" aria-label="Nabin's chat assistant">
+    <div id="aicb-header">
+      <div class="aicb-avatar">🤖</div>
+      <div class="aicb-title">
+        <strong>Ask about Nabin</strong>
+        <span><span class="aicb-status"></span>Instant answers · pick a question</span>
+      </div>
+      <button id="aicb-restart" title="Restart">↺</button>
+      <button id="aicb-close" title="Close">✕</button>
+    </div>
+    <div id="aicb-body"></div>
+    <div id="aicb-questions">
+      <div class="aicb-hint">Choose a question</div>
+      <div class="aicb-chips" id="aicb-chips"></div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    // ---------- Supabase client (read-only, publishable key) ----------
+    var AICB_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+    var AICB_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+    var aicbSupabase = null;
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        aicbSupabase = window.supabase.createClient(AICB_URL, AICB_KEY);
+      }
+    } catch (e) { console.warn('AI Chat: supabase init failed', e); }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c];
+      });
+    }
+    function fmtDate(d) {
+      if (!d) return '';
+      try { return new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); }
+      catch(e) { return d; }
+    }
+
+    // ---------- Question bank ----------
+    // type: 'static' -> html is fixed text; 'live' -> fetch() returns a Promise<string html>
+    var QUESTIONS = [
+      {
+        id: 'who',
+        label: '👋 Who is Nabin?',
+        type: 'static',
+        html: "I'm <b>Nabin Chalise</b> — a Computer Operator &amp; ICT professional from Galkot Municipality, Baglung, Nepal. I have 8+ years of experience across technology, education and community service, and I currently serve as <b>Rotaract Club President</b>."
+      },
+      {
+        id: 'job',
+        label: '💼 What does he do now?',
+        type: 'static',
+        html: "Since 2025 I've been working as a <b>Computer Operator</b> at Galkot Municipality — handling ICT operations, data management and system administration. From 2022–2025 I worked there as an Assistant Employment Officer."
+      },
+      {
+        id: 'experience',
+        label: '📈 Work experience timeline',
+        type: 'static',
+        html: "<b>2025–Present</b> — Computer Operator, Galkot Municipality\n<b>2022–2025</b> — Assistant Employment Officer, Galkot Municipality\n<b>2019–2022</b> — ICT Teacher, Galkot Secondary School\n<b>2018–2019</b> — Computer Lab Teacher, Nawa Pravat School\n<b>2014–2018</b> — Basic Level Computer Teacher, New Life Boarding Secondary School"
+      },
+      {
+        id: 'skills',
+        label: '🛠️ What are his skills?',
+        type: 'static',
+        html: "MS Office (95%), HTML/CSS (90%), JavaScript (85%), Public Speaking (85%), Git/GitHub (80%), Training &amp; Mentoring (80%), Networking (75%), Graphic Design (70%)."
+      },
+      {
+        id: 'projects',
+        label: '🚀 What projects has he built?',
+        type: 'static',
+        html: "A few highlights:\n• <a href=\"g/index.html\">Galkot Municipality</a> — optimized record pipelines for local government data.\n• <a href=\"/r/index.html\">Rotaract Club of Galkot Baglung</a> — community platform for events &amp; member engagement.\n• <a href=\"blog.html\">Personal Blog</a> — writing on tech, leadership and community service."
+      },
+      {
+        id: 'rotaract',
+        label: '🎗️ His role in Rotaract?',
+        type: 'static',
+        html: "He's currently <b>President (2026–27), Club Administration</b> at the Rotaract Club of Galkot Baglung. Journey: Charter Member (2020-21) → IT Officer (2021-22) → International Service Chair (2022-23) → Joint Secretary (2023-24) → Secretary (2024-25) → President Elect (2025-26) → President (2026-27). He's also a Zonal Social Media Officer for Zone XVI and a District 3292 Training Team Member."
+      },
+      {
+        id: 'gt',
+        label: '🎓 What is Galkot Tech (GT)?',
+        type: 'static',
+        html: "<b>Galkot Tech Computer Institute</b> offers professional IT training and certification courses in Baglung, Nepal. You can explore courses on the <a href=\"gt/index.html\">GT Institute page</a>."
+      },
+      {
+        id: 'verify',
+        label: '✅ How to verify a certificate?',
+        type: 'static',
+        html: "You can verify a course completion certificate or enrollment through the official portals:\n• <a href=\"gt/courseverify.html\">Course Certificate Verification</a>\n• <a href=\"gt/enrollmentverify.html\">Enrollment Verification</a>"
+      },
+      {
+        id: 'contact',
+        label: '📞 How can I contact him?',
+        type: 'static',
+        html: "📞 Phone: +977-9851338747\n✉️ Email: officialnabincs3@gmail.com\n📍 Location: Galkot Municipality-3, Baglung, Nepal\n\nOr just use the <a href=\"#contact\">contact form</a> on this page."
+      },
+      {
+        id: 'blogs',
+        label: '📝 Latest blog posts',
+        type: 'live',
+        fetch: function() {
+          if (!aicbSupabase) return Promise.resolve("The live blog feed isn't reachable right now — check the <a href=\"blog.html\">Blog page</a> directly.");
+          return aicbSupabase.from('blogs')
+            .select('title, slug, published_at, status')
+            .eq('status', 'published')
+            .order('published_at', { ascending: false })
+            .limit(3)
+            .then(function(res) {
+              if (res.error || !res.data || !res.data.length) {
+                return "I couldn't find any published posts yet — check the <a href=\"blog.html\">Blog page</a> for the latest.";
+              }
+              var lines = res.data.map(function(b) {
+                return '• ' + esc(b.title) + (b.published_at ? ' <span style="color:#64748b">(' + fmtDate(b.published_at) + ')</span>' : '');
+              });
+              return "Here are the latest posts:\n" + lines.join('\n') + "\n\nRead more on the <a href=\"blog.html\">Blog page</a>.";
+            })
+            .catch(function() {
+              return "I couldn't load the blog feed right now — check the <a href=\"blog.html\">Blog page</a> directly.";
+            });
+        }
+      },
+      {
+        id: 'upcoming',
+        label: '📅 Upcoming projects',
+        type: 'live',
+        fetch: function() {
+          if (!aicbSupabase) return Promise.resolve("The live projects feed isn't reachable right now — check the <a href=\"/r/upcomming-projects.html\">Upcoming Projects page</a>.");
+          return aicbSupabase.from('upcoming_projects')
+            .select('name, date, location, status')
+            .order('date', { ascending: true })
+            .limit(3)
+            .then(function(res) {
+              if (res.error || !res.data || !res.data.length) {
+                return "No upcoming projects listed right now — check the <a href=\"/r/upcomming-projects.html\">Upcoming Projects page</a> for updates.";
+              }
+              var lines = res.data.map(function(p) {
+                return '• ' + esc(p.name) + (p.date ? ' — ' + fmtDate(p.date) : '') + (p.location ? ' <span style="color:#64748b">(' + esc(p.location) + ')</span>' : '');
+              });
+              return "Upcoming Rotaract projects:\n" + lines.join('\n') + "\n\nFull list on the <a href=\"/r/upcomming-projects.html\">Upcoming Projects page</a>.";
+            })
+            .catch(function() {
+              return "I couldn't load upcoming projects right now — check the <a href=\"/r/upcomming-projects.html\">Upcoming Projects page</a>.";
+            });
+        }
+      },
+      {
+        id: 'quote',
+        label: '✨ Quote of the day',
+        type: 'live',
+        fetch: function() {
+          if (!aicbSupabase) return Promise.resolve("The live quote feed isn't reachable right now — see the <a href=\"#quote\">Quote section</a> above.");
+          return aicbSupabase.from('spiritual_quotes')
+            .select('quote, author, day')
+            .order('day', { ascending: true })
+            .limit(1)
+            .then(function(res) {
+              if (res.error || !res.data || !res.data.length) {
+                return "I couldn't load today's quote — see the <a href=\"#quote\">Quote section</a> above on this page.";
+              }
+              var q = res.data[0];
+              return '"' + esc(q.quote) + '"\n— ' + esc(q.author || 'Unknown');
+            })
+            .catch(function() {
+              return "I couldn't load today's quote — see the <a href=\"#quote\">Quote section</a> above on this page.";
+            });
+        }
+      },
+      {
+        id: 'certifications',
+        label: '📜 Certifications held',
+        type: 'live',
+        fetch: function() {
+          if (!aicbSupabase) return Promise.resolve("The live certifications feed isn't reachable right now.");
+          return aicbSupabase.from('certifications')
+            .select('title, issuer, issued_date')
+            .order('issued_date', { ascending: false })
+            .limit(5)
+            .then(function(res) {
+              if (res.error || !res.data || !res.data.length) {
+                return "I don't have a live certifications list to show right now, but he holds 8+ professional certificates across ICT and training.";
+              }
+              var lines = res.data.map(function(c) {
+                return '• ' + esc(c.title) + (c.issuer ? ' — ' + esc(c.issuer) : '');
+              });
+              return "Certifications:\n" + lines.join('\n');
+            })
+            .catch(function() {
+              return "I couldn't load certifications right now.";
+            });
+        }
+      }
+    ];
+
+    // ---------- Widget wiring ----------
+    var launcher = document.getElementById('aicb-launcher');
+    var panel = document.getElementById('aicb-panel');
+    var closeBtn = document.getElementById('aicb-close');
+    var restartBtn = document.getElementById('aicb-restart');
+    var body = document.getElementById('aicb-body');
+    var chipsWrap = document.getElementById('aicb-chips');
+    var opened = false;
+
+    function addRow(who, htmlContent) {
+      var row = document.createElement('div');
+      row.className = 'aicb-row ' + who;
+      if (who === 'bot') {
+        row.innerHTML = '<div class="aicb-bot-icon">🤖</div><div class="aicb-bubble">' + htmlContent + '</div>';
+      } else {
+        row.innerHTML = '<div class="aicb-bubble">' + htmlContent + '</div>';
+      }
+      body.appendChild(row);
+      body.scrollTop = body.scrollHeight;
+      return row;
+    }
+
+    function addTyping() {
+      var row = document.createElement('div');
+      row.className = 'aicb-row bot';
+      row.id = 'aicb-typing-row';
+      row.innerHTML = '<div class="aicb-bot-icon">🤖</div><div class="aicb-bubble"><div class="aicb-typing"><span></span><span></span><span></span></div></div>';
+      body.appendChild(row);
+      body.scrollTop = body.scrollHeight;
+    }
+    function removeTyping() {
+      var el = document.getElementById('aicb-typing-row');
+      if (el) el.remove();
+    }
+
+    function renderChips() {
+      chipsWrap.innerHTML = '';
+      QUESTIONS.forEach(function(q) {
+        var chip = document.createElement('button');
+        chip.className = 'aicb-chip';
+        chip.textContent = q.label;
+        chip.addEventListener('click', function() { handleQuestion(q); });
+        chipsWrap.appendChild(chip);
+      });
+    }
+
+    function handleQuestion(q) {
+      addRow('user', esc(q.label.replace(/^\S+\s/, '')));
+      addTyping();
+      var delay = 350 + Math.random() * 350;
+      if (q.type === 'static') {
+        setTimeout(function() {
+          removeTyping();
+          addRow('bot', q.html.replace(/\n/g, '<br>'));
+        }, delay);
+      } else {
+        Promise.resolve(q.fetch()).then(function(html) {
+          setTimeout(function() {
+            removeTyping();
+            addRow('bot', html.replace(/\n/g, '<br>'));
+          }, delay);
+        });
+      }
+    }
+
+    function resetChat() {
+      body.innerHTML = '';
+      addRow('bot', "Hi! 👋 I'm Nabin's assistant. Pick a question below and I'll answer instantly — from his background to live blog &amp; project updates.");
+      renderChips();
+    }
+
+    launcher.addEventListener('click', function() {
+      opened = !opened;
+      panel.classList.toggle('open', opened);
+      if (opened && !body.hasChildNodes()) resetChat();
+    });
+    closeBtn.addEventListener('click', function() {
+      opened = false;
+      panel.classList.remove('open');
+    });
+    restartBtn.addEventListener('click', resetChat);
+
+    document.addEventListener('click', function(e) {
+      if (!opened) return;
+      if (panel.contains(e.target) || launcher.contains(e.target)) return;
+    });
+  })();
+  </script>
 </body>
 </html>
