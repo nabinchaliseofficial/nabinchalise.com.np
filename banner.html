@@ -41,12 +41,10 @@
             transition: background-image 0.5s ease, border-color 0.3s ease;
         }
 
-        /* Fullscreen mode: red border instead of gold */
         .banner-container.is-fullscreen {
             border-color: #e53935;
         }
 
-        /* Top Header for Clock */
         .header-section {
             width: 100%;
             display: flex;
@@ -68,15 +66,6 @@
             border: 2px solid #d4af37;
         }
 
-        .live-clock .time-label {
-            font-size: 0.8rem;
-            display: block;
-            text-align: center;
-            color: #666;
-            font-weight: 400;
-        }
-
-        /* Center Logo Box */
         .center-logo-container {
             position: absolute;
             top: 20px;
@@ -99,7 +88,6 @@
             object-fit: contain;
         }
 
-        /* Center Content */
         .content-section {
             text-align: center;
             display: flex;
@@ -114,7 +102,7 @@
         }
 
         .meeting-title {
-            font-size: 4.5rem;
+            font-size: calc(4.5rem * var(--font-scale, 1));
             font-weight: 800;
             color: #d32f2f;
             text-shadow: 3px 3px 0px rgba(255,255,255,0.8), 
@@ -127,7 +115,7 @@
         }
 
         .organized-by {
-            font-size: 2.8rem;
+            font-size: calc(2.8rem * var(--font-scale, 1));
             font-weight: 700;
             color: #b71c1c;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.8), 
@@ -136,13 +124,12 @@
                         -2px 2px 0px rgba(255,255,255,0.8);
         }
 
-        /* Footer Section */
         .footer-section {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.8rem;
+            font-size: calc(1.8rem * var(--font-scale, 1));
             font-weight: bold;
             color: #b71c1c;
             padding: 0 20px 10px 20px;
@@ -165,15 +152,7 @@
             padding: 8px 25px;
             border-radius: 10px;
             border: 2px solid #d4af37;
-            font-size: 1.6rem;
-        }
-
-        .footer-section .nepali-date-display .date-label {
-            font-size: 0.8rem;
-            display: block;
-            text-align: center;
-            color: #666;
-            font-weight: 400;
+            font-size: calc(1.6rem * var(--font-scale, 1));
         }
 
         .footer-section .time-display {
@@ -181,41 +160,33 @@
             padding: 8px 25px;
             border-radius: 10px;
             border: 2px solid #d4af37;
-            font-size: 1.6rem;
+            font-size: calc(1.6rem * var(--font-scale, 1));
         }
 
-        .footer-section .time-display .time-label {
-            font-size: 0.8rem;
-            display: block;
-            text-align: center;
-            color: #666;
-            font-weight: 400;
-        }
-
-        /* Fullscreen Button */
+        /* FIXED: Smaller, semi-transparent fullscreen button */
         .fullscreen-btn {
             position: absolute;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #d32f2f, #b71c1c);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            border-radius: 4px;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
-            font-weight: 600;
+            backdrop-filter: blur(3px);
+            letter-spacing: 0.5px;
         }
 
         .fullscreen-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(211, 47, 47, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Status indicator */
         .status-indicator {
             position: absolute;
             bottom: 20px;
@@ -245,21 +216,20 @@
             100% { opacity: 1; }
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .meeting-title {
-                font-size: 3.5rem;
+                font-size: calc(3.5rem * var(--font-scale, 1));
             }
             .organized-by {
-                font-size: 2.2rem;
+                font-size: calc(2.2rem * var(--font-scale, 1));
             }
             .footer-section {
-                font-size: 1.4rem;
+                font-size: calc(1.4rem * var(--font-scale, 1));
             }
             .footer-section span,
             .footer-section .nepali-date-display,
             .footer-section .time-display {
-                font-size: 1.2rem;
+                font-size: calc(1.2rem * var(--font-scale, 1));
                 padding: 6px 18px;
             }
             .live-clock {
@@ -277,23 +247,23 @@
                 border-width: 8px;
             }
             .meeting-title {
-                font-size: 2.5rem;
+                font-size: calc(2.5rem * var(--font-scale, 1));
             }
             .organized-by {
-                font-size: 1.6rem;
+                font-size: calc(1.6rem * var(--font-scale, 1));
             }
             .content-section {
                 padding: 15px 20px;
             }
             .footer-section {
-                font-size: 1rem;
+                font-size: calc(1rem * var(--font-scale, 1));
                 justify-content: center;
                 gap: 8px;
             }
             .footer-section span,
             .footer-section .nepali-date-display,
             .footer-section .time-display {
-                font-size: 0.9rem;
+                font-size: calc(0.9rem * var(--font-scale, 1));
                 padding: 4px 12px;
             }
             .live-clock {
@@ -312,8 +282,8 @@
                 justify-content: center;
             }
             .fullscreen-btn {
-                padding: 8px 16px;
-                font-size: 0.8rem;
+                padding: 4px 10px;
+                font-size: 0.6rem;
                 bottom: 10px;
                 right: 10px;
             }
@@ -324,15 +294,15 @@
 
         @media (max-width: 480px) {
             .meeting-title {
-                font-size: 1.8rem;
+                font-size: calc(1.8rem * var(--font-scale, 1));
             }
             .organized-by {
-                font-size: 1.2rem;
+                font-size: calc(1.2rem * var(--font-scale, 1));
             }
             .footer-section span,
             .footer-section .nepali-date-display,
             .footer-section .time-display {
-                font-size: 0.7rem;
+                font-size: calc(0.7rem * var(--font-scale, 1));
                 padding: 3px 8px;
             }
             .live-clock {
@@ -344,6 +314,12 @@
             }
             .content-section {
                 padding: 10px 15px;
+            }
+            .fullscreen-btn {
+                padding: 3px 8px;
+                font-size: 0.5rem;
+                bottom: 8px;
+                right: 8px;
             }
         }
     </style>
@@ -387,8 +363,8 @@
         </div>
     </div>
 
-    <!-- Fullscreen Toggle Button -->
-    <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ पूर्ण स्क्रिन</button>
+    <!-- Fullscreen Toggle Button - Smaller and subtle -->
+    <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
 
     <script>
         // ===== SUPABASE CONFIGURATION =====
@@ -430,7 +406,6 @@
             referenceEnglishDate: new Date(2013, 3, 14)
         };
 
-        // Convert any string/number's ASCII digits (0-9) to Nepali (Devanagari) digits.
         function toNepaliDigits(input) {
             const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
             return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
@@ -501,19 +476,12 @@
             };
         }
 
-        // ===== OFFLINE-SAFE LOCAL CACHE =====
-        // Remembers the last successfully loaded banner so that a page reload
-        // during a network drop still shows the last known content instead of
-        // a blank/"Loading..." screen. The live view only ever gets overwritten
-        // once a *new* fetch or realtime event actually succeeds.
         const BANNER_CACHE_KEY = 'bannerSettingsCache';
 
         function saveBannerCache(data) {
             try {
                 localStorage.setItem(BANNER_CACHE_KEY, JSON.stringify(data));
-            } catch (e) {
-                // Ignore storage errors (e.g. private browsing) — caching is best-effort.
-            }
+            } catch (e) {}
         }
 
         function loadBannerCache() {
@@ -525,8 +493,6 @@
             }
         }
 
-        // Applies a banner row to the DOM. Used by the initial fetch, the cache
-        // fallback, and realtime updates alike so the display logic is one path.
         function applyBannerData(data) {
             if (!data) return;
 
@@ -552,12 +518,13 @@
             } else {
                 document.getElementById('centerLogo').style.display = 'none';
             }
+
+            const fontScale = data.font_scale || 100;
+            document.documentElement.style.setProperty('--font-scale', fontScale / 100);
         }
 
-        // ===== FETCH BANNER DATA =====
         async function fetchBannerData() {
             try {
-                // Prefer the row the admin has explicitly marked live.
                 let { data, error } = await supabaseClient
                     .from('banner_settings')
                     .select('*')
@@ -565,8 +532,6 @@
                     .limit(1)
                     .maybeSingle();
 
-                // Fall back to the first row (covers older rows saved before the
-                // "is_active" column existed, so nothing breaks mid-migration).
                 if (!error && !data) {
                     const fallback = await supabaseClient
                         .from('banner_settings')
@@ -580,15 +545,11 @@
 
                 if (error) {
                     console.error('Error fetching data:', error);
-                    // Network/DB hiccup — keep whatever is already on screen,
-                    // just flag the status indicator, don't blank the banner.
                     document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
                     return;
                 }
 
                 if (!data) {
-                    // Only show the placeholder if we truly have nothing to show
-                    // (no cache and no row in the DB at all).
                     if (!loadBannerCache()) {
                         document.getElementById('meetingName').innerText = 'बैनर डाटा उपलब्ध छैन';
                         document.getElementById('organizedBy').innerText = 'कृपया एडमिन प्यानलबाट सेट अप गर्नुहोस्';
@@ -602,12 +563,10 @@
                 document.getElementById('statusText').textContent = 'लाइभ';
             } catch (error) {
                 console.error('Error:', error);
-                // Offline or unreachable — leave the current display untouched.
                 document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
             }
         }
 
-        // ===== REALTIME SUBSCRIPTION =====
         let realtimeChannel = null;
 
         function setupRealtime() {
@@ -620,16 +579,8 @@
                 .on('postgres_changes',
                     { event: '*', schema: 'public', table: 'banner_settings' },
                     payload => {
-                        console.log('🔄 Realtime event received:', payload.eventType, payload);
-
-                        // Any insert/update/delete could change which row is the
-                        // active/live one (e.g. admin ticked a different row, or
-                        // edited the currently-live one) — re-fetch whichever row
-                        // is marked active rather than trying to patch fields from
-                        // the raw payload. fetchBannerData() never blanks the
-                        // screen on failure, so this stays safe if offline too.
+                        console.log('🔄 Realtime event received:', payload.eventType);
                         fetchBannerData();
-
                         document.getElementById('statusText').textContent = 'अपडेट भयो!';
                         setTimeout(() => {
                             document.getElementById('statusText').textContent = 'लाइभ';
@@ -642,7 +593,6 @@
                         document.getElementById('statusText').textContent = 'लाइभ';
                     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
                         document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
-                        // Re-fetch current data and retry the subscription after a short delay
                         setTimeout(() => {
                             fetchBannerData();
                             setupRealtime();
@@ -651,20 +601,11 @@
                 });
         }
 
-        // ===== LIVE CLOCK =====
         function updateClock() {
             const time = getCurrentNepaliTime();
             document.getElementById('clockTime').textContent = time.formattedNepali;
         }
 
-        // ===== VIEWPORT HEIGHT FIX (mobile fullscreen repaint bug) =====
-        // On many mobile browsers, 100vh is computed against the viewport
-        // size *before* the browser chrome (address bar etc.) hides/shows,
-        // and the layout isn't recalculated until the next touch/scroll.
-        // That's why the banner looked "stuck" after tapping fullscreen and
-        // only snapped to full size once the screen was touched. Setting an
-        // actual pixel-based --vh on every relevant event forces an
-        // immediate repaint instead of waiting for user interaction.
         function setViewportHeight() {
             document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
         }
@@ -672,7 +613,6 @@
         window.addEventListener('resize', setViewportHeight);
         window.addEventListener('orientationchange', setViewportHeight);
 
-        // ===== FULLSCREEN TOGGLE =====
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 const el = document.documentElement;
@@ -693,10 +633,6 @@
             }
         }
 
-        // Switch the border to red whenever we're actually in fullscreen,
-        // regardless of how it was triggered (button, Esc key, browser UI),
-        // and force an immediate repaint so the banner fills the screen
-        // right away instead of waiting for a touch.
         function updateFullscreenBorder() {
             const container = document.getElementById('bannerBg');
             if (document.fullscreenElement) {
@@ -704,50 +640,28 @@
             } else {
                 container.classList.remove('is-fullscreen');
             }
-
-            // Re-measure the viewport now that fullscreen actually changed...
             setViewportHeight();
-            // ...and again shortly after, since some mobile browsers finish
-            // the fullscreen transition a beat after the event fires.
             setTimeout(setViewportHeight, 150);
             setTimeout(setViewportHeight, 400);
-
-            // Force a reflow so the new height is applied immediately rather
-            // than sitting stale until the next touch/scroll triggers one.
             requestAnimationFrame(() => {
                 container.style.display = 'none';
-                void container.offsetHeight; // reading this forces the reflow
+                void container.offsetHeight;
                 container.style.display = '';
             });
         }
         document.addEventListener('fullscreenchange', updateFullscreenBorder);
         document.addEventListener('webkitfullscreenchange', updateFullscreenBorder);
 
-        // ===== INITIALIZATION =====
         window.onload = () => {
-            // Paint the last known good data immediately, in case the network
-            // is slow or down right at page load — avoids a blank "Loading..."
-            // banner until the real fetch below comes back.
             const cached = loadBannerCache();
             if (cached) {
                 applyBannerData(cached);
             }
-
-            // Fetch fresh data
             fetchBannerData();
-            
-            // Setup realtime
             setupRealtime();
-            
-            // Start clock
             updateClock();
             setInterval(updateClock, 1000);
-
-            // Fallback poll: even if a realtime event is ever missed (dropped
-            // connection, etc.), this catches up within 30s without ever
-            // clearing the currently displayed content on failure.
             setInterval(fetchBannerData, 30000);
-            
             console.log('✅ Banner initialized successfully!');
         };
     </script>

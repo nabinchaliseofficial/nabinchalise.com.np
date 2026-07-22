@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Banner Settings with Nepali Date/Time</title>
+    <link rel="preconnect" href="https://kbyfvqkfcxqgjjtfvvxf.supabase.co">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -57,9 +59,9 @@
             font-size: 0.95rem;
         }
 
-        input[type="text"], 
-        input[type="email"], 
-        input[type="password"], 
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
         input[type="file"],
         select {
             width: 100%;
@@ -128,13 +130,13 @@
             padding: 10px;
             border-radius: 6px;
         }
-        .success { 
-            color: #155724; 
+        .success {
+            color: #155724;
             background: #d4edda;
             border: 1px solid #c3e6cb;
         }
-        .error { 
-            color: #721c24; 
+        .error {
+            color: #721c24;
             background: #f8d7da;
             border: 1px solid #f5c6cb;
         }
@@ -206,6 +208,7 @@
             border: 2px solid #e0e0e0;
             padding: 3px;
             background: white;
+            display: none;
         }
 
         .date-time-selector {
@@ -248,20 +251,9 @@
             font-weight: 600;
         }
 
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
 
         .row {
             display: flex;
@@ -274,29 +266,63 @@
             min-width: 200px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h2 {
-                font-size: 1.4rem;
-            }
-            
-            .date-time-selector {
-                grid-template-columns: 1fr;
-            }
-            
-            .row {
-                flex-direction: column;
-            }
-            
-            .time-picker {
-                flex-wrap: wrap;
-            }
+        /* FONT SIZE CONTROL SECTION */
+        .font-size-section {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
         }
 
-        /* ===== LOGIN POPUP MODAL ===== */
+        .font-size-section h3 {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 12px 0;
+        }
+
+        .font-size-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+        }
+
+        .font-size-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 18px rgba(211, 47, 47, 0.4);
+        }
+
+        .font-size-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #d32f2f;
+            min-width: 80px;
+            text-align: center;
+            background: white;
+            padding: 4px 16px;
+            border-radius: 8px;
+            border: 2px solid #d32f2f;
+        }
+
+        /* LOGIN POPUP MODAL */
         .locked-backdrop {
             position: fixed;
             inset: 0;
@@ -304,6 +330,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #f0f2f5 0%, #e8eaf0 100%);
+            z-index: 999;
         }
 
         .locked-backdrop .locked-hint {
@@ -322,12 +349,6 @@
             justify-content: center;
             z-index: 2000;
             padding: 20px;
-            animation: fadeInOverlay 0.25s ease;
-        }
-
-        @keyframes fadeInOverlay {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .login-modal-box {
@@ -337,18 +358,18 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
             width: 100%;
             max-width: 400px;
-            animation: popIn 0.25s ease;
         }
 
-        @keyframes popIn {
-            from { opacity: 0; transform: translateY(-15px) scale(0.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h2 { font-size: 1.4rem; }
+            .date-time-selector { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Locked state background, visible behind the login popup -->
+    <!-- Locked state background -->
     <div class="locked-backdrop" id="lockedBackdrop">
         <p class="locked-hint">🔒 ब्यानर एडमिन प्यानल पहुँच गर्न लगइन गर्नुहोस्...</p>
     </div>
@@ -359,7 +380,7 @@
             <h2>🔐 Admin Login</h2>
             <div class="form-group">
                 <label>📧 इमेल (Email)</label>
-                <input type="email" id="adminEmail" placeholder="admin@example.com">
+                <input type="email" id="adminEmail" placeholder="admin@example.com" autofocus>
             </div>
             <div class="form-group">
                 <label>🔑 पासवर्ड (Password)</label>
@@ -373,7 +394,7 @@
     <div class="container">
         <!-- Dashboard Section -->
         <div id="dashboardSection" class="hidden">
-            
+
             <div class="saved-data-section">
                 <h3>📋 सेभ भएका ब्यानरहरूको सूची</h3>
                 <div class="table-wrapper">
@@ -389,7 +410,7 @@
                             </tr>
                         </thead>
                         <tbody id="dataTableBody">
-                            <tr><td colspan="5" style="color: #999;">लोड हुँदै...</td></tr>
+                            <tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -400,12 +421,24 @@
             <input type="hidden" id="bgUrl">
             <input type="hidden" id="logoUrl">
 
+            <!-- FONT SIZE SECTION -->
+            <div class="font-size-section">
+                <h3>🔠 लाइभ पेजमा अक्षरको साइज (Live Page Text Size)</h3>
+                <div class="font-size-control">
+                    <button type="button" class="font-size-btn" onclick="adjustFontScale(-10)">−</button>
+                    <span class="font-size-value" id="fontScaleDisplay">100%</span>
+                    <button type="button" class="font-size-btn" onclick="adjustFontScale(10)">+</button>
+                </div>
+                <input type="hidden" id="fontScale" value="100">
+            </div>
+
+            <!-- MEETING NAME & ORGANIZED BY -->
             <div class="form-group">
+                <h3 style="margin-bottom:15px;">🏛️ बैठकको नाम र आयोजक (Meeting Name & Organized By)</h3>
                 <label>🏛️ बैठकको नाम (Meeting Name)</label>
                 <input type="text" id="meetingName" placeholder="e.g., कर्मचारी मासिक बैठक">
-            </div>
-            <div class="form-group">
-                <label>🏢 आयोजक (Organized By)</label>
+
+                <label style="margin-top:14px;">🏢 आयोजक (Organized By)</label>
                 <input type="text" id="organizedBy" placeholder="e.g., गलकोट नगरपालिका">
             </div>
 
@@ -414,76 +447,55 @@
                 <label>📅 नेपाली मिति (Nepali Date)</label>
                 <div class="date-time-selector">
                     <div>
-                        <select id="nepaliYear" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()">
-                            <!-- Will be populated by JavaScript -->
-                        </select>
-                        <label style="font-size:0.85rem;font-weight:400;">वर्ष (Year)</label>
+                        <select id="nepaliYear" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">वर्ष (Year)</label>
                     </div>
                     <div>
-                        <select id="nepaliMonth" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()">
-                            <!-- Will be populated by JavaScript -->
-                        </select>
-                        <label style="font-size:0.85rem;font-weight:400;">महिना (Month)</label>
+                        <select id="nepaliMonth" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">महिना (Month)</label>
                     </div>
                     <div>
-                        <select id="nepaliDay" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()">
-                            <!-- Will be populated by JavaScript -->
-                        </select>
-                        <label style="font-size:0.85rem;font-weight:400;">दिन (Day)</label>
+                        <select id="nepaliDay" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">दिन (Day)</label>
                     </div>
                     <div>
-                        <select id="nepaliWeekday" onchange="onWeekdayManualChange()">
-                            <!-- Will be populated by JavaScript -->
-                        </select>
-                        <label style="font-size:0.85rem;font-weight:400;">बार (Weekday)</label>
+                        <select id="nepaliWeekday" onchange="updateNepaliDateDisplay()"></select>
+                        <label style="font-size:0.85rem;">बार (Weekday)</label>
                     </div>
                 </div>
                 <div class="nepali-date-display" id="nepaliDateDisplay">
-                    <strong>📆</strong> <span id="selectedNepaliDate">२०८१ बैशाख १, सोमबार</span>
+                    <strong>📆</strong> <span id="selectedNepaliDate">--</span>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>🕐 नेपाली समय (Nepali Time)</label>
                 <div class="time-picker">
-                    <select id="nepaliHour">
-                        <!-- Populated by JavaScript -->
-                    </select>
+                    <select id="nepaliHour"></select>
                     <span>:</span>
-                    <select id="nepaliMinute">
-                        <!-- Populated by JavaScript -->
-                    </select>
+                    <select id="nepaliMinute"></select>
                     <select id="nepaliPeriod">
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                     </select>
                 </div>
-                <div style="margin-top:8px;font-size:0.9rem;color:#666;">
-                    ⏰ हालको समय: <span id="currentNepaliTime">--:-- --</span>
-                    <button class="btn" style="width:auto;padding:4px 12px;font-size:0.8rem;background:#d32f2f;color:white;border:none;border-radius:4px;cursor:pointer;margin-left:10px;" onclick="setCurrentNepaliTime()">हालको समय सेट गर्नुहोस्</button>
-                </div>
             </div>
 
-            <!-- Hidden fields for formatted text -->
             <input type="hidden" id="dateText">
             <input type="hidden" id="timeText">
 
             <div class="form-group">
                 <label>🖼️ Background Image (JPG, PNG, WebP - Max 5MB)</label>
                 <input type="file" id="bgFile" accept="image/jpeg,image/png,image/webp">
-                <div class="preview-wrapper">
-                    <img id="bgPreview" class="preview-img" src="" alt="Background Preview">
-                    <span id="bgStatus" class="badge badge-warning">No image</span>
-                </div>
+                <img id="bgPreview" class="preview-img" alt="Background Preview">
+                <span id="bgStatus" class="badge badge-warning">No image</span>
             </div>
 
             <div class="form-group">
                 <label>🏷️ Logo Image (JPG, PNG, WebP - Max 2MB)</label>
                 <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp">
-                <div class="preview-wrapper">
-                    <img id="logoPreview" class="preview-img" src="" alt="Logo Preview">
-                    <span id="logoStatus" class="badge badge-warning">No image</span>
-                </div>
+                <img id="logoPreview" class="preview-img" alt="Logo Preview">
+                <span id="logoStatus" class="badge badge-warning">No image</span>
             </div>
 
             <button class="btn btn-primary" onclick="updateBannerData()" id="updateBtn">
@@ -496,122 +508,85 @@
     </div>
 
     <script>
-        // ===== NEPALI DATE SYSTEM =====
         const NepaliDate = {
-            // Nepali months data (days in each month for different years)
-            months: [
-                'बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 
-                'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'
-            ],
+            months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
             weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
-            // Days in each month for years 2070-2090 (approximate)
             monthDays: {
-                2070: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2071: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2072: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2073: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2074: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2075: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2076: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2077: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2078: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2079: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2081: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2082: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2083: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2084: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
                 2085: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2086: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2087: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2088: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2089: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30],
-                2090: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30]
+                2086: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 30]
             },
-            // Starting reference: 2070 Baisakh 1 = 2013 April 14 (approx)
-            referenceYear: 2070,
-            referenceMonth: 0, // Baisakh = 0
+            referenceYear: 2080,
+            referenceMonth: 0,
             referenceDay: 1,
-            referenceEnglishDate: new Date(2013, 3, 14) // April 14, 2013
+            referenceEnglishDate: new Date(2023, 3, 14)
         };
 
-        // Convert ASCII digits to Nepali (Devanagari) digits, for display/storage.
         function toNepaliDigits(input) {
             const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
             return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
         }
 
-        // Reverse conversion, so text previously saved with Nepali digits can
-        // still be parsed back into the date/time selectors when editing.
         function fromNepaliDigits(input) {
             const nepaliDigits = '०१२३४५६७८९';
             return String(input).replace(/[०-९]/g, d => String(nepaliDigits.indexOf(d)));
         }
 
-        // Initialize Nepali date selectors
         function initializeNepaliDateSelectors() {
             const yearSelect = document.getElementById('nepaliYear');
             const monthSelect = document.getElementById('nepaliMonth');
             const weekdaySelect = document.getElementById('nepaliWeekday');
 
-            // Populate weekday options (बार) so it can be selected manually too,
-            // not just auto-calculated from the date.
             weekdaySelect.innerHTML = '';
             NepaliDate.weekdays.forEach((day, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = day;
-                weekdaySelect.appendChild(option);
+                const opt = document.createElement('option');
+                opt.value = index; opt.textContent = day;
+                weekdaySelect.appendChild(opt);
             });
 
-            // Populate years (2070-2090)
             yearSelect.innerHTML = '';
-            for (let year = 2070; year <= 2090; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
+            for (let y = 2080; y <= 2086; y++) {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                yearSelect.appendChild(opt);
             }
-            
-            // Populate months
+
             monthSelect.innerHTML = '';
-            NepaliDate.months.forEach((month, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = month;
-                monthSelect.appendChild(option);
+            NepaliDate.months.forEach((m, index) => {
+                const opt = document.createElement('option');
+                opt.value = index; opt.textContent = m;
+                monthSelect.appendChild(opt);
             });
-            
-            // Set default to current date
-            const currentNepali = getCurrentNepaliDate();
-            yearSelect.value = currentNepali.year;
-            monthSelect.value = currentNepali.month;
+
+            yearSelect.value = 2081;
+            monthSelect.value = 0;
             updateNepaliDays();
-            document.getElementById('nepaliDay').value = currentNepali.day;
             updateNepaliWeekday();
             updateNepaliDateDisplay();
-            
-            // Initialize time
-            initializeTimeSelectors();
-            setCurrentNepaliTime();
-            
-            // Update time every second
-            setInterval(updateCurrentTimeDisplay, 1000);
+
+            const hourSelect = document.getElementById('nepaliHour');
+            for (let i = 1; i <= 12; i++) {
+                hourSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
+            }
+            const minSelect = document.getElementById('nepaliMinute');
+            for (let i = 0; i < 60; i += 5) {
+                minSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
+            }
         }
 
         function updateNepaliDays() {
             const year = parseInt(document.getElementById('nepaliYear').value);
             const month = parseInt(document.getElementById('nepaliMonth').value);
             const daySelect = document.getElementById('nepaliDay');
-            
-            const daysInMonth = NepaliDate.monthDays[year] ? NepaliDate.monthDays[year][month] : 31;
+            const daysInMonth = (NepaliDate.monthDays[year] && NepaliDate.monthDays[year][month]) || 31;
             
             daySelect.innerHTML = '';
-            for (let day = 1; day <= daysInMonth; day++) {
-                const option = document.createElement('option');
-                option.value = day;
-                option.textContent = toNepaliDigits(day);
-                daySelect.appendChild(option);
+            for (let d = 1; d <= daysInMonth; d++) {
+                daySelect.innerHTML += `<option value="${d}">${toNepaliDigits(d)}</option>`;
             }
         }
 
@@ -619,13 +594,6 @@
             const year = parseInt(document.getElementById('nepaliYear').value);
             const month = parseInt(document.getElementById('nepaliMonth').value);
             const day = parseInt(document.getElementById('nepaliDay').value);
-            
-            const weekday = getNepaliWeekday(year, month, day);
-            document.getElementById('nepaliWeekday').value = weekday;
-        }
-
-        function getNepaliWeekday(year, month, day) {
-            // Calculate days difference from reference date
             let daysDiff = 0;
             for (let y = NepaliDate.referenceYear; y < year; y++) {
                 const days = NepaliDate.monthDays[y];
@@ -640,54 +608,8 @@
                 }
             }
             daysDiff += (day - NepaliDate.referenceDay);
-            
-            // Reference day: 2070 Baisakh 1 = Monday (1)
             const weekdayIndex = (1 + daysDiff) % 7;
-            return weekdayIndex;
-        }
-
-        function getCurrentNepaliDate() {
-            const now = new Date();
-            const refDate = NepaliDate.referenceEnglishDate;
-            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
-            
-            let remainingDays = diffDays;
-            let year = NepaliDate.referenceYear;
-            let month = NepaliDate.referenceMonth;
-            
-            while (remainingDays > 0) {
-                const daysInYear = NepaliDate.monthDays[year];
-                if (!daysInYear) break;
-                
-                const totalDaysInYear = daysInYear.reduce((a, b) => a + b, 0);
-                if (remainingDays >= totalDaysInYear) {
-                    remainingDays -= totalDaysInYear;
-                    year++;
-                } else {
-                    for (let m = 0; m < daysInYear.length; m++) {
-                        if (remainingDays >= daysInYear[m]) {
-                            remainingDays -= daysInYear[m];
-                            month = m + 1;
-                        } else {
-                            month = m;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            
-            return {
-                year: year,
-                month: month,
-                day: remainingDays + 1
-            };
-        }
-
-        // Called when the admin manually picks a weekday from the dropdown
-        // (rather than letting it auto-calculate from year/month/day).
-        function onWeekdayManualChange() {
-            updateNepaliDateDisplay();
+            document.getElementById('nepaliWeekday').value = weekdayIndex;
         }
 
         function updateNepaliDateDisplay() {
@@ -696,124 +618,82 @@
             const day = document.getElementById('nepaliDay').value;
             const weekdayIndex = parseInt(document.getElementById('nepaliWeekday').value);
             const weekdayName = NepaliDate.weekdays[weekdayIndex];
-            
-            const display = document.getElementById('selectedNepaliDate');
-            display.textContent = `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${weekdayName}`;
-            
-            // Update hidden date text (Nepali digits — this is what banner.html displays)
+
+            document.getElementById('selectedNepaliDate').textContent = `${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)}, ${weekdayName}`;
             document.getElementById('dateText').value = `मिति: ${toNepaliDigits(year)} ${NepaliDate.months[month]} ${toNepaliDigits(day)} गते, ${weekdayName}`;
-        }
-
-        // ===== NEPALI TIME SYSTEM =====
-        function initializeTimeSelectors() {
-            const hourSelect = document.getElementById('nepaliHour');
-            const minuteSelect = document.getElementById('nepaliMinute');
             
-            hourSelect.innerHTML = '';
-            for (let i = 1; i <= 12; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i.toString().padStart(2, '0');
-                hourSelect.appendChild(option);
-            }
-            
-            minuteSelect.innerHTML = '';
-            for (let i = 0; i < 60; i += 5) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i.toString().padStart(2, '0');
-                minuteSelect.appendChild(option);
-            }
-        }
-
-        function setCurrentNepaliTime() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes();
-            const period = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12 || 12;
-            
-            document.getElementById('nepaliHour').value = hours;
-            document.getElementById('nepaliMinute').value = Math.floor(minutes / 5) * 5;
-            document.getElementById('nepaliPeriod').value = period;
-            
-            updateTimeDisplay();
-            updateCurrentTimeDisplay();
-        }
-
-        function updateCurrentTimeDisplay() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            const period = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12 || 12;
-            
-            const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${period}`;
-            document.getElementById('currentNepaliTime').textContent = timeStr;
-        }
-
-        function updateTimeDisplay() {
+            // FIXED: Time format without AM/PM
             const hour = document.getElementById('nepaliHour').value;
             const minute = document.getElementById('nepaliMinute').value;
             const period = document.getElementById('nepaliPeriod').value;
-            
-            document.getElementById('timeText').value = `समय: ${toNepaliDigits(hour)}:${toNepaliDigits(minute.toString().padStart(2, '0'))} ${period}`;
+            // Store time without AM/PM in the hidden field
+            document.getElementById('timeText').value = `बैठक सुरु समय: ${toNepaliDigits(hour)}:${toNepaliDigits(minute.toString().padStart(2, '0'))} बजे`;
         }
 
-        // ===== SUPABASE CONFIGURATION =====
+        function adjustFontScale(delta) {
+            const input = document.getElementById('fontScale');
+            let current = parseInt(input.value) || 100;
+            let newVal = Math.min(Math.max(current + delta, 50), 200);
+            input.value = newVal;
+            document.getElementById('fontScaleDisplay').textContent = newVal + '%';
+        }
+
+        // SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
         const SUPABASE_BUCKET = 'banner-assets';
-        const MAX_BG_SIZE = 5 * 1024 * 1024;
-        const MAX_LOGO_SIZE = 2 * 1024 * 1024;
-
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ===== AUTHENTICATION =====
+        async function isAdminUser(user) {
+            try {
+                const email = user.email;
+                if (!email) return false;
 
-        // Checks the admin_users table — this page is only for users listed
-        // there. Being a valid, logged-in Supabase user is not enough on its
-        // own; membership in admin_users is what grants access.
-        async function isAdminUser(userId) {
-            const { data, error } = await supabaseClient
-                .from('admin_users')
-                .select('id')
-                .eq('user_id', userId)
-                .maybeSingle();
+                const { data, error } = await supabaseClient
+                    .from('user_roles')
+                    .select('role, status')
+                    .eq('email', email)
+                    .eq('role', 'admin')
+                    .eq('status', 'active')
+                    .maybeSingle();
 
-            if (error) {
-                console.error('Error checking admin role:', error);
+                if (error) {
+                    console.error('Error checking admin role by email:', error);
+                    const { data: data2, error: error2 } = await supabaseClient
+                        .from('user_roles')
+                        .select('role, status')
+                        .eq('user_id', user.id)
+                        .eq('role', 'admin')
+                        .eq('status', 'active')
+                        .maybeSingle();
+                    
+                    if (error2 || !data2) return false;
+                    return true;
+                }
+
+                if (!data) return false;
+                return true;
+            } catch (err) {
+                console.error('Role check error:', err);
                 return false;
             }
-            return !!data;
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
             initializeNepaliDateSelectors();
-            
+
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                // A session existing (e.g. from a previous visit) doesn't by
-                // itself prove this user is an admin — re-check every load.
-                const allowed = await isAdminUser(session.user.id);
+                const allowed = await isAdminUser(session.user);
                 if (allowed) {
                     showDashboard();
+                    return;
                 } else {
                     await supabaseClient.auth.signOut();
-                    const msgEl = document.getElementById('loginMsg');
-                    msgEl.innerText = "❌ यो पेज एडमिनहरूका लागि मात्र हो। तपाईंसँग पहुँच छैन।";
-                    msgEl.className = "msg error";
                 }
             }
-            
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_OUT') {
-                    logoutAdmin();
-                }
-            });
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('lockedBackdrop').classList.remove('hidden');
         });
 
         async function loginAdmin() {
@@ -823,20 +703,15 @@
             const loginBtn = document.getElementById('loginBtn');
 
             if (!email || !password) {
-                msgEl.innerText = "कृपया इमेल र पासवर्ड दुवै भर्नुहोस्";
+                msgEl.innerText = "कृपया इमेल र पासवर्ड भर्नुहोस्";
                 msgEl.className = "msg error";
                 return;
             }
 
             loginBtn.disabled = true;
             loginBtn.innerHTML = '⏳ लगइन हुँदै...';
-            msgEl.innerText = "";
-            msgEl.className = "msg";
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 loginBtn.disabled = false;
@@ -846,39 +721,33 @@
                 return;
             }
 
-            // Credentials were valid — now confirm this account actually has
-            // admin access before letting them into the dashboard.
             msgEl.innerText = "⏳ पहुँच जाँच हुँदै...";
             msgEl.className = "msg info";
 
-            const allowed = await isAdminUser(data.user.id);
-
+            const allowed = await isAdminUser(data.user);
             loginBtn.disabled = false;
             loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
 
             if (!allowed) {
                 await supabaseClient.auth.signOut();
-                msgEl.innerText = "❌ पहुँच अस्वीकृत: यो पेज एडमिनहरूका लागि मात्र हो।";
+                msgEl.innerText = "❌ पहुँच अस्वीकृत: तपाईंको एडमिन (admin) रोल छैन!";
                 msgEl.className = "msg error";
                 return;
             }
 
-            msgEl.innerText = "✅ लगइन सफल भयो!";
-            msgEl.className = "msg success";
-            setTimeout(showDashboard, 800);
+            showDashboard();
         }
 
-        async function showDashboard() {
+        function showDashboard() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('lockedBackdrop').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
-            await loadSavedData();
+            loadSavedData();
         }
 
-        // ===== LOAD DATA =====
         async function loadSavedData() {
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>';
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>';
 
             const { data, error } = await supabaseClient
                 .from('banner_settings')
@@ -886,349 +755,109 @@
                 .order('id', { ascending: true });
 
             if (error) {
-                console.error('Error fetching data:', error);
-                tbody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = '';
 
             if (!data || data.length === 0) {
-                // No row exists yet — create a sensible default so the admin has
-                // something to edit instead of hitting a dead end.
-                await createDefaultBannerRow();
+                const now = new Date();
+                const defaultData = {
+                    meeting_name: 'बैठकको नाम',
+                    organized_by: 'आयोजकको नाम',
+                    date_text: 'मिति: २०८१ बैशाख १ गते, सोमबार',
+                    time_text: 'बैठक सुरु समय: १०:०० बजे',
+                    is_active: true,
+                    font_scale: 100
+                };
+                const { error: insertError } = await supabaseClient
+                    .from('banner_settings')
+                    .insert(defaultData);
+                
+                if (insertError) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल</td></tr>';
+                    return;
+                }
+                loadSavedData();
                 return;
             }
 
-            // Stash the loaded records so edit buttons can reference them by index
-            // instead of stuffing JSON into an HTML attribute (which breaks on quotes).
-            window.__bannerRecords = data;
-
-            fillForm(data[0]);
-
-            data.forEach((item, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="text-align:center;">
-                        <input type="radio" name="liveBannerSelect" class="live-radio" data-index="${index}" ${item.is_active ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer;">
-                    </td>
-                    <td><strong>${escapeHtml(item.meeting_name)}</strong></td>
-                    <td>${escapeHtml(item.organized_by)}</td>
-                    <td>${escapeHtml(item.date_text)}</td>
-                    <td>${escapeHtml(item.time_text)}</td>
-                    <td style="white-space:nowrap;">
-                        <button class="edit-btn" data-index="${index}">✏️ Edit</button>
-                        <button class="delete-btn" data-index="${index}" style="background:#c62828;color:#fff;border:none;padding:6px 16px;border-radius:5px;cursor:pointer;font-weight:600;margin-left:6px;">🗑️ Delete</button>
-                    </td>
+            tableBody.innerHTML = '';
+            data.forEach((item) => {
+                const isActive = item.is_active ? 'checked' : '';
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><input type="radio" name="activeRadio" ${isActive} onclick="setActiveBanner(${item.id})"></td>
+                        <td><strong>${item.meeting_name || ''}</strong></td>
+                        <td>${item.organized_by || ''}</td>
+                        <td>${item.date_text || ''}</td>
+                        <td>${item.time_text || ''}</td>
+                        <td><button class="edit-btn" onclick='editRecord(${JSON.stringify(item)})'>✏️ Edit</button></td>
+                    </tr>
                 `;
-                row.querySelector('.edit-btn').addEventListener('click', () => {
-                    editRecord(window.__bannerRecords[index]);
-                });
-                row.querySelector('.delete-btn').addEventListener('click', () => {
-                    deleteBannerRecord(window.__bannerRecords[index]);
-                });
-                row.querySelector('.live-radio').addEventListener('change', () => {
-                    setActiveBanner(window.__bannerRecords[index]);
-                });
-                tbody.appendChild(row);
             });
         }
 
-        // ===== SET LIVE / ACTIVE BANNER =====
-        // Marks one row as the "live" banner shown on banner.html. Only one row
-        // can be active at a time (enforced by a partial unique index in the DB
-        // as well, as a safety net).
-        async function setActiveBanner(item) {
-            const msgEl = document.getElementById('updateMsg');
-            msgEl.innerText = "⏳ लाइभ ब्यानर सेट गरिँदै...";
-            msgEl.className = "msg info";
-
-            // Turn off any currently-active row first so the unique index never
-            // sees two active rows at once, then activate the chosen one.
-            const { error: clearError } = await supabaseClient
-                .from('banner_settings')
-                .update({ is_active: false })
-                .eq('is_active', true);
-
-            if (clearError) {
-                console.error('Error clearing active flag:', clearError);
-                msgEl.innerText = "❌ लाइभ सेट गर्न असफल: " + clearError.message;
-                msgEl.className = "msg error";
-                await loadSavedData();
-                return;
-            }
-
-            const { error } = await supabaseClient
-                .from('banner_settings')
-                .update({ is_active: true, updated_at: new Date().toISOString() })
-                .eq('id', item.id);
-
-            if (error) {
-                console.error('Error setting active banner:', error);
-                msgEl.innerText = "❌ लाइभ सेट गर्न असफल: " + error.message;
-                msgEl.className = "msg error";
-            } else {
-                msgEl.innerText = `✅ "${item.meeting_name}" अब लाइभ ब्यानरमा देखिन्छ।`;
-                msgEl.className = "msg success";
-            }
-            await loadSavedData();
-        }
-
-        // ===== DELETE BANNER RECORD =====
-        async function deleteBannerRecord(item) {
-            const confirmed = window.confirm(`के तपाईं "${item.meeting_name}" मेटाउन निश्चित हुनुहुन्छ?`);
-            if (!confirmed) return;
-
-            const msgEl = document.getElementById('updateMsg');
-            msgEl.innerText = "⏳ मेटाउँदै...";
-            msgEl.className = "msg info";
-
-            const { error } = await supabaseClient
-                .from('banner_settings')
-                .delete()
-                .eq('id', item.id);
-
-            if (error) {
-                console.error('Error deleting record:', error);
-                msgEl.innerText = "❌ मेटाउन असफल: " + error.message;
-                msgEl.className = "msg error";
-                return;
-            }
-
-            msgEl.innerText = "✅ रेकर्ड मेटाइयो।";
-            msgEl.className = "msg success";
-            await loadSavedData();
-        }
-
-        // Creates a starter row (id=1) the first time the admin logs in and the
-        // table is empty, so banner.html and the admin form both have something
-        // to display/edit instead of silently doing nothing.
-        async function createDefaultBannerRow() {
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" style="color: #999;">सुरुवाती डाटा बनाइँदै...</td></tr>';
-
-            const nowNepali = getCurrentNepaliDate();
-            const defaultRow = {
-                meeting_name: 'बैठकको नाम',
-                organized_by: 'आयोजकको नाम',
-                date_text: `मिति: ${toNepaliDigits(nowNepali.year)} ${NepaliDate.months[nowNepali.month]} ${toNepaliDigits(nowNepali.day)} गते`,
-                time_text: `समय: ${toNepaliDigits('10:00')} AM`,
-                background_url: '',
-                logo_url: '',
-                is_active: true
-            };
-
-            const { data, error } = await supabaseClient
-                .from('banner_settings')
-                .insert(defaultRow)
-                .select();
-
-            if (error) {
-                console.error('Error creating default row:', error);
-                tbody.innerHTML = `<tr><td colspan="6" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल: ${escapeHtml(error.message)}</td></tr>`;
-                return;
-            }
-
-            await loadSavedData();
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        async function setActiveBanner(id) {
+            await supabaseClient.from('banner_settings').update({ is_active: false }).neq('id', id);
+            await supabaseClient.from('banner_settings').update({ is_active: true }).eq('id', id);
+            loadSavedData();
         }
 
         window.editRecord = function(item) {
             document.getElementById('recordId').value = item.id;
-            fillForm(item);
+            document.getElementById('meetingName').value = item.meeting_name || '';
+            document.getElementById('organizedBy').value = item.organized_by || '';
+            document.getElementById('fontScale').value = item.font_scale || 100;
+            document.getElementById('fontScaleDisplay').textContent = (item.font_scale || 100) + '%';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function fillForm(item) {
-            document.getElementById('recordId').value = item.id;
-            document.getElementById('meetingName').value = item.meeting_name || '';
-            document.getElementById('organizedBy').value = item.organized_by || '';
-            
-            // Parse date and time from text fields (normalize Nepali digits to ASCII first)
-            if (item.date_text) {
-                const dateMatch = fromNepaliDigits(item.date_text).match(/(\d{4})\s+([^\d]+)\s+(\d+)/);
-                if (dateMatch) {
-                    const year = parseInt(dateMatch[1]);
-                    const monthName = dateMatch[2].trim();
-                    const day = parseInt(dateMatch[3]);
-                    const monthIndex = NepaliDate.months.indexOf(monthName);
-                    if (monthIndex !== -1) {
-                        document.getElementById('nepaliYear').value = year;
-                        document.getElementById('nepaliMonth').value = monthIndex;
-                        updateNepaliDays();
-                        document.getElementById('nepaliDay').value = day;
-                        updateNepaliWeekday();
-                        updateNepaliDateDisplay();
-                    }
-                }
-            }
-            
-            if (item.time_text) {
-                const timeMatch = fromNepaliDigits(item.time_text).match(/(\d{1,2}):(\d{2})\s+(AM|PM)/);
-                if (timeMatch) {
-                    document.getElementById('nepaliHour').value = parseInt(timeMatch[1]);
-                    document.getElementById('nepaliMinute').value = parseInt(timeMatch[2]);
-                    document.getElementById('nepaliPeriod').value = timeMatch[3];
-                    updateTimeDisplay();
-                }
-            }
-            
-            document.getElementById('bgUrl').value = item.background_url || '';
-            updatePreview('bgPreview', item.background_url, 'bgStatus');
-            
-            document.getElementById('logoUrl').value = item.logo_url || '';
-            updatePreview('logoPreview', item.logo_url, 'logoStatus');
-        }
-
-        function updatePreview(imgId, url, statusId) {
-            const img = document.getElementById(imgId);
-            const status = document.getElementById(statusId);
-            if (url && url !== '') {
-                img.src = url;
-                img.style.display = 'block';
-                status.textContent = '✅ Image loaded';
-                status.className = 'badge badge-success';
-            } else {
-                img.src = '';
-                img.style.display = 'none';
-                status.textContent = 'No image';
-                status.className = 'badge badge-warning';
-            }
-        }
-
-        // ===== IMAGE UPLOAD =====
-        async function uploadImage(fileInputId, existingUrl, maxSize) {
-            const fileInput = document.getElementById(fileInputId);
-            if (fileInput.files.length === 0) {
-                return existingUrl;
-            }
-
-            const file = fileInput.files[0];
-            
-            // Validate file size
-            if (file.size > maxSize) {
-                const sizeMB = (maxSize / (1024 * 1024)).toFixed(0);
-                alert(`फाइल साइज ${sizeMB}MB भन्दा बढी हुन सक्दैन। कृपया सानो फाइल चयन गर्नुहोस्।`);
-                return existingUrl;
-            }
-
-            // Validate file type
-            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!validTypes.includes(file.type)) {
-                alert('कृपया JPG, PNG, वा WebP फाइल मात्र चयन गर्नुहोस्।');
-                return existingUrl;
-            }
-
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
-            const filePath = `banners/${fileName}`;
-
-            const { data, error } = await supabaseClient.storage
-                .from(SUPABASE_BUCKET)
-                .upload(filePath, file, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
-
-            if (error) {
-                console.error('Upload error:', error);
-                alert('फाइल अपलोड गर्न असफल: ' + error.message);
-                return existingUrl;
-            }
-
-            const { data: publicURLData } = supabaseClient.storage
-                .from(SUPABASE_BUCKET)
-                .getPublicUrl(filePath);
-
-            return publicURLData.publicUrl;
-        }
-
-        // ===== UPDATE BANNER =====
         async function updateBannerData() {
             const recordId = document.getElementById('recordId').value;
             const meetingName = document.getElementById('meetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
-            const dateText = document.getElementById('dateText').value;
-            const timeText = document.getElementById('timeText').value;
-            
+            const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
             const msgEl = document.getElementById('updateMsg');
-            const updateBtn = document.getElementById('updateBtn');
 
             if (!meetingName || !organizedBy) {
-                msgEl.innerText = "कृपया बैठकको नाम र आयोजक भर्नुहोस्";
+                msgEl.innerText = "कृपया सबै विवरण भर्नुहोस्";
                 msgEl.className = "msg error";
                 return;
             }
 
-            updateBtn.disabled = true;
-            updateBtn.innerHTML = '⏳ अपलोड र सेभ हुँदै...';
-            msgEl.innerText = "⏳ कृपया पर्खनुहोस्...";
+            msgEl.innerText = "⏳ सेभ हुँदैछ...";
             msgEl.className = "msg info";
 
-            let currentBgUrl = document.getElementById('bgUrl').value;
-            let currentLogoUrl = document.getElementById('logoUrl').value;
-
-            // Upload images if new files selected
-            if (document.getElementById('bgFile').files.length > 0) {
-                const newBgUrl = await uploadImage('bgFile', currentBgUrl, MAX_BG_SIZE);
-                if (newBgUrl !== currentBgUrl) {
-                    currentBgUrl = newBgUrl;
-                }
-            }
-
-            if (document.getElementById('logoFile').files.length > 0) {
-                const newLogoUrl = await uploadImage('logoFile', currentLogoUrl, MAX_LOGO_SIZE);
-                if (newLogoUrl !== currentLogoUrl) {
-                    currentLogoUrl = newLogoUrl;
-                }
-            }
-
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('banner_settings')
-                .upsert({
-                    id: recordId ? Number(recordId) : undefined,
+                .update({
                     meeting_name: meetingName,
                     organized_by: organizedBy,
-                    date_text: dateText,
-                    time_text: timeText,
-                    background_url: currentBgUrl,
-                    logo_url: currentLogoUrl,
+                    date_text: document.getElementById('dateText').value,
+                    time_text: document.getElementById('timeText').value,
+                    font_scale: fontScale,
                     updated_at: new Date().toISOString()
-                }, { onConflict: 'id' })
-                .select();
-
-            updateBtn.disabled = false;
-            updateBtn.innerHTML = '💾 सेभ र अपडेट गर्नुहोस् (Save & Update)';
+                })
+                .eq('id', recordId);
 
             if (error) {
-                msgEl.innerText = "❌ अपडेट गर्न असफल: " + error.message;
+                msgEl.innerText = "❌ अपडेट असफल: " + error.message;
                 msgEl.className = "msg error";
             } else {
-                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! ब्यानरमा लाइभ परिवर्तन भयो।";
+                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो!";
                 msgEl.className = "msg success";
-                
-                document.getElementById('bgFile').value = '';
-                document.getElementById('logoFile').value = '';
-
-                await loadSavedData();
+                loadSavedData();
             }
         }
 
         async function logoutAdmin() {
             await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+            location.reload();
         }
 
-        // ===== EVENT LISTENERS FOR TIME =====
-        document.getElementById('nepaliHour').addEventListener('change', updateTimeDisplay);
-        document.getElementById('nepaliMinute').addEventListener('change', updateTimeDisplay);
-        document.getElementById('nepaliPeriod').addEventListener('change', updateTimeDisplay);
+        document.getElementById('nepaliHour').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliMinute').addEventListener('change', updateNepaliDateDisplay);
+        document.getElementById('nepaliPeriod').addEventListener('change', updateNepaliDateDisplay);
     </script>
 </body>
 </html>
