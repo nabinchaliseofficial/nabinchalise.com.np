@@ -245,6 +245,76 @@ button{ font-family:inherit; }
 .toast-card .t-bar{ position:absolute; left:0; bottom:0; height:2px; background:var(--accent); animation:toastBar 7s linear forwards; }
 @keyframes toastBar{ from{ width:100%; } to{ width:0%; } }
 
+/* ============================================================
+   SITE SEARCH — trigger button + command-palette modal
+   ============================================================ */
+.site-search-btn{
+    display:flex; align-items:center; gap:0.6rem; height:44px; padding:0 0.9rem;
+    background:var(--surface); border:1px solid var(--border); border-radius:10px; color:var(--text-muted);
+    font-family:var(--font-body); font-size:0.85rem; cursor:pointer; min-width:170px;
+    transition:background .2s var(--ease), border-color .2s var(--ease);
+}
+.site-search-btn:hover{ background:var(--surface-hover); border-color:var(--border-strong); color:var(--text); }
+.site-search-btn span{ flex:1; text-align:left; }
+.site-search-btn kbd{
+    font-family:var(--font-mono); font-size:0.66rem; color:var(--text-faint); background:var(--surface-2);
+    border:1px solid var(--border); border-radius:5px; padding:0.15rem 0.4rem;
+}
+@media (max-width:720px){ .site-search-btn span, .site-search-btn kbd{ display:none; } .site-search-btn{ min-width:auto; width:44px; justify-content:center; padding:0; } }
+
+.search-overlay{
+    position:fixed; inset:0; z-index:9998; display:flex; align-items:flex-start; justify-content:center;
+    padding-top:min(14vh, 120px); background:rgba(6,8,12,0.72); backdrop-filter:blur(3px);
+    opacity:0; visibility:hidden; transition:opacity .18s var(--ease), visibility .18s;
+}
+.search-overlay.active{ opacity:1; visibility:visible; }
+.search-modal{
+    width:min(560px, calc(100vw - 2.4rem)); max-height:min(70vh, 560px); display:flex; flex-direction:column;
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:16px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.55); transform:translateY(-14px); transition:transform .2s var(--ease);
+    overflow:hidden;
+}
+.search-overlay.active .search-modal{ transform:translateY(0); }
+.search-input-row{ display:flex; align-items:center; gap:0.7rem; padding:1rem 1.2rem; border-bottom:1px solid var(--border); color:var(--text-muted); }
+.search-input-row input{
+    flex:1; background:none; border:none; outline:none; color:var(--text); font-family:var(--font-body);
+    font-size:0.95rem;
+}
+.search-input-row input::placeholder{ color:var(--text-faint); }
+.search-close-btn{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:0.95rem; }
+.search-close-btn:hover{ color:var(--text); }
+.search-results{ overflow-y:auto; flex:1; }
+.search-hint, .search-empty{ padding:2.2rem 1.2rem; text-align:center; color:var(--text-faint); font-size:0.85rem; }
+.search-section-label{
+    padding:0.6rem 1.2rem 0.4rem; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--text-faint); font-weight:700; position:sticky; top:0; background:var(--surface);
+}
+.search-loading{ padding:1.4rem 1.2rem; text-align:center; color:var(--text-muted); font-size:0.82rem; }
+.search-result{
+    display:flex; gap:0.85rem; align-items:flex-start; padding:0.9rem 1.2rem; cursor:pointer;
+    border-bottom:1px solid var(--border); transition:background .12s var(--ease);
+}
+.search-result:last-child{ border-bottom:none; }
+.search-result:hover, .search-result.active{ background:var(--surface-hover); }
+.search-result .sr-icon{
+    width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:var(--accent-2-dim); color:var(--accent-2); font-size:0.95rem; margin-top:2px;
+}
+.search-result .sr-body{ flex:1; min-width:0; }
+.search-result .sr-title{ font-size:0.88rem; font-weight:600; color:var(--text); }
+.search-result .sr-title mark{ background:var(--accent-dim); color:var(--accent); border-radius:3px; padding:0 2px; }
+.search-result .sr-path{ font-size:0.7rem; color:var(--text-faint); font-family:var(--font-mono); margin-top:2px; }
+.search-result .sr-snippet{ font-size:0.78rem; color:var(--text-muted); margin-top:4px; line-height:1.45; }
+.search-result .sr-snippet mark{ background:var(--accent-dim); color:var(--accent); border-radius:3px; padding:0 2px; }
+.search-footer{
+    display:flex; gap:1.1rem; padding:0.6rem 1.2rem; border-top:1px solid var(--border);
+    font-size:0.7rem; color:var(--text-faint);
+}
+.search-footer kbd{
+    font-family:var(--font-mono); background:var(--surface-2); border:1px solid var(--border); border-radius:4px;
+    padding:0.1rem 0.35rem; margin-right:0.2rem;
+}
+
 .quote-strip{
     margin:1.4rem 2.2rem 0; padding:1rem 1.4rem; border-radius:var(--radius);
     background:linear-gradient(135deg, rgba(226,130,63,0.08), rgba(155,140,240,0.06));
@@ -455,6 +525,11 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
                 <h1 id="pageTitle">Overview</h1>
                 <p id="pageSubtitle">Members, projects, minutes and inquiries — all in one place.</p>
             </div>
+            <button class="site-search-btn" id="siteSearchBtn" type="button" title="Search the whole site (Ctrl+K)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search site…</span>
+                <kbd>Ctrl K</kbd>
+            </button>
             <div class="notif-bell-wrap" id="notifBellWrap">
                 <button class="notif-bell" id="notifBellBtn" type="button" title="Notifications" aria-label="Notifications">
                     <i class="fa-solid fa-bell"></i>
@@ -726,6 +801,24 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
 </div>
 
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<div class="search-overlay" id="searchOverlay">
+    <div class="search-modal">
+        <div class="search-input-row">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search pages, sections, or content across the site…" autocomplete="off" />
+            <button class="search-close-btn" id="searchCloseBtn" type="button" aria-label="Close search"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="search-results" id="searchResults">
+            <div class="search-hint">Type to search every page on the site by meaning, not just exact words.</div>
+        </div>
+        <div class="search-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+            <span><kbd>Enter</kbd> open</span>
+            <span><kbd>Esc</kbd> close</span>
+        </div>
+    </div>
+</div>
 
 <script>
 (() => {
@@ -1113,6 +1206,287 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
         e.stopPropagation();
         notifList = [];
         renderNotifPanel();
+    });
+
+    // ============================================================
+    // SITE SEARCH — free "semantic-ish" search across every page,
+    // sourced from the `pages` table (title, content, meta
+    // description, keywords). No external API/key: this uses
+    // token overlap + lightweight fuzzy (typo-tolerant) matching
+    // instead of true embeddings, so it understands loose phrasing
+    // and misspellings reasonably well without any ongoing cost.
+    // ============================================================
+    let searchIndex = null;      // cached rows from `pages`
+    let searchIndexAt = 0;       // cache timestamp
+    const SEARCH_CACHE_MS = 5 * 60 * 1000;
+    let searchActiveIndex = -1;
+    let searchDebounce = null;
+
+    const STOPWORDS = new Set(['the','a','an','and','or','of','to','in','on','for','is','are','was','were','with','at','by','this','that','it','as','be','from']);
+
+    function stripHtml(html) {
+        if (!html) return '';
+        return String(html).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    function tokenize(str) {
+        return (String(str || '').toLowerCase().match(/[a-z0-9]+/g) || []).filter(t => t.length > 1 && !STOPWORDS.has(t));
+    }
+    // Levenshtein distance, capped early for speed — only used on
+    // shortish words so a typo like "memberz" still matches "members".
+    function editDistance(a, b, max) {
+        if (Math.abs(a.length - b.length) > max) return max + 1;
+        const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+        for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+        return dp[a.length][b.length];
+    }
+    function fuzzyTokenMatch(queryToken, docToken) {
+        if (docToken === queryToken) return 3;
+        if (docToken.startsWith(queryToken) || queryToken.startsWith(docToken)) return 2;
+        if (queryToken.length >= 4 && docToken.length >= 4) {
+            const dist = editDistance(queryToken, docToken, 2);
+            if (dist <= 1) return 1.6;
+            if (dist === 2 && queryToken.length >= 6) return 1;
+        }
+        return 0;
+    }
+
+    async function ensureSearchIndex() {
+        if (searchIndex && (Date.now() - searchIndexAt) < SEARCH_CACHE_MS) return searchIndex;
+        const { data, error } = await supabase
+            .from('pages')
+            .select('id, page_path, page_directory, filename, title, content, meta_description, keywords, slug, is_published')
+            .eq('is_published', true);
+        if (error) { console.warn('search index load error', error); return searchIndex || []; }
+        searchIndex = (data || []).map(row => {
+            const plainContent = stripHtml(row.content);
+            return {
+                ...row,
+                _titleTokens: tokenize(row.title),
+                _keywordTokens: tokenize(row.keywords),
+                _metaTokens: tokenize(row.meta_description),
+                _contentTokens: tokenize(plainContent).slice(0, 400),
+                _plainContent: plainContent
+            };
+        });
+        searchIndexAt = Date.now();
+        return searchIndex;
+    }
+
+    function scorePage(queryTokens, page) {
+        let score = 0;
+        const matchedContentWords = new Set();
+        for (const qt of queryTokens) {
+            let best = 0;
+            for (const t of page._titleTokens) best = Math.max(best, fuzzyTokenMatch(qt, t) * 3);
+            for (const t of page._keywordTokens) best = Math.max(best, fuzzyTokenMatch(qt, t) * 2.5);
+            for (const t of page._metaTokens) best = Math.max(best, fuzzyTokenMatch(qt, t) * 1.6);
+            for (const t of page._contentTokens) {
+                const m = fuzzyTokenMatch(qt, t);
+                if (m > 0) matchedContentWords.add(t);
+                best = Math.max(best, m);
+            }
+            score += best;
+        }
+        if (matchedContentWords.size) score += Math.min(matchedContentWords.size, 3) * 0.5;
+        return score;
+    }
+
+    function buildSnippet(page, queryTokens) {
+        const text = page._plainContent;
+        if (!text) return escapeHtml(page.meta_description || '');
+        const lower = text.toLowerCase();
+        let hitPos = -1;
+        for (const qt of queryTokens) {
+            const idx = lower.indexOf(qt);
+            if (idx !== -1) { hitPos = idx; break; }
+        }
+        const start = hitPos === -1 ? 0 : Math.max(0, hitPos - 60);
+        let snippet = text.slice(start, start + 160);
+        if (start > 0) snippet = '…' + snippet;
+        if (start + 160 < text.length) snippet += '…';
+        let out = escapeHtml(snippet);
+        for (const qt of queryTokens) {
+            if (qt.length < 2) continue;
+            out = out.replace(new RegExp('(' + qt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>');
+        }
+        return out;
+    }
+    function highlightTitle(title, queryTokens) {
+        let out = escapeHtml(title || '');
+        for (const qt of queryTokens) {
+            if (qt.length < 2) continue;
+            out = out.replace(new RegExp('(' + qt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>');
+        }
+        return out;
+    }
+
+    // Every page this console already knows about (Members/Projects/
+    // Minutes/Inquiries modules + the whole "More pages" list) — this
+    // list is always available with zero network calls, so the search
+    // box can show every page by name the instant it opens, and match
+    // against it instantly while typing, even before any Supabase
+    // `pages` content search resolves (or if that table has no rows).
+    function buildStaticPages() {
+        return Object.keys(MODULE_META).map(path => {
+            const meta = MODULE_META[path];
+            return {
+                path,
+                title: meta.title,
+                icon: meta.icon || 'fa-solid fa-file-lines',
+                sub: meta.sub || '',
+                tokens: tokenize(`${meta.title} ${meta.sub} ${path}`)
+            };
+        }).sort((a, b) => a.title.localeCompare(b.title));
+    }
+    const STATIC_PAGES = buildStaticPages();
+
+    function scoreStaticPage(queryTokens, page) {
+        let score = 0;
+        for (const qt of queryTokens) {
+            let best = 0;
+            for (const t of page.tokens) best = Math.max(best, fuzzyTokenMatch(qt, t));
+            score += best;
+        }
+        return score;
+    }
+
+    function renderStaticRow(page, queryTokens) {
+        return `
+            <div class="search-result" data-path="${escapeHtml(page.path)}">
+                <div class="sr-icon"><i class="${page.icon}"></i></div>
+                <div class="sr-body">
+                    <div class="sr-title">${highlightTitle(page.title, queryTokens)}</div>
+                    <div class="sr-path">${escapeHtml(page.path)}</div>
+                    ${page.sub ? `<div class="sr-snippet">${escapeHtml(page.sub)}</div>` : ''}
+                </div>
+            </div>`;
+    }
+    function renderDbRow(page, queryTokens) {
+        return `
+            <div class="search-result" data-path="${escapeHtml(page.page_path || page.filename || '')}">
+                <div class="sr-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="sr-body">
+                    <div class="sr-title">${highlightTitle(page.title || page.slug || page.page_path, queryTokens)}</div>
+                    <div class="sr-path">${escapeHtml(page.page_path || '')}</div>
+                    <div class="sr-snippet">${buildSnippet(page, queryTokens)}</div>
+                </div>
+            </div>`;
+    }
+    function attachResultHandlers() {
+        const rows = Array.from($('searchResults').querySelectorAll('.search-result'));
+        rows.forEach((el, i) => {
+            el.dataset.index = i;
+            el.addEventListener('click', () => goToSearchResult(el.dataset.path));
+        });
+        rows.forEach(el => el.classList.remove('active'));
+        searchActiveIndex = rows.length ? 0 : -1;
+        if (rows.length) rows[0].classList.add('active');
+    }
+    function renderAllPagesList() {
+        $('searchResults').innerHTML =
+            `<div class="search-section-label">All pages · ${STATIC_PAGES.length} total — click to open</div>` +
+            STATIC_PAGES.map(p => renderStaticRow(p, [])).join('');
+        attachResultHandlers();
+    }
+
+    async function runSiteSearch(query) {
+        const resultsEl = $('searchResults');
+        const q = query.trim();
+        if (!q) {
+            renderAllPagesList();
+            return;
+        }
+        const queryTokens = tokenize(q);
+        if (queryTokens.length === 0) {
+            renderAllPagesList();
+            return;
+        }
+
+        // 1) Instant: match the known page list (name + path) — this
+        //    never depends on the database, so it always finds pages
+        //    right away, letting you jump fast even before step 2 lands.
+        const staticMatches = STATIC_PAGES
+            .map(page => ({ page, score: scoreStaticPage(queryTokens, page) }))
+            .filter(r => r.score > 0.8)
+            .sort((a, b) => b.score - a.score);
+
+        const staticHtml = staticMatches.map(r => renderStaticRow(r.page, queryTokens)).join('');
+        resultsEl.innerHTML = staticHtml || '<div class="search-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching page content…</div>';
+        attachResultHandlers();
+
+        // 2) Enrich with full-text matches from the `pages` table content,
+        //    skipping anything already shown above.
+        const index = await ensureSearchIndex();
+        const shownPaths = new Set(staticMatches.map(r => r.page.path));
+        const dbMatches = index
+            .map(page => ({ page, score: scorePage(queryTokens, page) }))
+            .filter(r => r.score > 0.5 && !shownPaths.has(r.page.page_path))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 8);
+
+        if (staticMatches.length === 0 && dbMatches.length === 0) {
+            resultsEl.innerHTML = `<div class="search-empty">No matches for "${escapeHtml(q)}". Try different words.</div>`;
+            searchActiveIndex = -1;
+            return;
+        }
+        resultsEl.innerHTML = staticHtml + dbMatches.map(r => renderDbRow(r.page, queryTokens)).join('');
+        attachResultHandlers();
+    }
+
+    function goToSearchResult(path) {
+        if (!path) return;
+        closeSearchOverlay();
+        openModule(path);
+    }
+
+    function openSearchOverlay() {
+        const overlay = $('searchOverlay');
+        overlay.classList.add('active');
+        const input = $('searchInput');
+        input.value = '';
+        input.focus();
+        renderAllPagesList();
+        ensureSearchIndex();
+    }
+    function closeSearchOverlay() {
+        $('searchOverlay').classList.remove('active');
+    }
+    function moveSearchSelection(delta) {
+        const items = Array.from($('searchResults').querySelectorAll('.search-result'));
+        if (items.length === 0) return;
+        items[searchActiveIndex]?.classList.remove('active');
+        searchActiveIndex = (searchActiveIndex + delta + items.length) % items.length;
+        items[searchActiveIndex].classList.add('active');
+        items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    $('siteSearchBtn').addEventListener('click', openSearchOverlay);
+    $('searchCloseBtn').addEventListener('click', closeSearchOverlay);
+    $('searchOverlay').addEventListener('click', (e) => { if (e.target === $('searchOverlay')) closeSearchOverlay(); });
+    $('searchInput').addEventListener('input', (e) => {
+        clearTimeout(searchDebounce);
+        const val = e.target.value;
+        searchDebounce = setTimeout(() => runSiteSearch(val), 180);
+    });
+    $('searchInput').addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); moveSearchSelection(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); moveSearchSelection(-1); }
+        else if (e.key === 'Enter') {
+            e.preventDefault();
+            const active = $('searchResults').querySelector('.search-result.active') || $('searchResults').querySelector('.search-result');
+            if (active) goToSearchResult(active.dataset.path);
+        } else if (e.key === 'Escape') { closeSearchOverlay(); }
+    });
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            $('searchOverlay').classList.contains('active') ? closeSearchOverlay() : openSearchOverlay();
+        }
     });
 
     // ============================================================
