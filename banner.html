@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Banner - Live Supabase with Nepali Date/Time</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,6 +18,7 @@
         body, html {
             width: 100%;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
             overflow: hidden;
             font-family: 'Mukta', 'Segoe UI', sans-serif;
             background-color: #000;
@@ -24,6 +28,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -33,7 +38,12 @@
             align-items: center;
             padding: 20px 30px;
             border: 12px solid #d4af37;
-            transition: background-image 0.5s ease;
+            transition: background-image 0.5s ease, border-color 0.3s ease;
+        }
+
+        /* Fullscreen mode: red border instead of gold */
+        .banner-container.is-fullscreen {
+            border-color: #e53935;
         }
 
         /* Top Header for Clock */
@@ -351,7 +361,6 @@
         <div class="header-section">
             <div class="live-clock" id="liveClock">
                 <span id="clockTime">--:--:--</span>
-                <span class="time-label" id="clockDate">नेपाली समय</span>
             </div>
         </div>
 
@@ -365,11 +374,9 @@
         <div class="footer-section">
             <span class="nepali-date-display" id="dateDisplay">
                 <span id="dateText">मिति: --</span>
-                <span class="date-label">नेपाली मिति</span>
             </span>
             <span class="time-display" id="timeDisplay">
                 <span id="timeText">समय: --</span>
-                <span class="time-label">बैठक समय</span>
             </span>
         </div>
 
@@ -494,58 +501,109 @@
             };
         }
 
+        // ===== OFFLINE-SAFE LOCAL CACHE =====
+        // Remembers the last successfully loaded banner so that a page reload
+        // during a network drop still shows the last known content instead of
+        // a blank/"Loading..." screen. The live view only ever gets overwritten
+        // once a *new* fetch or realtime event actually succeeds.
+        const BANNER_CACHE_KEY = 'bannerSettingsCache';
+
+        function saveBannerCache(data) {
+            try {
+                localStorage.setItem(BANNER_CACHE_KEY, JSON.stringify(data));
+            } catch (e) {
+                // Ignore storage errors (e.g. private browsing) — caching is best-effort.
+            }
+        }
+
+        function loadBannerCache() {
+            try {
+                const raw = localStorage.getItem(BANNER_CACHE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Applies a banner row to the DOM. Used by the initial fetch, the cache
+        // fallback, and realtime updates alike so the display logic is one path.
+        function applyBannerData(data) {
+            if (!data) return;
+
+            window.__liveBannerId = data.id;
+            document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
+            document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
+
+            if (data.date_text) {
+                document.getElementById('dateText').innerHTML = data.date_text;
+            }
+            if (data.time_text) {
+                document.getElementById('timeText').innerHTML = data.time_text;
+            }
+
+            if (data.background_url && data.background_url !== '') {
+                document.getElementById('bannerBg').style.backgroundImage = `url('${data.background_url}')`;
+            } else {
+                document.getElementById('bannerBg').style.backgroundImage = '';
+            }
+            if (data.logo_url && data.logo_url !== '') {
+                document.getElementById('centerLogo').src = data.logo_url;
+                document.getElementById('centerLogo').style.display = 'block';
+            } else {
+                document.getElementById('centerLogo').style.display = 'none';
+            }
+        }
+
         // ===== FETCH BANNER DATA =====
         async function fetchBannerData() {
             try {
-                const { data, error } = await supabaseClient
+                // Prefer the row the admin has explicitly marked live.
+                let { data, error } = await supabaseClient
                     .from('banner_settings')
                     .select('*')
-                    .order('id', { ascending: true })
+                    .eq('is_active', true)
                     .limit(1)
                     .maybeSingle();
 
+                // Fall back to the first row (covers older rows saved before the
+                // "is_active" column existed, so nothing breaks mid-migration).
+                if (!error && !data) {
+                    const fallback = await supabaseClient
+                        .from('banner_settings')
+                        .select('*')
+                        .order('id', { ascending: true })
+                        .limit(1)
+                        .maybeSingle();
+                    data = fallback.data;
+                    error = fallback.error;
+                }
+
                 if (error) {
                     console.error('Error fetching data:', error);
-                    document.getElementById('statusText').textContent = 'त्रुटि';
+                    // Network/DB hiccup — keep whatever is already on screen,
+                    // just flag the status indicator, don't blank the banner.
+                    document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
                     return;
                 }
 
                 if (!data) {
-                    // No row exists yet — friendly placeholder instead of stuck "Loading..."
-                    document.getElementById('meetingName').innerText = 'बैनर डाटा उपलब्ध छैन';
-                    document.getElementById('organizedBy').innerText = 'कृपया एडमिन प्यानलबाट सेट अप गर्नुहोस्';
+                    // Only show the placeholder if we truly have nothing to show
+                    // (no cache and no row in the DB at all).
+                    if (!loadBannerCache()) {
+                        document.getElementById('meetingName').innerText = 'बैनर डाटा उपलब्ध छैन';
+                        document.getElementById('organizedBy').innerText = 'कृपया एडमिन प्यानलबाट सेट अप गर्नुहोस्';
+                    }
                     document.getElementById('statusText').textContent = 'डाटा छैन';
                     return;
                 }
 
-                if (data) {
-                    // Remember which row id is live so the realtime filter can target it
-                    window.__liveBannerId = data.id;
-                    document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
-                    document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
-                    
-                    // Update date and time from stored text
-                    if (data.date_text) {
-                        document.getElementById('dateText').innerHTML = data.date_text;
-                    }
-                    if (data.time_text) {
-                        document.getElementById('timeText').innerHTML = data.time_text;
-                    }
-                    
-                    if (data.background_url && data.background_url !== '') {
-                        document.getElementById('bannerBg').style.backgroundImage = `url('${data.background_url}')`;
-                    } else {
-                        document.getElementById('bannerBg').style.backgroundImage = '';
-                    }
-                    if (data.logo_url && data.logo_url !== '') {
-                        document.getElementById('centerLogo').src = data.logo_url;
-                        document.getElementById('centerLogo').style.display = 'block';
-                    } else {
-                        document.getElementById('centerLogo').style.display = 'none';
-                    }
-                }
+                applyBannerData(data);
+                saveBannerCache(data);
+                document.getElementById('statusText').textContent = 'लाइभ';
             } catch (error) {
                 console.error('Error:', error);
+                // Offline or unreachable — leave the current display untouched.
+                document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
             }
         }
 
@@ -564,43 +622,14 @@
                     payload => {
                         console.log('🔄 Realtime event received:', payload.eventType, payload);
 
-                        // Ignore changes to rows other than the one currently on display,
-                        // unless we don't have a live row yet (first data ever inserted).
-                        if (window.__liveBannerId && payload.new && payload.new.id !== window.__liveBannerId) {
-                            return;
-                        }
-                        if (!window.__liveBannerId && payload.new && payload.new.id) {
-                            window.__liveBannerId = payload.new.id;
-                        }
+                        // Any insert/update/delete could change which row is the
+                        // active/live one (e.g. admin ticked a different row, or
+                        // edited the currently-live one) — re-fetch whichever row
+                        // is marked active rather than trying to patch fields from
+                        // the raw payload. fetchBannerData() never blanks the
+                        // screen on failure, so this stays safe if offline too.
+                        fetchBannerData();
 
-                        const newData = payload.new;
-                        if (!newData) return;
-
-                        if (newData.meeting_name) {
-                            document.getElementById('meetingName').innerText = newData.meeting_name;
-                        }
-                        if (newData.organized_by) {
-                            document.getElementById('organizedBy').innerText = newData.organized_by;
-                        }
-                        if (newData.date_text) {
-                            document.getElementById('dateText').innerHTML = newData.date_text;
-                        }
-                        if (newData.time_text) {
-                            document.getElementById('timeText').innerHTML = newData.time_text;
-                        }
-                        if (newData.background_url) {
-                            document.getElementById('bannerBg').style.backgroundImage = `url('${newData.background_url}')`;
-                        } else {
-                            document.getElementById('bannerBg').style.backgroundImage = '';
-                        }
-                        if (newData.logo_url) {
-                            document.getElementById('centerLogo').src = newData.logo_url;
-                            document.getElementById('centerLogo').style.display = 'block';
-                        } else {
-                            document.getElementById('centerLogo').style.display = 'none';
-                        }
-                        
-                        // Update status
                         document.getElementById('statusText').textContent = 'अपडेट भयो!';
                         setTimeout(() => {
                             document.getElementById('statusText').textContent = 'लाइभ';
@@ -626,29 +655,85 @@
         function updateClock() {
             const time = getCurrentNepaliTime();
             document.getElementById('clockTime').textContent = time.formattedNepali;
-
-            // Live current Nepali date, shown under the clock
-            const date = getCurrentNepaliDate();
-            const dayNepali = toNepaliDigits(date.day);
-            document.getElementById('clockDate').textContent = `${date.weekday}, ${date.monthName} ${dayNepali}`;
         }
+
+        // ===== VIEWPORT HEIGHT FIX (mobile fullscreen repaint bug) =====
+        // On many mobile browsers, 100vh is computed against the viewport
+        // size *before* the browser chrome (address bar etc.) hides/shows,
+        // and the layout isn't recalculated until the next touch/scroll.
+        // That's why the banner looked "stuck" after tapping fullscreen and
+        // only snapped to full size once the screen was touched. Setting an
+        // actual pixel-based --vh on every relevant event forces an
+        // immediate repaint instead of waiting for user interaction.
+        function setViewportHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
 
         // ===== FULLSCREEN TOGGLE =====
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log('Fullscreen error:', err);
-                });
+                const el = document.documentElement;
+                const request = el.requestFullscreen
+                    ? el.requestFullscreen()
+                    : el.webkitRequestFullscreen
+                        ? el.webkitRequestFullscreen()
+                        : null;
+                if (request && request.catch) {
+                    request.catch(err => console.log('Fullscreen error:', err));
+                }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
                 }
             }
         }
 
+        // Switch the border to red whenever we're actually in fullscreen,
+        // regardless of how it was triggered (button, Esc key, browser UI),
+        // and force an immediate repaint so the banner fills the screen
+        // right away instead of waiting for a touch.
+        function updateFullscreenBorder() {
+            const container = document.getElementById('bannerBg');
+            if (document.fullscreenElement) {
+                container.classList.add('is-fullscreen');
+            } else {
+                container.classList.remove('is-fullscreen');
+            }
+
+            // Re-measure the viewport now that fullscreen actually changed...
+            setViewportHeight();
+            // ...and again shortly after, since some mobile browsers finish
+            // the fullscreen transition a beat after the event fires.
+            setTimeout(setViewportHeight, 150);
+            setTimeout(setViewportHeight, 400);
+
+            // Force a reflow so the new height is applied immediately rather
+            // than sitting stale until the next touch/scroll triggers one.
+            requestAnimationFrame(() => {
+                container.style.display = 'none';
+                void container.offsetHeight; // reading this forces the reflow
+                container.style.display = '';
+            });
+        }
+        document.addEventListener('fullscreenchange', updateFullscreenBorder);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenBorder);
+
         // ===== INITIALIZATION =====
         window.onload = () => {
-            // Fetch data
+            // Paint the last known good data immediately, in case the network
+            // is slow or down right at page load — avoids a blank "Loading..."
+            // banner until the real fetch below comes back.
+            const cached = loadBannerCache();
+            if (cached) {
+                applyBannerData(cached);
+            }
+
+            // Fetch fresh data
             fetchBannerData();
             
             // Setup realtime
@@ -657,11 +742,11 @@
             // Start clock
             updateClock();
             setInterval(updateClock, 1000);
-            
-            // Also update status indicator periodically
-            setInterval(() => {
-                document.getElementById('statusText').textContent = 'लाइभ';
-            }, 5000);
+
+            // Fallback poll: even if a realtime event is ever missed (dropped
+            // connection, etc.), this catches up within 30s without ever
+            // clearing the currently displayed content on failure.
+            setInterval(fetchBannerData, 30000);
             
             console.log('✅ Banner initialized successfully!');
         };

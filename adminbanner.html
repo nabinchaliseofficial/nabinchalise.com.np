@@ -380,6 +380,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>लाइभ</th>
                                 <th>बैठकको नाम</th>
                                 <th>आयोजक</th>
                                 <th>मिति</th>
@@ -413,25 +414,25 @@
                 <label>📅 नेपाली मिति (Nepali Date)</label>
                 <div class="date-time-selector">
                     <div>
-                        <select id="nepaliYear" onchange="updateNepaliDateDisplay()">
+                        <select id="nepaliYear" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()">
                             <!-- Will be populated by JavaScript -->
                         </select>
                         <label style="font-size:0.85rem;font-weight:400;">वर्ष (Year)</label>
                     </div>
                     <div>
-                        <select id="nepaliMonth" onchange="updateNepaliDateDisplay(); updateNepaliDays()">
+                        <select id="nepaliMonth" onchange="updateNepaliDays(); updateNepaliWeekday(); updateNepaliDateDisplay()">
                             <!-- Will be populated by JavaScript -->
                         </select>
                         <label style="font-size:0.85rem;font-weight:400;">महिना (Month)</label>
                     </div>
                     <div>
-                        <select id="nepaliDay" onchange="updateNepaliDateDisplay()">
+                        <select id="nepaliDay" onchange="updateNepaliWeekday(); updateNepaliDateDisplay()">
                             <!-- Will be populated by JavaScript -->
                         </select>
                         <label style="font-size:0.85rem;font-weight:400;">दिन (Day)</label>
                     </div>
                     <div>
-                        <select id="nepaliWeekday" disabled>
+                        <select id="nepaliWeekday" onchange="onWeekdayManualChange()">
                             <!-- Will be populated by JavaScript -->
                         </select>
                         <label style="font-size:0.85rem;font-weight:400;">बार (Weekday)</label>
@@ -551,7 +552,18 @@
         function initializeNepaliDateSelectors() {
             const yearSelect = document.getElementById('nepaliYear');
             const monthSelect = document.getElementById('nepaliMonth');
-            
+            const weekdaySelect = document.getElementById('nepaliWeekday');
+
+            // Populate weekday options (बार) so it can be selected manually too,
+            // not just auto-calculated from the date.
+            weekdaySelect.innerHTML = '';
+            NepaliDate.weekdays.forEach((day, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = day;
+                weekdaySelect.appendChild(option);
+            });
+
             // Populate years (2070-2090)
             yearSelect.innerHTML = '';
             for (let year = 2070; year <= 2090; year++) {
@@ -598,7 +610,7 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 const option = document.createElement('option');
                 option.value = day;
-                option.textContent = day;
+                option.textContent = toNepaliDigits(day);
                 daySelect.appendChild(option);
             }
         }
@@ -672,11 +684,17 @@
             };
         }
 
+        // Called when the admin manually picks a weekday from the dropdown
+        // (rather than letting it auto-calculate from year/month/day).
+        function onWeekdayManualChange() {
+            updateNepaliDateDisplay();
+        }
+
         function updateNepaliDateDisplay() {
             const year = document.getElementById('nepaliYear').value;
             const month = parseInt(document.getElementById('nepaliMonth').value);
             const day = document.getElementById('nepaliDay').value;
-            const weekdayIndex = getNepaliWeekday(parseInt(year), month, parseInt(day));
+            const weekdayIndex = parseInt(document.getElementById('nepaliWeekday').value);
             const weekdayName = NepaliDate.weekdays[weekdayIndex];
             
             const display = document.getElementById('selectedNepaliDate');
@@ -755,12 +773,40 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ===== AUTHENTICATION =====
+
+        // Checks the admin_users table — this page is only for users listed
+        // there. Being a valid, logged-in Supabase user is not enough on its
+        // own; membership in admin_users is what grants access.
+        async function isAdminUser(userId) {
+            const { data, error } = await supabaseClient
+                .from('admin_users')
+                .select('id')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (error) {
+                console.error('Error checking admin role:', error);
+                return false;
+            }
+            return !!data;
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             initializeNepaliDateSelectors();
             
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                showDashboard();
+                // A session existing (e.g. from a previous visit) doesn't by
+                // itself prove this user is an admin — re-check every load.
+                const allowed = await isAdminUser(session.user.id);
+                if (allowed) {
+                    showDashboard();
+                } else {
+                    await supabaseClient.auth.signOut();
+                    const msgEl = document.getElementById('loginMsg');
+                    msgEl.innerText = "❌ यो पेज एडमिनहरूका लागि मात्र हो। तपाईंसँग पहुँच छैन।";
+                    msgEl.className = "msg error";
+                }
             }
             
             supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -792,17 +838,34 @@
                 password: password,
             });
 
+            if (error) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
+                msgEl.innerText = "❌ लगइन असफल: " + error.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            // Credentials were valid — now confirm this account actually has
+            // admin access before letting them into the dashboard.
+            msgEl.innerText = "⏳ पहुँच जाँच हुँदै...";
+            msgEl.className = "msg info";
+
+            const allowed = await isAdminUser(data.user.id);
+
             loginBtn.disabled = false;
             loginBtn.innerHTML = 'लगइन गर्नुहोस् (Login)';
 
-            if (error) {
-                msgEl.innerText = "❌ लगइन असफल: " + error.message;
+            if (!allowed) {
+                await supabaseClient.auth.signOut();
+                msgEl.innerText = "❌ पहुँच अस्वीकृत: यो पेज एडमिनहरूका लागि मात्र हो।";
                 msgEl.className = "msg error";
-            } else {
-                msgEl.innerText = "✅ लगइन सफल भयो!";
-                msgEl.className = "msg success";
-                setTimeout(showDashboard, 800);
+                return;
             }
+
+            msgEl.innerText = "✅ लगइन सफल भयो!";
+            msgEl.className = "msg success";
+            setTimeout(showDashboard, 800);
         }
 
         async function showDashboard() {
@@ -815,7 +878,7 @@
         // ===== LOAD DATA =====
         async function loadSavedData() {
             const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="color: #999;">लोड हुँदै...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="color: #999;">लोड हुँदै...</td></tr>';
 
             const { data, error } = await supabaseClient
                 .from('banner_settings')
@@ -824,7 +887,7 @@
 
             if (error) {
                 console.error('Error fetching data:', error);
-                tbody.innerHTML = '<tr><td colspan="5" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="color: red;">❌ डाटा लोड गर्न असफल</td></tr>';
                 return;
             }
 
@@ -846,19 +909,95 @@
             data.forEach((item, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
+                    <td style="text-align:center;">
+                        <input type="radio" name="liveBannerSelect" class="live-radio" data-index="${index}" ${item.is_active ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer;">
+                    </td>
                     <td><strong>${escapeHtml(item.meeting_name)}</strong></td>
                     <td>${escapeHtml(item.organized_by)}</td>
                     <td>${escapeHtml(item.date_text)}</td>
                     <td>${escapeHtml(item.time_text)}</td>
-                    <td>
+                    <td style="white-space:nowrap;">
                         <button class="edit-btn" data-index="${index}">✏️ Edit</button>
+                        <button class="delete-btn" data-index="${index}" style="background:#c62828;color:#fff;border:none;padding:6px 16px;border-radius:5px;cursor:pointer;font-weight:600;margin-left:6px;">🗑️ Delete</button>
                     </td>
                 `;
                 row.querySelector('.edit-btn').addEventListener('click', () => {
                     editRecord(window.__bannerRecords[index]);
                 });
+                row.querySelector('.delete-btn').addEventListener('click', () => {
+                    deleteBannerRecord(window.__bannerRecords[index]);
+                });
+                row.querySelector('.live-radio').addEventListener('change', () => {
+                    setActiveBanner(window.__bannerRecords[index]);
+                });
                 tbody.appendChild(row);
             });
+        }
+
+        // ===== SET LIVE / ACTIVE BANNER =====
+        // Marks one row as the "live" banner shown on banner.html. Only one row
+        // can be active at a time (enforced by a partial unique index in the DB
+        // as well, as a safety net).
+        async function setActiveBanner(item) {
+            const msgEl = document.getElementById('updateMsg');
+            msgEl.innerText = "⏳ लाइभ ब्यानर सेट गरिँदै...";
+            msgEl.className = "msg info";
+
+            // Turn off any currently-active row first so the unique index never
+            // sees two active rows at once, then activate the chosen one.
+            const { error: clearError } = await supabaseClient
+                .from('banner_settings')
+                .update({ is_active: false })
+                .eq('is_active', true);
+
+            if (clearError) {
+                console.error('Error clearing active flag:', clearError);
+                msgEl.innerText = "❌ लाइभ सेट गर्न असफल: " + clearError.message;
+                msgEl.className = "msg error";
+                await loadSavedData();
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({ is_active: true, updated_at: new Date().toISOString() })
+                .eq('id', item.id);
+
+            if (error) {
+                console.error('Error setting active banner:', error);
+                msgEl.innerText = "❌ लाइभ सेट गर्न असफल: " + error.message;
+                msgEl.className = "msg error";
+            } else {
+                msgEl.innerText = `✅ "${item.meeting_name}" अब लाइभ ब्यानरमा देखिन्छ।`;
+                msgEl.className = "msg success";
+            }
+            await loadSavedData();
+        }
+
+        // ===== DELETE BANNER RECORD =====
+        async function deleteBannerRecord(item) {
+            const confirmed = window.confirm(`के तपाईं "${item.meeting_name}" मेटाउन निश्चित हुनुहुन्छ?`);
+            if (!confirmed) return;
+
+            const msgEl = document.getElementById('updateMsg');
+            msgEl.innerText = "⏳ मेटाउँदै...";
+            msgEl.className = "msg info";
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .delete()
+                .eq('id', item.id);
+
+            if (error) {
+                console.error('Error deleting record:', error);
+                msgEl.innerText = "❌ मेटाउन असफल: " + error.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "✅ रेकर्ड मेटाइयो।";
+            msgEl.className = "msg success";
+            await loadSavedData();
         }
 
         // Creates a starter row (id=1) the first time the admin logs in and the
@@ -866,7 +1005,7 @@
         // to display/edit instead of silently doing nothing.
         async function createDefaultBannerRow() {
             const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="color: #999;">सुरुवाती डाटा बनाइँदै...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="color: #999;">सुरुवाती डाटा बनाइँदै...</td></tr>';
 
             const nowNepali = getCurrentNepaliDate();
             const defaultRow = {
@@ -875,7 +1014,8 @@
                 date_text: `मिति: ${toNepaliDigits(nowNepali.year)} ${NepaliDate.months[nowNepali.month]} ${toNepaliDigits(nowNepali.day)} गते`,
                 time_text: `समय: ${toNepaliDigits('10:00')} AM`,
                 background_url: '',
-                logo_url: ''
+                logo_url: '',
+                is_active: true
             };
 
             const { data, error } = await supabaseClient
@@ -885,7 +1025,7 @@
 
             if (error) {
                 console.error('Error creating default row:', error);
-                tbody.innerHTML = `<tr><td colspan="5" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल: ${escapeHtml(error.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="color: red;">❌ सुरुवाती डाटा बनाउन असफल: ${escapeHtml(error.message)}</td></tr>`;
                 return;
             }
 
