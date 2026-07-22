@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live Chat — Admin Only</title>
+<meta name="description" content="Admin-only live chat console for real-time visitor conversations." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0b1120;
+    --panel: #0f172a;
+    --panel-2: #131c31;
+    --border: rgba(255,255,255,0.08);
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --accent: #2563eb;
+    --accent-2: #06b6d4;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image: radial-gradient(circle at 10% 0%, rgba(37,99,235,0.08), transparent 40%), radial-gradient(circle at 90% 100%, rgba(6,182,212,0.06), transparent 40%);
+    background-attachment: fixed;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+  /* ===== access denied ===== */
+  .access-denied-overlay {
+    position: fixed; inset: 0; background: rgba(5,8,15,0.97); z-index: 10000;
+    display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px; text-align: center; padding: 24px;
+  }
+  .access-denied-overlay.active { display: flex; }
+  .access-denied-overlay i { font-size: 3rem; color: var(--danger); }
+  .access-denied-overlay h2 { font-size: 1.4rem; }
+  .access-denied-overlay p { color: var(--muted); max-width: 380px; }
+  .btn-go-back {
+    margin-top: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border: none;
+    padding: 11px 26px; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+  }
+  #authLoading { position: fixed; inset:0; background: var(--bg); z-index: 9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+  #authLoading i { font-size: 2rem; color: var(--accent); }
+  #authLoading span { color: var(--muted); font-size: 0.9rem; }
+
+  /* ===== app shell ===== */
+  #app { display: none; height: 100vh; flex-direction: column; }
+  #app.active { display: flex; }
+  .topbar {
+    display: flex; align-items: center; gap: 14px; padding: 14px 22px; border-bottom: 1px solid var(--border);
+    background: rgba(15,23,42,0.85); backdrop-filter: blur(10px); flex-shrink: 0;
+  }
+  .topbar a.back { color: var(--muted); text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+  .topbar a.back:hover { color: var(--text); }
+  .topbar h1 { font-size: 1.05rem; font-weight: 700; flex: 1; display:flex; align-items:center; gap:10px; }
+  .topbar h1 i { color: var(--accent-2); }
+  .conn-pill { display:flex; align-items:center; gap:6px; font-size: 0.75rem; color: var(--muted); padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,0.04); border:1px solid var(--border); }
+  .conn-dot { width:7px; height:7px; border-radius:50%; background:#94a3b8; }
+  .conn-dot.live { background: var(--success); box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+  .conn-dot.offline { background: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+  .btn-logout { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+  .btn-logout:hover { background: rgba(239,68,68,0.2); }
+
+  .layout { flex: 1; display: flex; min-height: 0; }
+
+  /* ===== sessions sidebar ===== */
+  .sessions-pane { width: 320px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--panel); }
+  .tabs { display: flex; gap: 6px; padding: 12px 14px 0; }
+  .tab-btn {
+    flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--muted);
+    padding: 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active { background: rgba(37,99,235,0.18); border-color: var(--accent); color: #fff; }
+  .session-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .session-item {
+    padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid transparent;
+    cursor: pointer; transition: all 0.15s; position: relative;
+  }
+  .session-item:hover { background: rgba(255,255,255,0.06); }
+  .session-item.active { background: rgba(37,99,235,0.14); border-color: rgba(37,99,235,0.4); }
+  .session-item .row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .session-item .name { font-weight: 700; font-size: 0.87rem; }
+  .session-item .time { font-size: 0.68rem; color: var(--faint); flex-shrink: 0; }
+  .session-item .preview { font-size: 0.78rem; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .status-chip { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; flex-shrink:0; }
+  .status-chip.open { background: var(--success); box-shadow: 0 0 0 2px rgba(16,185,129,0.25); }
+  .status-chip.closed { background: var(--faint); }
+  .session-empty { padding: 40px 16px; text-align: center; color: var(--faint); font-size: 0.85rem; }
+
+  /* ===== conversation pane ===== */
+  .convo-pane { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .convo-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: var(--faint); }
+  .convo-placeholder i { font-size: 2.6rem; opacity: 0.4; }
+  .convo-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .convo-header .who { flex: 1; min-width: 0; }
+  .convo-header .who strong { display: block; font-size: 0.95rem; }
+  .convo-header .who span { font-size: 0.75rem; color: var(--muted); }
+  .btn-close-chat { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 8px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+  .btn-close-chat:hover { background: rgba(239,68,68,0.2); }
+  .btn-close-chat:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .convo-messages { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .msg-row { display: flex; gap: 8px; max-width: 100%; }
+  .msg-row.admin { justify-content: flex-end; }
+  .msg-bubble { padding: 10px 14px; border-radius: 16px; font-size: 0.87rem; line-height: 1.5; max-width: 70%; white-space: pre-wrap; word-break: break-word; }
+  .msg-row.visitor .msg-bubble { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-row.admin .msg-bubble { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-bottom-right-radius: 4px; }
+  .msg-row.system { justify-content: center; }
+  .msg-row.system .msg-bubble { background: rgba(255,255,255,0.04); color: var(--faint); font-size: 0.72rem; border-radius: 20px; padding: 5px 12px; }
+  .msg-time { font-size: 0.62rem; color: var(--faint); margin-top: 3px; }
+
+  .convo-input { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .convo-input input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 16px; border-radius: 22px; font-size: 0.87rem; outline: none;
+  }
+  .convo-input input:focus { border-color: var(--accent); }
+  .convo-input input:disabled { opacity: 0.5; }
+  .convo-input button {
+    width: 42px; height: 42px; border-radius: 50%; border: none; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-size: 1.05rem; cursor: pointer;
+  }
+  .convo-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 18px; border-radius: 12px; font-size: 0.85rem; z-index: 10001;
+    box-shadow: 0 12px 30px -8px rgba(0,0,0,0.6); transition: all 0.4s;
+  }
+  .toast.error { border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+  .toast.success { border-color: rgba(16,185,129,0.4); color: #6ee7b7; }
+
+  @media (max-width: 760px) {
+    .sessions-pane { position: absolute; inset: 0; z-index: 5; width: 100%; transition: transform 0.25s; }
+    .sessions-pane.hide-mobile { transform: translateX(-100%); }
+    .convo-pane { width: 100%; }
+    .back-mobile { display: inline-flex !important; }
+  }
+  .back-mobile { display: none; background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+</style>
+</head>
+<body>
+
+  <div id="authLoading"><i class="fa-solid fa-circle-notch fa-spin"></i><span>Checking admin access…</span></div>
+
+  <div class="access-denied-overlay" id="accessDeniedOverlay">
+    <i class="fa-solid fa-lock"></i>
+    <h2>Access Denied</h2>
+    <p>You need admin privileges to open the Live Chat console. Please sign in with an admin account.</p>
+    <button class="btn-go-back" id="goBackBtn"><i class="fa-solid fa-arrow-left"></i> Back to site</button>
+  </div>
+
+  <div id="app">
+    <div class="topbar">
+      <a class="back" href="admin.html"><i class="fa-solid fa-arrow-left"></i> Hub</a>
+      <h1><i class="fa-solid fa-comments"></i> Live Chat</h1>
+      <div class="conn-pill"><span class="conn-dot" id="connDot"></span><span id="connText">Connecting…</span></div>
+      <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+    </div>
+
+    <div class="layout">
+      <div class="sessions-pane" id="sessionsPane">
+        <div class="tabs">
+          <button class="tab-btn active" data-status="open" id="tabOpen">🟢 Open</button>
+          <button class="tab-btn" data-status="closed" id="tabClosed">Closed</button>
+        </div>
+        <div class="session-list" id="sessionList"><div class="session-empty">Loading chats…</div></div>
+      </div>
+
+      <div class="convo-pane" id="convoPane">
+        <div class="convo-placeholder" id="convoPlaceholder">
+          <i class="fa-solid fa-comment-dots"></i>
+          <span>Select a chat to start replying</span>
+        </div>
+        <div id="convoActive" style="display:none; flex-direction:column; height:100%;">
+          <div class="convo-header">
+            <button class="back-mobile" id="backMobileBtn"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="who">
+              <strong id="convoName">—</strong>
+              <span id="convoMeta">—</span>
+            </div>
+            <button class="btn-close-chat" id="closeChatBtn"><i class="fa-solid fa-circle-xmark"></i> Close chat</button>
+          </div>
+          <div class="convo-messages" id="convoMessages"></div>
+          <form class="convo-input" id="convoInputForm">
+            <input id="convoInput" type="text" maxlength="1000" placeholder="Type a reply…" disabled />
+            <button type="submit" id="convoSendBtn" disabled><i class="fa-solid fa-paper-plane"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const $ = (id) => document.getElementById(id);
+  const authLoading = $('authLoading');
+  const accessDeniedOverlay = $('accessDeniedOverlay');
+  const app = $('app');
+  const connDot = $('connDot');
+  const connText = $('connText');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+  }
+  function showToast(message, type = 'success') {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+  }
+  function relTime(iso) {
+    if (!iso) return '';
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return Math.floor(diff / 86400) + 'd ago';
+  }
+  function timeShort(iso) {
+    try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch(e) { return ''; }
+  }
+
+  $('goBackBtn').addEventListener('click', () => { window.location.href = '/index.html'; });
+
+  // ============================================================
+  // AUTH GUARD — same pattern as other admin modules
+  // ============================================================
+  async function checkAdminRole() {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) { window.location.href = '/index.html'; return false; }
+    const { data: roleData, error: roleError } = await supabase
+      .from('user_roles').select('role').eq('user_id', session.user.id).maybeSingle();
+    if (roleError || !roleData || roleData.role !== 'admin') return false;
+    return true;
+  }
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let currentTab = 'open';
+  let activeSessionId = null;
+  let sessionsChannel = null;
+  let messagesChannel = null;
+  let renderedMsgIds = {};
+  let sessionsCache = [];
+
+  function pingDb() {
+    supabase.from('live_chat_sessions').select('id', { count: 'exact', head: true }).then(res => {
+      if (res.error) { connDot.className = 'conn-dot offline'; connText.textContent = 'Offline'; }
+      else { connDot.className = 'conn-dot live'; connText.textContent = 'Live'; }
+    }).catch(() => { connDot.className = 'conn-dot offline'; connText.textContent = 'Offline'; });
+  }
+
+  async function loadSessions() {
+    const list = $('sessionList');
+    const { data, error } = await supabase
+      .from('live_chat_sessions')
+      .select('id, visitor_name, status, last_message, last_message_at, created_at')
+      .eq('status', currentTab)
+      .order('last_message_at', { ascending: false })
+      .limit(100);
+    if (error) { list.innerHTML = '<div class="session-empty">Could not load chats.</div>'; return; }
+    sessionsCache = data || [];
+    renderSessionList();
+  }
+
+  function renderSessionList() {
+    const list = $('sessionList');
+    if (!sessionsCache.length) {
+      list.innerHTML = `<div class="session-empty">No ${esc(currentTab)} chats.</div>`;
+      return;
+    }
+    list.innerHTML = '';
+    sessionsCache.forEach(s => {
+      const item = document.createElement('div');
+      item.className = 'session-item' + (s.id === activeSessionId ? ' active' : '');
+      item.innerHTML =
+        `<div class="row1">
+           <span><span class="status-chip ${s.status}"></span><span class="name">${esc(s.visitor_name)}</span></span>
+           <span class="time">${esc(relTime(s.last_message_at || s.created_at))}</span>
+         </div>
+         <div class="preview">${esc(s.last_message || 'New chat')}</div>`;
+      item.addEventListener('click', () => openSession(s.id, s.visitor_name, s.status));
+      list.appendChild(item);
+    });
+  }
+
+  $('tabOpen').addEventListener('click', () => switchTab('open'));
+  $('tabClosed').addEventListener('click', () => switchTab('closed'));
+  function switchTab(tab) {
+    currentTab = tab;
+    $('tabOpen').classList.toggle('active', tab === 'open');
+    $('tabClosed').classList.toggle('active', tab === 'closed');
+    loadSessions();
+  }
+
+  function addMsgBubble(who, text, atIso) {
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + who;
+    if (who === 'system') {
+      row.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    } else {
+      row.innerHTML = `<div><div class="msg-bubble">${esc(text)}</div><div class="msg-time">${esc(timeShort(atIso))}</div></div>`;
+    }
+    const container = $('convoMessages');
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function renderMsgRow(msg) {
+    if (renderedMsgIds[msg.id]) return;
+    renderedMsgIds[msg.id] = true;
+    addMsgBubble(msg.sender === 'admin' ? 'admin' : 'visitor', msg.message, msg.created_at);
+  }
+
+  async function openSession(id, name, status) {
+    activeSessionId = id;
+    renderedMsgIds = {};
+    document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));
+    renderSessionList();
+
+    $('convoPlaceholder').style.display = 'none';
+    $('convoActive').style.display = 'flex';
+    $('convoName').textContent = name;
+    $('convoMeta').innerHTML = status === 'open'
+      ? '<span class="status-chip open" style="display:inline-block;"></span>Live session'
+      : '<span class="status-chip closed" style="display:inline-block;"></span>Closed';
+    $('convoMessages').innerHTML = '';
+    $('convoInput').disabled = status !== 'open';
+    $('convoSendBtn').disabled = status !== 'open';
+    $('closeChatBtn').disabled = status !== 'open';
+    $('closeChatBtn').textContent = status === 'open' ? '' : 'Chat closed';
+    if (status === 'open') $('closeChatBtn').innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Close chat';
+
+    const { data, error } = await supabase
+      .from('live_chat_messages').select('*').eq('session_id', id).order('created_at', { ascending: true });
+    if (!error && data) data.forEach(renderMsgRow);
+
+    if (messagesChannel) { supabase.removeChannel(messagesChannel); messagesChannel = null; }
+    messagesChannel = supabase.channel('admin-room-' + id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live_chat_messages', filter: 'session_id=eq.' + id }, payload => {
+        renderMsgRow(payload.new);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'live_chat_sessions', filter: 'id=eq.' + id }, payload => {
+        if (payload.new.status === 'closed') {
+          $('convoInput').disabled = true;
+          $('convoSendBtn').disabled = true;
+          $('closeChatBtn').disabled = true;
+          $('convoMeta').innerHTML = '<span class="status-chip closed" style="display:inline-block;"></span>Closed';
+          clearSessionText(id);
+        }
+      })
+      .subscribe();
+
+    document.body.classList.add('chat-open-mobile');
+    $('sessionsPane').classList.add('hide-mobile');
+  }
+
+  $('backMobileBtn').addEventListener('click', () => { $('sessionsPane').classList.remove('hide-mobile'); });
+
+  $('convoInputForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = $('convoInput');
+    const text = input.value.trim();
+    if (!text || !activeSessionId) return;
+    input.value = '';
+    const { data, error } = await supabase
+      .from('live_chat_messages').insert({ session_id: activeSessionId, sender: 'admin', message: text }).select().single();
+    if (error) { showToast('Could not send message.', 'error'); return; }
+    if (data) renderMsgRow(data);
+  });
+
+  $('closeChatBtn').addEventListener('click', async () => {
+    if (!activeSessionId) return;
+    if (!confirm('Close this chat? All messages will be cleared automatically for both you and the visitor.')) return;
+    $('closeChatBtn').disabled = true;
+    const closingId = activeSessionId;
+    const { error } = await supabase
+      .from('live_chat_sessions')
+      .update({ status: 'closed', closed_by: 'admin', closed_at: new Date().toISOString(), last_message: null })
+      .eq('id', closingId);
+    if (error) { showToast('Could not close chat.', 'error'); $('closeChatBtn').disabled = false; return; }
+    await clearSessionText(closingId);
+    showToast('Chat closed and cleared.', 'success');
+    loadSessions();
+  });
+
+  // Auto-clear: once a chat finishes, wipe its message history and reset the
+  // conversation pane back to the empty placeholder state.
+  async function clearSessionText(id) {
+    await supabase.from('live_chat_messages').delete().eq('session_id', id);
+    if (activeSessionId === id) {
+      addMsgBubble('system', 'This chat has ended and was cleared.');
+      setTimeout(() => {
+        if (activeSessionId !== id) return;
+        activeSessionId = null;
+        renderedMsgIds = {};
+        if (messagesChannel) { supabase.removeChannel(messagesChannel); messagesChannel = null; }
+        $('convoMessages').innerHTML = '';
+        $('convoActive').style.display = 'none';
+        $('convoPlaceholder').style.display = 'flex';
+        $('sessionsPane').classList.remove('hide-mobile');
+        document.body.classList.remove('chat-open-mobile');
+      }, 1800);
+    }
+  }
+
+  $('logoutBtn').addEventListener('click', async () => {
+    if (confirm('Log out of the console?')) {
+      await supabase.auth.signOut();
+      window.location.href = '/index.html';
+    }
+  });
+
+  function subscribeSessionsList() {
+    if (sessionsChannel) supabase.removeChannel(sessionsChannel);
+    sessionsChannel = supabase.channel('admin-sessions-list')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'live_chat_sessions' }, () => loadSessions())
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'live_chat_sessions' }, () => loadSessions())
+      .subscribe();
+  }
+
+  // ============================================================
+  // BOOT
+  // ============================================================
+  (async function boot() {
+    const ok = await checkAdminRole();
+    authLoading.style.display = 'none';
+    if (!ok) { accessDeniedOverlay.classList.add('active'); return; }
+    app.classList.add('active');
+    pingDb();
+    setInterval(pingDb, 20000);
+    await loadSessions();
+    subscribeSessionsList();
+  })();
+})();
+</script>
+</body>
+</html>
