@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Banner - Live Supabase with Nepali Date/Time</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            overflow: hidden;
+            font-family: 'Mukta', 'Segoe UI', sans-serif;
+            background-color: #000;
+        }
+
+        .banner-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border: 12px solid #d4af37;
+            transition: background-image 0.5s ease, border-color 0.3s ease;
+            background-color: #1a1a2e;
+        }
+
+        .banner-container.is-fullscreen {
+            border-color: #e53935;
+        }
+
+        .header-section {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .live-clock {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #111;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+        }
+
+        .center-logo-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(3px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .center-logo-container img {
+            max-height: 70px;
+            max-width: 180px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .content-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            max-width: 90%;
+        }
+
+        .meeting-title {
+            font-size: calc(4.5rem * var(--font-scale, 1));
+            font-weight: 800;
+            color: #d32f2f;
+            text-shadow: 3px 3px 0px rgba(255,255,255,0.8), 
+                        -3px -3px 0px rgba(255,255,255,0.8),
+                        3px -3px 0px rgba(255,255,255,0.8),
+                        -3px 3px 0px rgba(255,255,255,0.8),
+                        0px 0px 20px rgba(255,255,255,0.5);
+            letter-spacing: 2px;
+            line-height: 1.3;
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .sub-meeting-title {
+            font-size: calc(2.5rem * var(--font-scale, 1));
+            font-weight: 700;
+            color: #e65100;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.7), 
+                        -2px -2px 0px rgba(255,255,255,0.7),
+                        2px -2px 0px rgba(255,255,255,0.7),
+                        -2px 2px 0px rgba(255,255,255,0.7);
+            letter-spacing: 1px;
+            line-height: 1.2;
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .organized-by {
+            font-size: calc(2.8rem * var(--font-scale, 1));
+            font-weight: 700;
+            color: #b71c1c;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8), 
+                        -2px -2px 0px rgba(255,255,255,0.8),
+                        2px -2px 0px rgba(255,255,255,0.8),
+                        -2px 2px 0px rgba(255,255,255,0.8);
+            margin-top: 5px;
+        }
+
+        .footer-section {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: calc(1.8rem * var(--font-scale, 1));
+            font-weight: bold;
+            color: #b71c1c;
+            padding: 0 20px 10px 20px;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-section span {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .footer-section .nepali-date-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 25px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            font-size: calc(1.6rem * var(--font-scale, 1));
+        }
+
+        .footer-section .time-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 25px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            font-size: calc(1.6rem * var(--font-scale, 1));
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
+            letter-spacing: 0.5px;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 12px;
+            border-radius: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .status-indicator .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 1024px) {
+            .meeting-title {
+                font-size: calc(3.5rem * var(--font-scale, 1));
+            }
+            .sub-meeting-title {
+                font-size: calc(2rem * var(--font-scale, 1));
+            }
+            .organized-by {
+                font-size: calc(2.2rem * var(--font-scale, 1));
+            }
+            .footer-section {
+                font-size: calc(1.4rem * var(--font-scale, 1));
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: calc(1.2rem * var(--font-scale, 1));
+                padding: 6px 18px;
+            }
+            .live-clock {
+                font-size: 1.4rem;
+                padding: 8px 15px;
+            }
+            .center-logo-container img {
+                max-height: 50px;
+                max-width: 130px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .banner-container {
+                padding: 15px 15px;
+                border-width: 8px;
+            }
+            .meeting-title {
+                font-size: calc(2.5rem * var(--font-scale, 1));
+            }
+            .sub-meeting-title {
+                font-size: calc(1.5rem * var(--font-scale, 1));
+            }
+            .organized-by {
+                font-size: calc(1.6rem * var(--font-scale, 1));
+            }
+            .content-section {
+                padding: 15px 20px;
+            }
+            .footer-section {
+                font-size: calc(1rem * var(--font-scale, 1));
+                justify-content: center;
+                gap: 8px;
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: calc(0.9rem * var(--font-scale, 1));
+                padding: 4px 12px;
+            }
+            .live-clock {
+                font-size: 1rem;
+                padding: 5px 12px;
+            }
+            .center-logo-container {
+                top: 10px;
+                padding: 5px 12px;
+            }
+            .center-logo-container img {
+                max-height: 40px;
+                max-width: 100px;
+            }
+            .header-section {
+                justify-content: center;
+            }
+            .fullscreen-btn {
+                padding: 4px 10px;
+                font-size: 0.6rem;
+                bottom: 10px;
+                right: 10px;
+            }
+            .status-indicator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .meeting-title {
+                font-size: calc(1.8rem * var(--font-scale, 1));
+            }
+            .sub-meeting-title {
+                font-size: calc(1.2rem * var(--font-scale, 1));
+            }
+            .organized-by {
+                font-size: calc(1.2rem * var(--font-scale, 1));
+            }
+            .footer-section span,
+            .footer-section .nepali-date-display,
+            .footer-section .time-display {
+                font-size: calc(0.7rem * var(--font-scale, 1));
+                padding: 3px 8px;
+            }
+            .live-clock {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .center-logo-container img {
+                max-height: 30px;
+                max-width: 80px;
+            }
+            .content-section {
+                padding: 10px 15px;
+            }
+            .fullscreen-btn {
+                padding: 3px 8px;
+                font-size: 0.5rem;
+                bottom: 8px;
+                right: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner-container" id="bannerBg">
+        
+        <!-- Logo - Center Top -->
+        <div class="center-logo-container">
+            <img id="centerLogo" src="" alt="Logo">
+        </div>
+
+        <!-- Top Header with Live Clock -->
+        <div class="header-section">
+            <div class="live-clock" id="liveClock">
+                <span id="clockTime">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Center Main Content -->
+        <div class="content-section">
+            <h1 class="meeting-title" id="meetingName">Loading...</h1>
+            <h2 class="sub-meeting-title" id="subMeetingName"></h2>
+            <h2 class="organized-by" id="organizedBy">Loading...</h2>
+        </div>
+
+        <!-- Footer: Date & Time in Nepali -->
+        <div class="footer-section">
+            <span class="nepali-date-display" id="dateDisplay">
+                <span id="dateText">मिति: --</span>
+            </span>
+            <span class="time-display" id="timeDisplay">
+                <span id="timeText">समय: --</span>
+            </span>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="status-indicator">
+            <span class="dot"></span>
+            <span id="statusText">लाइभ</span>
+        </div>
+    </div>
+
+    <!-- Fullscreen Toggle Button -->
+    <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
+
+    <script>
+        // ===== SUPABASE CONFIGURATION =====
+        const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== NEPALI DATE SYSTEM =====
+        const NepaliDate = {
+            months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
+            weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
+            monthDays: {
+                2070: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2071: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2072: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2073: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2074: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2075: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2076: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2077: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2078: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2079: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2080: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2081: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2082: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2083: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2084: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2085: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2086: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2087: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2088: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2089: [31,32,31,32,31,30,30,30,29,30,29,30],
+                2090: [31,32,31,32,31,30,30,30,29,30,29,30]
+            },
+            referenceYear: 2070,
+            referenceMonth: 0,
+            referenceDay: 1,
+            referenceEnglishDate: new Date(2013, 3, 14)
+        };
+
+        function toNepaliDigits(input) {
+            const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+            return String(input).replace(/[0-9]/g, d => nepaliDigits[d]);
+        }
+
+        function getCurrentNepaliDate() {
+            const now = new Date();
+            const refDate = NepaliDate.referenceEnglishDate;
+            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
+            
+            let remainingDays = diffDays;
+            let year = NepaliDate.referenceYear;
+            let month = NepaliDate.referenceMonth;
+            
+            while (remainingDays > 0) {
+                const daysInYear = NepaliDate.monthDays[year];
+                if (!daysInYear) break;
+                
+                const totalDaysInYear = daysInYear.reduce((a, b) => a + b, 0);
+                if (remainingDays >= totalDaysInYear) {
+                    remainingDays -= totalDaysInYear;
+                    year++;
+                } else {
+                    for (let m = 0; m < daysInYear.length; m++) {
+                        if (remainingDays >= daysInYear[m]) {
+                            remainingDays -= daysInYear[m];
+                            month = m + 1;
+                        } else {
+                            month = m;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            const day = remainingDays + 1;
+            const weekdayIndex = (1 + diffDays) % 7;
+            
+            return {
+                year: year,
+                month: month,
+                day: day,
+                weekday: NepaliDate.weekdays[weekdayIndex],
+                monthName: NepaliDate.months[month]
+            };
+        }
+
+        function getCurrentNepaliTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const periodNepali = hours >= 12 ? 'बेलुका' : 'बिहान';
+            const period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+
+            const digitsFormatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            return {
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
+                period: period,
+                periodNepali: periodNepali,
+                formatted: `${digitsFormatted} ${period}`,
+                formattedNepali: `${toNepaliDigits(digitsFormatted)} ${periodNepali}`
+            };
+        }
+
+        const BANNER_CACHE_KEY = 'bannerSettingsCache';
+
+        function saveBannerCache(data) {
+            try {
+                localStorage.setItem(BANNER_CACHE_KEY, JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function loadBannerCache() {
+            try {
+                const raw = localStorage.getItem(BANNER_CACHE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function applyBannerData(data) {
+            if (!data) return;
+
+            window.__liveBannerId = data.id;
+            document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
+            document.getElementById('subMeetingName').innerText = data.sub_meeting_name || '';
+            document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
+
+            // Hide sub-meeting if empty
+            if (!data.sub_meeting_name || data.sub_meeting_name.trim() === '') {
+                document.getElementById('subMeetingName').style.display = 'none';
+            } else {
+                document.getElementById('subMeetingName').style.display = 'block';
+            }
+
+            if (data.date_text) {
+                document.getElementById('dateText').innerHTML = data.date_text;
+            }
+            if (data.time_text) {
+                document.getElementById('timeText').innerHTML = data.time_text;
+            }
+
+            if (data.background_url && data.background_url !== '') {
+                document.getElementById('bannerBg').style.backgroundImage = `url('${data.background_url}')`;
+            } else {
+                document.getElementById('bannerBg').style.backgroundImage = '';
+            }
+            if (data.logo_url && data.logo_url !== '') {
+                document.getElementById('centerLogo').src = data.logo_url;
+                document.getElementById('centerLogo').style.display = 'block';
+            } else {
+                document.getElementById('centerLogo').style.display = 'none';
+            }
+
+            const fontScale = data.font_scale || 100;
+            document.documentElement.style.setProperty('--font-scale', fontScale / 100);
+        }
+
+        async function fetchBannerData() {
+            try {
+                let { data, error } = await supabaseClient
+                    .from('banner_settings')
+                    .select('*')
+                    .eq('is_active', true)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (!error && !data) {
+                    const fallback = await supabaseClient
+                        .from('banner_settings')
+                        .select('*')
+                        .order('id', { ascending: true })
+                        .limit(1)
+                        .maybeSingle();
+                    data = fallback.data;
+                    error = fallback.error;
+                }
+
+                if (error) {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
+                    return;
+                }
+
+                if (!data) {
+                    if (!loadBannerCache()) {
+                        document.getElementById('meetingName').innerText = 'बैनर डाटा उपलब्ध छैन';
+                        document.getElementById('organizedBy').innerText = 'कृपया एडमिन प्यानलबाट सेट अप गर्नुहोस्';
+                    }
+                    document.getElementById('statusText').textContent = 'डाटा छैन';
+                    return;
+                }
+
+                applyBannerData(data);
+                saveBannerCache(data);
+                document.getElementById('statusText').textContent = 'लाइभ';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
+            }
+        }
+
+        let realtimeChannel = null;
+
+        function setupRealtime() {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = supabaseClient
+                .channel('public:banner_settings')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'banner_settings' },
+                    payload => {
+                        console.log('🔄 Realtime event received:', payload.eventType);
+                        fetchBannerData();
+                        document.getElementById('statusText').textContent = 'अपडेट भयो!';
+                        setTimeout(() => {
+                            document.getElementById('statusText').textContent = 'लाइभ';
+                        }, 2000);
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Realtime channel status:', status);
+                    if (status === 'SUBSCRIBED') {
+                        document.getElementById('statusText').textContent = 'लाइभ';
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                        document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
+                        setTimeout(() => {
+                            fetchBannerData();
+                            setupRealtime();
+                        }, 3000);
+                    }
+                });
+        }
+
+        function updateClock() {
+            const time = getCurrentNepaliTime();
+            document.getElementById('clockTime').textContent = time.formattedNepali;
+        }
+
+        function setViewportHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                const el = document.documentElement;
+                const request = el.requestFullscreen
+                    ? el.requestFullscreen()
+                    : el.webkitRequestFullscreen
+                        ? el.webkitRequestFullscreen()
+                        : null;
+                if (request && request.catch) {
+                    request.catch(err => console.log('Fullscreen error:', err));
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenBorder() {
+            const container = document.getElementById('bannerBg');
+            if (document.fullscreenElement) {
+                container.classList.add('is-fullscreen');
+            } else {
+                container.classList.remove('is-fullscreen');
+            }
+            setViewportHeight();
+            setTimeout(setViewportHeight, 150);
+            setTimeout(setViewportHeight, 400);
+            requestAnimationFrame(() => {
+                container.style.display = 'none';
+                void container.offsetHeight;
+                container.style.display = '';
+            });
+        }
+        document.addEventListener('fullscreenchange', updateFullscreenBorder);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenBorder);
+
+        window.onload = () => {
+            const cached = loadBannerCache();
+            if (cached) {
+                applyBannerData(cached);
+            }
+            fetchBannerData();
+            setupRealtime();
+            updateClock();
+            setInterval(updateClock, 1000);
+            setInterval(fetchBannerData, 30000);
+            console.log('✅ Banner initialized successfully!');
+        };
+    </script>
+</body>
+</html>
