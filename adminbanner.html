@@ -172,6 +172,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s ease;
+            margin: 2px;
         }
         .edit-btn:hover {
             background: #1b5e20;
@@ -546,6 +547,7 @@
                 <div class="nepali-date-display">
                     <strong>📆</strong> <span id="selectedNepaliDate">--</span>
                 </div>
+                <button type="button" class="btn btn-secondary" style="margin-top:10px;" onclick="setTodayDate()">📅 आजको मिति सेट गर्नुहोस्</button>
             </div>
 
             <div class="form-group">
@@ -559,6 +561,7 @@
                         <option value="PM">PM</option>
                     </select>
                 </div>
+                <button type="button" class="btn btn-secondary" style="margin-top:10px;" onclick="setCurrentTime()">🕐 अहिलेको समय सेट गर्नुहोस्</button>
             </div>
 
             <input type="hidden" id="dateText">
@@ -738,6 +741,68 @@
                 `बैठक सुरु समय: ${toNepaliDigits(hour12)}:${toNepaliDigits(minute.padStart(2, '0'))} बजे`;
         }
 
+        // ===== SET TODAY'S NEPALI DATE =====
+        function setTodayDate() {
+            const now = new Date();
+            const refDate = NepaliDate.referenceEnglishDate;
+            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
+
+            let remainingDays = diffDays;
+            let year = NepaliDate.referenceYear;
+            let month = NepaliDate.referenceMonth;
+
+            while (remainingDays > 0) {
+                const daysInYear = NepaliDate.monthDays[year];
+                if (!daysInYear) {
+                    alert('माफ गर्नुहोस्, आजको मिति उपलब्ध वर्ष दायरा (2080-2086) बाहिर छ। कृपया manual select गर्नुहोस्।');
+                    return;
+                }
+                const totalDaysInYear = daysInYear.reduce((a, b) => a + b, 0);
+                if (remainingDays >= totalDaysInYear) {
+                    remainingDays -= totalDaysInYear;
+                    year++;
+                } else {
+                    for (let m = 0; m < daysInYear.length; m++) {
+                        if (remainingDays >= daysInYear[m]) {
+                            remainingDays -= daysInYear[m];
+                            month = m + 1;
+                        } else {
+                            month = m;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            const day = remainingDays + 1;
+            const weekdayIndex = ((5 + diffDays) % 7 + 7) % 7;
+
+            document.getElementById('nepaliYear').value = year;
+            document.getElementById('nepaliMonth').value = month;
+            document.getElementById('nepaliDay').value = day;
+            document.getElementById('nepaliWeekday').value = weekdayIndex;
+            updateNepaliDateDisplay();
+        }
+
+        // ===== SET CURRENT TIME =====
+        function setCurrentTime() {
+            const now = new Date();
+            const totalMinutes = now.getHours() * 60 + now.getMinutes();
+            // Round to nearest 5 minutes (minute select only has 0,5,10...55)
+            const rounded = Math.round(totalMinutes / 5) * 5 % (24 * 60);
+            const hour24 = Math.floor(rounded / 60);
+            const minute = rounded % 60;
+            const period = hour24 >= 12 ? 'PM' : 'AM';
+            let hour12 = hour24 % 12;
+            if (hour12 === 0) hour12 = 12;
+
+            document.getElementById('nepaliHour').value = hour12;
+            document.getElementById('nepaliMinute').value = minute;
+            document.getElementById('nepaliPeriod').value = period;
+            updateNepaliDateDisplay();
+        }
+
         function adjustGlobalScale(delta) {
             const input = document.getElementById('fontScale');
             let val = Math.min(Math.max(parseInt(input.value) + delta, 50), 200);
@@ -796,7 +861,7 @@
                         <img src="${item.url}" alt="background">
                         <div style="display:flex; gap:8px; margin-top:8px;">
                             <button class="edit-btn" style="flex:1; background:#1565c0;" onclick="useGalleryImage('${item.url}')">✅ प्रयोग गर्नुहोस्</button>
-                            <button class="edit-btn" style="background:#c62828;" onclick="deleteGalleryImage(${item.id})">🗑️</button>
+                            <button class="edit-btn" style="background:#c62828;" onclick="deleteGalleryImage(${item.id}, '${item.url.replace(/'/g, "\\'")}')">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -837,18 +902,61 @@
             loadGallery();
         }
 
-        function useGalleryImage(url) {
+        async function useGalleryImage(url) {
+            // Update the form preview too (helpful if this is the record being edited)
             document.getElementById('bgPreview').src = url;
             document.getElementById('bgPreview').style.display = 'block';
             document.getElementById('bgUrlDisplay').textContent = '✅ ' + url;
             document.getElementById('bgStatus').textContent = '✅ अपलोड भएको';
             document.getElementById('bgStatus').className = 'file-status uploaded';
-            document.getElementById('updateMsg').innerText = '🖼️ नमूना background लाग्यो — "💾 सेभ र अपडेट गर्नुहोस्" थिच्नुहोस्';
-            document.getElementById('updateMsg').className = 'msg info';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const msgEl = document.getElementById('updateMsg');
+            const galleryMsgEl = document.getElementById('galleryMsg');
+            galleryMsgEl.classList.remove('hidden');
+
+            if (!currentActiveId) {
+                galleryMsgEl.innerText = "❌ कुनै ब्यानर लाइभ छैन, background लाग्न सकेन";
+                galleryMsgEl.className = "msg error";
+                return;
+            }
+
+            galleryMsgEl.innerText = "⏳ लाइभ ब्यानरमा लगाउँदै...";
+            galleryMsgEl.className = "msg info";
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({ background_url: url, updated_at: new Date().toISOString() })
+                .eq('id', currentActiveId);
+
+            if (error) {
+                galleryMsgEl.innerText = "❌ लाइभ ब्यानरमा लगाउन असफल: " + error.message;
+                galleryMsgEl.className = "msg error";
+                return;
+            }
+
+            galleryMsgEl.innerText = "✅ लाइभ ब्यानरमा background अटोमेटिक लाग्यो!";
+            galleryMsgEl.className = "msg success";
+            msgEl.innerText = "✅ लाइभ ब्यानरमा background अटोमेटिक लाग्यो!";
+            msgEl.className = "msg success";
+            loadSavedData();
         }
 
-        async function deleteGalleryImage(id) {
+        function extractStoragePath(url) {
+            const marker = `/object/public/${STORAGE_BUCKET}/`;
+            const idx = url.indexOf(marker);
+            if (idx === -1) return null;
+            return decodeURIComponent(url.substring(idx + marker.length));
+        }
+
+        async function deleteGalleryImage(id, url) {
+            if (!confirm('के तपाईं यो नमूना background पूर्ण रूपमा हटाउन चाहनुहुन्छ? यो पछि फिर्ता ल्याउन सकिँदैन।')) {
+                return;
+            }
+
+            const path = extractStoragePath(url);
+            if (path) {
+                await supabaseClient.storage.from(STORAGE_BUCKET).remove([path]);
+            }
             await supabaseClient.from('banner_backgrounds').delete().eq('id', id);
             loadGallery();
         }
@@ -1053,7 +1161,11 @@
                         <td>${item.organized_by || ''}</td>
                         <td>${item.date_text || ''}</td>
                         <td>${item.time_text || ''}</td>
-                        <td><button class="edit-btn" onclick='editRecord(${JSON.stringify(item).replace(/'/g, "&#39;")})'>✏️ Edit</button></td>
+                        <td>
+                            <button class="edit-btn" onclick='editRecord(${JSON.stringify(item).replace(/'/g, "&#39;")})'>✏️ Edit</button>
+                            <button class="edit-btn" style="background:#1565c0;" onclick='cloneBanner(${JSON.stringify(item).replace(/'/g, "&#39;")})'>📋 Clone</button>
+                            <button class="edit-btn" style="background:#c62828;" onclick="deleteBanner(${item.id})">🗑️ Delete</button>
+                        </td>
                     </tr>
                 `;
             });
@@ -1080,16 +1192,81 @@
             loadSavedData();
         }
 
+        // ===== CLONE BANNER =====
+        async function cloneBanner(item) {
+            if (!confirm(`"${item.meeting_name || 'यो बैठक'}" जस्तै नयाँ बैठक बनाउने हो?`)) {
+                return;
+            }
+
+            const clone = {
+                meeting_name: item.meeting_name,
+                sub_meeting_name: item.sub_meeting_name,
+                organized_by: item.organized_by,
+                date_text: item.date_text,
+                time_text: item.time_text,
+                is_active: false,
+                font_scale: item.font_scale,
+                meeting_name_font_size: item.meeting_name_font_size,
+                sub_meeting_font_size: item.sub_meeting_font_size,
+                organized_by_font_size: item.organized_by_font_size,
+                date_font_size: item.date_font_size,
+                time_font_size: item.time_font_size,
+                background_url: item.background_url,
+                logo_url: item.logo_url
+            };
+
+            const { error } = await supabaseClient.from('banner_settings').insert(clone);
+            if (error) {
+                alert('❌ Clone गर्न असफल: ' + error.message);
+                return;
+            }
+            loadSavedData();
+        }
+
+        // ===== DELETE BANNER =====
+        async function deleteBanner(id) {
+            if (__allBanners.length <= 1) {
+                alert('❌ कम्तिमा एउटा ब्यानर बाँकी रहनुपर्छ, यसलाई मेटाउन मिल्दैन।');
+                return;
+            }
+
+            const item = __allBanners.find(b => b.id === id);
+            const warnActive = item && item.is_active ? '\n\n⚠️ यो अहिले लाइभ रहेको ब्यानर हो!' : '';
+
+            if (!confirm(`के तपाईं "${item ? (item.meeting_name || 'यो बैठक') : 'यो बैठक'}" पूर्ण रूपमा मेटाउन चाहनुहुन्छ? यो पछि फिर्ता ल्याउन सकिँदैन।${warnActive}`)) {
+                return;
+            }
+
+            const { error } = await supabaseClient.from('banner_settings').delete().eq('id', id);
+            if (error) {
+                alert('❌ मेटाउन असफल: ' + error.message);
+                return;
+            }
+
+            if (item && item.is_active) {
+                // Make sure some banner remains active
+                const remaining = __allBanners.find(b => b.id !== id);
+                if (remaining) {
+                    await supabaseClient.from('banner_settings').update({ is_active: true }).eq('id', remaining.id);
+                }
+            }
+
+            loadSavedData();
+        }
+
         // ===== PARSE DATE FROM TEXT =====
         function parseDateFromText(dateText) {
             if (!dateText) return null;
 
-            // Format: "मिति: २०८१ बैशाख १ गते, सोमबार"
-            const match = dateText.match(/मिति:\s*([\d]+)\s*([^,]+)\s*([\d]+)\s*गते,\s*([^,]+)/);
+            // Saved text uses Nepali digits (e.g. "मिति: २०८१ बैशाख १ गते, सोमबार")
+            // Convert digits to English FIRST so \d+ in the regex can match them.
+            const normalized = toEnglishDigits(dateText);
+
+            const match = normalized.match(/मिति:\s*(\d+)\s*([^,]+?)\s*(\d+)\s*गते,\s*([^,]+)/);
             if (match) {
-                const year = toEnglishDigits(match[1]);
+                const year = match[1];
                 const monthName = match[2].trim();
-                const day = toEnglishDigits(match[3]);
+                const day = match[3];
                 const weekday = match[4].trim();
 
                 const monthIndex = NepaliDate.months.indexOf(monthName);
@@ -1104,11 +1281,13 @@
         function parseTimeFromText(timeText) {
             if (!timeText) return null;
 
-            // Format: "बैठक सुरु समय: १०:०० बजे"
-            const match = timeText.match(/बैठक सुरु समय:\s*([\d]+):([\d]+)\s*बजे/);
+            // Saved text uses Nepali digits (e.g. "बैठक सुरु समय: १०:०० बजे")
+            const normalized = toEnglishDigits(timeText);
+
+            const match = normalized.match(/बैठक सुरु समय:\s*(\d+):(\d+)\s*बजे/);
             if (match) {
-                let hour = parseInt(toEnglishDigits(match[1]));
-                const minute = toEnglishDigits(match[2]);
+                let hour = parseInt(match[1]);
+                const minute = match[2];
 
                 // Determine AM/PM (12-hour format, assume PM if hour > 6)
                 const period = hour >= 6 ? 'PM' : 'AM';
@@ -1314,15 +1493,32 @@
             if (error) {
                 msgEl.innerText = "❌ अपडेट असफल: " + error.message;
                 msgEl.className = "msg error";
-            } else {
-                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो!";
-                msgEl.className = "msg success";
-                loadSavedData();
-
-                // Clear file inputs
-                document.getElementById('bgFile').value = '';
-                document.getElementById('logoFile').value = '';
+                return;
             }
+
+            // ===== SYNC DATE/TIME TO ALL OTHER BANNERS =====
+            // मिति र समय एउटा ब्यानरमा सेट गरेपछि, बाँकी सबै ब्यानरमा पनि उही मिति/समय लागोस्
+            const { error: syncError } = await supabaseClient
+                .from('banner_settings')
+                .update({
+                    date_text: dateText,
+                    time_text: timeText,
+                    updated_at: new Date().toISOString()
+                })
+                .neq('id', recordId);
+
+            if (syncError) {
+                msgEl.innerText = "✅ यो ब्यानर अपडेट भयो, तर बाँकीमा मिति/समय सिंक हुन असफल: " + syncError.message;
+                msgEl.className = "msg error";
+            } else {
+                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! (मिति/समय सबै ब्यानरमा सिंक भयो)";
+                msgEl.className = "msg success";
+            }
+            loadSavedData();
+
+            // Clear file inputs
+            document.getElementById('bgFile').value = '';
+            document.getElementById('logoFile').value = '';
         }
 
         async function logoutAdmin() {
