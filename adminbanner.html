@@ -464,6 +464,7 @@
                         </tbody>
                     </table>
                 </div>
+                <button class="btn btn-secondary hidden" id="showMoreBtn" onclick="toggleShowAllBanners()" style="margin-top:12px;"></button>
             </div>
 
             <h2>✏️ Banner Update Form</h2>
@@ -577,6 +578,33 @@
                         <div class="url-text" id="bgUrlDisplay">कुनै छैन</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- SAMPLE BACKGROUND GALLERY -->
+            <div class="font-size-section">
+                <h3>🖼️ नमूना Background ग्यालरी</h3>
+                <div class="file-upload-wrapper" style="margin-bottom:12px;">
+                    <input type="file" id="galleryFile" accept="image/*">
+                    <button class="btn btn-primary" style="width:auto; margin:0; padding:10px 18px;" onclick="uploadToGallery()" id="galleryUploadBtn">⬆️ ग्यालरीमा थप्नुहोस्</button>
+                </div>
+                <p id="galleryMsg" class="msg hidden"></p>
+                <div class="image-preview-container" id="galleryContainer" style="margin-top:10px;">
+                    <div class="preview-box"><label>लोड हुँदै...</label></div>
+                </div>
+                <button class="btn btn-primary" onclick="useRandomBackground()" style="margin-top:15px;">
+                    🎲 अहिले लाइभ रहेको ब्यानरमा अनियमित (Random) Background लगाउनुहोस्
+                </button>
+                <p id="randomBgMsg" class="msg hidden"></p>
+            </div>
+
+            <!-- TYPEWRITER ANIMATION -->
+            <div class="font-size-section">
+                <h3>⌨️ Typewriter एनिमेसन</h3>
+                <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:12px;">
+                    क्लिक गर्दा लाइभ ब्यानरको 🏛️ बैठकको नाम टाइप हुँदै ३ पटक देखिनेछ
+                </p>
+                <button class="btn btn-primary" onclick="triggerTypewriter()">▶️ Typewriter एनिमेसन चलाउनुहोस्</button>
+                <p id="typewriterMsg" class="msg hidden"></p>
             </div>
 
             <!-- LOGO IMAGE -->
@@ -743,6 +771,148 @@
             return urlData.publicUrl;
         }
 
+        // ===== SAMPLE BACKGROUND GALLERY =====
+        async function loadGallery() {
+            const container = document.getElementById('galleryContainer');
+            const { data, error } = await supabaseClient
+                .from('banner_backgrounds')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = '<div class="preview-box"><label style="color:#c62828;">❌ ग्यालरी लोड गर्न असफल (के banner_backgrounds table बनाइयो?)</label></div>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="preview-box"><label>अहिलेसम्म कुनै नमूना background थपिएको छैन।</label></div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="preview-box">
+                        <img src="${item.url}" alt="background">
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button class="edit-btn" style="flex:1; background:#1565c0;" onclick="useGalleryImage('${item.url}')">✅ प्रयोग गर्नुहोस्</button>
+                            <button class="edit-btn" style="background:#c62828;" onclick="deleteGalleryImage(${item.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function uploadToGallery() {
+            const file = document.getElementById('galleryFile').files[0];
+            const msgEl = document.getElementById('galleryMsg');
+            msgEl.classList.remove('hidden');
+
+            if (!file) {
+                msgEl.innerText = "कृपया पहिले फाइल छान्नुहोस्";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "⏳ अपलोड हुँदै...";
+            msgEl.className = "msg info";
+
+            const url = await uploadImage(file, 'gallery');
+            if (!url) {
+                msgEl.innerText = "❌ अपलोड असफल";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            const { error } = await supabaseClient.from('banner_backgrounds').insert({ url });
+            if (error) {
+                msgEl.innerText = "❌ ग्यालरीमा थप्न असफल: " + error.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "✅ ग्यालरीमा थपियो!";
+            msgEl.className = "msg success";
+            document.getElementById('galleryFile').value = '';
+            loadGallery();
+        }
+
+        function useGalleryImage(url) {
+            document.getElementById('bgPreview').src = url;
+            document.getElementById('bgPreview').style.display = 'block';
+            document.getElementById('bgUrlDisplay').textContent = '✅ ' + url;
+            document.getElementById('bgStatus').textContent = '✅ अपलोड भएको';
+            document.getElementById('bgStatus').className = 'file-status uploaded';
+            document.getElementById('updateMsg').innerText = '🖼️ नमूना background लाग्यो — "💾 सेभ र अपडेट गर्नुहोस्" थिच्नुहोस्';
+            document.getElementById('updateMsg').className = 'msg info';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteGalleryImage(id) {
+            await supabaseClient.from('banner_backgrounds').delete().eq('id', id);
+            loadGallery();
+        }
+
+        async function useRandomBackground() {
+            const msgEl = document.getElementById('randomBgMsg');
+            msgEl.classList.remove('hidden');
+
+            if (!currentActiveId) {
+                msgEl.innerText = "❌ कुनै ब्यानर लाइभ छैन";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            const { data, error } = await supabaseClient.from('banner_backgrounds').select('*');
+            if (error || !data || data.length === 0) {
+                msgEl.innerText = "❌ ग्यालरीमा कुनै background छैन, पहिले थप्नुहोस्";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            const pick = data[Math.floor(Math.random() * data.length)];
+            const { error: updateError } = await supabaseClient
+                .from('banner_settings')
+                .update({ background_url: pick.url, updated_at: new Date().toISOString() })
+                .eq('id', currentActiveId);
+
+            if (updateError) {
+                msgEl.innerText = "❌ लाइभ ब्यानरमा लगाउन असफल: " + updateError.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "✅ लाइभ ब्यानरमा अनियमित background लगाइयो!";
+            msgEl.className = "msg success";
+            loadSavedData();
+        }
+
+        // ===== TYPEWRITER TRIGGER =====
+        async function triggerTypewriter() {
+            const msgEl = document.getElementById('typewriterMsg');
+            msgEl.classList.remove('hidden');
+
+            if (!currentActiveId) {
+                msgEl.innerText = "❌ कुनै ब्यानर लाइभ छैन";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({ typewriter_trigger: Date.now() })
+                .eq('id', currentActiveId);
+
+            if (error) {
+                msgEl.innerText = "❌ एनिमेसन चलाउन असफल: " + error.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "✅ एनिमेसन लाइभ ब्यानरमा पठाइयो!";
+            msgEl.className = "msg success";
+        }
+
         // ===== AUTH FUNCTIONS =====
         async function isAdminUser(user) {
             try {
@@ -820,9 +990,15 @@
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
             loadSavedData();
+            loadGallery();
         }
 
         // ===== LOAD SAVED DATA =====
+        const BANNER_LIST_PAGE_SIZE = 5;
+        let __allBanners = [];
+        let __showAllBanners = false;
+        let currentActiveId = null;
+
         async function loadSavedData() {
             const tableBody = document.getElementById('dataTableBody');
 
@@ -854,13 +1030,25 @@
                 return;
             }
 
+            __allBanners = data;
+            const activeItem = data.find(item => item.is_active);
+            currentActiveId = activeItem ? activeItem.id : null;
+            renderBannerTable();
+        }
+
+        function renderBannerTable() {
+            const tableBody = document.getElementById('dataTableBody');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const rows = __showAllBanners ? __allBanners : __allBanners.slice(0, BANNER_LIST_PAGE_SIZE);
+
             tableBody.innerHTML = '';
-            data.forEach((item) => {
+            rows.forEach((item) => {
                 const isActive = item.is_active ? 'checked' : '';
+                const liveTag = item.is_active ? ' 🟢' : '';
                 tableBody.innerHTML += `
                     <tr>
-                        <td><input type="radio" name="activeRadio" ${isActive} onclick="setActiveBanner(${item.id})"></td>
-                        <td><strong>${item.meeting_name || ''}</strong></td>
+                        <td><input type="radio" name="activeRadio" ${isActive} onclick="setActiveBanner(${item.id})" title="यो ब्यानर लाइभ देखाउनुहोस्"></td>
+                        <td><strong>${item.meeting_name || ''}</strong>${liveTag}</td>
                         <td>${item.sub_meeting_name || ''}</td>
                         <td>${item.organized_by || ''}</td>
                         <td>${item.date_text || ''}</td>
@@ -869,11 +1057,26 @@
                     </tr>
                 `;
             });
+
+            if (__allBanners.length > BANNER_LIST_PAGE_SIZE) {
+                showMoreBtn.classList.remove('hidden');
+                showMoreBtn.textContent = __showAllBanners
+                    ? `▲ कम देखाउनुहोस् (५ वटा मात्र)`
+                    : `▼ थप देखाउनुहोस् (जम्मा ${__allBanners.length} वटा)`;
+            } else {
+                showMoreBtn.classList.add('hidden');
+            }
+        }
+
+        function toggleShowAllBanners() {
+            __showAllBanners = !__showAllBanners;
+            renderBannerTable();
         }
 
         async function setActiveBanner(id) {
             await supabaseClient.from('banner_settings').update({ is_active: false }).neq('id', id);
             await supabaseClient.from('banner_settings').update({ is_active: true }).eq('id', id);
+            currentActiveId = id;
             loadSavedData();
         }
 
@@ -930,6 +1133,13 @@
             // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
             document.getElementById('globalScaleDisplay').textContent = (item.font_scale || 100) + '%';
+
+            // Set per-box font sizes
+            document.getElementById('meetingNameFontSize').value = item.meeting_name_font_size || 4.5;
+            document.getElementById('subMeetingFontSize').value = item.sub_meeting_font_size || 2.5;
+            document.getElementById('organizedByFontSize').value = item.organized_by_font_size || 2.8;
+            document.getElementById('dateFontSize').value = item.date_font_size || 1.6;
+            document.getElementById('timeFontSize').value = item.time_font_size || 1.6;
 
             // ===== PARSE AND SET DATE =====
             const dateData = parseDateFromText(item.date_text);
@@ -1027,6 +1237,12 @@
             const dateText = document.getElementById('dateText').value;
             const timeText = document.getElementById('timeText').value;
 
+            const meetingNameFontSize = parseFloat(document.getElementById('meetingNameFontSize').value) || 4.5;
+            const subMeetingFontSize = parseFloat(document.getElementById('subMeetingFontSize').value) || 2.5;
+            const organizedByFontSize = parseFloat(document.getElementById('organizedByFontSize').value) || 2.8;
+            const dateFontSize = parseFloat(document.getElementById('dateFontSize').value) || 1.6;
+            const timeFontSize = parseFloat(document.getElementById('timeFontSize').value) || 1.6;
+
             const msgEl = document.getElementById('updateMsg');
 
             if (!meetingName || !organizedBy) {
@@ -1084,6 +1300,11 @@
                     date_text: dateText,
                     time_text: timeText,
                     font_scale: fontScale,
+                    meeting_name_font_size: meetingNameFontSize,
+                    sub_meeting_font_size: subMeetingFontSize,
+                    organized_by_font_size: organizedByFontSize,
+                    date_font_size: dateFontSize,
+                    time_font_size: timeFontSize,
                     background_url: bgUrl,
                     logo_url: logoUrl,
                     updated_at: new Date().toISOString()
