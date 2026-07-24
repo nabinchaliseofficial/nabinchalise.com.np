@@ -58,7 +58,7 @@
         .hero-banner {
             position: absolute;
             inset: 0;
-            background-image: url('cots.jpg');
+            background-image: url('/r/clubheading.jpg');
             background-size: cover;
             background-position: center;
             opacity: .42;
@@ -342,6 +342,13 @@
             color: var(--gold);
             margin-right: .4rem;
         }
+        .footer-img {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 1.2rem;
+        }
 
         @media (prefers-reduced-motion:reduce) {
             .ticket {
@@ -374,7 +381,7 @@
         <div class="hero-inner">
             <span class="eyebrow">Community Organized Training Seminar</span>
             <h1>COTS Sessions</h1>
-            <p>Facilitator slide decks from the COTS program &mdash; present or download each session.</p>
+            <p>Facilitator slide decks from the COTS program &mdash; present each session.</p>
         </div>
     </div>
 
@@ -405,7 +412,8 @@
 
     <!-- ========== FOOTER ========== -->
     <footer>
-        <i class="fas fa-gear"></i>Rotaract Club of Galkot Baglung &middot; COTS Archive
+        <img src="/r/footer.jpg" alt="Rotaract Club of Galkot Baglung" class="footer-img" />
+        <div><i class="fas fa-gear"></i>Rotaract Club of Galkot Baglung &middot; COTS Archive</div>
     </footer>
 
     <script>
@@ -438,7 +446,6 @@
                 }
                 grid.innerHTML = sessions.map((s, idx) => {
                     const embedUrl = `https://docs.google.com/presentation/d/${s.driveId}/embed?start=false&loop=false&delayms=3000`;
-                    const downloadUrl = `https://docs.google.com/presentation/d/${s.driveId}/export/pptx`;
                     return `
                     <div class="ticket">
                         <span class="ticket-tag">${s.tag}</span>
@@ -448,9 +455,6 @@
                             <button class="btn btn-solid present-btn" data-embed="${embedUrl}" data-facilitator="${s.facilitator}">
                                 <i class="fas fa-play"></i> Present
                             </button>
-                            <a class="btn btn-line" href="${downloadUrl}">
-                                <i class="fas fa-download"></i> Download
-                            </a>
                         </div>
                     </div>
                 `;
