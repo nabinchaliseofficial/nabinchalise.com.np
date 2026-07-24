@@ -106,7 +106,7 @@
         }
 
         .meeting-title {
-            font-size: calc(4.5rem * var(--font-scale, 1));
+            font-size: calc(var(--meeting-title-size, 4.5rem) * var(--font-scale, 1));
             font-weight: 800;
             color: #d32f2f;
             text-shadow: 3px 3px 0px rgba(255,255,255,0.8), 
@@ -123,7 +123,7 @@
         }
 
         .sub-meeting-title {
-            font-size: calc(2.5rem * var(--font-scale, 1));
+            font-size: calc(var(--sub-meeting-title-size, 2.5rem) * var(--font-scale, 1));
             font-weight: 700;
             color: #e65100;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.7), 
@@ -139,7 +139,7 @@
         }
 
         .organized-by {
-            font-size: calc(2.8rem * var(--font-scale, 1));
+            font-size: calc(var(--organized-by-size, 2.8rem) * var(--font-scale, 1));
             font-weight: 700;
             color: #b71c1c;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.8), 
@@ -177,7 +177,7 @@
             padding: 8px 25px;
             border-radius: 10px;
             border: 2px solid #d4af37;
-            font-size: calc(1.6rem * var(--font-scale, 1));
+            font-size: calc(var(--date-size, 1.6rem) * var(--font-scale, 1));
         }
 
         .footer-section .time-display {
@@ -185,7 +185,7 @@
             padding: 8px 25px;
             border-radius: 10px;
             border: 2px solid #d4af37;
-            font-size: calc(1.6rem * var(--font-scale, 1));
+            font-size: calc(var(--time-size, 1.6rem) * var(--font-scale, 1));
         }
 
         .fullscreen-btn {
@@ -242,21 +242,27 @@
 
         @media (max-width: 1024px) {
             .meeting-title {
-                font-size: calc(3.5rem * var(--font-scale, 1));
+                font-size: calc(var(--meeting-title-size, 4.5rem) * var(--font-scale, 1) * 0.78);
             }
             .sub-meeting-title {
-                font-size: calc(2rem * var(--font-scale, 1));
+                font-size: calc(var(--sub-meeting-title-size, 2.5rem) * var(--font-scale, 1) * 0.8);
             }
             .organized-by {
-                font-size: calc(2.2rem * var(--font-scale, 1));
+                font-size: calc(var(--organized-by-size, 2.8rem) * var(--font-scale, 1) * 0.79);
             }
             .footer-section {
                 font-size: calc(1.4rem * var(--font-scale, 1));
             }
-            .footer-section span,
-            .footer-section .nepali-date-display,
-            .footer-section .time-display {
+            .footer-section span {
                 font-size: calc(1.2rem * var(--font-scale, 1));
+                padding: 6px 18px;
+            }
+            .footer-section .nepali-date-display {
+                font-size: calc(var(--date-size, 1.6rem) * var(--font-scale, 1) * 0.75);
+                padding: 6px 18px;
+            }
+            .footer-section .time-display {
+                font-size: calc(var(--time-size, 1.6rem) * var(--font-scale, 1) * 0.75);
                 padding: 6px 18px;
             }
             .live-clock {
@@ -275,13 +281,13 @@
                 border-width: 8px;
             }
             .meeting-title {
-                font-size: calc(2.5rem * var(--font-scale, 1));
+                font-size: calc(var(--meeting-title-size, 4.5rem) * var(--font-scale, 1) * 0.56);
             }
             .sub-meeting-title {
-                font-size: calc(1.5rem * var(--font-scale, 1));
+                font-size: calc(var(--sub-meeting-title-size, 2.5rem) * var(--font-scale, 1) * 0.6);
             }
             .organized-by {
-                font-size: calc(1.6rem * var(--font-scale, 1));
+                font-size: calc(var(--organized-by-size, 2.8rem) * var(--font-scale, 1) * 0.57);
             }
             .content-section {
                 padding: 15px 20px;
@@ -291,10 +297,16 @@
                 justify-content: center;
                 gap: 8px;
             }
-            .footer-section span,
-            .footer-section .nepali-date-display,
-            .footer-section .time-display {
+            .footer-section span {
                 font-size: calc(0.9rem * var(--font-scale, 1));
+                padding: 4px 12px;
+            }
+            .footer-section .nepali-date-display {
+                font-size: calc(var(--date-size, 1.6rem) * var(--font-scale, 1) * 0.56);
+                padding: 4px 12px;
+            }
+            .footer-section .time-display {
+                font-size: calc(var(--time-size, 1.6rem) * var(--font-scale, 1) * 0.56);
                 padding: 4px 12px;
             }
             .live-clock {
@@ -325,18 +337,21 @@
 
         @media (max-width: 480px) {
             .meeting-title {
-                font-size: calc(1.8rem * var(--font-scale, 1));
+                font-size: calc(var(--meeting-title-size, 4.5rem) * var(--font-scale, 1) * 0.4);
             }
             .sub-meeting-title {
-                font-size: calc(1.2rem * var(--font-scale, 1));
+                font-size: calc(var(--sub-meeting-title-size, 2.5rem) * var(--font-scale, 1) * 0.48);
             }
             .organized-by {
-                font-size: calc(1.2rem * var(--font-scale, 1));
+                font-size: calc(var(--organized-by-size, 2.8rem) * var(--font-scale, 1) * 0.43);
             }
-            .footer-section span,
+            .footer-section span {
+                font-size: calc(0.7rem * var(--font-scale, 1));
+                padding: 3px 8px;
+            }
             .footer-section .nepali-date-display,
             .footer-section .time-display {
-                font-size: calc(0.7rem * var(--font-scale, 1));
+                font-size: calc(var(--date-size, 1.6rem) * var(--font-scale, 1) * 0.44);
                 padding: 3px 8px;
             }
             .live-clock {
@@ -565,6 +580,50 @@
 
             const fontScale = data.font_scale || 100;
             document.documentElement.style.setProperty('--font-scale', fontScale / 100);
+
+            // Per-box font sizes (rem)
+            document.documentElement.style.setProperty('--meeting-title-size', (data.meeting_name_font_size || 4.5) + 'rem');
+            document.documentElement.style.setProperty('--sub-meeting-title-size', (data.sub_meeting_font_size || 2.5) + 'rem');
+            document.documentElement.style.setProperty('--organized-by-size', (data.organized_by_font_size || 2.8) + 'rem');
+            document.documentElement.style.setProperty('--date-size', (data.date_font_size || 1.6) + 'rem');
+            document.documentElement.style.setProperty('--time-size', (data.time_font_size || 1.6) + 'rem');
+
+            // Typewriter animation trigger (admin clicks a button -> this value changes)
+            if (window.__lastTypewriterTrigger === undefined) {
+                // First load: just remember the current value, don't animate
+                window.__lastTypewriterTrigger = data.typewriter_trigger || 0;
+            } else if (data.typewriter_trigger && data.typewriter_trigger != window.__lastTypewriterTrigger) {
+                window.__lastTypewriterTrigger = data.typewriter_trigger;
+                playTypewriter(data.meeting_name || '', 3);
+            }
+        }
+
+        // ===== TYPEWRITER ANIMATION (meeting name, repeats `times` times) =====
+        let __typewriterRunning = false;
+        async function playTypewriter(text, times = 3) {
+            if (!text || __typewriterRunning) return;
+            __typewriterRunning = true;
+            const el = document.getElementById('meetingName');
+            const typeDelay = 55;
+            const eraseDelay = 30;
+            const pauseDelay = 450;
+
+            for (let round = 0; round < times; round++) {
+                el.innerText = '';
+                for (let i = 0; i <= text.length; i++) {
+                    el.innerText = text.slice(0, i);
+                    await new Promise(r => setTimeout(r, typeDelay));
+                }
+                await new Promise(r => setTimeout(r, pauseDelay));
+                if (round < times - 1) {
+                    for (let i = text.length; i >= 0; i--) {
+                        el.innerText = text.slice(0, i);
+                        await new Promise(r => setTimeout(r, eraseDelay));
+                    }
+                }
+            }
+            el.innerText = text;
+            __typewriterRunning = false;
         }
 
         async function fetchBannerData() {
