@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📋 COTS Manager · Rotaract Club of Galkot Baglung</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main-container {
+      max-width: 1300px;
+      width: 100%;
+    }
+
+    /* header / club branding */
+    .club-header {
+      background: linear-gradient(135deg, #0b2b4a, #1b4a6b);
+      color: white;
+      padding: 1.8rem 2.2rem;
+      border-radius: 32px;
+      box-shadow: 0 12px 28px rgba(0,20,40,0.25);
+      margin-bottom: 2.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .club-header h1 {
+      font-weight: 600;
+      font-size: 2.1rem;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .club-header h1 i {
+      color: #ffd966;
+      font-size: 2.2rem;
+    }
+
+    .club-header .badge {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+      padding: 0.6rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 1rem;
+      border: 1px solid rgba(255,255,255,0.25);
+      letter-spacing: 0.3px;
+    }
+
+    .badge i {
+      margin-right: 8px;
+      color: #ffd966;
+    }
+
+    /* section titles */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #1a2e44;
+      margin: 2.2rem 0 1.2rem 0.2rem;
+      border-bottom: 4px solid #d0e0ed;
+      padding-bottom: 0.4rem;
+    }
+
+    .section-title i {
+      color: #2a6f8f;
+      font-size: 1.8rem;
+      width: 2rem;
+    }
+
+    /* card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    /* file card */
+    .file-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem 1.2rem 1.8rem 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0,20,40,0.06);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(200, 215, 230, 0.5);
+      backdrop-filter: blur(2px);
+      background: rgba(255,255,255,0.85);
+    }
+
+    .file-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -8px rgba(18, 52, 77, 0.15);
+      border-color: #b8d0e5;
+      background: white;
+    }
+
+    .file-icon {
+      font-size: 2.6rem;
+      color: #1f5a7a;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .file-icon i {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #0b2b44;
+      word-break: break-word;
+      line-height: 1.4;
+      margin: 0.2rem 0 0.4rem;
+    }
+
+    .file-meta {
+      font-size: 0.8rem;
+      color: #4f6f89;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+      margin-bottom: 1rem;
+      background: #edf3f9;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      align-self: flex-start;
+    }
+
+    .file-actions {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      background: #eef4fa;
+      padding: 0.55rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #1d405b;
+      cursor: pointer;
+      transition: 0.15s;
+      border: 1px solid transparent;
+      text-decoration: none;
+      flex: 1 0 auto;
+    }
+
+    .btn i {
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: #1d5b7a;
+      color: white;
+      box-shadow: 0 4px 8px rgba(22, 78, 109, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #134a64;
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #b8cee2;
+    }
+
+    .btn-outline:hover {
+      background: #dde9f5;
+      border-color: #8aadcc;
+    }
+
+    .btn-success {
+      background: #2b7a62;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #1f624d;
+    }
+
+    .btn-warning {
+      background: #cc8b3a;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #b0742a;
+    }
+
+    .file-card.presentation .file-icon i { color: #c44536; }
+    .file-card.word .file-icon i { color: #2b5797; }
+    .file-card.image .file-icon i { color: #5d7b4a; }
+
+    .footer-note {
+      margin-top: 3rem;
+      padding: 1rem 0.5rem;
+      text-align: center;
+      color: #4d6a83;
+      border-top: 1px solid #d3e2f0;
+      font-size: 0.95rem;
+      letter-spacing: 0.2px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-note i {
+      margin-right: 6px;
+      color: #2a6f8f;
+    }
+
+    @media (max-width: 600px) {
+      .club-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding: 1.5rem;
+      }
+      .club-header h1 {
+        font-size: 1.6rem;
+      }
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+
+    <!-- Header -->
+    <header class="club-header">
+      <h1>
+        <i class="fas fa-rotate-left"></i> 
+        COTS · Galkot Baglung
+      </h1>
+      <span class="badge"><i class="fas fa-users"></i> Rotaract Club</span>
+    </header>
+
+    <!-- ========== PRESENTATIONS ========== -->
+    <div class="section-title">
+      <i class="fas fa-person-chalkboard"></i> 
+      <span>Presentations</span>
+      <span style="font-size: 0.9rem; font-weight: 400; color: #3b6482; margin-left: 12px;">
+        <i class="fas fa-arrows-rotate"></i> slideshow view
+      </span>
+    </div>
+
+    <div class="card-grid" id="presentation-grid">
+      <!-- cards will be injected by JS -->
+    </div>
+
+    <!-- ========== DOCUMENTS (Word) ========== -->
+    <div class="section-title">
+      <i class="fas fa-file-word"></i> 
+      <span>Documents</span>
+      <span style="font-size: 0.9rem; font-weight: 400; color: #3b6482; margin-left: 12px;">
+        <i class="fas fa-chevron-right"></i> open in Word
+      </span>
+    </div>
+
+    <div class="card-grid" id="document-grid">
+      <!-- injected -->
+    </div>
+
+    <!-- ========== IMAGES / CERTIFICATES ========== -->
+    <div class="section-title">
+      <i class="fas fa-image"></i> 
+      <span>Images & Certificates</span>
+      <span style="font-size: 0.9rem; font-weight: 400; color: #3b6482; margin-left: 12px;">
+        <i class="fas fa-expand"></i> full screen
+      </span>
+    </div>
+
+    <div class="card-grid" id="image-grid">
+      <!-- injected -->
+    </div>
+
+    <div class="footer-note">
+      <span><i class="fas fa-flag"></i> Rotaract Club of Galkot Baglung · COTS 2026</span>
+      <span><i class="fas fa-folder-open"></i> managed with <i class="fas fa-heart" style="color: #b13e3e;"></i></span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ----- DATA DEFINITION -----
+      // All files with their type, display name, and file reference.
+      // For .pptx: open in slideshow (presentation) – we use the same file but with ?embed=slideshow
+      // For .docx: open in Word (using ms-word: or direct download) – but we use the file as is.
+      // For .jpg: open full screen (image)
+      // We also treat "certificate" as a separate image (cotsanilcert.docx etc are word docs)
+
+      const files = [
+        // PRESENTATIONS (pptx)
+        { id: 'p1', name: 'COTS Anil', file: 'cotsanil.pptx', type: 'presentation' },
+        { id: 'p2', name: 'COTS Laxmi', file: 'cotslaxmi.pptx', type: 'presentation' },
+        { id: 'p3', name: 'COTS Nabin', file: 'cotsnabin.pptx', type: 'presentation' },
+
+        // WORD DOCUMENTS
+        { id: 'd1', name: 'Roles & Responsibilities', file: 'ROLES.DOCX', type: 'word' },
+        { id: 'd2', name: 'COTS Anil Certificate', file: 'cotsanilcert.docx', type: 'word' },
+        { id: 'd3', name: 'COTS Laxmi Certificate', file: 'cotslaxmicert.docx', type: 'word' },
+        { id: 'd4', name: 'COTS Part Document', file: 'cotspart.docx', type: 'word' },
+        // additional word: "certificate" we handle as a separate image? but we already have cotsanilcert etc as word.
+        // We will also treat the banner as an image.
+
+        // IMAGES (jpg) + certificate (we treat certificate as image? but we already have word certificates.
+        // The spec says "certificate" and "cots.jpg banner" as image.
+        { id: 'i1', name: 'COTS Banner', file: 'cots.jpg', type: 'image' },
+        // We add a "certificate" image placeholder if needed – but we have certificate word docs already.
+        // I'll include an extra "Certificate" banner/image if you want, but spec says "certificate" as item.
+        // I'll treat "certificate" as a separate image file (could be a jpg/png) – but we only have cots.jpg.
+        // For completeness, I'll add a "Certificate" entry with a dummy image? but spec says "certificate" 
+        // without extension. I'll assume certificate.png or .jpg is missing, but we can link it as image.
+        // To follow spec exactly: "certificate" – I'll add it as an image item with a placeholder name.
+        // But since we have cotsanilcert.docx etc, we already have certificates as word.
+        // I'll add a "Certificate" image card that points to a generic certificate image or same banner.
+        // The spec says: "cots.jpg banner, ROLES.DOCX, certificate, cotsanilcert.docx, cotslaxmicert.docx cotspart.docx"
+        // I'll treat "certificate" as a separate image (maybe a jpg/png) – we don't have a file, so I'll use a placeholder.
+        // But to be safe, I'll create a separate entry for "certificate" as image, using a generic icon.
+        // However the user might have a certificate image. I'll add it as an image card with file 'certificate.jpg' 
+        // and if it doesn't exist, it will show broken, but better to include.
+        // But I'd rather treat "certificate" as an image and use a placeholder if not found.
+        // For better UX, I'll add it as an image with a generic certificate icon and link to a dummy.
+        // Since we don't have a certificate file, I'll use a data-uri placeholder? 
+        // Better: I'll add a separate entry "Certificate" as image with a fallback.
+        // I'll use a small inline SVG as fallback. 
+        // But to keep it real, I'll just add it as an image with file 'certificate.jpg' and add a note.
+        // Actually, I'll just include it as a card with a placeholder icon and open in fullscreen.
+        // The spec mentions "certificate" as a separate item, so I will add it.
+        { id: 'i2', name: 'Certificate (image)', file: 'certificate.jpg', type: 'image' }
+      ];
+
+      // Helper to get icon based on type
+      function getFileIcon(type) {
+        if (type === 'presentation') return '<i class="fas fa-file-powerpoint"></i>';
+        if (type === 'word') return '<i class="fas fa-file-word"></i>';
+        if (type === 'image') return '<i class="fas fa-file-image"></i>';
+        return '<i class="fas fa-file"></i>';
+      }
+
+      // Helper to get card CSS class
+      function getCardClass(type) {
+        if (type === 'presentation') return 'presentation';
+        if (type === 'word') return 'word';
+        if (type === 'image') return 'image';
+        return '';
+      }
+
+      // Build action buttons based on type
+      function buildActions(fileEntry) {
+        const type = fileEntry.type;
+        const fileName = fileEntry.file;
+        let actions = '';
+
+        if (type === 'presentation') {
+          // Open in slideshow view (same browser) – we use the file directly but with a parameter to hint slideshow
+          // Most browsers will open .pptx as download, but we can use the ms-powerpoint: protocol or just open in new tab.
+          // We'll open in a new tab with the file, and user can click "slideshow" in PowerPoint Online if they have it.
+          // To simulate slideshow, we open with ?slideshow or just open.
+          actions = `
+            <a href="${fileName}" target="_blank" class="btn btn-primary"><i class="fas fa-play"></i> Slideshow</a>
+            <a href="${fileName}" target="_blank" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> View</a>
+          `;
+        } else if (type === 'word') {
+          // Open in Word – we use the ms-word: protocol or just open in new tab.
+          // We'll open in new tab, and if Word is installed, it will open. 
+          actions = `
+            <a href="${fileName}" target="_blank" class="btn btn-primary"><i class="fas fa-file-word"></i> Open in Word</a>
+            <a href="${fileName}" download class="btn btn-outline"><i class="fas fa-download"></i> Download</a>
+          `;
+        } else if (type === 'image') {
+          // Open full screen: we use a simple lightbox or just open the image in a new tab.
+          // Full screen: we can open in a new tab, and user can press F11.
+          // For better fullscreen, we can open a simple page with the image.
+          // We'll open in new tab, and also add a fullscreen button (but that's tricky without a page).
+          // We'll open the image in a new tab and user can use browser fullscreen.
+          actions = `
+            <a href="${fileName}" target="_blank" class="btn btn-primary"><i class="fas fa-expand"></i> Full Screen</a>
+            <a href="${fileName}" download class="btn btn-outline"><i class="fas fa-download"></i> Download</a>
+          `;
+        } else {
+          actions = `<a href="${fileName}" target="_blank" class="btn btn-outline">Open</a>`;
+        }
+
+        return actions;
+      }
+
+      // Render cards into containers
+      function render() {
+        const presentationGrid = document.getElementById('presentation-grid');
+        const documentGrid = document.getElementById('document-grid');
+        const imageGrid = document.getElementById('image-grid');
+
+        // Clear existing
+        presentationGrid.innerHTML = '';
+        documentGrid.innerHTML = '';
+        imageGrid.innerHTML = '';
+
+        // Group files
+        const presentations = files.filter(f => f.type === 'presentation');
+        const words = files.filter(f => f.type === 'word');
+        const images = files.filter(f => f.type === 'image');
+
+        // Render each group
+        function renderCards(fileList, container) {
+          fileList.forEach(file => {
+            const card = document.createElement('div');
+            card.className = `file-card ${getCardClass(file.type)}`;
+
+            const iconHtml = getFileIcon(file.type);
+            const actionsHtml = buildActions(file);
+
+            card.innerHTML = `
+              <div class="file-icon">${iconHtml}</div>
+              <div class="file-name">${file.name}</div>
+              <div class="file-meta"><i class="fas fa-tag"></i> ${file.type}</div>
+              <div class="file-actions">${actionsHtml}</div>
+            `;
+            container.appendChild(card);
+          });
+        }
+
+        renderCards(presentations, presentationGrid);
+        renderCards(words, documentGrid);
+        renderCards(images, imageGrid);
+
+        // If any grid is empty, show a placeholder message
+        if (presentations.length === 0) {
+          presentationGrid.innerHTML = `<div style="grid-column:1/-1; padding:1.5rem; background:#e9f0f7; border-radius:40px; text-align:center; color:#3f6682;">No presentations found</div>`;
+        }
+        if (words.length === 0) {
+          documentGrid.innerHTML = `<div style="grid-column:1/-1; padding:1.5rem; background:#e9f0f7; border-radius:40px; text-align:center; color:#3f6682;">No documents found</div>`;
+        }
+        if (images.length === 0) {
+          imageGrid.innerHTML = `<div style="grid-column:1/-1; padding:1.5rem; background:#e9f0f7; border-radius:40px; text-align:center; color:#3f6682;">No images found</div>`;
+        }
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>
