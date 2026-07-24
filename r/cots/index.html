@@ -91,6 +91,35 @@
             color: #e7dfd0;
             max-width: 520px;
         }
+        .hero-nav {
+            display: flex;
+            gap: .6rem;
+            margin-bottom: 1.2rem;
+        }
+        .hero-nav-btn {
+            padding: .45rem 1rem;
+            font-size: .82rem;
+        }
+        .event-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: .82rem;
+            color: #fdf9f0;
+        }
+        .event-info i {
+            color: var(--gold);
+            margin-right: .4rem;
+        }
+        .hashtags {
+            margin-top: .6rem;
+            font-size: .78rem;
+            color: var(--gold);
+            font-family: 'Space Mono', monospace;
+            letter-spacing: .02em;
+        }
         .hero-seal {
             position: absolute;
             top: 2.4rem;
@@ -120,7 +149,24 @@
             padding: 0 2rem;
         }
         .section {
+            position: relative;
             padding: 3.2rem 0 .6rem;
+        }
+        .sessions-section {
+            padding-left: 1px;
+            padding-right: 1px;
+        }
+        .sessions-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/r/cots/cots.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: .12;
+            z-index: -1;
         }
         .section-head {
             display: flex;
@@ -200,6 +246,49 @@
             color: var(--ink);
         }
         .ticket .facilitator {
+            font-size: .85rem;
+            color: var(--slate);
+        }
+        .facilitator-link {
+            font-size: .85rem;
+            color: var(--slate);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            transition: color .15s ease;
+        }
+        .facilitator-link i {
+            color: #1877f2;
+        }
+        .facilitator-link:hover {
+            color: var(--magenta);
+        }
+        .coordinator-card {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+            background: #fffdf7;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.4rem 1.6rem;
+            box-shadow: 0 10px 22px -14px rgba(15, 28, 46, .35);
+            max-width: 480px;
+        }
+        .coordinator-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--gold);
+            flex-shrink: 0;
+        }
+        .coordinator-info h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .coordinator-role {
             font-size: .85rem;
             color: var(--slate);
         }
@@ -379,9 +468,19 @@
         <div class="hero-veil"></div>
         <div class="hero-seal">Est. Rotaract<br />Galkot Baglung</div>
         <div class="hero-inner">
-            <span class="eyebrow">Community Organized Training Seminar</span>
+            <div class="hero-nav">
+                <a href="/r/index.html" class="btn btn-line hero-nav-btn"><i class="fas fa-house"></i> Home</a>
+                <a href="https://nabinchalise.com.np/r/upcomming-projects.html" class="btn btn-solid hero-nav-btn" target="_blank"><i class="fas fa-pen"></i> Register</a>
+            </div>
+            <span class="eyebrow">Club Officers Training Seminar (COTS)</span>
             <h1>COTS Sessions</h1>
             <p>Facilitator slide decks from the COTS program &mdash; present each session.</p>
+            <div class="event-info">
+                <span><i class="fas fa-location-dot"></i> CHAKATI KITCHEN</span>
+                <span><i class="fas fa-calendar-days"></i> July 25, 2026 (Saturday)</span>
+                <span><i class="fas fa-clock"></i> 11:00 A.M.</span>
+            </div>
+            <div class="hashtags">#RotaractCOTS2026 #FutureRotaractLeaders</div>
         </div>
     </div>
 
@@ -389,13 +488,28 @@
     <div class="wrap">
 
         <!-- ===== SESSIONS ===== -->
-        <div class="section">
+        <div class="section sessions-section">
+            <div class="sessions-bg"></div>
             <div class="section-head">
                 <h2><i class="fas fa-person-chalkboard" style="color:var(--magenta);margin-right:.5rem;"></i>Sessions</h2>
                 <span class="count" id="session-count">0</span>
                 <span class="hint">facilitator slide decks</span>
             </div>
             <div class="grid" id="session-grid"></div>
+        </div>
+
+        <!-- ===== PROGRAM COORDINATOR ===== -->
+        <div class="section">
+            <div class="section-head">
+                <h2><i class="fas fa-user-tie" style="color:var(--magenta);margin-right:.5rem;"></i>Program Coordinator</h2>
+            </div>
+            <div class="coordinator-card">
+                <img src="/r/images/balaramadhikari.jpg" alt="Rtr. Balaram Adhikari" class="coordinator-img" />
+                <div class="coordinator-info">
+                    <h3>Rtr. Balaram Adhikari</h3>
+                    <span class="coordinator-role">Program Co-Ordinator &middot; Club Member</span>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -428,6 +542,13 @@
                 { facilitator: 'Nabin', driveId: '1sh8eokZOQpCQ37iiAxFCELb__AE1eNUx', tag: 'Session 03' },
             ];
 
+            // facilitator Facebook profile links
+            const socials = {
+                Anil: 'https://www.facebook.com/shoutatthedevils',
+                Laxmi: 'https://www.facebook.com/laxmi.magar.409860',
+                Nabin: 'https://www.facebook.com/nabincs3/',
+            };
+
             // ---- DOM REFS ----
             const grid = document.getElementById('session-grid');
             const countEl = document.getElementById('session-count');
@@ -445,11 +566,12 @@
                 }
                 grid.innerHTML = sessions.map((s, idx) => {
                     const embedUrl = `https://docs.google.com/presentation/d/${s.driveId}/embed?start=false&loop=false&delayms=3000`;
+                    const fbUrl = socials[s.facilitator] || '#';
                     return `
                     <div class="ticket">
                         <span class="ticket-tag">${s.tag}</span>
                         <h3>COTS &middot; ${s.facilitator}</h3>
-                        <span class="facilitator"><i class="fas fa-user"></i> Facilitated by ${s.facilitator}</span>
+                        <a class="facilitator-link" href="${fbUrl}" target="_blank"><i class="fab fa-facebook"></i> Facilitated by ${s.facilitator}</a>
                         <div class="ticket-actions">
                             <button class="btn btn-solid present-btn" data-embed="${embedUrl}" data-facilitator="${s.facilitator}">
                                 <i class="fas fa-play"></i> Present
