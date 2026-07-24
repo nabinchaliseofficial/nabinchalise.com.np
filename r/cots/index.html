@@ -412,10 +412,12 @@
         (function() {
 
             // ---- SESSION DATA ----
+            // driveId = the ID from the Google Slides share URL
+            // (https://docs.google.com/presentation/d/**THIS_PART**/edit...)
             const sessions = [
-                { facilitator: 'Anil', file: '/cotsanil.pptx', tag: 'Session 01' },
-                { facilitator: 'Laxmi', file: '/cotslaxmi.pptx', tag: 'Session 02' },
-                { facilitator: 'Nabin', file: '/cotsnabin.pptx', tag: 'Session 03' },
+                { facilitator: 'Anil', driveId: '10HdBypxEqEGnFTqsRKqZaaMVHiX2Jv9x', tag: 'Session 01' },
+                { facilitator: 'Laxmi', driveId: '1DPLvvDv5CXxe6oWztFU4v9kSNLsCz2Ry', tag: 'Session 02' },
+                { facilitator: 'Nabin', driveId: '1sh8eokZOQpCQ37iiAxFCELb__AE1eNUx', tag: 'Session 03' },
             ];
 
             // ---- DOM REFS ----
@@ -434,45 +436,42 @@
                     grid.innerHTML = '<div class="empty">No session slides yet.</div>';
                     return;
                 }
-                grid.innerHTML = sessions.map((s, idx) => `
+                grid.innerHTML = sessions.map((s, idx) => {
+                    const embedUrl = `https://docs.google.com/presentation/d/${s.driveId}/embed?start=false&loop=false&delayms=3000`;
+                    const downloadUrl = `https://docs.google.com/presentation/d/${s.driveId}/export/pptx`;
+                    return `
                     <div class="ticket">
                         <span class="ticket-tag">${s.tag}</span>
                         <h3>COTS &middot; ${s.facilitator}</h3>
                         <span class="facilitator"><i class="fas fa-user"></i> Facilitated by ${s.facilitator}</span>
-                        <span class="filename">${s.file}</span>
                         <div class="ticket-actions">
-                            <button class="btn btn-solid present-btn" data-file="${s.file}" data-facilitator="${s.facilitator}">
+                            <button class="btn btn-solid present-btn" data-embed="${embedUrl}" data-facilitator="${s.facilitator}">
                                 <i class="fas fa-play"></i> Present
                             </button>
-                            <a class="btn btn-line" href="${s.file}" download>
+                            <a class="btn btn-line" href="${downloadUrl}">
                                 <i class="fas fa-download"></i> Download
                             </a>
                         </div>
                     </div>
-                `).join('');
+                `;
+                }).join('');
 
                 // Attach present events
                 document.querySelectorAll('.present-btn').forEach(btn => {
                     btn.addEventListener('click', function(e) {
-                        const file = this.dataset.file;
+                        const embedUrl = this.dataset.embed;
                         const facilitator = this.dataset.facilitator;
-                        openPresentation(file, facilitator);
+                        openPresentation(embedUrl, facilitator);
                     });
                 });
             }
 
             // ---- OPEN PRESENTATION (fullscreen modal) ----
-            function openPresentation(file, facilitator) {
-                // Browsers can't render .pptx natively, so an iframe pointed
-                // straight at the file just shows blank or triggers a download.
-                // Build an absolute URL to the file and hand it to Microsoft's
-                // Office Online viewer, which can render pptx inside an iframe.
-                // (Requires the page + file to be served over http(s) on a
-                // publicly reachable URL — this will not work opened via file://.)
-                const absoluteUrl = new URL(file, window.location.href).href;
-                const viewerUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(absoluteUrl);
-
-                modalFrame.src = viewerUrl;
+            function openPresentation(embedUrl, facilitator) {
+                // Google Slides serves its own embeddable player at this URL
+                // shape, so the iframe can load it straight away — no need
+                // to route through a third-party viewer.
+                modalFrame.src = embedUrl;
 
                 // Show modal
                 modal.classList.add('active');
@@ -484,13 +483,14 @@
                     modal.webkitRequestFullscreen();
                 }
 
-                // The viewer is always cross-origin, so we can never inspect
-                // its contents to detect success/failure — trying to do so
-                // just throws and makes the fallback show up unpredictably.
-                // Instead, always surface the "open in new tab" link after a
-                // short delay as a quiet, reliable escape hatch.
+                // The embed is cross-origin, so we can't inspect its contents
+                // to confirm it loaded. Slides that are still "Restricted"
+                // (not shared as "Anyone with the link") will render Google's
+                // own "you need permission" screen inside the iframe rather
+                // than failing outright, so we just offer a quiet "open in
+                // new tab" escape hatch rather than trying to auto-detect it.
                 fallback.style.display = 'none';
-                fallbackLink.href = absoluteUrl;
+                fallbackLink.href = embedUrl.replace('/embed', '/edit');
 
                 if (modal._fallbackTimer) clearTimeout(modal._fallbackTimer);
                 modal._fallbackTimer = setTimeout(() => {
