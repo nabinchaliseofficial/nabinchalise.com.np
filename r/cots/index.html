@@ -406,7 +406,7 @@
         <iframe class="modal-frame" id="modalFrame" src="" allowfullscreen></iframe>
         <div class="modal-fallback" id="modalFallback">
             <i class="fas fa-info-circle"></i>
-            Can't view? <a href="#" id="fallbackLink" target="_blank">Open in new tab</a>
+            Having trouble loading? Please close and try again.
         </div>
     </div>
 
@@ -435,7 +435,6 @@
             const modalFrame = document.getElementById('modalFrame');
             const modalClose = document.getElementById('modalClose');
             const fallback = document.getElementById('modalFallback');
-            const fallbackLink = document.getElementById('fallbackLink');
 
             // ---- RENDER SESSIONS ----
             function renderSessions() {
@@ -491,10 +490,9 @@
                 // to confirm it loaded. Slides that are still "Restricted"
                 // (not shared as "Anyone with the link") will render Google's
                 // own "you need permission" screen inside the iframe rather
-                // than failing outright, so we just offer a quiet "open in
-                // new tab" escape hatch rather than trying to auto-detect it.
+                // than failing outright — we surface a plain message rather
+                // than a link out, so the slide can only ever be viewed here.
                 fallback.style.display = 'none';
-                fallbackLink.href = embedUrl.replace('/embed', '/edit');
 
                 if (modal._fallbackTimer) clearTimeout(modal._fallbackTimer);
                 modal._fallbackTimer = setTimeout(() => {
