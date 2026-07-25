@@ -1860,6 +1860,33 @@
             if (accessDeniedOverlay) accessDeniedOverlay.classList.remove('active');
         }
 
+        // ============================================================
+        //  ROLE-BASED EDIT PERMISSIONS
+        //  - Admin: can create new meetings AND edit existing ones.
+        //  - Secretary: can create/save a NEW meeting, but cannot edit
+        //    an existing (already-saved) meeting record.
+        //  - President / Editor: can search/view only, no saving.
+        // ============================================================
+        function canCreateNewMeeting() {
+            return currentUserRole === 'admin' || currentUserRole === 'secretary';
+        }
+
+        function canEditExistingMeeting() {
+            return currentUserRole === 'admin';
+        }
+
+        function applyRolePermissionsToUI() {
+            const saveBtn = document.getElementById('saveBtn');
+            const allowed = canCreateNewMeeting();
+
+            if (saveBtn) {
+                saveBtn.disabled = !allowed;
+                saveBtn.style.opacity = allowed ? '1' : '0.5';
+                saveBtn.style.cursor = allowed ? 'pointer' : 'not-allowed';
+                saveBtn.title = allowed ? '' : 'Only Admin/Secretary can save meeting minutes.';
+            }
+        }
+
         function updateUIAfterAuth(user, role) {
             currentUser = user;
             currentUserRole = role;
@@ -1886,6 +1913,7 @@
 
             fetchAllMeetings();
             calculateAttendanceCounts();
+            applyRolePermissionsToUI();
 
             showToast('✅ Welcome', `Logged in as ${role.toUpperCase()}`, 'success');
         }
@@ -2787,6 +2815,11 @@
             const btn = document.getElementById('saveBtn');
             if (!btn || btn.classList.contains('loading')) return;
 
+            if (!canCreateNewMeeting()) {
+                showToast('🔒 Not Allowed', 'Only Admin/Secretary can save meeting minutes.', 'error');
+                return;
+            }
+
             const modeEnabled = await checkMeetingMode();
             if (!modeEnabled) { showModeOffOverlay(); return; }
 
@@ -2806,15 +2839,20 @@
                 return;
             }
 
+            // Match against an existing meeting with the same meeting number (update in place)
+            const existing = allMeetings.find(item =>
+                (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
+            );
+
+            if (existing && !canEditExistingMeeting()) {
+                showToast('🔒 Not Allowed', 'This meeting already exists — only Admin can edit an existing meeting record.', 'error');
+                return;
+            }
+
             btn.classList.add('loading');
             btn.disabled = true;
 
             try {
-                // Match against an existing meeting with the same meeting number (update in place)
-                const existing = allMeetings.find(item =>
-                    (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
-                );
-
                 let versionNum = 1;
                 if (existing && existing.data?._version) {
                     const match = /v(\d+)/i.exec(existing.data._version);
