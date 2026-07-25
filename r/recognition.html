@@ -314,32 +314,32 @@
       ).join('');
     }
 
-    // --- Fixed Board of Directors roster (R.Y. 2026/27) --------------------
-    // These are the ONLY people counted as "Board" for the Leader award.
-    // Everyone else in the members table falls into the general club-member
-    // pool used for the Rising Star award.
-    // IMPORTANT: `name` below must match the `name` column in your `members`
-    // table (matching ignores "Rtr."/"Dr." prefix, case, and extra spaces -
-    // see normalizeKey). Verified against real member data on file.
-    const BOARD_ROSTER = [
-      { name: 'Nabin Chalise',      designation: 'President',              isPresident: true },
-      { name: 'Madan Sharma',       designation: 'Secretary' },
-      { name: 'Manish Kandel',      designation: 'Treasurer' },
-      { name: 'Nabin Subedi',       designation: 'IPP / Mentor' },
-      { name: 'Tika Ram Gautam',    designation: 'President Elect' },
-      { name: 'Vikash Subedi',      designation: 'Vice President' },
-      { name: 'Sagar Chalise',      designation: 'Joint Secretary' },
-      { name: 'Bipin Chalise',      designation: 'Membership Chair' },
-      { name: 'Manish Gurung',      designation: 'Public Image Chair' },
-      { name: 'Smriti Budhathoki',  designation: 'Service Projects Chair' },
-      { name: 'Manoj Karki',        designation: 'Health Program Chair' },
-      { name: 'Manjeela Shrestha',  designation: 'Rotary Foundation Chair' },
-      { name: 'Lokendra Gaire',     designation: 'Sergeant At Arms' },
-      { name: 'Raju Sahani',        designation: 'IT Officer' },
-      { name: 'Melina Kharel',      designation: 'Young Leaders Contact' },
-      { name: 'Laxmi Pun',          designation: 'PP/Learning Facilitator' },
-      { name: 'Anil Shrestha',      designation: 'PP/ISD/Advisor' },
-      { name: 'Kamal Kharel',       designation: 'PP/Club Advisor' }
+    // --- Board classification, driven by the `position` column ------------
+    // Board membership is now read directly from each member's `position`
+    // field in the `members` table (set via a fixed dropdown in the admin
+    // panel - see adminmembers.html) instead of a hardcoded name list.
+    // This means recognition no longer breaks when a name is spelled
+    // slightly differently in different places - as long as the admin
+    // picks a position from the dropdown, classification always works.
+    const BOARD_DESIGNATIONS = [
+      'President',
+      'President Elect',
+      'Secretary',
+      'Joint Secretary',
+      'Treasurer',
+      'Vice President',
+      'IPP / Mentor',
+      'Membership Chair',
+      'Public Image Chair',
+      'Service Projects Chair',
+      'Health Program Chair',
+      'Rotary Foundation Chair',
+      'Sergeant At Arms',
+      'IT Officer',
+      'Young Leaders Contact',
+      'Learning Facilitator',
+      'Club Advisor',
+      'ISD Advisor'
     ];
 
     function normalizeKey(str) {
@@ -349,22 +349,13 @@
         .replace(/\s+/g, ' ');
     }
 
-    const boardByName = {};
-    BOARD_ROSTER.forEach(b => { boardByName[normalizeKey(b.name)] = b; });
-
     function classifyMember(m) {
-      const boardEntry = boardByName[normalizeKey(m.name)];
-      if (boardEntry) {
-        return {
-          designation: boardEntry.designation,
-          isPresident: !!boardEntry.isPresident,
-          isBoard: true
-        };
-      }
+      const position = (m.position || m.designation || '').toString().trim();
+      const isBoard = BOARD_DESIGNATIONS.includes(position);
       return {
-        designation: (m.designation || m.position || 'Member').toString().trim() || 'Member',
-        isPresident: false,
-        isBoard: false
+        designation: position || 'Club Member',
+        isPresident: position === 'President',
+        isBoard
       };
     }
 

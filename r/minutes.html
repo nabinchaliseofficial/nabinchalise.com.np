@@ -1543,7 +1543,7 @@
             </div>
             <div class="grid-2">
                 <div class="form-group"><label for="meetVenue">Venue Location</label><input type="text" id="meetVenue" value="Club Office, Galkot" /></div>
-                <div class="form-group"><label for="meetChair">Meeting Chairperson</label><input type="text" id="meetChair" value="Rtr. Nabin Chalise" /></div>
+                <div class="form-group"><label for="meetChair">Meeting Chairperson</label><select id="meetChair"><option value="Rtr. Nabin Chalise" selected>Rtr. Nabin Chalise</option></select></div>
             </div>
         </div>
 
@@ -1625,13 +1625,12 @@
             <div id="action-items-container">
                 <div class="action-item-row">
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
+                    <select class="ai-person"><option value="">-- Select member --</option></select>
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
                 </div>
             </div>
-            <datalist id="rosterNamesList"></datalist>
         </div>
 
         <!-- CARD 6: CLOSING REMARKS -->
@@ -2135,23 +2134,47 @@
         ];
 
         // ============================================================
-        //  ROSTER NAMES → DATALIST (for Action Items "Responsible" autocomplete)
-        //  Pulled live from the `members` table (same source the
-        //  attendance-award feature uses) — rosterData above is only a
-        //  fallback for when Supabase is unreachable/unconfigured.
+        //  LIVE MEMBER NAMES (pulled from the `members` table)
+        //  Every place on this form that needs a person's name now uses
+        //  a dropdown built from this list instead of a free-text field,
+        //  so the name saved always matches the `members` table exactly
+        //  (rosterData above is only a fallback for when Supabase is
+        //  unreachable/unconfigured) - this is what makes attendance and
+        //  the recognition/attendance-award feature match reliably.
         // ============================================================
-        function renderResponsibleNames(names) {
-            const rosterNamesListEl = document.getElementById('rosterNamesList');
-            if (!rosterNamesListEl) return;
-            const unique = [...new Set(names.filter(Boolean))].sort();
-            rosterNamesListEl.innerHTML = unique.map(name =>
-                `<option value="${escapeHtml(name)}"></option>`
-            ).join('');
+        let liveMemberNames = rosterData.map(m => m.name);
+
+        function memberOptionsHTML(selected) {
+            let names = liveMemberNames;
+            if (selected && !names.includes(selected)) {
+                names = [selected, ...names];
+            }
+            const opts = ['<option value="">-- Select member --</option>'];
+            names.forEach(name => {
+                opts.push(`<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`);
+            });
+            return opts.join('');
+        }
+
+        function refreshAllPersonSelects() {
+            document.querySelectorAll('.ai-person').forEach(sel => {
+                const current = sel.value;
+                sel.innerHTML = memberOptionsHTML(current);
+            });
+            document.querySelectorAll('.add-member-name').forEach(sel => {
+                const current = sel.value;
+                sel.innerHTML = memberOptionsHTML(current);
+            });
+            const chairSel = document.getElementById('meetChair');
+            if (chairSel) {
+                const current = chairSel.value;
+                chairSel.innerHTML = memberOptionsHTML(current);
+            }
         }
 
         async function loadResponsibleNames() {
             // Show something immediately, then upgrade to live DB data
-            renderResponsibleNames(rosterData.map(m => m.name));
+            refreshAllPersonSelects();
 
             if (!supabaseClient) return;
             try {
@@ -2163,7 +2186,10 @@
                 const activeNames = (data || [])
                     .filter(m => (m.status || '').toLowerCase() !== 'inactive')
                     .map(m => m.name);
-                if (activeNames.length) renderResponsibleNames(activeNames);
+                if (activeNames.length) {
+                    liveMemberNames = [...new Set(activeNames)].sort();
+                    refreshAllPersonSelects();
+                }
             } catch (err) {
                 console.error('❌ loadResponsibleNames error (using local roster as fallback):', err);
             }
@@ -2226,7 +2252,7 @@
             row.className = 'dynamic-row';
             row.innerHTML = `
                 <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
-                <input type="text" class="add-member-name" placeholder="Rtr. Name" style="flex:1;" oninput="calculateAttendanceCounts()">
+                <select class="add-member-name" style="flex:1;" onchange="calculateAttendanceCounts()">${memberOptionsHTML('')}</select>
                 <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="flex:1;">
             `;
             container.appendChild(row);
@@ -2321,7 +2347,7 @@
             row.className = 'action-item-row';
             row.innerHTML = `
                 <input class="ai-task" placeholder="Task" />
-                <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
+                <select class="ai-person">${memberOptionsHTML('')}</select>
                 <input class="ai-deadline" type="date" />
                 <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                 <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2559,7 +2585,7 @@
                 meetDate.value = (new Date(date - off)).toISOString().slice(0, 16);
             }
             if (meetVenue) meetVenue.value = payload.venue || 'Club Office, Galkot';
-            if (meetChair) meetChair.value = payload.chairperson || 'Rtr. Nabin Chalise';
+            if (meetChair) meetChair.innerHTML = memberOptionsHTML(payload.chairperson || 'Rtr. Nabin Chalise');
 
             document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
             document.querySelectorAll('.add-member-checkbox').forEach(cb => {
@@ -2577,8 +2603,8 @@
                         row.className = 'dynamic-row';
                         row.innerHTML = `
                             <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
-                            <input type="text" class="add-member-name" value="${member.name}" style="flex:1;" oninput="calculateAttendanceCounts()">
-                            <input type="text" class="add-member-role" value="${member.role || 'CLUB MEMBER'}" style="flex:1;">
+                            <select class="add-member-name" style="flex:1;" onchange="calculateAttendanceCounts()">${memberOptionsHTML(member.name)}</select>
+                            <input type="text" class="add-member-role" value="${escapeHtml(member.role || 'CLUB MEMBER')}" style="flex:1;">
                         `;
                         container.appendChild(row);
                     }
@@ -2643,21 +2669,20 @@
                     const row = document.createElement('div');
                     row.className = 'action-item-row';
                     row.innerHTML = `
-                        <input class="ai-task" value="${item.task || ''}" placeholder="Task" />
-                        <input class="ai-person" value="${escapeHtml(item.person || '')}" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
+                        <input class="ai-task" value="${escapeHtml(item.task || '')}" placeholder="Task" />
+                        <select class="ai-person">${memberOptionsHTML(item.person || '')}</select>
                         <input class="ai-deadline" type="date" value="${item.deadline || ''}" />
                         <select class="ai-status"><option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option></select>
                         <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
                     `;
                     actionContainer.appendChild(row);
-                    autoGrowPersonField(row.querySelector('.ai-person'));
                 });
             } else if (actionContainer) {
                 const row = document.createElement('div');
                 row.className = 'action-item-row';
                 row.innerHTML = `
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
+                    <select class="ai-person">${memberOptionsHTML('')}</select>
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>

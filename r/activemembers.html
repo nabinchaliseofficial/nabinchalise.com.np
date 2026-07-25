@@ -1384,25 +1384,29 @@
             let recognitionDataCache = null;
             let recognitionShownAutomatically = false;
 
-            const BOARD_ROSTER = [
-                { name: 'Nabin Chalise',      designation: 'President',              isPresident: true },
-                { name: 'Madan Sharma',       designation: 'Secretary' },
-                { name: 'Manish Kandel',      designation: 'Treasurer' },
-                { name: 'Nabin Subedi',       designation: 'IPP / Mentor' },
-                { name: 'Tika Ram Gautam',    designation: 'President Elect' },
-                { name: 'Vikash Subedi',      designation: 'Vice President' },
-                { name: 'Sagar Chalise',      designation: 'Joint Secretary' },
-                { name: 'Bipin Chalise',      designation: 'Membership Chair' },
-                { name: 'Manish Gurung',      designation: 'Public Image Chair' },
-                { name: 'Smriti Budhathoki',  designation: 'Service Projects Chair' },
-                { name: 'Manoj Karki',        designation: 'Health Program Chair' },
-                { name: 'Manjeela Shrestha',  designation: 'Rotary Foundation Chair' },
-                { name: 'Lokendra Gaire',     designation: 'Sergeant At Arms' },
-                { name: 'Raju Sahani',        designation: 'IT Officer' },
-                { name: 'Melina Kharel',      designation: 'Young Leaders Contact' },
-                { name: 'Laxmi Pun',          designation: 'PP/Learning Facilitator' },
-                { name: 'Anil Shrestha',      designation: 'PP/ISD/Advisor' },
-                { name: 'Kamal Kharel',       designation: 'PP/Club Advisor' }
+            // Board classification is driven by each member's `position`
+            // column (set via the fixed dropdown in adminmembers.html)
+            // instead of a hardcoded name list - see recognition.html for
+            // the same fix and the reasoning behind it.
+            const BOARD_DESIGNATIONS = [
+                'President',
+                'President Elect',
+                'Secretary',
+                'Joint Secretary',
+                'Treasurer',
+                'Vice President',
+                'IPP / Mentor',
+                'Membership Chair',
+                'Public Image Chair',
+                'Service Projects Chair',
+                'Health Program Chair',
+                'Rotary Foundation Chair',
+                'Sergeant At Arms',
+                'IT Officer',
+                'Young Leaders Contact',
+                'Learning Facilitator',
+                'Club Advisor',
+                'ISD Advisor'
             ];
 
             function rpNormalizeKey(str) {
@@ -1412,18 +1416,13 @@
                     .replace(/\s+/g, ' ');
             }
 
-            const rpBoardByName = {};
-            BOARD_ROSTER.forEach(b => { rpBoardByName[rpNormalizeKey(b.name)] = b; });
-
             function rpClassifyMember(m) {
-                const boardEntry = rpBoardByName[rpNormalizeKey(m.name)];
-                if (boardEntry) {
-                    return { designation: boardEntry.designation, isPresident: !!boardEntry.isPresident, isBoard: true };
-                }
+                const position = (m.position || m.designation || '').toString().trim();
+                const isBoard = BOARD_DESIGNATIONS.includes(position);
                 return {
-                    designation: (m.designation || m.position || 'Member').toString().trim() || 'Member',
-                    isPresident: false,
-                    isBoard: false
+                    designation: position || 'Club Member',
+                    isPresident: position === 'President',
+                    isBoard
                 };
             }
 

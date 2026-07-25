@@ -1235,7 +1235,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label for="editVenue">Venue</label><input type="text" id="editVenue" placeholder="e.g. Club Hall, Galkot" /></div>
-                    <div class="form-group"><label for="editChairperson">Chairperson</label><input type="text" id="editChairperson" placeholder="e.g. Rtr. Nabin Chalise" /></div>
+                    <div class="form-group"><label for="editChairperson">Chairperson</label><select id="editChairperson"></select></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label for="editMembersPresent">Members Present (auto)</label><input type="number" id="editMembersPresent" min="0" readonly /></div>
@@ -1311,6 +1311,61 @@
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // ============================================================
+            // ===== LIVE MEMBER NAMES (for dropdowns - no free typing) =====
+            // Every place in the edit form that needs a person's name uses
+            // a dropdown built from the `members` table, so saved names
+            // always match exactly - this is what the recognition /
+            // attendance-award feature depends on.
+            // ============================================================
+            let liveMemberNames = [];
+
+            function memberOptionsHTML(selected) {
+                let names = liveMemberNames;
+                if (selected && !names.includes(selected)) {
+                    names = [selected, ...names];
+                }
+                const opts = ['<option value="">-- Select member --</option>'];
+                names.forEach(name => {
+                    opts.push(`<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`);
+                });
+                return opts.join('');
+            }
+
+            function refreshAllPersonSelects() {
+                document.querySelectorAll('#actionItemsEditor .ai-person').forEach(sel => {
+                    const current = sel.value;
+                    sel.innerHTML = memberOptionsHTML(current);
+                });
+                document.querySelectorAll('#membersEditor .member-name').forEach(sel => {
+                    const current = sel.value;
+                    sel.innerHTML = memberOptionsHTML(current);
+                });
+                const chairSel = document.getElementById('editChairperson');
+                if (chairSel) {
+                    const current = chairSel.value;
+                    chairSel.innerHTML = memberOptionsHTML(current);
+                }
+            }
+
+            async function loadLiveMembers() {
+                try {
+                    const { data, error } = await supabase
+                        .from('members')
+                        .select('name, status')
+                        .order('name', { ascending: true });
+                    if (error) throw error;
+                    const activeNames = (data || [])
+                        .filter(m => (m.status || '').toLowerCase() !== 'inactive')
+                        .map(m => m.name)
+                        .filter(Boolean);
+                    liveMemberNames = [...new Set(activeNames)].sort();
+                    refreshAllPersonSelects();
+                } catch (err) {
+                    console.error('❌ loadLiveMembers error:', err);
+                }
+            }
 
             // ============================================================
             // ===== SECURE ADMIN ACCESS CONTROL (Database-based) =====
@@ -1849,12 +1904,12 @@
                 const div = document.createElement('div');
                 div.className = 'member-entry';
                 div.innerHTML = `
-                    <input type="text" placeholder="Member Name" value="${escapeHtml(name)}" class="member-name" style="flex:2;" />
+                    <select class="member-name" style="flex:2;">${memberOptionsHTML(name)}</select>
                     <input type="text" placeholder="Designation" value="${escapeHtml(role)}" class="member-role" style="flex:1;" />
                     <button type="button" class="remove-btn" title="Remove member"><i class="fa-solid fa-xmark"></i></button>
                 `;
                 div.querySelector('.remove-btn').addEventListener('click', () => { div.remove(); calculateEditCounts(); });
-                div.querySelector('.member-name').addEventListener('input', calculateEditCounts);
+                div.querySelector('.member-name').addEventListener('change', calculateEditCounts);
                 div.querySelector('.member-role').addEventListener('input', calculateEditCounts);
                 container.appendChild(div);
                 calculateEditCounts();
@@ -1879,7 +1934,7 @@
                 div.className = 'member-entry';
                 div.innerHTML = `
                     <input type="text" placeholder="Task" value="${escapeHtml(task)}" class="ai-task" style="flex:2;" />
-                    <input type="text" placeholder="Responsible" value="${escapeHtml(person)}" class="ai-person" style="flex:1;" />
+                    <select class="ai-person" style="flex:1;">${memberOptionsHTML(person)}</select>
                     <input type="date" value="${deadline}" class="ai-deadline" style="flex:0.8;" />
                     <select class="ai-status" style="flex:0.8;">
                         <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
@@ -1913,7 +1968,7 @@
                 document.getElementById('editMeetingDate').value = m.meeting_date ? new Date(m.meeting_date).toISOString()
                     .slice(0, 16) : '';
                 document.getElementById('editVenue').value = m.venue || '';
-                document.getElementById('editChairperson').value = m.chairperson || '';
+                document.getElementById('editChairperson').innerHTML = memberOptionsHTML(m.chairperson || '');
                 document.getElementById('editMembersPresent').value = m.members_present || 0;
                 document.getElementById('editGuestsCount').value = m.guests_count || 0;
                 document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'Regular';
@@ -2259,6 +2314,7 @@
             // ============================================================
             document.addEventListener('DOMContentLoaded', () => {
                 verifySecureAuthentication();
+                loadLiveMembers();
             });
 
         })();
