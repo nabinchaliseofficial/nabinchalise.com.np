@@ -1264,7 +1264,7 @@
             }
             .content-section {
                 margin-bottom: 24px;
-                page-break-inside: avoid;
+                text-align: justify;
             }
             .content-section h4 {
                 color: var(--secondary);
@@ -1279,6 +1279,8 @@
             .agenda-item {
                 margin-bottom: 14px;
                 font-size: 13.5px;
+                page-break-inside: avoid;
+                text-align: justify;
             }
             .agenda-item strong {
                 color: #1e293b;
@@ -1288,6 +1290,7 @@
                 margin: 3px 0 0 15px;
                 color: #334155;
                 font-size: 12.5px;
+                text-align: justify;
             }
             .print-table {
                 width: 100%;
@@ -1327,10 +1330,19 @@
                 text-align: center;
                 min-width: 200px;
             }
+            .footer-sign-img {
+                display: block;
+                max-width: 150px;
+                max-height: 55px;
+                margin: 0 auto 6px auto;
+            }
             .sign-line p {
                 margin: 0;
                 font-size: 13px;
                 color: #1e293b;
+            }
+            .no-print {
+                display: none !important;
             }
             .sign-line p:first-child {
                 font-weight: 700;
@@ -1644,11 +1656,6 @@
                 <div class="signature-field">
                     <label>Prepared By</label>
                     <input type="text" id="sigPrepared" value="Rtr. Madan Subedi" />
-                    <div class="auto-signature-preview">
-                        <span class="label">📄 Signature:</span>
-                        <img id="autoPreparedImg" src="secretarysign.png" alt="Secretary Signature" onerror="this.style.display='none'" />
-                        <span class="status">secretarysign.png</span>
-                    </div>
                 </div>
                 <div class="signature-field">
                     <label>Reviewed By</label>
@@ -1659,11 +1666,6 @@
                 <div class="signature-field">
                     <label>Approved By</label>
                     <input type="text" id="sigApproved" value="Rtr. Nabin Chalise" />
-                    <div class="auto-signature-preview">
-                        <span class="label">📄 Signature:</span>
-                        <img id="autoApprovedImg" src="presidentsign.png" alt="President Signature" onerror="this.style.display='none'" />
-                        <span class="status">presidentsign.png</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1692,7 +1694,7 @@
             </div>
         </div>
         <h3 id="outTitle">MINUTES OF MEETING</h3>
-        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+        <div class="no-print" style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
             <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
             <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
         </div>
@@ -1711,22 +1713,20 @@
             <table class="print-table" style="width:100%;">
                 <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
                 <tr>
-                    <td style="text-align:center;"><div id="outSigPrepared">Rtr. Madan Subedi</div>
-                        <img id="outSigPreparedImg" src="secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigPrepared" style="text-align:center;">Rtr. Madan Subedi</td>
                     <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
-                    <td style="text-align:center;"><div id="outSigApproved">Rtr. Nabin Chalise</div>
-                        <img id="outSigApprovedImg" src="presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigApproved" style="text-align:center;">Rtr. Nabin Chalise</td>
                 </tr>
             </table>
         </div>
         <div class="footer-sign">
             <div class="sign-line">
+                <img id="outSigApprovedImg" src="presidentsign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outChairSign">Rtr. Nabin Chalise</p>
                 <p class="sign-role">Meeting Chairperson</p>
             </div>
             <div class="sign-line">
+                <img id="outSigPreparedImg" src="secretarysign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outSecretarySign">Rtr. Madan Subedi</p>
                 <p class="sign-role">Club Secretary</p>
             </div>
