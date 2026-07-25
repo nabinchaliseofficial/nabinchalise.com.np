@@ -1066,6 +1066,8 @@
         .action-item-row .ai-person {
             flex: 1;
             min-width: 100px;
+            max-width: 100%;
+            transition: width 0.15s ease;
         }
         .action-item-row .ai-deadline {
             flex: 0.8;
@@ -1586,7 +1588,7 @@
             <div class="grid-2">
                 <div class="form-group"><label>Sergeant-at-Arms</label><textarea id="saaReport" rows="2" placeholder="Attendance, discipline..."></textarea></div>
                 <div class="form-group"><label>Happy Moments</label><textarea id="happyMoments" rows="2" placeholder="Good news, celebrations..."></textarea></div>
-                <div class="form-group"><label>President's Remarks</label><textarea id="presidentRemarks" rows="2" placeholder="Opening remarks..."></textarea></div>
+                <div class="form-group"><label>Opening Remarks</label><textarea id="presidentRemarks" rows="2" placeholder="Opening remarks..."></textarea></div>
                 <div class="form-group"><label>Committee Updates</label><textarea id="committeeUpdates" rows="2" placeholder="Updates from committees..."></textarea></div>
                 <div class="form-group"><label>Announcements</label><textarea id="announcements" rows="2" placeholder="Upcoming events..."></textarea></div>
                 <div class="form-group"><label>Open Floor</label><textarea id="openFloor" rows="2" placeholder="General discussion..."></textarea></div>
@@ -1623,12 +1625,13 @@
             <div id="action-items-container">
                 <div class="action-item-row">
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" />
+                    <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
                 </div>
             </div>
+            <datalist id="rosterNamesList"></datalist>
         </div>
 
         <!-- CARD 6: CLOSING REMARKS -->
@@ -2132,6 +2135,41 @@
         ];
 
         // ============================================================
+        //  ROSTER NAMES → DATALIST (for Action Items "Responsible" autocomplete)
+        //  Pulled live from the `members` table (same source the
+        //  attendance-award feature uses) — rosterData above is only a
+        //  fallback for when Supabase is unreachable/unconfigured.
+        // ============================================================
+        function renderResponsibleNames(names) {
+            const rosterNamesListEl = document.getElementById('rosterNamesList');
+            if (!rosterNamesListEl) return;
+            const unique = [...new Set(names.filter(Boolean))].sort();
+            rosterNamesListEl.innerHTML = unique.map(name =>
+                `<option value="${escapeHtml(name)}"></option>`
+            ).join('');
+        }
+
+        async function loadResponsibleNames() {
+            // Show something immediately, then upgrade to live DB data
+            renderResponsibleNames(rosterData.map(m => m.name));
+
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('members')
+                    .select('name, status')
+                    .order('name', { ascending: true });
+                if (error) throw error;
+                const activeNames = (data || [])
+                    .filter(m => (m.status || '').toLowerCase() !== 'inactive')
+                    .map(m => m.name);
+                if (activeNames.length) renderResponsibleNames(activeNames);
+            } catch (err) {
+                console.error('❌ loadResponsibleNames error (using local roster as fallback):', err);
+            }
+        }
+
+        // ============================================================
         //  MOUNT CHECKLIST
         // ============================================================
         const checklistContainer = document.getElementById('members-checklist');
@@ -2267,6 +2305,15 @@
             }
         }
 
+        function autoGrowPersonField(el) {
+            if (!el) return;
+            const len = el.value.length;
+            // Grows with content, stays within sensible min/max bounds
+            const chWidth = Math.min(60, Math.max(12, len + 2));
+            el.style.width = chWidth + 'ch';
+            el.style.flex = 'none';
+        }
+
         function addActionItem() {
             const container = document.getElementById('action-items-container');
             if (!container) return;
@@ -2274,7 +2321,7 @@
             row.className = 'action-item-row';
             row.innerHTML = `
                 <input class="ai-task" placeholder="Task" />
-                <input class="ai-person" placeholder="Responsible" />
+                <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
                 <input class="ai-deadline" type="date" />
                 <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                 <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2597,19 +2644,20 @@
                     row.className = 'action-item-row';
                     row.innerHTML = `
                         <input class="ai-task" value="${item.task || ''}" placeholder="Task" />
-                        <input class="ai-person" value="${item.person || ''}" placeholder="Responsible" />
+                        <input class="ai-person" value="${escapeHtml(item.person || '')}" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
                         <input class="ai-deadline" type="date" value="${item.deadline || ''}" />
                         <select class="ai-status"><option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option></select>
                         <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
                     `;
                     actionContainer.appendChild(row);
+                    autoGrowPersonField(row.querySelector('.ai-person'));
                 });
             } else if (actionContainer) {
                 const row = document.createElement('div');
                 row.className = 'action-item-row';
                 row.innerHTML = `
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" />
+                    <input class="ai-person" placeholder="Responsible" list="rosterNamesList" oninput="autoGrowPersonField(this)" />
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2748,7 +2796,7 @@
             }
 
             const discussionLabels = {
-                saa: 'Sergeant-at-Arms', happy: 'Happy Moments', president: "President's Remarks",
+                saa: 'Sergeant-at-Arms', happy: 'Happy Moments', president: "Opening Remarks",
                 committee: 'Committee Updates', announcements: 'Announcements', openFloor: 'Open Floor'
             };
             const discussionsEl = document.getElementById('outDiscussions');
@@ -2903,6 +2951,7 @@
         window.addGuestRow = addGuestRow;
         window.addAgendaRow = addAgendaRow;
         window.addActionItem = addActionItem;
+        window.autoGrowPersonField = autoGrowPersonField;
         window.compileSaveAndEmail = compileSaveAndEmail;
         window.printMinutes = printMinutes;
         window.searchMeeting = searchMeeting;
@@ -2924,6 +2973,7 @@
 
             if (hasSession) {
                 await fetchAllMeetings();
+                await loadResponsibleNames();
                 calculateAttendanceCounts();
 
                 const searchInput = document.getElementById('searchMeetingNo');

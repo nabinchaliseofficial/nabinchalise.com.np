@@ -864,7 +864,7 @@
 
             .content-section {
                 margin-bottom: 24px;
-                page-break-inside: avoid;
+                text-align: justify;
             }
             .content-section h4 {
                 color: var(--secondary);
@@ -880,6 +880,8 @@
             .agenda-item {
                 margin-bottom: 14px;
                 font-size: 13.5px;
+                page-break-inside: avoid;
+                text-align: justify;
             }
             .agenda-item strong {
                 color: #1e293b;
@@ -889,6 +891,7 @@
                 margin: 3px 0 0 15px;
                 color: #334155;
                 font-size: 12.5px;
+                text-align: justify;
             }
 
             .print-table {
@@ -930,6 +933,12 @@
                 text-align: center;
                 min-width: 200px;
             }
+            .footer-sign-img {
+                display: block;
+                max-width: 150px;
+                max-height: 55px;
+                margin: 0 auto 6px auto;
+            }
             .sign-line p {
                 margin: 0;
                 font-size: 13px;
@@ -951,6 +960,9 @@
             }
             .page-break {
                 page-break-before: always;
+            }
+            .no-print {
+                display: none !important;
             }
         }
 
@@ -1130,7 +1142,7 @@
         <h3 id="outTitle">MINUTES OF MEETING</h3>
 
         <!-- Version Info -->
-        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+        <div class="no-print" style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
             <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
             <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
         </div>
@@ -1176,25 +1188,21 @@
             <table class="print-table" style="width:100%;">
                 <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
                 <tr>
-                    <td style="text-align:center;">
-                        <div id="outSigPrepared">Rtr. Madan Subedi</div>
-                        <img id="outSigPreparedImg" src="/r/secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigPrepared" style="text-align:center;">Rtr. Madan Subedi</td>
                     <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
-                    <td style="text-align:center;">
-                        <div id="outSigApproved">Rtr. Nabin Chalise</div>
-                        <img id="outSigApprovedImg" src="/r/presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigApproved" style="text-align:center;">Rtr. Nabin Chalise</td>
                 </tr>
             </table>
         </div>
 
         <div class="footer-sign">
             <div class="sign-line">
+                <img id="outSigApprovedImg" src="/r/presidentsign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outChairSign">Rtr. Nabin Chalise</p>
                 <p class="sign-role">Meeting Chairperson</p>
             </div>
             <div class="sign-line">
+                <img id="outSigPreparedImg" src="/r/secretarysign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outSecretarySign">Rtr. Madan Subedi</p>
                 <p class="sign-role">Club Secretary</p>
             </div>
@@ -1230,8 +1238,8 @@
                     <div class="form-group"><label for="editChairperson">Chairperson</label><input type="text" id="editChairperson" placeholder="e.g. Rtr. Nabin Chalise" /></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label for="editMembersPresent">Members Present (Count)</label><input type="number" id="editMembersPresent" min="0" /></div>
-                    <div class="form-group"><label for="editGuestsCount">Guests Count</label><input type="number" id="editGuestsCount" min="0" /></div>
+                    <div class="form-group"><label for="editMembersPresent">Members Present (auto)</label><input type="number" id="editMembersPresent" min="0" readonly /></div>
+                    <div class="form-group"><label for="editGuestsCount">Guests Count (auto)</label><input type="number" id="editGuestsCount" min="0" readonly /></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label for="editMeetingType">Meeting Type</label>
@@ -1254,7 +1262,7 @@
                 <!-- Discussions -->
                 <div class="form-group">
                     <label>Discussions &amp; Remarks</label>
-                    <textarea id="editDiscussions" placeholder="Sergeant-at-Arms, Happy Moments, President's Remarks, Committee Updates, Announcements, Open Floor..." rows="4"></textarea>
+                    <textarea id="editDiscussions" placeholder="Sergeant-at-Arms, Happy Moments, Opening Remarks, Committee Updates, Announcements, Open Floor..." rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1558,7 +1566,7 @@
                                 </div>
                                 <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap;">
                                     <span><i class="fa-solid fa-users"></i> Members: ${memberCount}</span>
-                                    <span><i class="fa-solid fa-user-plus"></i> Guests: ${m.guests_count || 0}</span>
+                                    <span><i class="fa-solid fa-user-plus"></i> Guests: ${(m.guests || []).length}</span>
                                     <span><i class="fa-solid fa-list"></i> Agendas: ${agendaCount}</span>
                                 </div>
                                 ${m.agendas && m.agendas.length > 0 ? `
@@ -1656,8 +1664,8 @@
                 document.getElementById('outVenue').innerText = m.venue || 'N/A';
                 document.getElementById('outChair').innerText = m.chairperson || 'N/A';
                 document.getElementById('outChairSign').innerText = m.chairperson || 'N/A';
-                document.getElementById('outPres').innerText = m.members_present || 0;
-                document.getElementById('outGst').innerText = m.guests_count || 0;
+                document.getElementById('outPres').innerText = (m.members || []).length;
+                document.getElementById('outGst').innerText = (m.guests || []).length;
 
                 // Members
                 let memberHTML = '';
@@ -1719,7 +1727,7 @@
                 let discHTML = '';
                 if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${d.saa}</p>`;
                 if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${d.happy}</p>`;
-                if (d.president) discHTML += `<p><strong>President's Remarks:</strong> ${d.president}</p>`;
+                if (d.president) discHTML += `<p><strong>Opening Remarks:</strong> ${d.president}</p>`;
                 if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${d.committee}</p>`;
                 if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${d.announcements}</p>`;
                 if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${d.openFloor}</p>`;
@@ -1819,6 +1827,23 @@
             const editModal = document.getElementById('editModal');
             const editForm = document.getElementById('editMinuteForm');
 
+            const calculateEditCounts = () => {
+                const memberRows = document.querySelectorAll('#membersEditor .member-entry');
+                let memberCount = 0;
+                memberRows.forEach(row => {
+                    const name = row.querySelector('.member-name')?.value.trim() || '';
+                    const role = row.querySelector('.member-role')?.value.trim() || '';
+                    if (name || role) memberCount++;
+                });
+                const guestsText = document.getElementById('editGuests')?.value || '';
+                const guestCount = guestsText.split('\n').map(g => g.trim()).filter(g => g).length;
+
+                const membersPresentEl = document.getElementById('editMembersPresent');
+                const guestsCountEl = document.getElementById('editGuestsCount');
+                if (membersPresentEl) membersPresentEl.value = memberCount;
+                if (guestsCountEl) guestsCountEl.value = guestCount;
+            };
+
             const addMemberRow = (name = '', role = '') => {
                 const container = document.getElementById('membersEditor');
                 const div = document.createElement('div');
@@ -1828,8 +1853,11 @@
                     <input type="text" placeholder="Designation" value="${escapeHtml(role)}" class="member-role" style="flex:1;" />
                     <button type="button" class="remove-btn" title="Remove member"><i class="fa-solid fa-xmark"></i></button>
                 `;
-                div.querySelector('.remove-btn').addEventListener('click', () => div.remove());
+                div.querySelector('.remove-btn').addEventListener('click', () => { div.remove(); calculateEditCounts(); });
+                div.querySelector('.member-name').addEventListener('input', calculateEditCounts);
+                div.querySelector('.member-role').addEventListener('input', calculateEditCounts);
                 container.appendChild(div);
+                calculateEditCounts();
             };
 
             const addAgendaRow = (title = '', description = '') => {
@@ -1896,7 +1924,7 @@
                 const discText = [
                     d.saa ? `Sergeant-at-Arms: ${d.saa}` : '',
                     d.happy ? `Happy Moments: ${d.happy}` : '',
-                    d.president ? `President's Remarks: ${d.president}` : '',
+                    d.president ? `Opening Remarks: ${d.president}` : '',
                     d.committee ? `Committee Updates: ${d.committee}` : '',
                     d.announcements ? `Announcements: ${d.announcements}` : '',
                     d.openFloor ? `Open Floor: ${d.openFloor}` : ''
@@ -1926,6 +1954,8 @@
                     .status));
                 if ((m.actionItems || []).length === 0) addActionItemRow('', '', '', 'Pending');
 
+                calculateEditCounts();
+
                 editModal.classList.add('active');
             };
 
@@ -1941,6 +1971,7 @@
             document.getElementById('addMemberBtn')?.addEventListener('click', () => addMemberRow('', ''));
             document.getElementById('addAgendaBtn')?.addEventListener('click', () => addAgendaRow('', ''));
             document.getElementById('addActionItemBtn')?.addEventListener('click', () => addActionItemRow('', '', '', 'Pending'));
+            document.getElementById('editGuests')?.addEventListener('input', calculateEditCounts);
 
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1950,8 +1981,6 @@
                 const meetingDate = document.getElementById('editMeetingDate').value;
                 const venue = document.getElementById('editVenue').value.trim();
                 const chairperson = document.getElementById('editChairperson').value.trim();
-                const membersPresent = parseInt(document.getElementById('editMembersPresent').value) || 0;
-                const guestsCount = parseInt(document.getElementById('editGuestsCount').value) || 0;
                 const meetingType = document.getElementById('editMeetingType').value;
                 const status = document.getElementById('editStatus').value;
                 const closingRemarks = document.getElementById('editClosingRemarks').value.trim();
@@ -1991,6 +2020,9 @@
                 const guestsText = document.getElementById('editGuests').value;
                 const guests = guestsText.split('\n').map(g => g.trim()).filter(g => g);
 
+                const membersPresent = members.length;
+                const guestsCount = guests.length;
+
                 const agendaRows = document.querySelectorAll('#agendasEditor .member-entry');
                 const agendas = [];
                 agendaRows.forEach(row => {
@@ -2022,6 +2054,9 @@
 
                 const nowIso = new Date().toISOString();
 
+                const originalMinute = allMinutesData.find(item => item.id == editingId);
+                const originalData = originalMinute ? (originalMinute.data || originalMinute) : {};
+
                 const updatedData = {
                     meeting_number: meetingNumber || 'Unnamed Meeting',
                     meeting_date: meetingDate || new Date().toISOString(),
@@ -2034,6 +2069,7 @@
                     agendas: agendas,
                     discussions: discussions,
                     actionItems: actionItems,
+                    signatures: originalData.signatures || {},
                     closing_remarks: closingRemarks,
                     _version: newVersion,
                     _savedAt: nowIso
