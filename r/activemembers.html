@@ -1093,6 +1093,63 @@
             .home-btn-container { bottom: 16px; right: 16px; }
         }
 
+        /* ===== EXPORT TO PDF SECTION ===== */
+        .print-export-section {
+            width: 100%;
+            margin-top: 2rem;
+        }
+        .print-export-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 1.4rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .print-export-text h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .print-export-text h3 i { color: #dc2626; }
+        .print-export-text p {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin: 0;
+        }
+        .btn-export-pdf {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.6rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(220, 38, 38, 0.25);
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-export-pdf:hover:not(:disabled) { background: #b91c1c; transform: translateY(-2px); }
+        .btn-export-pdf:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+        @media (max-width: 640px) {
+            .print-export-inner { flex-direction: column; align-items: stretch; text-align: center; padding: 1.2rem; }
+            .btn-export-pdf { justify-content: center; }
+        }
+
         /* ===== LAST SYNCED INDICATOR ===== */
         .last-synced {
             font-size: 0.7rem;
@@ -1158,6 +1215,19 @@
     <!-- ===== BACK TO DASHBOARD ===== -->
     <div class="home-btn-container">
         <a href="index.html" class="home-btn"><span aria-hidden="true">🏠</span> Dashboard</a>
+    </div>
+
+    <!-- ===== EXPORT TO PDF (member directory, print-ready A4) ===== -->
+    <div class="print-export-section">
+        <div class="print-export-inner">
+            <div class="print-export-text">
+                <h3><i class="fas fa-file-pdf" aria-hidden="true"></i> Export Member Directory</h3>
+                <p>Download a printable roster (Name, Position, Phone, Email, Blood Group, Address) formatted to fit A4 paper.</p>
+            </div>
+            <button type="button" id="exportPdfBtn" class="btn-export-pdf" onclick="exportMembersToPdf()" disabled>
+                <i class="fas fa-print" aria-hidden="true"></i> Export to PDF
+            </button>
+        </div>
     </div>
 
     <!-- ===== FOOTER ===== -->
@@ -1691,13 +1761,30 @@
                     clubLine.style.display = 'inline-block';
                 }
 
+                // NOTE: html2canvas has a well-known bug capturing elements
+                // positioned with position:fixed/absolute or placed off-screen
+                // (left:-9999px) - it can end up screenshotting the wrong
+                // region and producing a blank page. The reliable fix is to
+                // let the card sit in NORMAL document flow (just appended at
+                // the end of <body>, no special positioning) and hide it with
+                // a full-screen overlay instead.
+                const cardOverlay = document.createElement('div');
+                cardOverlay.style.cssText = 'position:fixed; inset:0; background:#ffffff; z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; font-family:inherit; color:#1e293b;';
+                cardOverlay.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#dc2626;"></i><div>Generating PDF...</div>';
+                document.body.appendChild(cardOverlay);
+
+                const prevBodyOverflowCard = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+
                 const container = document.createElement('div');
-                container.style.position = 'fixed';
-                container.style.left = '-9999px';
-                container.style.top = '0';
                 container.style.width = '500px';
                 container.style.padding = '20px';
                 container.style.background = 'transparent';
+                // body is "display:flex; flex-direction:column" for the
+                // app's own layout, which would stretch/shrink this div as
+                // a flex item. Take it out of that flex layout entirely.
+                container.style.flex = 'none';
+                container.style.alignSelf = 'flex-start';
                 container.appendChild(clone);
                 document.body.appendChild(container);
 
@@ -1709,13 +1796,155 @@
                     jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
                 };
 
-                html2pdf().set(opt).from(clone).save().then(function() {
-                    document.body.removeChild(container);
-                }).catch(function(err) {
-                    console.error('PDF generation error:', err);
-                    document.body.removeChild(container);
-                });
+                function cardCleanup() {
+                    if (container.parentNode) document.body.removeChild(container);
+                    if (cardOverlay.parentNode) document.body.removeChild(cardOverlay);
+                    document.body.style.overflow = prevBodyOverflowCard;
+                }
+
+                setTimeout(() => {
+                    html2pdf().set(opt).from(clone).save().then(cardCleanup).catch(function(err) {
+                        console.error('PDF generation error:', err);
+                        cardCleanup();
+                    });
+                }, 80);
             });
+
+            // ===== EXPORT MEMBER DIRECTORY TO PDF (A4, landscape) =====
+            window.exportMembersToPdf = function() {
+                const list = (currentDisplayedMembers && currentDisplayedMembers.length)
+                    ? currentDisplayedMembers
+                    : activeMembers;
+                if (!list || list.length === 0) return;
+
+                const btn = document.getElementById('exportPdfBtn');
+                const originalBtnHtml = btn ? btn.innerHTML : '';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+                }
+
+                const rows = list.map((member, idx) => {
+                    const name = getFullNameWithPrefix(member);
+                    const position = member.position || member.role || '—';
+                    const phone = member.phone || member.phone_number || '—';
+                    const email = member.email || '—';
+                    const blood = member.blood_group || member.blood || '—';
+                    const address = member.address || '—';
+                    return `
+                        <tr>
+                            <td style="text-align:center;">${idx + 1}</td>
+                            <td>${escapeHtmlPdf(name)}</td>
+                            <td>${escapeHtmlPdf(position)}</td>
+                            <td>${escapeHtmlPdf(phone)}</td>
+                            <td>${escapeHtmlPdf(email)}</td>
+                            <td style="text-align:center;">${escapeHtmlPdf(blood)}</td>
+                            <td>${escapeHtmlPdf(address)}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const generatedOn = new Date().toLocaleString();
+                const printHtml = `
+                    <div style="font-family: 'Segoe UI', Arial, sans-serif; color:#0f172a; padding:16px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #1e293b; padding-bottom:10px; margin-bottom:14px;">
+                            <div>
+                                <div style="font-size:18px; font-weight:800;">Rotaract Club of Galkot Baglung</div>
+                                <div style="font-size:12px; color:#64748b;">Active Member Directory</div>
+                            </div>
+                            <div style="text-align:right; font-size:11px; color:#64748b;">
+                                <div>Generated: ${escapeHtmlPdf(generatedOn)}</div>
+                                <div>Total Members: ${list.length}</div>
+                            </div>
+                        </div>
+                        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                            <thead>
+                                <tr style="background:#1e293b; color:#fff;">
+                                    <th style="padding:6px 8px; text-align:center; width:34px;">S.N.</th>
+                                    <th style="padding:6px 8px; text-align:left;">Name</th>
+                                    <th style="padding:6px 8px; text-align:left;">Position</th>
+                                    <th style="padding:6px 8px; text-align:left;">Phone</th>
+                                    <th style="padding:6px 8px; text-align:left;">Email</th>
+                                    <th style="padding:6px 8px; text-align:center;">Blood Group</th>
+                                    <th style="padding:6px 8px; text-align:left;">Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+
+                const style = document.createElement('style');
+                style.textContent = `
+                    .pdf-roster-table table tr { page-break-inside: avoid; }
+                    .pdf-roster-table table tbody tr:nth-child(even) { background: #f8fafc; }
+                    .pdf-roster-table table td { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; }
+                `;
+                document.head.appendChild(style);
+
+                // NOTE: html2canvas has a well-known bug capturing elements
+                // that use position:fixed/absolute - when it clones the page
+                // internally to render it, fixed/absolute elements can end up
+                // outside the region it screenshots, producing a blank page.
+                // The reliable fix is to let the table sit in NORMAL document
+                // flow (just appended at the end of <body>, no special
+                // positioning) and hide it from view with a full-screen
+                // overlay instead of relying on offsets/z-index tricks.
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed; inset:0; background:#ffffff; z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; font-family:inherit; color:#1e293b;';
+                overlay.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#dc2626;"></i><div>Generating PDF...</div>';
+                document.body.appendChild(overlay);
+
+                const prevBodyOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+
+                const container = document.createElement('div');
+                container.className = 'pdf-roster-table';
+                container.style.width = '1050px';
+                container.style.background = '#ffffff';
+                // body is "display:flex; flex-direction:column" for the
+                // app's own layout, which made this div a flex item and
+                // stretched/shrank it (clipping the left side of the table).
+                // Take it out of that flex layout entirely.
+                container.style.flex = 'none';
+                container.style.alignSelf = 'flex-start';
+                container.innerHTML = printHtml;
+                document.body.appendChild(container);
+
+                const opt = {
+                    margin:       [0.4, 0.3, 0.4, 0.3],
+                    filename:     `Member_Directory_${new Date().toISOString().slice(0, 10)}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, letterRendering: true, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
+                    pagebreak:    { mode: ['css', 'legacy'] }
+                };
+
+                function cleanup() {
+                    if (container.parentNode) document.body.removeChild(container);
+                    if (overlay.parentNode) document.body.removeChild(overlay);
+                    if (style.parentNode) document.head.removeChild(style);
+                    document.body.style.overflow = prevBodyOverflow;
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHtml; }
+                }
+
+                // Pin the page to the top before capturing, and give the
+                // browser a moment to commit layout for the new elements
+                // before html2canvas reads them.
+                window.scrollTo(0, 0);
+                setTimeout(() => {
+                    html2pdf().set(opt).from(container).save().then(cleanup).catch(function(err) {
+                        console.error('Member directory PDF error:', err);
+                        cleanup();
+                    });
+                }, 80);
+            };
+
+            function escapeHtmlPdf(str) {
+                const div = document.createElement('div');
+                div.textContent = str == null ? '' : String(str);
+                return div.innerHTML;
+            }
 
             // ===== RENDER =====
             function renderProfiles(members, searchActive = false) {
@@ -1918,12 +2147,17 @@
                 });
             }
 
+            let currentDisplayedMembers = [];
+
             function applyFiltersAndRender(searchTerm = '') {
                 const filtered = filterMembers(searchTerm);
                 const sorted = sortMembers(filtered);
+                currentDisplayedMembers = sorted;
                 renderProfiles(sorted, !!searchTerm.trim());
                 updateStats(sorted);
                 updateBirthdayBanner(sorted);
+                const exportBtn = document.getElementById('exportPdfBtn');
+                if (exportBtn) exportBtn.disabled = sorted.length === 0;
             }
 
             // ===== FETCH (only active members) =====
