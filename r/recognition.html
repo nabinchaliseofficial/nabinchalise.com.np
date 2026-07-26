@@ -276,17 +276,31 @@
       errorDisplay.innerHTML = '';
     }
 
+    function getFullNameWithPrefix(name) {
+      const raw = (name || '').toString().trim();
+      if (!raw) return 'Member';
+      // Case-insensitively strip any existing Rtr/RTR/rtr prefix (with or
+      // without a period/space) before re-adding one canonical "RTR. "
+      // prefix, so names never show up inconsistently ("Rtr. NAME" here,
+      // "RTR. NAME" there, "NAME" elsewhere) or double-prefixed.
+      const withoutRtr = raw.replace(/^rtr(?:\.\s*|\s+)/i, '').trim();
+      if (withoutRtr !== raw) return `RTR. ${withoutRtr}`;
+      if (/^(dr|mr|ms|mrs|rit)(?:\.\s*|\s+)/i.test(raw)) return raw;
+      return `RTR. ${raw}`;
+    }
+
     function getAvatarHtml(name, photoUrl) {
       if (photoUrl) {
         return `<img src="${photoUrl}" alt="${name}" />`;
       }
-      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-      return `<span class="avatar-placeholder">${initials}</span>`;
+      const withoutTitle = (name || '').replace(/^(rtr|dr|mr|ms|mrs|rit)(?:\.\s*|\s+)/i, '');
+      const initials = withoutTitle.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0,2);
+      return `<span class="avatar-placeholder">${initials || 'M'}</span>`;
     }
 
     function renderWinnerItem(member, score, bonus, attendancePct) {
       const photo = member.photoUrl || null;
-      const name = member.fullName || 'Member';
+      const name = getFullNameWithPrefix(member.fullName);
       const designation = member.designation || 'Member';
       return `
         <div class="winner-item">
@@ -344,8 +358,8 @@
 
     function normalizeKey(str) {
       return (str || '').toString().trim().toLowerCase()
-        .replace(/^rtr\.?\s+/, '')
-        .replace(/^dr\.?\s+/, '')
+        .replace(/^rtr(?:\.\s*|\s+)/, '')
+        .replace(/^dr(?:\.\s*|\s+)/, '')
         .replace(/\s+/g, ' ');
     }
 

@@ -2104,7 +2104,7 @@
             { role: "ROTARACT YOUNG LEADERS CONTACT", name: "RTR. MELINA KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. AMRIT SUBEDI" },
             { role: "CLUB MEMBER", name: "RTR. ANIL GANDARVA" },
-            { role: "CLUB MEMBER", name: "RTR. BALARAM ADHIKARI" },
+            { role: "CLUB MEMBER", name: "RTR. BALRAM ADHIKARI" },
             { role: "CLUB MEMBER", name: "RTR. BIBEK KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. BIDUR KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. DEEPAK KHATTRI" },
@@ -2180,15 +2180,22 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('members')
-                    .select('name, status')
+                    .select('name, status, position, designation')
                     .order('name', { ascending: true });
                 if (error) throw error;
-                const activeNames = (data || [])
-                    .filter(m => (m.status || '').toLowerCase() !== 'inactive')
-                    .map(m => m.name);
-                if (activeNames.length) {
-                    liveMemberNames = [...new Set(activeNames)].sort();
+                const activeMembers = (data || [])
+                    .filter(m => (m.status || '').toLowerCase() !== 'inactive' && m.name);
+                if (activeMembers.length) {
+                    liveMemberNames = [...new Set(activeMembers.map(m => m.name))].sort();
                     refreshAllPersonSelects();
+
+                    // Rebuild the attendance checklist from the same live
+                    // roster the dropdowns use, so a name only ever has
+                    // to match itself.
+                    const liveRoster = activeMembers
+                        .map(m => ({ name: m.name, role: m.position || m.designation || 'CLUB MEMBER' }))
+                        .sort((a, b) => a.name.localeCompare(b.name));
+                    renderMembersChecklist(liveRoster);
                 }
             } catch (err) {
                 console.error('❌ loadResponsibleNames error (using local roster as fallback):', err);
@@ -2197,23 +2204,59 @@
 
         // ============================================================
         //  MOUNT CHECKLIST
+        //  Renders from whichever roster list is passed in. Called once
+        //  immediately with the hardcoded `rosterData` fallback so the
+        //  form is usable right away, then re-called with the LIVE
+        //  `members` table roster once it loads (see loadResponsibleNames
+        //  below) - this keeps the checklist's name spelling/casing in
+        //  sync with the `members` table, which is what the person
+        //  dropdowns already do. Without this, a checklist entry whose
+        //  hardcoded name doesn't exactly match the `members` table row
+        //  (after normalization) would silently fail to count toward
+        //  attendance on the recognition page. Checked state is
+        //  preserved across re-renders by matching on a normalized key.
         // ============================================================
         const checklistContainer = document.getElementById('members-checklist');
-        if (checklistContainer) {
-            rosterData.forEach((member, i) => {
+
+        function normalizeChecklistKey(str) {
+            return (str || '').toString().trim().toLowerCase()
+                .replace(/^rtr\.?\s+/, '')
+                .replace(/^dr\.?\s+/, '')
+                .replace(/\s+/g, ' ');
+        }
+
+        function renderMembersChecklist(list) {
+            if (!checklistContainer || !Array.isArray(list) || list.length === 0) return;
+
+            // Preserve any currently-checked members (by normalized name)
+            // across a re-render, so a live refresh never un-checks
+            // someone the user already selected.
+            const previouslyChecked = new Set();
+            checklistContainer.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+                previouslyChecked.add(normalizeChecklistKey(cb.dataset.name));
+            });
+
+            checklistContainer.innerHTML = '';
+            list.forEach((member, i) => {
+                const key = normalizeChecklistKey(member.name);
+                const wasChecked = previouslyChecked.has(key);
                 const div = document.createElement('div');
                 div.className = 'checklist-item';
                 div.dataset.name = member.name.toLowerCase();
                 div.innerHTML = `
-                    <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
+                    <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${escapeHtml(member.name)}" data-role="${escapeHtml(member.role)}" ${wasChecked ? 'checked' : ''} onchange="calculateAttendanceCounts()">
                     <label for="memb_${i}">
-                        <span>${member.name}</span>
-                        <span class="member-role">${member.role}</span>
+                        <span>${escapeHtml(member.name)}</span>
+                        <span class="member-role">${escapeHtml(member.role)}</span>
                     </label>
                 `;
                 checklistContainer.appendChild(div);
             });
+            calculateAttendanceCounts();
         }
+
+        // Immediate render so the form is usable before Supabase responds
+        renderMembersChecklist(rosterData);
 
         // ============================================================
         //  DATE INIT

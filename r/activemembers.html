@@ -1331,11 +1331,20 @@
             }
 
             function getFullNameWithPrefix(member) {
-                const name = member.name || member.full_name || '—';
-                if (name === '—') return '—';
-                if (name.startsWith('Rtr.') || name.startsWith('Rtr ') || name.startsWith('Rtr')) return name;
-                if (name.includes('Dr.') || name.includes('Mr.') || name.includes('Ms.') || name.includes('Mrs.')) return name;
-                return `Rtr. ${name}`;
+                const raw = (member.name || member.full_name || '').toString().trim();
+                if (!raw) return '—';
+                // Case-insensitively strip any existing Rtr/RTR/rtr prefix
+                // (with or without a period, with or without a space) so we
+                // never end up stacking a second one on top of a name that's
+                // already prefixed in different casing - that's what caused
+                // names to show up as "Rtr. RTR. NABIN CHALISE" while others
+                // showed "RTR. NABIN CHALISE" or just "NABIN CHALISE".
+                const withoutRtr = raw.replace(/^rtr(?:\.\s*|\s+)/i, '').trim();
+                if (withoutRtr !== raw) return `RTR. ${withoutRtr}`;
+                // A different honorific (Dr./Mr./Ms./Mrs./Rit.) - leave as-is.
+                if (/^(dr|mr|ms|mrs|rit)(?:\.\s*|\s+)/i.test(raw)) return raw;
+                // No title at all - add the standard one.
+                return `RTR. ${raw}`;
             }
 
             // ===== SHOW BIRTHDAY POPUP =====
@@ -1411,8 +1420,8 @@
 
             function rpNormalizeKey(str) {
                 return (str || '').toString().trim().toLowerCase()
-                    .replace(/^rtr\.?\s+/, '')
-                    .replace(/^dr\.?\s+/, '')
+                    .replace(/^rtr(?:\.\s*|\s+)/, '')
+                    .replace(/^dr(?:\.\s*|\s+)/, '')
                     .replace(/\s+/g, ' ');
             }
 
@@ -1428,12 +1437,13 @@
 
             function rpAvatarHtml(name, photoUrl) {
                 if (photoUrl) return `<img src="${photoUrl}" alt="${name}">`;
-                const initials = (name || 'M').split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                const withoutTitle = (name || '').replace(/^(rtr|dr|mr|ms|mrs|rit)(?:\.\s*|\s+)/i, '');
+                const initials = withoutTitle.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
                 return initials || 'M';
             }
 
             function rpWinnerItemHtml(member) {
-                const name = member.fullName || 'Member';
+                const name = getFullNameWithPrefix({ name: member.fullName });
                 return `
                     <div class="rp-winner-item">
                         <div class="rp-avatar">${rpAvatarHtml(name, member.photoUrl)}</div>

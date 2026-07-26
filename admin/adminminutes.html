@@ -1318,8 +1318,29 @@
             // a dropdown built from the `members` table, so saved names
             // always match exactly - this is what the recognition /
             // attendance-award feature depends on.
+            //
+            // FALLBACK_ROSTER below is only used until the live fetch in
+            // loadLiveMembers() resolves (or if it fails) - same idea as
+            // rosterData in minutes.html - so the dropdown is never blank
+            // if an admin opens the edit modal in the first instant after
+            // page load.
             // ============================================================
-            let liveMemberNames = [];
+            const FALLBACK_ROSTER = [
+                "RTR. NEETU KHADKA", "RTR. NABIN CHALISE", "RTR. MADAN SHARMA", "RTR. MANISH KANDEL",
+                "RTR. ANIL SHRESTHA", "RTR. NABIN SUBEDI", "RTR. KAMAL KHAREL", "RTR. ISHOR GAUTAM",
+                "RTR. SAGAR CHALISE", "RTR. TIKA RAM GAUTAM", "RTR. DR. MANOJ KARKI", "RTR. LAXMI PUN",
+                "RTR. VIKASH SUBEDI", "RTR. BIPIN CHALISE", "RTR. RAJU SAHANI (RJ)", "RTR. LOKENDRA GAIRE",
+                "RTR. MANJEELA SHRESTHA", "RTR. SMRITI BUDHATHOKI", "RTR. MELINA KHAREL", "RTR. AMRIT SUBEDI",
+                "RTR. ANIL GANDARVA", "RTR. BALRAM ADHIKARI", "RTR. BIBEK KHAREL", "RTR. BIDUR KHAREL",
+                "RTR. DEEPAK KHATTRI", "RTR. DURGA DARLAMI", "RTR. GANESH SAPKOTA", "RIT. JIT BAHADUR B.K.",
+                "RTR. KRIPA KANDEL", "RTR. MANISH GURUNG", "RTR. MIN THAPA", "RTR. NABIN GAIRE",
+                "RTR. NABIN SHARMA POUDEL", "RTR. NETRA PRASAD LAMICHHANE", "RTR. PRAKASH KHADKA",
+                "RTR. PRANSU RAM REGMI", "RTR. PRATAP SEN", "RTR. PRATIKSHYA DARJI", "RTR. RADHA GAUTAM",
+                "RTR. ROMAN SUBEDI", "RTR. SANJU NEUPANE", "RTR. SANTOSH BOHORA CHETTRI", "RTR. SUNIL CHHETRI",
+                "RTR. SUNIL GAUTAM", "RTR. SUNIL KHATIWAL", "RTR. SUNIL ROKA MAGAR", "TARA PRASAD SUNAR",
+                "RTR. TUL BAHADUR B.K."
+            ];
+            let liveMemberNames = [...FALLBACK_ROSTER];
 
             function memberOptionsHTML(selected) {
                 let names = liveMemberNames;
