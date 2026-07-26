@@ -1545,6 +1545,25 @@
                 <div class="form-group"><label for="meetVenue">Venue Location</label><input type="text" id="meetVenue" value="Club Office, Galkot" /></div>
                 <div class="form-group"><label for="meetChair">Meeting Chairperson</label><select id="meetChair"><option value="Rtr. Nabin Chalise" selected>Rtr. Nabin Chalise</option></select></div>
             </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="meetType">Meeting Type</label>
+                    <select id="meetType">
+                        <option value="General Meeting" selected>General Meeting</option>
+                        <option value="Board Meeting">Board Meeting</option>
+                        <option value="Special Board Meeting">Special Board Meeting</option>
+                        <option value="Club Assembly">Club Assembly</option>
+                        <option value="Special General Meeting">Special General Meeting</option>
+                        <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">
+                        ℹ️ Club Members are recognized/attendance-counted only for General Meeting, Club Assembly, Special General Meeting &amp; AGM. Board Meeting and Special Board Meeting count for board roster members only.
+                    </p>
+                </div>
+            </div>
         </div>
 
         <!-- CARD 2: ROSTER -->
@@ -1703,6 +1722,7 @@
         <table class="meta-table">
             <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
             <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Meeting Type</td><td colspan="3" id="outMeetType"></td></tr>
             <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
         <div class="content-section" id="print-section-members"><h4>Attended Members</h4><div id="outPresentMembersNames"></div></div>
@@ -2500,10 +2520,11 @@
                 const meeting = item.data || {};
                 const title = meeting.meeting_number || 'Untitled';
                 const date = meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString() : 'No date';
+                const type = meeting.meeting_type || 'General Meeting';
                 html += `
                     <div class="autocomplete-item" data-meeting-id="${escapeHtml(String(item.id))}" tabindex="0" role="option">
                         <span class="meeting-title">${escapeHtml(title)}</span>
-                        <span class="meeting-date">${escapeHtml(date)}</span>
+                        <span class="meeting-date">${escapeHtml(date)} · ${escapeHtml(type)}</span>
                     </div>
                 `;
             });
@@ -2620,6 +2641,7 @@
             const meetDate = document.getElementById('meetDate');
             const meetVenue = document.getElementById('meetVenue');
             const meetChair = document.getElementById('meetChair');
+            const meetType = document.getElementById('meetType');
 
             if (meetNo) meetNo.value = payload.meeting_number || '';
             if (payload.meeting_date && meetDate) {
@@ -2628,6 +2650,7 @@
                 meetDate.value = (new Date(date - off)).toISOString().slice(0, 16);
             }
             if (meetVenue) meetVenue.value = payload.venue || 'Club Office, Galkot';
+            if (meetType) meetType.value = payload.meeting_type || 'General Meeting';
             if (meetChair) meetChair.innerHTML = memberOptionsHTML(payload.chairperson || 'Rtr. Nabin Chalise');
 
             document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
@@ -2762,6 +2785,7 @@
             const meetDateRaw = document.getElementById('meetDate')?.value || '';
             const meetVenue = document.getElementById('meetVenue')?.value.trim() || '';
             const meetChair = document.getElementById('meetChair')?.value.trim() || '';
+            const meetType = document.getElementById('meetType')?.value.trim() || 'General Meeting';
 
             const members = [];
             document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
@@ -2818,6 +2842,7 @@
                 meeting_date: meetDateRaw ? new Date(meetDateRaw).toISOString() : null,
                 venue: meetVenue,
                 chairperson: meetChair,
+                meeting_type: meetType,
                 members,
                 guests,
                 agendas,
@@ -2841,6 +2866,7 @@
             setText('outDate', payload.meeting_date ? new Date(payload.meeting_date).toLocaleString() : '—');
             setText('outVenue', payload.venue || '—');
             setText('outChair', payload.chairperson || '—');
+            setText('outMeetType', payload.meeting_type || 'General Meeting');
             setText('outChairSign', payload.chairperson || '—');
             setText('outPres', payload.members.length);
             setText('outGst', payload.guests.length);
@@ -2982,12 +3008,12 @@
                 if (existing) {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .update({ data: payload, closing_remarks: payload.closing_remarks, updated_at: payload._savedAt })
+                        .update({ data: payload, closing_remarks: payload.closing_remarks, updated_at: payload._savedAt, meeting_type: payload.meeting_type })
                         .eq('id', existing.id));
                 } else {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .insert([{ data: payload, closing_remarks: payload.closing_remarks }]));
+                        .insert([{ data: payload, closing_remarks: payload.closing_remarks, meeting_type: payload.meeting_type }]));
                 }
                 if (error) throw error;
 

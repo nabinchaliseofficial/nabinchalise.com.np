@@ -1483,9 +1483,28 @@
                     return { noData: 'No Published meetings found (only Draft minutes exist so far).' };
                 }
 
-                const totalMeetings = publishedMinutes.length;
+                // Same meeting-type scoping as recognition.html: Club Members only
+                // count General Meeting / Club Assembly / Special General Meeting /
+                // AGM. Board Meeting & Special Board Meeting count for the board
+                // roster only. Missing meeting_type (older minutes) is treated as
+                // non-board so it still counts for Club Members.
+                function rpGetMeetingType(meeting) {
+                    return (meeting.meeting_type || (meeting.data || {}).meeting_type || '').toString().trim().toLowerCase();
+                }
+                function rpIsBoardOnlyMeetingType(meeting) {
+                    const t = rpGetMeetingType(meeting);
+                    return t === 'board meeting' || t === 'special board meeting';
+                }
 
-                const presentSets = publishedMinutes.map(meeting => {
+                const totalMeetingsAll = publishedMinutes.length;
+                const clubMemberMinutes = publishedMinutes.filter(m => !rpIsBoardOnlyMeetingType(m));
+                const totalMeetingsClub = clubMemberMinutes.length;
+
+                const presentSetsAll = publishedMinutes.map(meeting => {
+                    const list = Array.isArray((meeting.data || {}).members) ? meeting.data.members : [];
+                    return new Set(list.map(p => rpNormalizeKey(p && (p.name || p.full_name || p))));
+                });
+                const presentSetsClub = clubMemberMinutes.map(meeting => {
                     const list = Array.isArray((meeting.data || {}).members) ? meeting.data.members : [];
                     return new Set(list.map(p => rpNormalizeKey(p && (p.name || p.full_name || p))));
                 });
@@ -1506,10 +1525,12 @@
 
                 const memberScores = (members || []).map(m => {
                     const key = rpNormalizeKey(m.name);
-                    const attended = presentSets.filter(s => s.has(key)).length;
-                    const attendancePct = Math.round((attended / totalMeetings) * 1000) / 10;
-                    const bonus = bonusMap[key] || 0;
                     const classification = rpClassifyMember(m);
+                    const presentSets = classification.isBoard ? presentSetsAll : presentSetsClub;
+                    const totalMeetings = classification.isBoard ? totalMeetingsAll : totalMeetingsClub;
+                    const attended = presentSets.filter(s => s.has(key)).length;
+                    const attendancePct = totalMeetings > 0 ? Math.round((attended / totalMeetings) * 1000) / 10 : 0;
+                    const bonus = bonusMap[key] || 0;
                     const photoUrl = m.photo_url || m.photo || m.profile_image || null;
                     const finalScore = attendancePct + bonus;
                     return {

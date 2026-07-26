@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -45,6 +46,24 @@
       font-size: 0.9rem;
       border: 1px solid #334155;
     }
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #15803d;
+      color: white;
+      border: none;
+      padding: 0.55rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-export:hover { background: #166534; }
+    .btn-export:disabled { background: #94a3b8; cursor: not-allowed; }
     .loader {
       display: flex;
       justify-content: center;
@@ -211,7 +230,12 @@
 <div class="container" id="app">
   <div class="header">
     <h1><i class="fas fa-trophy"></i> Recognition · Galkot Baglung</h1>
-    <span class="badge-rotary"><i class="fas fa-rotate-right"></i> Rotary Year 2026-27</span>
+    <div class="header-actions">
+      <button id="exportExcelBtn" class="btn-export" onclick="exportToExcel()" disabled>
+        <i class="fas fa-file-excel"></i> Export to Excel
+      </button>
+      <span class="badge-rotary"><i class="fas fa-rotate-right"></i> Rotary Year 2026-27</span>
+    </div>
   </div>
 
   <div id="loader" class="loader">
@@ -242,9 +266,9 @@
 
   <div class="footer-note">
     <span><i class="fas fa-calendar-check"></i> Attendance computed from Published meeting minutes</span>
-    <span><i class="fas fa-check-circle"></i> Bonus: +1 per completed action item</span>
-    <span><i class="fas fa-users"></i> Leader: Fixed board roster, President excluded</span>
-    <span><i class="fas fa-star"></i> Rising Star: All non-board club members</span>
+    <span><i class="fas fa-check-circle"></i> Bonus: +1 per completed action item (any meeting type)</span>
+    <span><i class="fas fa-users"></i> Leader: Fixed board roster (all meeting types), President excluded</span>
+    <span><i class="fas fa-star"></i> Rising Star: Club Members (General/Assembly/Special General/AGM meetings only)</span>
   </div>
 </div>
 
@@ -258,6 +282,7 @@
     const leaderList = document.getElementById('leaderList');
     const risingList = document.getElementById('risingList');
     const errorDisplay = document.getElementById('errorDisplay');
+    let latestExportData = []; // full member list, populated after each successful load
 
     function showError(message, details = '') {
       errorDisplay.style.display = 'block';
@@ -415,12 +440,35 @@
           return;
         }
 
-        const totalMeetings = publishedMinutes.length;
+        // --- Meeting-type based attendance scope ---------------------------
+        // Club Members (non-board) are only counted for General Meeting, Club
+        // Assembly, Special General Meeting and Annual General Meeting (AGM).
+        // Board Meeting / Special Board Meeting attendance does NOT count
+        // toward a Club Member's attendance %. Board roster members (the
+        // Leader award pool) are counted across every meeting type. Meetings
+        // saved before this field existed have no meeting_type - treated as
+        // a non-board type so they still count for Club Members (backward
+        // compatible with older minutes).
+        function getMeetingType(meeting) {
+          return (meeting.meeting_type || (meeting.data || {}).meeting_type || '').toString().trim().toLowerCase();
+        }
+        function isBoardOnlyMeetingType(meeting) {
+          const t = getMeetingType(meeting);
+          return t === 'board meeting' || t === 'special board meeting';
+        }
+
+        const totalMeetingsAll = publishedMinutes.length; // scope for Board roster members
+        const clubMemberMinutes = publishedMinutes.filter(m => !isBoardOnlyMeetingType(m));
+        const totalMeetingsClub = clubMemberMinutes.length; // scope for Club Members
 
         // For each meeting, data.members is the list of people who were
         // PRESENT (there's no separate present/absent flag - presence in
         // this array IS attendance). Build one normalized-name set per meeting.
-        const presentSets = publishedMinutes.map(meeting => {
+        const presentSetsAll = publishedMinutes.map(meeting => {
+          const list = Array.isArray((meeting.data || {}).members) ? meeting.data.members : [];
+          return new Set(list.map(p => normalizeKey(p && (p.name || p.full_name || p))));
+        });
+        const presentSetsClub = clubMemberMinutes.map(meeting => {
           const list = Array.isArray((meeting.data || {}).members) ? meeting.data.members : [];
           return new Set(list.map(p => normalizeKey(p && (p.name || p.full_name || p))));
         });
@@ -445,10 +493,14 @@
         // Build a score for every member on the official roster
         const memberScores = (members || []).map(m => {
           const key = normalizeKey(m.name);
-          const attended = presentSets.filter(s => s.has(key)).length;
-          const attendancePct = Math.round((attended / totalMeetings) * 1000) / 10;
-          const bonus = bonusMap[key] || 0;
           const classification = classifyMember(m);
+          // Board roster -> scored against every meeting. Club Member ->
+          // scored only against General/Assembly/Special General/AGM meetings.
+          const presentSets = classification.isBoard ? presentSetsAll : presentSetsClub;
+          const totalMeetings = classification.isBoard ? totalMeetingsAll : totalMeetingsClub;
+          const attended = presentSets.filter(s => s.has(key)).length;
+          const attendancePct = totalMeetings > 0 ? Math.round((attended / totalMeetings) * 1000) / 10 : 0;
+          const bonus = bonusMap[key] || 0;
           const photoUrl = m.photo_url || m.photo || m.profile_image || null;
           const finalScore = attendancePct + bonus;
 
@@ -491,6 +543,24 @@
         loader.style.display = 'none';
         grid.style.display = 'grid';
 
+        // Full roster for Excel export - every member gets a row, tagged
+        // with which award (if any) they won.
+        const leaderWinnerIds = new Set(leaderWinners.map(m => m.id));
+        const risingWinnerIds = new Set(risingWinners.map(m => m.id));
+        latestExportData = memberScores
+          .map(m => ({
+            ...m,
+            award: leaderWinnerIds.has(m.id)
+              ? 'Outstanding Club Leader'
+              : risingWinnerIds.has(m.id)
+                ? 'Rising Star'
+                : ''
+          }))
+          .sort((a, b) => (b.isBoard - a.isBoard) || (b.finalScore - a.finalScore));
+
+        const exportBtn = document.getElementById('exportExcelBtn');
+        if (exportBtn) exportBtn.disabled = latestExportData.length === 0;
+
         // Troubleshooting details go to the browser console only (not shown on page)
         console.log('Recognition data loaded:', { publishedMinutes, members, bonusMap, memberScores, leaderWinners, risingWinners });
 
@@ -499,6 +569,51 @@
         showError('Failed to load data', err.message);
         loader.style.display = 'none';
       }
+    }
+
+    // ------------------------------------------------------------------
+    // EXCEL EXPORT (client-side, via SheetJS) - exports the full member
+    // roster with attendance/bonus/score, not just the two award winners.
+    // ------------------------------------------------------------------
+    window.exportToExcel = function() {
+      if (!latestExportData.length) {
+        showToast_fallback();
+        return;
+      }
+      if (typeof XLSX === 'undefined') {
+        alert('Excel export library failed to load. Check your internet connection and try again.');
+        return;
+      }
+
+      const rows = latestExportData.map(m => ({
+        'Name': getFullNameWithPrefix(m.fullName),
+        'Category': m.isPresident ? 'President (excluded)' : (m.isBoard ? 'Board Roster' : 'Club Member'),
+        'Designation': m.designation,
+        'Meetings Counted': m.totalMeetings,
+        'Meetings Attended': m.attended,
+        'Attendance %': m.attendancePct,
+        'Bonus (Action Items)': m.bonus,
+        'Final Score': Number(m.finalScore.toFixed(1)),
+        'Award': m.award
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet['!cols'] = [
+        { wch: 26 }, { wch: 20 }, { wch: 22 }, { wch: 16 },
+        { wch: 16 }, { wch: 13 }, { wch: 18 }, { wch: 12 }, { wch: 24 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Recognition');
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `Recognition_Galkot_Baglung_${todayStr}.xlsx`);
+    };
+
+    // Tiny no-op fallback so exportToExcel() never throws if called before
+    // data has loaded (button is disabled until then, this is just a guard).
+    function showToast_fallback() {
+      console.warn('Export attempted before data was loaded.');
     }
 
     window.addEventListener('DOMContentLoaded', loadData);

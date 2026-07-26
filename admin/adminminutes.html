@@ -1150,6 +1150,7 @@
         <table class="meta-table">
             <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
             <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Meeting Type</td><td colspan="3" id="outMeetType"></td></tr>
             <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
 
@@ -1244,10 +1245,12 @@
                 <div class="form-row">
                     <div class="form-group"><label for="editMeetingType">Meeting Type</label>
                         <select id="editMeetingType">
-                            <option value="Regular">Regular</option>
-                            <option value="Special">Special</option>
-                            <option value="Board">Board</option>
-                            <option value="Emergency">Emergency</option>
+                            <option value="General Meeting">General Meeting</option>
+                            <option value="Board Meeting">Board Meeting</option>
+                            <option value="Special Board Meeting">Special Board Meeting</option>
+                            <option value="Club Assembly">Club Assembly</option>
+                            <option value="Special General Meeting">Special General Meeting</option>
+                            <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
                         </select>
                     </div>
                     <div class="form-group"><label for="editStatus">Status</label>
@@ -1616,7 +1619,7 @@
                         const memberCount = (m.members || []).length;
                         const agendaCount = (m.agendas || []).length;
                         const status = row.status || m.status || 'Draft';
-                        const meetingType = row.meeting_type || m.meeting_type || 'Regular';
+                        const meetingType = row.meeting_type || m.meeting_type || 'General Meeting';
                         const version = m._version || 'v1.0';
                         const savedAt = m._savedAt || m.created_at || row.created_at;
                         const savedAtDisplay = savedAt ? new Date(savedAt).toLocaleString() : 'N/A';
@@ -1740,6 +1743,7 @@
                 document.getElementById('outVenue').innerText = m.venue || 'N/A';
                 document.getElementById('outChair').innerText = m.chairperson || 'N/A';
                 document.getElementById('outChairSign').innerText = m.chairperson || 'N/A';
+                document.getElementById('outMeetType').innerText = m.meeting_type || 'General Meeting';
                 document.getElementById('outPres').innerText = (m.members || []).length;
                 document.getElementById('outGst').innerText = (m.guests || []).length;
 
@@ -1992,7 +1996,7 @@
                 document.getElementById('editChairperson').innerHTML = memberOptionsHTML(m.chairperson || '');
                 document.getElementById('editMembersPresent').value = m.members_present || 0;
                 document.getElementById('editGuestsCount').value = m.guests_count || 0;
-                document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'Regular';
+                document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'General Meeting';
                 document.getElementById('editStatus').value = minuteData.status || m.status || 'Draft';
 
                 // Discussions
@@ -2138,6 +2142,7 @@
                     meeting_date: meetingDate || new Date().toISOString(),
                     venue: venue || 'N/A',
                     chairperson: chairperson || 'N/A',
+                    meeting_type: meetingType,
                     members_present: membersPresent,
                     guests_count: guestsCount,
                     members: members,
