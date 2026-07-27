@@ -1217,14 +1217,14 @@
                 });
         }
 
-        // Converts a Google Slides link into an auto-starting, looping slideshow embed URL.
-        // Other URLs (PowerPoint Online, PDFs, general links) are returned unchanged.
+        // Converts a Google Slides link into a standard embed URL (no auto-slide, no loop).
         function transformPresentationUrl(url) {
             try {
                 const slidesMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
                 if (slidesMatch) {
                     const docId = slidesMatch[1];
-                    return `https://docs.google.com/presentation/d/${docId}/embed?start=true&loop=true&delayms=3000`;
+                    // Return simple embed without any query parameters – stops auto‑advance.
+                    return `https://docs.google.com/presentation/d/${docId}/embed`;
                 }
             } catch (e) {
                 console.log('Presentation URL transform skipped:', e);
