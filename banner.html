@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digital Banner - Live Supabase with Nepali Date/Time</title>
 
-    <!-- PWA / "Add to Home Screen" support: launching from the home-screen
-         icon opens with NO address bar and already fullscreen, no tap needed. -->
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -157,6 +155,7 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
+            gap: 12px;
             z-index: 10;
             position: relative;
         }
@@ -255,6 +254,193 @@
             margin-top: 5px;
         }
 
+        /* ===== AGENDA SECTION ===== */
+        .agenda-section {
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 12px 24px;
+            max-width: 80%;
+            width: 100%;
+            margin: 5px auto;
+            display: none;
+        }
+
+        .agenda-section.visible {
+            display: block;
+        }
+
+        .agenda-title {
+            color: #d4af37;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .agenda-item {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            padding: 4px 12px;
+            border-left: 3px solid #d4af37;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .agenda-item .agenda-num {
+            color: #d4af37;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        /* ===== COUNTDOWN ===== */
+        .countdown-section {
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 8px 24px;
+            display: none;
+            text-align: center;
+        }
+
+        .countdown-section.visible {
+            display: block;
+        }
+
+        .countdown-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .countdown-timer {
+            color: #d4af37;
+            font-size: 2rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+        }
+
+        .countdown-timer.started {
+            color: #4caf50;
+            font-size: 1.5rem;
+        }
+
+        /* ===== WEATHER (bottom-left, above the scrolling notice) ===== */
+        .weather-badge-top {
+            position: absolute;
+            bottom: 46px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .weather-badge-top .weather-icon {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        /* ===== INTERNET STATUS (top-right, next to clock) ===== */
+        .internet-badge-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 2px solid #d4af37;
+            transition: border-color 0.3s ease;
+        }
+
+        .internet-badge-top svg {
+            width: 24px;
+            height: 24px;
+            transition: fill 0.3s ease;
+        }
+
+        .internet-badge-top.online svg {
+            fill: #4caf50;
+        }
+
+        .internet-badge-top.offline svg {
+            fill: #f44336;
+        }
+
+        .internet-badge-top.online {
+            border-color: #4caf50;
+        }
+
+        .internet-badge-top.offline {
+            border-color: #f44336;
+        }
+
+        /* ===== SCROLLING NOTICE ===== */
+        .scrolling-notice {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            border-top: 2px solid #d4af37;
+            overflow: hidden;
+            height: 36px;
+            display: none;
+            align-items: center;
+        }
+
+        .scrolling-notice.visible {
+            display: flex;
+        }
+
+        .scrolling-notice .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scrollNotice 20s linear infinite;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding-left: 100%;
+        }
+
+        @keyframes scrollNotice {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
         .footer-section {
             width: 100%;
             display: flex;
@@ -329,35 +515,6 @@
             border-color: rgba(212, 175, 55, 0.6);
         }
 
-        .anthem-play-btn.recording {
-            color: #fff;
-            background: rgba(200, 30, 30, 0.55);
-            border-color: rgba(255, 90, 90, 0.7);
-            animation: recPulse 1.2s infinite;
-        }
-
-        @keyframes recPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 60, 0.5); }
-            50% { box-shadow: 0 0 0 6px rgba(255, 60, 60, 0); }
-        }
-
-        .record-timer {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.75);
-            background: rgba(0, 0, 0, 0.35);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-variant-numeric: tabular-nums;
-            min-width: 40px;
-            text-align: center;
-            display: none;
-        }
-
-        .record-timer.visible {
-            display: inline-block;
-        }
-
         .open-link-btn {
             position: absolute;
             top: 20px;
@@ -388,10 +545,6 @@
             border-color: rgba(255, 255, 255, 0.4);
         }
 
-        .open-presentation-btn {
-            top: 62px;
-        }
-
         .presentation-buttons-wrap {
             position: absolute;
             top: 62px;
@@ -407,26 +560,6 @@
             display: inline-block;
         }
 
-        @media (max-width: 768px) {
-            .open-link-btn {
-                top: 10px;
-                left: 10px;
-                padding: 5px 12px;
-                font-size: 0.65rem;
-            }
-
-            .open-presentation-btn {
-                top: 44px;
-            }
-
-            .presentation-buttons-wrap {
-                top: 44px;
-                left: 10px;
-                gap: 6px;
-            }
-        }
-
-        /* ===== In-page iframe overlay (Open Link / Open Presentation) ===== */
         .iframe-overlay {
             position: fixed;
             inset: 0;
@@ -569,6 +702,23 @@
                 max-height: 50px;
                 max-width: 130px;
             }
+            .weather-badge-top {
+                bottom: 40px;
+                left: 15px;
+                font-size: 0.9rem;
+                padding: 8px 14px;
+            }
+            .weather-badge-top .weather-icon {
+                font-size: 1.1rem;
+            }
+            .internet-badge-top {
+                width: 38px;
+                height: 38px;
+            }
+            .internet-badge-top svg {
+                width: 20px;
+                height: 20px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -629,6 +779,44 @@
             .status-indicator {
                 display: none;
             }
+            .agenda-section {
+                max-width: 95%;
+                padding: 8px 12px;
+            }
+            .agenda-title {
+                font-size: 1rem;
+            }
+            .agenda-item {
+                font-size: 0.85rem;
+                padding: 3px 8px;
+            }
+            .countdown-timer {
+                font-size: 1.4rem;
+            }
+            .scrolling-notice {
+                height: 30px;
+            }
+            .scrolling-notice .ticker {
+                font-size: 0.9rem;
+            }
+            .weather-badge-top {
+                bottom: 36px;
+                left: 10px;
+                font-size: 0.75rem;
+                padding: 5px 10px;
+                gap: 5px;
+            }
+            .weather-badge-top .weather-icon {
+                font-size: 0.9rem;
+            }
+            .internet-badge-top {
+                width: 30px;
+                height: 30px;
+            }
+            .internet-badge-top svg {
+                width: 16px;
+                height: 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -667,12 +855,38 @@
                 bottom: 8px;
                 right: 8px;
             }
+            .agenda-item {
+                font-size: 0.7rem;
+            }
+            .countdown-timer {
+                font-size: 1rem;
+            }
+            .scrolling-notice {
+                height: 24px;
+            }
+            .scrolling-notice .ticker {
+                font-size: 0.7rem;
+                animation-duration: 15s;
+            }
+            .weather-badge-top {
+                bottom: 30px;
+                left: 8px;
+                font-size: 0.65rem;
+                padding: 4px 8px;
+            }
+            .internet-badge-top {
+                width: 26px;
+                height: 26px;
+            }
+            .internet-badge-top svg {
+                width: 14px;
+                height: 14px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Start Screen (shown first; program starts only after admin clicks) -->
     <div class="start-screen" id="startScreen">
         <div class="curtain curtain-left" id="curtainLeft"></div>
         <div class="curtain curtain-right" id="curtainRight"></div>
@@ -684,26 +898,49 @@
 
     <div class="banner-container" id="bannerBg">
         
-        <!-- Logo - Center Top -->
+        <div class="weather-badge-top" id="weatherBadge">
+            <span class="weather-icon">🌤️</span>
+            <span><span id="weatherTemp">--</span>°C · <span id="weatherCondition">--</span></span>
+        </div>
+
         <div class="center-logo-container" onclick="openInPageOverlay(event, 'centerLogo')" style="cursor:pointer;" title="Admin Panel">
             <img id="centerLogo" src="" alt="Logo" data-url="https://nabinchalise.com.np/adminbanner">
         </div>
 
-        <!-- Top Header with Live Clock -->
         <div class="header-section">
+            <div class="internet-badge-top offline" id="internetBadge" title="Internet Status">
+                <svg id="internetDot" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2zM8.5 14.5a5 5 0 0 1 7 0 1 1 0 0 1-1.4 1.4 3 3 0 0 0-4.2 0 1 1 0 1 1-1.4-1.4zM5 11a10 10 0 0 1 14 0 1 1 0 0 1-1.4 1.4 8 8 0 0 0-11.2 0A1 1 0 1 1 5 11zM1.5 7.5a15 15 0 0 1 21 0 1 1 0 1 1-1.4 1.4 13 13 0 0 0-18.2 0 1 1 0 0 1-1.4-1.4z"/>
+                </svg>
+            </div>
             <div class="live-clock" id="liveClock">
                 <span id="clockTime">--:--:--</span>
             </div>
         </div>
 
-        <!-- Center Main Content -->
         <div class="content-section">
             <h1 class="meeting-title" id="meetingName">Loading...</h1>
             <h2 class="sub-meeting-title" id="subMeetingName"></h2>
             <h2 class="organized-by" id="organizedBy">Loading...</h2>
         </div>
 
-        <!-- Footer: Date & Time in Nepali -->
+        <!-- Agenda Section -->
+        <div class="agenda-section" id="agendaSection">
+            <div class="agenda-title">📋 कार्यसूची</div>
+            <div class="agenda-list" id="agendaList"></div>
+        </div>
+
+        <!-- Countdown Section -->
+        <div class="countdown-section" id="countdownSection">
+            <div class="countdown-label">⏱ Program Starts In</div>
+            <div class="countdown-timer" id="countdownTimer">-- : -- : --</div>
+        </div>
+
+        <!-- Scrolling Notice -->
+        <div class="scrolling-notice" id="scrollingNotice">
+            <div class="ticker" id="noticeTicker">कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।</div>
+        </div>
+
         <div class="footer-section">
             <span class="footer-left-group">
                 <button class="anthem-play-btn" id="anthemPlayBtn" onclick="toggleNationalAnthem()" title="राष्ट्रिय गान" aria-label="राष्ट्रिय गान">▶</button>
@@ -712,32 +949,24 @@
                 </span>
             </span>
             <span class="footer-left-group">
-                <button class="anthem-play-btn" id="cameraBtn" onclick="capturePhoto()" title="फोटो खिच्नुहोस्" aria-label="फोटो खिच्नुहोस्">📷</button>
-                <button class="anthem-play-btn" id="videoRecordBtn" onclick="toggleVideoRecording()" title="भिडियो रेकर्ड" aria-label="भिडियो रेकर्ड">⏺</button>
-                <span class="record-timer" id="recordTimer"></span>
                 <span class="time-display" id="timeDisplay">
                     <span id="timeText">समय: --</span>
                 </span>
             </span>
         </div>
 
-        <!-- Status Indicator -->
         <div class="status-indicator">
             <span class="dot"></span>
             <span id="statusText">लाइभ</span>
         </div>
     </div>
 
-    <!-- Open Link Tab (Top Left) -->
     <a href="#" class="open-link-btn" id="openLinkBtn" onclick="return openInPageOverlay(event, 'openLinkBtn')">🔗 Open Link</a>
 
-    <!-- Open Presentation Tab(s) (Top Left, below Open Link) — one button per saved presentation link -->
     <div class="presentation-buttons-wrap" id="presentationButtonsWrap"></div>
 
-    <!-- Fullscreen Toggle Button -->
     <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
 
-    <!-- In-page Iframe Overlay for Open Link / Open Presentation -->
     <div class="iframe-overlay" id="iframeOverlay">
         <div class="iframe-overlay-header">
             <button class="iframe-overlay-close" onclick="closeInPageOverlay()">✕ Close</button>
@@ -747,175 +976,37 @@
         </div>
     </div>
 
-    <!-- National Anthem Audio -->
     <audio id="nationalAnthemAudio" src="/r/national_anthem.mp3" preload="none"></audio>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+
     <script>
+        // ============================================================
         // ===== SUPABASE CONFIGURATION =====
+        // ============================================================
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ===== NATIONAL ANTHEM PLAY/PAUSE =====
-        function toggleNationalAnthem() {
-            const audio = document.getElementById('nationalAnthemAudio');
-            const btn = document.getElementById('anthemPlayBtn');
+        // ============================================================
+        // ===== STATE =====
+        // ============================================================
+        let __fullscreenRequested = false;
+        let __firstInteractionArmed = false;
+        let __overlayIsPresentation = false;
+        let __typewriterRunning = false;
+        let __lastTypewriterTrigger = 0;
+        let __lastProgramTrigger = 0;
+        let __currentMeetingName = '';
+        let __liveBannerId = null;
+        let __countdownInterval = null;
+        let __programStartTime = null;
+        let __celebrationTimer = null;
 
-            if (audio.paused) {
-                audio.play().catch(err => console.log('Anthem play error:', err));
-            } else {
-                audio.pause();
-            }
-        }
-
-        (function setupAnthemButtonState() {
-            const audio = document.getElementById('nationalAnthemAudio');
-            const btn = document.getElementById('anthemPlayBtn');
-            audio.addEventListener('play', () => {
-                btn.textContent = '⏸';
-                btn.classList.add('playing');
-            });
-            audio.addEventListener('pause', () => {
-                btn.textContent = '▶';
-                btn.classList.remove('playing');
-            });
-            audio.addEventListener('ended', () => {
-                btn.textContent = '▶';
-                btn.classList.remove('playing');
-            });
-        })();
-
-        // ===== CAMERA PHOTO / VIDEO RECORDING (with audio) =====
-        let __mediaStream = null;
-        let __mediaRecorder = null;
-        let __recordedChunks = [];
-        let __recordTimerInterval = null;
-        let __recordStartTime = null;
-
-        // Short synthesized beep — no external sound file needed.
-        function playBeep(freq, duration) {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                gain.gain.setValueAtTime(0.18, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-                osc.start();
-                osc.stop(ctx.currentTime + duration);
-                osc.onended = () => ctx.close();
-            } catch (e) {
-                console.log('Beep error:', e);
-            }
-        }
-
-        async function getMediaStream() {
-            if (__mediaStream) return __mediaStream;
-            __mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            return __mediaStream;
-        }
-
-        // ----- Photo capture -----
-        async function capturePhoto() {
-            playBeep(1300, 0.09); // shutter sound right at the moment of click
-            try {
-                const stream = await getMediaStream();
-                const video = document.createElement('video');
-                video.srcObject = stream;
-                video.muted = true;
-                await video.play();
-                await new Promise(r => setTimeout(r, 150)); // let a frame render
-
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                canvas.toBlob(blob => {
-                    if (!blob) return;
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `banner-photo-${Date.now()}.png`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }, 'image/png');
-            } catch (err) {
-                console.error('Camera error:', err);
-                alert('क्यामेरा एक्सेस गर्न सकिएन: ' + err.message);
-            }
-        }
-
-        // ----- Video recording (video + audio) -----
-        function updateRecordTimer() {
-            const elapsed = Math.floor((Date.now() - __recordStartTime) / 1000);
-            const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const s = String(elapsed % 60).padStart(2, '0');
-            document.getElementById('recordTimer').textContent = `${m}:${s}`;
-        }
-
-        async function toggleVideoRecording() {
-            const btn = document.getElementById('videoRecordBtn');
-            const timerEl = document.getElementById('recordTimer');
-
-            if (!__mediaRecorder || __mediaRecorder.state === 'inactive') {
-                // Start recording
-                try {
-                    const stream = await getMediaStream();
-                    __recordedChunks = [];
-
-                    const mimeCandidates = ['video/webm;codecs=vp8,opus', 'video/webm'];
-                    const mimeType = mimeCandidates.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
-
-                    __mediaRecorder = mimeType
-                        ? new MediaRecorder(stream, { mimeType })
-                        : new MediaRecorder(stream);
-
-                    __mediaRecorder.ondataavailable = (e) => {
-                        if (e.data && e.data.size > 0) __recordedChunks.push(e.data);
-                    };
-
-                    __mediaRecorder.onstop = () => {
-                        const blob = new Blob(__recordedChunks, { type: 'video/webm' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `banner-video-${Date.now()}.webm`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    };
-
-                    __mediaRecorder.start();
-                    playBeep(1500, 0.12); // record-start sound
-
-                    btn.textContent = '⏹';
-                    btn.classList.add('recording');
-                    __recordStartTime = Date.now();
-                    timerEl.classList.add('visible');
-                    updateRecordTimer();
-                    __recordTimerInterval = setInterval(updateRecordTimer, 1000);
-                } catch (err) {
-                    console.error('Recording error:', err);
-                    alert('रेकर्डिङ सुरु गर्न सकिएन: ' + err.message);
-                }
-            } else {
-                // Stop recording
-                __mediaRecorder.stop();
-                playBeep(700, 0.14); // record-stop sound
-
-                btn.textContent = '⏺';
-                btn.classList.remove('recording');
-                clearInterval(__recordTimerInterval);
-                timerEl.classList.remove('visible');
-                timerEl.textContent = '';
-            }
-        }
-
+        // ============================================================
         // ===== NEPALI DATE SYSTEM =====
+        // ============================================================
         const NepaliDate = {
             months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
             weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
@@ -1018,6 +1109,9 @@
             };
         }
 
+        // ============================================================
+        // ===== CACHE =====
+        // ============================================================
         const BANNER_CACHE_KEY = 'bannerSettingsCache';
 
         function saveBannerCache(data) {
@@ -1035,16 +1129,18 @@
             }
         }
 
+        // ============================================================
+        // ===== APPLY BANNER DATA =====
+        // ============================================================
         function applyBannerData(data) {
             if (!data) return;
 
-            window.__liveBannerId = data.id;
-            window.__currentMeetingName = data.meeting_name || '';
+            __liveBannerId = data.id;
+            __currentMeetingName = data.meeting_name || '';
             document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
             document.getElementById('subMeetingName').innerText = data.sub_meeting_name || '';
             document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
 
-            // Hide sub-meeting if empty
             if (!data.sub_meeting_name || data.sub_meeting_name.trim() === '') {
                 document.getElementById('subMeetingName').style.display = 'none';
             } else {
@@ -1092,28 +1188,19 @@
             const fontScale = data.font_scale || 100;
             document.documentElement.style.setProperty('--font-scale', fontScale / 100);
 
-            // Per-box font sizes (rem)
             document.documentElement.style.setProperty('--meeting-title-size', (data.meeting_name_font_size || 4.5) + 'rem');
             document.documentElement.style.setProperty('--sub-meeting-title-size', (data.sub_meeting_font_size || 2.5) + 'rem');
             document.documentElement.style.setProperty('--organized-by-size', (data.organized_by_font_size || 2.8) + 'rem');
             document.documentElement.style.setProperty('--date-size', (data.date_font_size || 1.6) + 'rem');
             document.documentElement.style.setProperty('--time-size', (data.time_font_size || 1.6) + 'rem');
 
-            // Typewriter animation trigger (admin clicks a button -> this value changes)
-            if (window.__lastTypewriterTrigger === undefined) {
-                // First load: just remember the current value, don't animate
-                window.__lastTypewriterTrigger = data.typewriter_trigger || 0;
-            } else if (data.typewriter_trigger && data.typewriter_trigger != window.__lastTypewriterTrigger) {
-                window.__lastTypewriterTrigger = data.typewriter_trigger;
+            if (data.typewriter_trigger && data.typewriter_trigger !== __lastTypewriterTrigger) {
+                __lastTypewriterTrigger = data.typewriter_trigger;
                 playTypewriter(data.meeting_name || '', 3);
             }
 
-            // Remote "कार्यक्रमको सुरुवात गर्नुहोस्" trigger (admin clicks the button in adminbanner.html)
-            if (window.__lastProgramTrigger === undefined) {
-                // First load: just remember the current value, don't auto-start
-                window.__lastProgramTrigger = data.program_start_trigger || 0;
-            } else if (data.program_start_trigger && data.program_start_trigger != window.__lastProgramTrigger) {
-                window.__lastProgramTrigger = data.program_start_trigger;
+            if (data.program_start_trigger && data.program_start_trigger !== __lastProgramTrigger) {
+                __lastProgramTrigger = data.program_start_trigger;
                 const startScreen = document.getElementById('startScreen');
                 const startBtn = document.getElementById('startProgramBtn');
                 if (startScreen && startBtn && !startBtn.disabled &&
@@ -1121,10 +1208,244 @@
                     startBtn.click();
                 }
             }
+
+            // ===== SCROLLING NOTICE =====
+            const noticeEnabled = data.scrolling_notice_enabled !== false;
+            const noticeText = data.scrolling_notice || 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।';
+            const noticeEl = document.getElementById('scrollingNotice');
+            const tickerEl = document.getElementById('noticeTicker');
+            if (noticeEnabled && noticeText.trim()) {
+                tickerEl.textContent = noticeText;
+                noticeEl.classList.add('visible');
+            } else {
+                noticeEl.classList.remove('visible');
+            }
+
+            // ===== AGENDA =====
+            const agendaData = data.agenda || [];
+            renderAgenda(agendaData);
+
+            // ===== COUNTDOWN =====
+            const startTime = data.program_start_time || null;
+            if (startTime) {
+                __programStartTime = startTime;
+                startCountdown(startTime);
+            } else {
+                document.getElementById('countdownSection').classList.remove('visible');
+                if (__countdownInterval) {
+                    clearInterval(__countdownInterval);
+                    __countdownInterval = null;
+                }
+            }
+
+            // ===== CELEBRATION TRIGGER =====
+            if (data.celebration_trigger && data.celebration_type) {
+                triggerCelebration(data.celebration_type);
+                supabaseClient
+                    .from('banner_settings')
+                    .update({ celebration_trigger: null, celebration_type: null })
+                    .eq('id', data.id)
+                    .then(() => {});
+            }
         }
 
-        // ===== TYPEWRITER ANIMATION (meeting name, repeats `times` times) =====
-        let __typewriterRunning = false;
+        // ============================================================
+        // ===== RENDER AGENDA =====
+        // ============================================================
+        function renderAgenda(agendaItems) {
+            const section = document.getElementById('agendaSection');
+            const list = document.getElementById('agendaList');
+            
+            if (!agendaItems || agendaItems.length === 0) {
+                section.classList.remove('visible');
+                list.innerHTML = '';
+                return;
+            }
+
+            section.classList.add('visible');
+            list.innerHTML = agendaItems.map((item, idx) => {
+                const text = typeof item === 'string' ? item : (item.text || item.title || '');
+                return `<div class="agenda-item"><span class="agenda-num">${idx + 1}.</span> ${text}</div>`;
+            }).join('');
+        }
+
+        // ============================================================
+        // ===== COUNTDOWN =====
+        // ============================================================
+        function startCountdown(startTimeStr) {
+            const section = document.getElementById('countdownSection');
+            const timer = document.getElementById('countdownTimer');
+
+            if (__countdownInterval) {
+                clearInterval(__countdownInterval);
+                __countdownInterval = null;
+            }
+
+            // Support both 24-hour "HH:MM" (native <input type="time"> format)
+            // and legacy 12-hour "H:MM AM/PM" strings.
+            let hours, minutes;
+            const parts24 = startTimeStr.match(/^(\d{1,2}):(\d{2})$/);
+            const parts12 = startTimeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+
+            if (parts24) {
+                hours = parseInt(parts24[1]);
+                minutes = parseInt(parts24[2]);
+            } else if (parts12) {
+                hours = parseInt(parts12[1]);
+                minutes = parseInt(parts12[2]);
+                const period = parts12[3].toUpperCase();
+                if (period === 'PM' && hours !== 12) hours += 12;
+                if (period === 'AM' && hours === 12) hours = 0;
+            } else {
+                section.classList.remove('visible');
+                return;
+            }
+
+            const now = new Date();
+            let target = new Date(now);
+            target.setHours(hours, minutes, 0, 0);
+
+            if (target < now) {
+                target.setDate(target.getDate() + 1);
+            }
+
+            section.classList.add('visible');
+
+            function updateCountdown() {
+                const now = new Date();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    timer.textContent = '🎉 Program Started';
+                    timer.className = 'countdown-timer started';
+                    if (__countdownInterval) {
+                        clearInterval(__countdownInterval);
+                        __countdownInterval = null;
+                    }
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                timer.textContent = `${String(hours).padStart(2, '0')} : ${String(mins).padStart(2, '0')} : ${String(secs).padStart(2, '0')}`;
+                timer.className = 'countdown-timer';
+            }
+
+            updateCountdown();
+            __countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // ============================================================
+        // ===== CELEBRATION EFFECTS =====
+        // ============================================================
+        function triggerCelebration(type) {
+            if (__celebrationTimer) {
+                clearTimeout(__celebrationTimer);
+                __celebrationTimer = null;
+                confetti.reset();
+            }
+
+            const duration = 4000;
+
+            switch (type) {
+                case 'colorful':
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800', '#88ff00']
+                    });
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.4 }
+                        });
+                    }, 500);
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 120,
+                            spread: 90,
+                            origin: { y: 0.7 }
+                        });
+                    }, 1000);
+                    break;
+
+                case 'golden':
+                    confetti({
+                        particleCount: 180,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#ffd700', '#ffc107', '#ffb300', '#ffa000', '#ff8f00']
+                    });
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 120,
+                            spread: 60,
+                            origin: { y: 0.4 },
+                            colors: ['#ffd700', '#ffc107', '#ffb300']
+                        });
+                    }, 600);
+                    break;
+
+                case 'balloon':
+                    confetti({
+                        particleCount: 200,
+                        spread: 100,
+                        origin: { y: 0.3 },
+                        startVelocity: 15,
+                        colors: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff']
+                    });
+                    break;
+
+                case 'fireworks':
+                    const fireworksInterval = setInterval(() => {
+                        const x = Math.random();
+                        const y = Math.random() * 0.5 + 0.1;
+                        confetti({
+                            particleCount: 80,
+                            spread: 60,
+                            origin: { x, y },
+                            colors: ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#ff00ff']
+                        });
+                    }, 300);
+                    setTimeout(() => clearInterval(fireworksInterval), duration);
+                    break;
+
+                case 'petals':
+                    confetti({
+                        particleCount: 120,
+                        spread: 50,
+                        origin: { y: 0.8 },
+                        colors: ['#ffb7c5', '#ff69b4', '#ff1493', '#ff6b9d', '#ff8da1'],
+                        shapes: ['circle']
+                    });
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 80,
+                            spread: 40,
+                            origin: { y: 0.7 },
+                            colors: ['#ffb7c5', '#ff69b4', '#ff1493'],
+                            shapes: ['circle']
+                        });
+                    }, 400);
+                    break;
+
+                default:
+                    return;
+            }
+
+            __celebrationTimer = setTimeout(() => {
+                confetti.reset();
+                __celebrationTimer = null;
+            }, duration + 500);
+        }
+
+        // ============================================================
+        // ===== TYPEWRITER =====
+        // ============================================================
         async function playTypewriter(text, times = 3) {
             if (!text || __typewriterRunning) return;
             __typewriterRunning = true;
@@ -1151,6 +1472,9 @@
             __typewriterRunning = false;
         }
 
+        // ============================================================
+        // ===== FETCH BANNER DATA =====
+        // ============================================================
         async function fetchBannerData() {
             try {
                 let { data, error } = await supabaseClient
@@ -1197,20 +1521,14 @@
 
         // ============================================================
         // ===== CHIEF GUEST MODE =====
-        // ON  -> keep the curtain + "🎬 कार्यक्रमको सुरुवात गर्नुहोस्" button
-        //        exactly as before (someone must click it, locally or via
-        //        the remote trigger from cg.html / adminbanner.html)
-        // OFF -> no chief guest ceremony needed: skip the curtain/button
-        //        entirely and reveal the banner directly
         // ============================================================
-        let currentChiefGuestMode = true; // safe default: ON (keep existing click-to-start behavior)
+        let currentChiefGuestMode = true;
 
         function revealBannerDirectly() {
             const startScreen = document.getElementById('startScreen');
             const startBtn = document.getElementById('startProgramBtn');
             if (!startScreen) return;
 
-            // Already started/animating — nothing to do
             if (startScreen.classList.contains('hidden') || startScreen.classList.contains('opening')) {
                 return;
             }
@@ -1219,7 +1537,7 @@
             startScreen.classList.add('hidden');
 
             const nameEl = document.getElementById('meetingName');
-            const nameText = window.__currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
+            const nameText = __currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
             playTypewriter(nameText, 3);
         }
 
@@ -1228,7 +1546,6 @@
             const startBtn = document.getElementById('startProgramBtn');
             if (!startScreen) return;
 
-            // Don't interrupt the curtain-opening animation itself
             if (startScreen.classList.contains('opening')) return;
 
             startScreen.classList.remove('hidden');
@@ -1252,7 +1569,7 @@
                     .maybeSingle();
 
                 if (error || !data) {
-                    currentChiefGuestMode = true; // default ON if missing/unreadable
+                    currentChiefGuestMode = true;
                 } else {
                     currentChiefGuestMode = data.setting_value === 'true' || data.setting_value === true;
                 }
@@ -1263,75 +1580,83 @@
             applyChiefGuestModeUI();
         }
 
-        let chiefGuestChannel = null;
-        function setupChiefGuestRealtime() {
-            if (chiefGuestChannel) {
-                supabaseClient.removeChannel(chiefGuestChannel);
-            }
-            chiefGuestChannel = supabaseClient
-                .channel('public:app_settings:chief_guest_mode')
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'app_settings', filter: 'setting_key=eq.chief_guest_mode' },
-                    () => {
-                        console.log('🔄 Chief Guest Mode changed, updating start screen...');
-                        loadChiefGuestMode();
-                    }
-                )
-                .subscribe((status) => {
-                    console.log('Chief Guest Mode channel status:', status);
-                });
-        }
+        // ============================================================
+        // ===== START PROGRAM (with Confetti) =====
+        // ============================================================
+        function startProgram() {
+            const startScreen = document.getElementById('startScreen');
+            const startProgramBtn = document.getElementById('startProgramBtn');
+            if (startProgramBtn) startProgramBtn.disabled = true;
 
-        let realtimeChannel = null;
-
-        function setupRealtime() {
-            if (realtimeChannel) {
-                supabaseClient.removeChannel(realtimeChannel);
+            const el = document.documentElement;
+            const request = el.requestFullscreen
+                ? el.requestFullscreen()
+                : el.webkitRequestFullscreen
+                    ? el.webkitRequestFullscreen()
+                    : null;
+            if (request && request.catch) {
+                request.catch(err => console.log('Fullscreen error:', err));
             }
 
-            realtimeChannel = supabaseClient
-                .channel('public:banner_settings')
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'banner_settings' },
-                    payload => {
-                        console.log('🔄 Realtime event received:', payload.eventType);
-                        fetchBannerData();
-                        document.getElementById('statusText').textContent = 'अपडेट भयो!';
-                        setTimeout(() => {
-                            document.getElementById('statusText').textContent = 'लाइभ';
-                        }, 2000);
-                    }
-                )
-                .subscribe((status) => {
-                    console.log('Realtime channel status:', status);
-                    if (status === 'SUBSCRIBED') {
-                        document.getElementById('statusText').textContent = 'लाइभ';
-                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-                        document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
-                        setTimeout(() => {
-                            fetchBannerData();
-                            setupRealtime();
-                        }, 3000);
-                    }
+            startScreen.classList.add('opening');
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.5 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800']
                 });
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.3 }
+                    });
+                }, 400);
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 120,
+                        spread: 90,
+                        origin: { y: 0.7 }
+                    });
+                }, 800);
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.5 },
+                        colors: ['#ffd700', '#ffc107', '#ffb300']
+                    });
+                }, 1200);
+            }, 300);
+
+            setTimeout(() => {
+                startScreen.classList.add('hidden');
+                const nameEl = document.getElementById('meetingName');
+                const nameText = __currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
+                playTypewriter(nameText, 3);
+            }, 3500);
+
+            setTimeout(() => {
+                confetti.reset();
+            }, 5500);
         }
 
-        // Converts a Google Slides link into a standard embed URL (no auto-slide, no loop).
+        // ============================================================
+        // ===== PRESENTATION BUTTONS =====
+        // ============================================================
         function transformPresentationUrl(url) {
             try {
-                // "Publish to the web" link (no Google login needed to view):
-                // https://docs.google.com/presentation/d/e/<PUB_ID>/pub?...
                 const publishedMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/e\/([a-zA-Z0-9_-]+)/);
                 if (publishedMatch) {
                     const pubId = publishedMatch[1];
                     return `https://docs.google.com/presentation/d/e/${pubId}/embed`;
                 }
 
-                // Regular share link: https://docs.google.com/presentation/d/<ID>/edit...
                 const slidesMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
                 if (slidesMatch) {
                     const docId = slidesMatch[1];
-                    // Return simple embed without any query parameters – stops auto‑advance.
                     return `https://docs.google.com/presentation/d/${docId}/embed`;
                 }
             } catch (e) {
@@ -1340,7 +1665,6 @@
             return url;
         }
 
-        // Builds one "Open Presentation" button per saved presentation link, labeled with its name.
         function renderPresentationButtons(items) {
             const wrap = document.getElementById('presentationButtonsWrap');
             wrap.innerHTML = '';
@@ -1363,9 +1687,9 @@
             });
         }
 
-        // ===== OPEN LINK / OPEN PRESENTATION / LOGO — same-page iframe overlay =====
-        let __overlayIsPresentation = false;
-
+        // ============================================================
+        // ===== OVERLAY =====
+        // ============================================================
         function openInPageOverlay(event, btnId, directUrl) {
             if (event) event.preventDefault();
             let url = directUrl;
@@ -1378,12 +1702,14 @@
             }
             if (!url) return false;
 
-            // PDFs (uploaded via the admin PDF Player) get full-size viewing instead of the
-            // 16:9 slide letterbox used for Google Slides embeds.
             const isPdf = isPresentation && /\.pdf(\?|$)/i.test(url);
 
             if (isPresentation) {
                 url = transformPresentationUrl(url);
+            }
+
+            if (isPdf) {
+                url = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
             }
 
             __overlayIsPresentation = isPresentation && !isPdf;
@@ -1392,8 +1718,6 @@
             document.getElementById('iframeOverlay').classList.add('visible');
 
             if (__overlayIsPresentation) {
-                // Let the overlay finish laying out, then letterbox-fit at 16:9
-                // so the full slide is always visible with nothing cropped off.
                 requestAnimationFrame(() => requestAnimationFrame(fitPresentationFrame));
                 setTimeout(fitPresentationFrame, 300);
                 setTimeout(fitPresentationFrame, 1000);
@@ -1409,8 +1733,6 @@
             __overlayIsPresentation = false;
         }
 
-        // Sizes the presentation iframe to fit fully inside its container at a
-        // 16:9 ratio (letterboxed), so no part of the slide is ever cut off.
         function fitPresentationFrame() {
             const body = document.getElementById('iframeOverlayBody');
             const frame = document.getElementById('iframeOverlayFrame');
@@ -1453,11 +1775,127 @@
         document.addEventListener('fullscreenchange', refitOverlayIfVisible);
         document.addEventListener('webkitfullscreenchange', refitOverlayIfVisible);
 
+        // ============================================================
+        // ===== ANTHEM =====
+        // ============================================================
+        function toggleNationalAnthem() {
+            const audio = document.getElementById('nationalAnthemAudio');
+            const btn = document.getElementById('anthemPlayBtn');
+
+            if (audio.paused) {
+                audio.play().catch(err => console.log('Anthem play error:', err));
+            } else {
+                audio.pause();
+            }
+        }
+
+        (function setupAnthemButtonState() {
+            const audio = document.getElementById('nationalAnthemAudio');
+            const btn = document.getElementById('anthemPlayBtn');
+            audio.addEventListener('play', () => {
+                btn.textContent = '⏸';
+                btn.classList.add('playing');
+            });
+            audio.addEventListener('pause', () => {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            });
+            audio.addEventListener('ended', () => {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            });
+        })();
+
+        // ============================================================
+        // ===== WEATHER =====
+        // ============================================================
+        // Fallback coordinates (used only if the device won't/can't share its location)
+        const WEATHER_FALLBACK_LAT = 28.0;
+        const WEATHER_FALLBACK_LON = 83.5;
+        let __weatherCoords = null; // cached once we know the real location
+
+        async function fetchWeatherForCoords(lat, lon) {
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                if (!response.ok) throw new Error('Weather API error');
+                const data = await response.json();
+                if (data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const weatherCode = data.current_weather.weathercode;
+                    let condition = 'Clear';
+                    if (weatherCode >= 51 && weatherCode <= 67) condition = 'Rain';
+                    else if (weatherCode >= 71 && weatherCode <= 77) condition = 'Snow';
+                    else if (weatherCode >= 80 && weatherCode <= 99) condition = 'Storm';
+                    else if (weatherCode >= 45 && weatherCode <= 48) condition = 'Fog';
+                    else if (weatherCode >= 1 && weatherCode <= 3) condition = 'Cloudy';
+
+                    document.getElementById('weatherTemp').textContent = temp;
+                    document.getElementById('weatherCondition').textContent = condition;
+                }
+            } catch (err) {
+                console.log('Weather fetch error:', err);
+            }
+        }
+
+        function getDeviceCoords() {
+            return new Promise((resolve) => {
+                // Reuse the location we already got once, so we don't re-prompt every 10 minutes
+                if (__weatherCoords) { resolve(__weatherCoords); return; }
+
+                if (!navigator.geolocation) {
+                    resolve({ lat: WEATHER_FALLBACK_LAT, lon: WEATHER_FALLBACK_LON });
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        __weatherCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+                        resolve(__weatherCoords);
+                    },
+                    (err) => {
+                        console.log('Geolocation unavailable, using fallback location:', err.message);
+                        resolve({ lat: WEATHER_FALLBACK_LAT, lon: WEATHER_FALLBACK_LON });
+                    },
+                    { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+                );
+            });
+        }
+
+        async function fetchWeather() {
+            const { lat, lon } = await getDeviceCoords();
+            await fetchWeatherForCoords(lat, lon);
+        }
+
+        // ============================================================
+        // ===== INTERNET STATUS =====
+        // ============================================================
+        function updateInternetStatus() {
+            const badge = document.getElementById('internetBadge');
+            if (navigator.onLine) {
+                badge.classList.remove('offline');
+                badge.classList.add('online');
+                badge.title = 'Internet Connected';
+            } else {
+                badge.classList.remove('online');
+                badge.classList.add('offline');
+                badge.title = 'Internet Offline';
+            }
+        }
+
+        window.addEventListener('online', updateInternetStatus);
+        window.addEventListener('offline', updateInternetStatus);
+
+        // ============================================================
+        // ===== CLOCK =====
+        // ============================================================
         function updateClock() {
             const time = getCurrentNepaliTime();
             document.getElementById('clockTime').textContent = time.formattedNepali;
         }
 
+        // ============================================================
+        // ===== VIEWPORT HEIGHT =====
+        // ============================================================
         function setViewportHeight() {
             document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
         }
@@ -1465,33 +1903,9 @@
         window.addEventListener('resize', setViewportHeight);
         window.addEventListener('orientationchange', setViewportHeight);
 
-        function startProgram() {
-            const startScreen = document.getElementById('startScreen');
-            const startProgramBtn = document.getElementById('startProgramBtn');
-            if (startProgramBtn) startProgramBtn.disabled = true;
-
-            // Request fullscreen now, while we still have the user gesture
-            const el = document.documentElement;
-            const request = el.requestFullscreen
-                ? el.requestFullscreen()
-                : el.webkitRequestFullscreen
-                    ? el.webkitRequestFullscreen()
-                    : null;
-            if (request && request.catch) {
-                request.catch(err => console.log('Fullscreen error:', err));
-            }
-
-            // Curtains open (parda khulcha)
-            startScreen.classList.add('opening');
-
-            setTimeout(() => {
-                startScreen.classList.add('hidden');
-                const nameEl = document.getElementById('meetingName');
-                const nameText = window.__currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
-                playTypewriter(nameText, 3);
-            }, 3250);
-        }
-
+        // ============================================================
+        // ===== FULLSCREEN =====
+        // ============================================================
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 const el = document.documentElement;
@@ -1531,35 +1945,9 @@
         document.addEventListener('fullscreenchange', updateFullscreenBorder);
         document.addEventListener('webkitfullscreenchange', updateFullscreenBorder);
 
-        window.onload = async () => {
-            const cached = loadBannerCache();
-            if (cached) {
-                applyBannerData(cached);
-            }
-            await fetchBannerData();
-            setupRealtime();
-            await loadChiefGuestMode();
-            setupChiefGuestRealtime();
-            updateClock();
-            setInterval(updateClock, 1000);
-            setInterval(fetchBannerData, 30000);
-            console.log('✅ Banner initialized successfully!');
-
-            requestAutoFullscreen();
-        };
-
-        // ===== AUTO FULLSCREEN ON OPEN (also hides the browser's URL bar) =====
-        // Fullscreen mode is what hides the address bar — there is no separate
-        // "hide URL bar" API. Browsers only allow requestFullscreen() during a
-        // real user gesture (tap/click/keypress), so a call made straight from
-        // page-load is blocked in almost every normal browser tab. This tries
-        // immediately (works in kiosk/PWA/embedded contexts that permit it),
-        // and falls back to grabbing fullscreen on the very first tap/click/
-        // keypress anywhere on the page if the immediate attempt is blocked.
-        // For a truly zero-tap launch with no address bar at all, see the
-        // manifest.json "Add to Home Screen" note below.
-        let __fullscreenRequested = false;
-
+        // ============================================================
+        // ===== AUTO FULLSCREEN =====
+        // ============================================================
         function requestAutoFullscreen() {
             if (document.fullscreenElement || __fullscreenRequested) return;
             __fullscreenRequested = true;
@@ -1581,7 +1969,6 @@
             }
         }
 
-        let __firstInteractionArmed = false;
         function armFirstInteractionFullscreen() {
             if (__firstInteractionArmed) return;
             __firstInteractionArmed = true;
@@ -1603,6 +1990,104 @@
                 document.addEventListener(evt, grabFullscreen, { once: true });
             });
         }
+
+        // ============================================================
+        // ===== REALTIME SETUP =====
+        // ============================================================
+        let realtimeChannel = null;
+        let chiefGuestChannel = null;
+        let celebrationChannel = null;
+
+        function setupRealtime() {
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+            }
+
+            realtimeChannel = supabaseClient
+                .channel('public:banner_settings')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'banner_settings' },
+                    payload => {
+                        console.log('🔄 Realtime event received:', payload.eventType);
+                        fetchBannerData();
+                        document.getElementById('statusText').textContent = 'अपडेट भयो!';
+                        setTimeout(() => {
+                            document.getElementById('statusText').textContent = 'लाइभ';
+                        }, 2000);
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Realtime channel status:', status);
+                    if (status === 'SUBSCRIBED') {
+                        document.getElementById('statusText').textContent = 'लाइभ';
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                        document.getElementById('statusText').textContent = 'पुन: जडान हुँदै...';
+                        setTimeout(() => {
+                            fetchBannerData();
+                            setupRealtime();
+                        }, 3000);
+                    }
+                });
+
+            if (chiefGuestChannel) {
+                supabaseClient.removeChannel(chiefGuestChannel);
+            }
+            chiefGuestChannel = supabaseClient
+                .channel('public:app_settings:chief_guest_mode')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'app_settings', filter: 'setting_key=eq.chief_guest_mode' },
+                    () => {
+                        console.log('🔄 Chief Guest Mode changed, updating start screen...');
+                        loadChiefGuestMode();
+                    }
+                )
+                .subscribe();
+
+            if (celebrationChannel) {
+                supabaseClient.removeChannel(celebrationChannel);
+            }
+            celebrationChannel = supabaseClient
+                .channel('public:banner_settings:celebration')
+                .on('postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'banner_settings' },
+                    (payload) => {
+                        const newData = payload.new;
+                        if (newData && newData.celebration_trigger && newData.celebration_type) {
+                            console.log('🎉 Celebration triggered:', newData.celebration_type);
+                            triggerCelebration(newData.celebration_type);
+                            supabaseClient
+                                .from('banner_settings')
+                                .update({ celebration_trigger: null, celebration_type: null })
+                                .eq('id', newData.id)
+                                .then(() => {});
+                        }
+                    }
+                )
+                .subscribe();
+        }
+
+        // ============================================================
+        // ===== INIT =====
+        // ============================================================
+        window.onload = async () => {
+            const cached = loadBannerCache();
+            if (cached) {
+                applyBannerData(cached);
+            }
+            await fetchBannerData();
+            setupRealtime();
+            await loadChiefGuestMode();
+            updateClock();
+            setInterval(updateClock, 1000);
+            setInterval(fetchBannerData, 30000);
+            updateInternetStatus();
+            setInterval(updateInternetStatus, 5000);
+            fetchWeather();
+            setInterval(fetchWeather, 600000);
+            console.log('✅ Banner initialized successfully!');
+
+            requestAutoFullscreen();
+        };
     </script>
 </body>
-</html>
+</html> 

@@ -28,8 +28,7 @@
             width: 100%;
             max-width: 1000px;
         }
-        h2,
-        h3 {
+        h2, h3 {
             text-align: center;
             color: #d32f2f;
             margin-bottom: 20px;
@@ -55,6 +54,7 @@
         input[type="password"],
         input[type="file"],
         input[type="number"],
+        input[type="time"],
         select,
         textarea {
             width: 100%;
@@ -105,77 +105,39 @@
             background: #333;
             transform: translateY(-2px);
         }
+        .btn-success {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #c62828, #8e0000);
+            color: white;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(198, 40, 40, 0.4);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            width: auto;
+            margin: 0;
+            display: inline-block;
+        }
         .hidden {
             display: none !important;
-        }
-        .presentation-link-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .presentation-link-row .presentation-link-name {
-            flex: 0 0 30%;
-        }
-        .presentation-link-row .presentation-link-input {
-            flex: 1;
-        }
-        .presentation-link-row .remove-link-btn {
-            flex-shrink: 0;
-            background: #c62828;
-            color: white;
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-        .presentation-link-row .remove-link-btn:hover {
-            background: #8e0000;
-            transform: scale(1.05);
-        }
-        .presentation-link-row.pdf-row {
-            align-items: flex-start;
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .presentation-link-row.pdf-row .presentation-link-name {
-            flex: 0 0 26%;
-        }
-        .presentation-pdf-filewrap {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-        .presentation-pdf-status {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #555;
-        }
-        .presentation-pdf-status.uploaded {
-            color: #2e7d32;
-        }
-        .presentation-pdf-status.pending-upload {
-            color: #b8860b;
-        }
-        .presentation-pdf-view {
-            font-size: 0.85rem;
-            color: #1565c0;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .presentation-pdf-view:hover {
-            text-decoration: underline;
-        }
-        .presentation-pdf-file {
-            font-size: 0.85rem;
         }
         .msg {
             text-align: center;
@@ -215,8 +177,7 @@
             border-collapse: collapse;
             font-size: 0.95rem;
         }
-        th,
-        td {
+        th, td {
             padding: 12px 15px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
@@ -473,6 +434,183 @@
             word-break: break-all;
             margin-top: 5px;
         }
+
+        /* ===== AGENDA EDITOR ===== */
+        .agenda-editor-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .agenda-editor-row input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: #fafafa;
+        }
+        .agenda-editor-row input:focus {
+            border-color: #d32f2f;
+            outline: none;
+        }
+        .agenda-editor-row .remove-agenda-btn {
+            flex-shrink: 0;
+            background: #c62828;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .agenda-editor-row .remove-agenda-btn:hover {
+            background: #8e0000;
+            transform: scale(1.05);
+        }
+
+        /* ===== PRESENTATION PDF ROWS ===== */
+        .presentation-link-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .presentation-link-row .presentation-link-name {
+            flex: 0 0 30%;
+        }
+        .presentation-link-row .presentation-link-input {
+            flex: 1;
+        }
+        .presentation-link-row .remove-link-btn {
+            flex-shrink: 0;
+            background: #c62828;
+            color: white;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .presentation-link-row .remove-link-btn:hover {
+            background: #8e0000;
+            transform: scale(1.05);
+        }
+        .presentation-link-row.pdf-row {
+            align-items: flex-start;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .presentation-link-row.pdf-row .presentation-link-name {
+            flex: 0 0 26%;
+        }
+        .presentation-pdf-filewrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+        .presentation-pdf-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .presentation-pdf-status.uploaded {
+            color: #2e7d32;
+        }
+        .presentation-pdf-status.pending-upload {
+            color: #b8860b;
+        }
+        .presentation-pdf-view {
+            font-size: 0.85rem;
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .presentation-pdf-view:hover {
+            text-decoration: underline;
+        }
+        .presentation-pdf-file {
+            font-size: 0.85rem;
+        }
+
+        /* ===== CELEBRATION BUTTONS ===== */
+        .celebration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .celebration-grid .btn {
+            margin: 0;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        /* ===== TOGGLE SWITCH ===== */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 0;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+        .toggle-switch.active {
+            background: #2e7d32;
+        }
+        .toggle-switch .toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(22px);
+        }
+        .toggle-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        .toggle-status {
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 2px 12px;
+            border-radius: 12px;
+        }
+        .toggle-status.on {
+            color: #2e7d32;
+            background: #d4edda;
+        }
+        .toggle-status.off {
+            color: #c62828;
+            background: #f8d7da;
+        }
+
         @media (max-width: 768px) {
             .font-size-grid {
                 grid-template-columns: 1fr;
@@ -497,6 +635,17 @@
             }
             .presentation-link-row .presentation-link-input {
                 flex: 1 1 auto;
+            }
+            .celebration-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .agenda-editor-row {
+                flex-wrap: wrap;
+            }
+        }
+        @media (max-width: 480px) {
+            .celebration-grid {
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -590,6 +739,39 @@
                 </div>
             </div>
 
+            <!-- ===== SCROLLING NOTICE ===== -->
+            <div class="font-size-section">
+                <h3>📝 Scrolling Notice</h3>
+                <div class="toggle-container">
+                    <div class="toggle-switch active" id="noticeToggle" onclick="toggleNotice()">
+                        <div class="toggle-knob"></div>
+                    </div>
+                    <span class="toggle-label">Enable Scrolling Notice</span>
+                    <span class="toggle-status on" id="noticeStatus">ON</span>
+                </div>
+                <div class="form-group">
+                    <label>Notice Text</label>
+                    <textarea id="noticeText" rows="2" placeholder="कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।">कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।</textarea>
+                </div>
+            </div>
+
+            <!-- ===== AGENDA EDITOR ===== -->
+            <div class="font-size-section">
+                <h3>📋 Agenda Editor</h3>
+                <div id="agendaEditorContainer"></div>
+                <button type="button" class="btn btn-secondary" style="width:auto; margin-top:8px; padding:8px 18px;" onclick="addAgendaRow()">➕ नयाँ Agenda थप्नुहोस्</button>
+            </div>
+
+            <!-- ===== PROGRAM START TIME ===== -->
+            <div class="font-size-section">
+                <h3>⏱ Countdown Timer</h3>
+                <div class="form-group">
+                    <label>Program Start Time</label>
+                    <input type="time" id="programStartTime" step="60">
+                    <p style="font-size:0.85rem; color:#666; margin-top:4px;">ब्यानरमा यो समयको काउन्टडाउन देखिनेछ।</p>
+                </div>
+            </div>
+
             <!-- Meeting Details -->
             <div class="form-group">
                 <h3 style="margin-bottom:15px;">🏛️ बैठकको विवरण</h3>
@@ -610,6 +792,21 @@
                 <button type="button" class="btn btn-secondary" style="width:auto; margin-top:6px; padding:8px 18px;" onclick="addPresentationPdfRow()">➕ नयाँ PDF थप्नुहोस् (Add PDF)</button>
             </div>
 
+            <!-- ===== CELEBRATION EFFECTS ===== -->
+            <div class="font-size-section">
+                <h3>🎉 Celebration Effects</h3>
+                <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:12px;">
+                    ब्यानरमा तुरुन्त इफेक्ट देखाउन तलको बटन क्लिक गर्नुहोस्
+                </p>
+                <div class="celebration-grid">
+                    <button class="btn btn-primary" onclick="triggerCelebration('colorful')">🎊 Colorful Confetti</button>
+                    <button class="btn btn-gold" onclick="triggerCelebration('golden')">✨ Golden Confetti</button>
+                    <button class="btn btn-success" onclick="triggerCelebration('balloon')">🎈 Balloon Burst</button>
+                    <button class="btn btn-danger" onclick="triggerCelebration('fireworks')">🎇 Fireworks</button>
+                    <button class="btn btn-secondary" onclick="triggerCelebration('petals')">🌸 Flower Petals</button>
+                </div>
+                <p id="celebrationMsg" class="msg hidden"></p>
+            </div>
 
             <!-- Nepali Date & Time -->
             <div class="form-group">
@@ -724,21 +921,23 @@
     </div>
 
     <script>
-        // ===== ACCESS CONTROL SETTING =====
-        // "Banner Admin Login" टगल अब Minutes एडमिन प्यानल (adminminutes.html) बाट
-        // नियन्त्रण हुन्छ र app_settings टेबलमा 'banner_admin_login' key मा सेभ हुन्छ।
-        //   ON  -> साधारण Supabase इमेल/पासवर्ड लगइन + admin role जाँच (सबैभन्दा सुरक्षित)
-        //   OFF -> छिटो पहुँचको लागि: Username 1111 / Password 0000 राखेर सिधै खुल्छ
+        // ============================================================
+        // ===== ACCESS CONTROL =====
+        // ============================================================
         let bannerAdminLoginOn = true;
 
+        // ============================================================
         // ===== SUPABASE CONFIG =====
+        // ============================================================
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
         const STORAGE_BUCKET = 'banner-assets';
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ============================================================
         // ===== NEPALI DATE SYSTEM =====
+        // ============================================================
         const NepaliDate = {
             months: ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फागुन', 'चैत'],
             weekdays: ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
@@ -757,19 +956,10 @@
             referenceEnglishDate: new Date(2023, 3, 14)
         };
 
-        // Nepali to English digits conversion
         function toEnglishDigits(input) {
             const map = {
-                '०': '0',
-                '१': '1',
-                '२': '2',
-                '३': '3',
-                '४': '4',
-                '५': '5',
-                '६': '6',
-                '७': '7',
-                '८': '8',
-                '९': '9'
+                '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
+                '५': '5', '६': '6', '७': '7', '८': '8', '९': '9'
             };
             return String(input).replace(/[०-९]/g, d => map[d] || d);
         }
@@ -795,12 +985,10 @@
                 weekdaySelect.innerHTML += `<option value="${i}">${d}</option>`;
             });
 
-            // Days (1-32)
             for (let d = 1; d <= 32; d++) {
                 daySelect.innerHTML += `<option value="${d}">${toNepaliDigits(d)}</option>`;
             }
 
-            // Hour & Minute
             for (let i = 1; i <= 12; i++) {
                 document.getElementById('nepaliHour').innerHTML +=
                     `<option value="${i}">${i.toString().padStart(2, '0')}</option>`;
@@ -836,7 +1024,6 @@
                 `बैठक सुरु समय: ${toNepaliDigits(hour12)}:${toNepaliDigits(minute.padStart(2, '0'))} बजे`;
         }
 
-        // ===== SET TODAY'S NEPALI DATE =====
         function setTodayDate() {
             const now = new Date();
             const refDate = NepaliDate.referenceEnglishDate;
@@ -880,11 +1067,9 @@
             updateNepaliDateDisplay();
         }
 
-        // ===== SET CURRENT TIME =====
         function setCurrentTime() {
             const now = new Date();
             const totalMinutes = now.getHours() * 60 + now.getMinutes();
-            // Round to nearest 5 minutes (minute select only has 0,5,10...55)
             const rounded = Math.round(totalMinutes / 5) * 5 % (24 * 60);
             const hour24 = Math.floor(rounded / 60);
             const minute = rounded % 60;
@@ -905,10 +1090,101 @@
             document.getElementById('globalScaleDisplay').textContent = val + '%';
         }
 
-        // ===== IMAGE UPLOAD =====
-        // ===== PRESENTATION PDFs (upload / replace / delete, stored in Supabase Storage) =====
-        // URLs of PDFs that need to be removed from Supabase Storage once the record is saved
-        // (populated when a row is deleted, or when an existing PDF is replaced with a new file).
+        // ============================================================
+        // ===== SCROLLING NOTICE TOGGLE =====
+        // ============================================================
+        let noticeEnabled = true;
+
+        async function toggleNotice() {
+            const toggle = document.getElementById('noticeToggle');
+            const status = document.getElementById('noticeStatus');
+            noticeEnabled = toggle.classList.toggle('active');
+            status.textContent = noticeEnabled ? 'ON' : 'OFF';
+            status.className = 'toggle-status ' + (noticeEnabled ? 'on' : 'off');
+
+            // Persist immediately so banner.html gets it via realtime,
+            // without waiting for the full "Update" form save.
+            const recordId = document.getElementById('recordId').value;
+            const msgEl = document.getElementById('updateMsg');
+            if (!recordId) return;
+
+            toggle.style.pointerEvents = 'none';
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({
+                    scrolling_notice_enabled: noticeEnabled,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', recordId);
+
+            toggle.style.pointerEvents = '';
+
+            if (error) {
+                // Revert UI if the save failed
+                noticeEnabled = toggle.classList.toggle('active');
+                status.textContent = noticeEnabled ? 'ON' : 'OFF';
+                status.className = 'toggle-status ' + (noticeEnabled ? 'on' : 'off');
+                if (msgEl) {
+                    msgEl.innerText = '❌ Scrolling Notice टगल असफल: ' + error.message;
+                    msgEl.className = 'msg error';
+                }
+            } else if (msgEl) {
+                msgEl.innerText = noticeEnabled
+                    ? '✅ Scrolling Notice ON गरियो (लाइभ अपडेट भयो)'
+                    : '✅ Scrolling Notice OFF गरियो (लाइभ अपडेट भयो)';
+                msgEl.className = 'msg success';
+            }
+        }
+
+        // ============================================================
+        // ===== AGENDA EDITOR =====
+        // ============================================================
+        let agendaItems = [];
+
+        function addAgendaRow(text = '') {
+            const container = document.getElementById('agendaEditorContainer');
+            const row = document.createElement('div');
+            row.className = 'agenda-editor-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Agenda item..." value="${text.replace(/"/g, '&quot;')}" class="agenda-input">
+                <button type="button" class="remove-agenda-btn" onclick="removeAgendaRow(this)">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeAgendaRow(btn) {
+            const row = btn.closest('.agenda-editor-row');
+            if (document.querySelectorAll('.agenda-editor-row').length > 1) {
+                row.remove();
+            } else {
+                row.querySelector('.agenda-input').value = '';
+            }
+        }
+
+        function collectAgendaItems() {
+            const rows = document.querySelectorAll('.agenda-editor-row');
+            const items = [];
+            rows.forEach(row => {
+                const text = row.querySelector('.agenda-input').value.trim();
+                if (text) items.push(text);
+            });
+            return items;
+        }
+
+        function setAgendaEditor(items) {
+            const container = document.getElementById('agendaEditorContainer');
+            container.innerHTML = '';
+            if (!items || items.length === 0) {
+                addAgendaRow('');
+            } else {
+                items.forEach(item => addAgendaRow(item));
+            }
+        }
+
+        // ============================================================
+        // ===== PRESENTATION PDFs =====
+        // ============================================================
         let pendingPdfDeletions = [];
 
         function addPresentationPdfRow(name = '', url = '') {
@@ -972,14 +1248,12 @@
 
         function removePresentationPdfRow(btn, row) {
             const container = document.getElementById('presentationLinksContainer');
-            // If this row already had a saved PDF, queue it for deletion from Storage on next save.
             if (row.dataset.originalUrl) {
                 pendingPdfDeletions.push(row.dataset.originalUrl);
             }
             if (container.children.length > 1) {
                 row.remove();
             } else {
-                // Keep at least one row visible; just reset it to empty/new.
                 row.remove();
                 addPresentationPdfRow('', '');
             }
@@ -989,7 +1263,6 @@
             const container = document.getElementById('presentationLinksContainer');
             container.innerHTML = '';
             pendingPdfDeletions = [];
-            // Normalize: accept array of {name, url} objects, plain strings (legacy), or empty
             const list = (items && items.length)
                 ? items.map(it => (typeof it === 'string') ? { name: '', url: it } : (it || { name: '', url: '' }))
                 : [];
@@ -1000,8 +1273,6 @@
             }
         }
 
-        // Uploads any newly-chosen PDF files, keeps existing ones, and returns the final
-        // {name, url} array to save — plus queues old files for deletion from Storage.
         async function collectPresentationPdfs() {
             const rows = document.querySelectorAll('#presentationLinksContainer .pdf-row');
             const result = [];
@@ -1018,21 +1289,16 @@
                         throw new Error('PDF अपलोड असफल भयो' + (name ? ' (' + name + ')' : ''));
                     }
                     if (originalUrl) {
-                        // Replacing an existing PDF — delete the old file after save succeeds.
                         pendingPdfDeletions.push(originalUrl);
                     }
                     result.push({ name, url: uploadedUrl });
                 } else if (originalUrl) {
                     result.push({ name, url: originalUrl });
                 }
-                // Rows with neither a new file nor an existing url are just empty/unused rows — skip them.
             }
-
             return result;
         }
 
-        // Actually removes queued PDF files from Supabase Storage. Call only after the
-        // database update has succeeded, so a failed save never orphans/loses a live file.
         async function flushPendingPdfDeletions() {
             const urls = pendingPdfDeletions;
             pendingPdfDeletions = [];
@@ -1079,6 +1345,16 @@
             }
         }
 
+        function extractStoragePath(url) {
+            const marker = `/object/public/${STORAGE_BUCKET}/`;
+            const idx = url.indexOf(marker);
+            if (idx === -1) return null;
+            return decodeURIComponent(url.substring(idx + marker.length));
+        }
+
+        // ============================================================
+        // ===== IMAGE UPLOAD =====
+        // ============================================================
         async function uploadImage(file, folder) {
             if (!file) return null;
 
@@ -1104,7 +1380,9 @@
             return urlData.publicUrl;
         }
 
+        // ============================================================
         // ===== SAMPLE BACKGROUND GALLERY =====
+        // ============================================================
         async function loadGallery() {
             const container = document.getElementById('galleryContainer');
             const { data, error } = await supabaseClient
@@ -1113,7 +1391,7 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                container.innerHTML = '<div class="preview-box"><label style="color:#c62828;">❌ ग्यालरी लोड गर्न असफल (के banner_backgrounds table बनाइयो?)</label></div>';
+                container.innerHTML = '<div class="preview-box"><label style="color:#c62828;">❌ ग्यालरी लोड गर्न असफल</label></div>';
                 return;
             }
 
@@ -1171,7 +1449,6 @@
         }
 
         async function useGalleryImage(url) {
-            // Update the form preview too (helpful if this is the record being edited)
             document.getElementById('bgPreview').src = url;
             document.getElementById('bgPreview').style.display = 'block';
             document.getElementById('bgUrlDisplay').textContent = '✅ ' + url;
@@ -1207,13 +1484,6 @@
             msgEl.innerText = "✅ लाइभ ब्यानरमा background अटोमेटिक लाग्यो!";
             msgEl.className = "msg success";
             loadSavedData();
-        }
-
-        function extractStoragePath(url) {
-            const marker = `/object/public/${STORAGE_BUCKET}/`;
-            const idx = url.indexOf(marker);
-            if (idx === -1) return null;
-            return decodeURIComponent(url.substring(idx + marker.length));
         }
 
         async function deleteGalleryImage(id, url) {
@@ -1263,7 +1533,9 @@
             loadSavedData();
         }
 
+        // ============================================================
         // ===== TYPEWRITER TRIGGER =====
+        // ============================================================
         async function triggerTypewriter() {
             const msgEl = document.getElementById('typewriterMsg');
             msgEl.classList.remove('hidden');
@@ -1289,7 +1561,60 @@
             msgEl.className = "msg success";
         }
 
+        // ============================================================
+        // ===== CELEBRATION TRIGGER =====
+        // ============================================================
+        async function triggerCelebration(type) {
+            const msgEl = document.getElementById('celebrationMsg');
+            msgEl.classList.remove('hidden');
+
+            if (!currentActiveId) {
+                msgEl.innerText = "❌ कुनै ब्यानर लाइभ छैन";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            msgEl.innerText = "🎉 पठाउँदै...";
+            msgEl.className = "msg info";
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({
+                    celebration_trigger: Date.now(),
+                    celebration_type: type,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', currentActiveId);
+
+            if (error) {
+                msgEl.innerText = "❌ इफेक्ट पठाउन असफल: " + error.message;
+                msgEl.className = "msg error";
+                return;
+            }
+
+            const typeLabels = {
+                'colorful': '🎊 Colorful Confetti',
+                'golden': '✨ Golden Confetti',
+                'balloon': '🎈 Balloon Burst',
+                'fireworks': '🎇 Fireworks',
+                'petals': '🌸 Flower Petals'
+            };
+            msgEl.innerText = "✅ " + (typeLabels[type] || type) + " लाइभ ब्यानरमा पठाइयो!";
+            msgEl.className = "msg success";
+
+            // Reset the trigger in DB after a moment
+            setTimeout(() => {
+                supabaseClient
+                    .from('banner_settings')
+                    .update({ celebration_trigger: null, celebration_type: null })
+                    .eq('id', currentActiveId)
+                    .then(() => {});
+            }, 1000);
+        }
+
+        // ============================================================
         // ===== AUTH FUNCTIONS =====
+        // ============================================================
         async function isAdminUser(user) {
             try {
                 const { data, error } = await supabaseClient
@@ -1307,7 +1632,6 @@
             }
         }
 
-        // ===== BANNER ADMIN LOGIN MODE (controlled from adminminutes.html) =====
         async function getBannerAdminLoginMode() {
             try {
                 const { data, error } = await supabaseClient
@@ -1320,13 +1644,12 @@
                     return data.setting_value === 'true' || data.setting_value === true;
                 }
 
-                // Default row not set yet — insert default (ON) and treat as ON
                 await supabaseClient
                     .from('app_settings')
                     .insert([{ setting_key: 'banner_admin_login', setting_value: 'true' }]);
                 return true;
             } catch (err) {
-                return true; // fail safe: default to secure admin login
+                return true;
             }
         }
 
@@ -1354,6 +1677,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             initializeNepaliDateSelectors();
             setPresentationLinks([]);
+            setAgendaEditor([]);
 
             bannerAdminLoginOn = await getBannerAdminLoginMode();
             applyLoginModeUI();
@@ -1385,7 +1709,6 @@
                 return;
             }
 
-            // ===== FAST LOGIN MODE (banner_admin_login OFF) =====
             if (!bannerAdminLoginOn) {
                 if (emailOrUser === '1111' && password === '0000') {
                     showDashboard();
@@ -1396,7 +1719,6 @@
                 return;
             }
 
-            // ===== NORMAL ADMIN LOGIN MODE (banner_admin_login ON) =====
             loginBtn.disabled = true;
             loginBtn.innerHTML = '⏳ लगइन हुँदै...';
 
@@ -1432,7 +1754,9 @@
             loadGallery();
         }
 
+        // ============================================================
         // ===== LOAD SAVED DATA =====
+        // ============================================================
         const BANNER_LIST_PAGE_SIZE = 5;
         let __allBanners = [];
         let __showAllBanners = false;
@@ -1452,7 +1776,6 @@
             }
 
             if (!data || data.length === 0) {
-                // Create default entry
                 const defaultData = {
                     meeting_name: 'बैठकको नाम',
                     sub_meeting_name: '',
@@ -1465,7 +1788,11 @@
                     is_active: true,
                     font_scale: 100,
                     background_url: '',
-                    logo_url: ''
+                    logo_url: '',
+                    scrolling_notice: 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।',
+                    scrolling_notice_enabled: true,
+                    agenda: [],
+                    program_start_time: ''
                 };
                 await supabaseClient.from('banner_settings').insert(defaultData);
                 loadSavedData();
@@ -1519,7 +1846,6 @@
             renderBannerTable();
         }
 
-        // ===== TRIGGER LIVE PROGRAM START (real-time on banner.html) =====
         async function triggerProgramStart() {
             const { error } = await supabaseClient
                 .from('banner_settings')
@@ -1541,7 +1867,6 @@
             loadSavedData();
         }
 
-        // ===== CLONE BANNER =====
         async function cloneBanner(item) {
             if (!confirm(`"${item.meeting_name || 'यो बैठक'}" जस्तै नयाँ बैठक बनाउने हो?`)) {
                 return;
@@ -1564,7 +1889,11 @@
                 date_font_size: item.date_font_size,
                 time_font_size: item.time_font_size,
                 background_url: item.background_url,
-                logo_url: item.logo_url
+                logo_url: item.logo_url,
+                scrolling_notice: item.scrolling_notice || 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।',
+                scrolling_notice_enabled: item.scrolling_notice_enabled !== false,
+                agenda: item.agenda || [],
+                program_start_time: item.program_start_time || ''
             };
 
             const { error } = await supabaseClient.from('banner_settings').insert(clone);
@@ -1575,7 +1904,6 @@
             loadSavedData();
         }
 
-        // ===== DELETE BANNER =====
         async function deleteBanner(id) {
             if (__allBanners.length <= 1) {
                 alert('❌ कम्तिमा एउटा ब्यानर बाँकी रहनुपर्छ, यसलाई मेटाउन मिल्दैन।');
@@ -1596,7 +1924,6 @@
             }
 
             if (item && item.is_active) {
-                // Make sure some banner remains active
                 const remaining = __allBanners.find(b => b.id !== id);
                 if (remaining) {
                     await supabaseClient.from('banner_settings').update({ is_active: true }).eq('id', remaining.id);
@@ -1606,57 +1933,46 @@
             loadSavedData();
         }
 
-        // ===== PARSE DATE FROM TEXT =====
+        // ============================================================
+        // ===== PARSE DATE/TIME =====
+        // ============================================================
         function parseDateFromText(dateText) {
             if (!dateText) return null;
-
-            // Saved text uses Nepali digits (e.g. "मिति: २०८१ बैशाख १ गते, सोमबार")
-            // Convert digits to English FIRST so \d+ in the regex can match them.
             const normalized = toEnglishDigits(dateText);
-
             const match = normalized.match(/मिति:\s*(\d+)\s*([^,]+?)\s*(\d+)\s*गते,\s*([^,]+)/);
             if (match) {
                 const year = match[1];
                 const monthName = match[2].trim();
                 const day = match[3];
                 const weekday = match[4].trim();
-
                 const monthIndex = NepaliDate.months.indexOf(monthName);
                 const weekdayIndex = NepaliDate.weekdays.indexOf(weekday);
-
                 return { year, month: monthIndex, day, weekday: weekdayIndex };
             }
             return null;
         }
 
-        // ===== PARSE TIME FROM TEXT =====
         function parseTimeFromText(timeText) {
             if (!timeText) return null;
-
-            // Saved text uses Nepali digits (e.g. "बैठक सुरु समय: १०:०० बजे")
             const normalized = toEnglishDigits(timeText);
-
             const match = normalized.match(/बैठक सुरु समय:\s*(\d+):(\d+)\s*बजे/);
             if (match) {
                 let hour = parseInt(match[1]);
                 const minute = match[2];
-
-                // Determine AM/PM (12-hour format, assume PM if hour > 6)
                 const period = hour >= 6 ? 'PM' : 'AM';
                 if (hour > 12) hour = hour - 12;
                 if (hour === 0) hour = 12;
-
                 return { hour, minute, period };
             }
             return null;
         }
 
-        // ===== EDIT RECORD - Fetches ALL data including Date/Time =====
+        // ============================================================
+        // ===== EDIT RECORD =====
+        // ============================================================
         window.editRecord = function(item) {
-            // Set ID
             document.getElementById('recordId').value = item.id;
 
-            // Set text fields
             document.getElementById('meetingName').value = item.meeting_name || '';
             document.getElementById('subMeetingName').value = item.sub_meeting_name || '';
             document.getElementById('organizedBy').value = item.organized_by || '';
@@ -1667,66 +1983,73 @@
                     : (item.presentation_url ? [item.presentation_url] : [])
             );
 
-            // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
             document.getElementById('globalScaleDisplay').textContent = (item.font_scale || 100) + '%';
 
-            // Set per-box font sizes
             document.getElementById('meetingNameFontSize').value = item.meeting_name_font_size || 4.5;
             document.getElementById('subMeetingFontSize').value = item.sub_meeting_font_size || 2.5;
             document.getElementById('organizedByFontSize').value = item.organized_by_font_size || 2.8;
             document.getElementById('dateFontSize').value = item.date_font_size || 1.6;
             document.getElementById('timeFontSize').value = item.time_font_size || 1.6;
 
-            // ===== PARSE AND SET DATE =====
+            // ===== SCROLLING NOTICE =====
+            const noticeText = item.scrolling_notice || 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।';
+            document.getElementById('noticeText').value = noticeText;
+            noticeEnabled = item.scrolling_notice_enabled !== false;
+            const toggle = document.getElementById('noticeToggle');
+            const status = document.getElementById('noticeStatus');
+            if (noticeEnabled) {
+                toggle.classList.add('active');
+                status.textContent = 'ON';
+                status.className = 'toggle-status on';
+            } else {
+                toggle.classList.remove('active');
+                status.textContent = 'OFF';
+                status.className = 'toggle-status off';
+            }
+
+            // ===== AGENDA =====
+            setAgendaEditor(item.agenda || []);
+
+            // ===== PROGRAM START TIME =====
+            document.getElementById('programStartTime').value = item.program_start_time || '';
+
+            // ===== DATE =====
             const dateData = parseDateFromText(item.date_text);
             if (dateData) {
-                // Set Year
                 const yearSelect = document.getElementById('nepaliYear');
                 for (let opt of yearSelect.options) {
                     if (opt.value === dateData.year) { opt.selected = true; break; }
                 }
-
-                // Set Month
                 if (dateData.month !== -1) {
                     document.getElementById('nepaliMonth').value = dateData.month;
                 }
-
-                // Set Day
                 const daySelect = document.getElementById('nepaliDay');
                 for (let opt of daySelect.options) {
                     if (opt.value === dateData.day) { opt.selected = true; break; }
                 }
-
-                // Set Weekday
                 if (dateData.weekday !== -1) {
                     document.getElementById('nepaliWeekday').value = dateData.weekday;
                 }
             }
 
-            // ===== PARSE AND SET TIME =====
+            // ===== TIME =====
             const timeData = parseTimeFromText(item.time_text);
             if (timeData) {
-                // Set Hour
                 const hourSelect = document.getElementById('nepaliHour');
                 for (let opt of hourSelect.options) {
                     if (parseInt(opt.value) === timeData.hour) { opt.selected = true; break; }
                 }
-
-                // Set Minute
                 const minSelect = document.getElementById('nepaliMinute');
                 for (let opt of minSelect.options) {
                     if (parseInt(opt.value) === parseInt(timeData.minute)) { opt.selected = true; break; }
                 }
-
-                // Set Period
                 document.getElementById('nepaliPeriod').value = timeData.period;
             }
 
-            // Update date display
             updateNepaliDateDisplay();
 
-            // Set background image
+            // ===== BACKGROUND =====
             if (item.background_url && item.background_url !== '') {
                 const bgPreview = document.getElementById('bgPreview');
                 bgPreview.src = item.background_url;
@@ -1741,7 +2064,7 @@
                 document.getElementById('bgStatus').className = 'file-status pending';
             }
 
-            // Set logo image
+            // ===== LOGO =====
             if (item.logo_url && item.logo_url !== '') {
                 const logoPreview = document.getElementById('logoPreview');
                 logoPreview.src = item.logo_url;
@@ -1756,15 +2079,15 @@
                 document.getElementById('logoStatus').className = 'file-status pending';
             }
 
-            // Update message
             document.getElementById('updateMsg').innerText = '📝 एडिट मोड: ID ' + item.id;
             document.getElementById('updateMsg').className = 'msg info';
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // ============================================================
         // ===== UPDATE BANNER DATA =====
+        // ============================================================
         async function updateBannerData() {
             const recordId = document.getElementById('recordId').value;
             const meetingName = document.getElementById('meetingName').value.trim();
@@ -1781,6 +2104,16 @@
             const dateFontSize = parseFloat(document.getElementById('dateFontSize').value) || 1.6;
             const timeFontSize = parseFloat(document.getElementById('timeFontSize').value) || 1.6;
 
+            // ===== SCROLLING NOTICE =====
+            const noticeText = document.getElementById('noticeText').value.trim();
+            const noticeEnabled = document.getElementById('noticeToggle').classList.contains('active');
+
+            // ===== AGENDA =====
+            const agendaItems = collectAgendaItems();
+
+            // ===== PROGRAM START TIME =====
+            const programStartTime = document.getElementById('programStartTime').value;
+
             const msgEl = document.getElementById('updateMsg');
 
             if (!meetingName || !organizedBy) {
@@ -1792,7 +2125,7 @@
             msgEl.innerText = "⏳ सेभ हुँदैछ...";
             msgEl.className = "msg info";
 
-            // Upload/replace any PDF presentations (Supabase Storage)
+            // Upload PDFs
             let presentationUrls;
             try {
                 presentationUrls = await collectPresentationPdfs();
@@ -1802,7 +2135,7 @@
                 return;
             }
 
-            // Upload background if new file selected
+            // Upload background
             const bgFile = document.getElementById('bgFile').files[0];
             let bgUrl = document.getElementById('bgUrlDisplay').textContent.replace('✅ ', '');
             if (bgUrl === 'कुनै छैन') bgUrl = '';
@@ -1820,7 +2153,7 @@
                 }
             }
 
-            // Upload logo if new file selected
+            // Upload logo
             const logoFile = document.getElementById('logoFile').files[0];
             let logoUrl = document.getElementById('logoUrlDisplay').textContent.replace('✅ ', '');
             if (logoUrl === 'कुनै छैन') logoUrl = '';
@@ -1858,6 +2191,10 @@
                     time_font_size: timeFontSize,
                     background_url: bgUrl,
                     logo_url: logoUrl,
+                    scrolling_notice: noticeText || 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।',
+                    scrolling_notice_enabled: noticeEnabled,
+                    agenda: agendaItems,
+                    program_start_time: programStartTime,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', recordId);
@@ -1868,8 +2205,7 @@
                 return;
             }
 
-            // ===== SYNC DATE/TIME TO ALL OTHER BANNERS =====
-            // मिति र समय एउटा ब्यानरमा सेट गरेपछि, बाँकी सबै ब्यानरमा पनि उही मिति/समय लागोस्
+            // Sync date/time to all other banners
             const { error: syncError } = await supabaseClient
                 .from('banner_settings')
                 .update({
@@ -1879,21 +2215,76 @@
                 })
                 .neq('id', recordId);
 
-            // Now that the save succeeded, actually delete any replaced/removed PDF files from Storage.
             await flushPendingPdfDeletions();
 
             if (syncError) {
                 msgEl.innerText = "✅ यो ब्यानर अपडेट भयो, तर बाँकीमा मिति/समय सिंक हुन असफल: " + syncError.message;
                 msgEl.className = "msg error";
             } else {
-                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! (मिति/समय सबै ब्यानरमा सिंक भयो, PDF अपडेट भयो)";
+                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! (मिति/समय सबै ब्यानरमा सिंक भयो)";
                 msgEl.className = "msg success";
             }
             loadSavedData();
 
-            // Clear file inputs
             document.getElementById('bgFile').value = '';
             document.getElementById('logoFile').value = '';
+        }
+
+        // ============================================================
+        // ===== PROGRAM START TIME - LIVE SAVE (feeds realtime) =====
+        // ============================================================
+        async function saveProgramStartTimeLive() {
+            const recordId = document.getElementById('recordId').value;
+            if (!recordId) return;
+
+            const programStartTime = document.getElementById('programStartTime').value;
+            const msgEl = document.getElementById('updateMsg');
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({
+                    program_start_time: programStartTime,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', recordId);
+
+            if (!msgEl) return;
+            if (error) {
+                msgEl.innerText = '❌ Program Start Time सेभ असफल: ' + error.message;
+                msgEl.className = 'msg error';
+            } else {
+                msgEl.innerText = '✅ Program Start Time लाइभ अपडेट भयो — Countdown banner मा auto देखिनेछ';
+                msgEl.className = 'msg success';
+            }
+        }
+
+        // ============================================================
+        // ===== NOTICE TEXT - LIVE SAVE (debounced, feeds realtime) =====
+        // ============================================================
+        let __noticeTextSaveTimeout = null;
+        async function saveNoticeTextLive() {
+            const recordId = document.getElementById('recordId').value;
+            if (!recordId) return;
+
+            const noticeText = document.getElementById('noticeText').value.trim();
+            const msgEl = document.getElementById('updateMsg');
+
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({
+                    scrolling_notice: noticeText || 'कृपया आफ्नो मोबाइल फोन Silent Mode मा राख्नुहोस्।',
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', recordId);
+
+            if (!msgEl) return;
+            if (error) {
+                msgEl.innerText = '❌ Notice Text सेभ असफल: ' + error.message;
+                msgEl.className = 'msg error';
+            } else {
+                msgEl.innerText = '✅ Notice Text लाइभ अपडेट भयो (Refresh नगरी banner मा change भयो)';
+                msgEl.className = 'msg success';
+            }
         }
 
         async function logoutAdmin() {
@@ -1909,6 +2300,19 @@
         document.getElementById('nepaliMonth').addEventListener('change', updateNepaliDateDisplay);
         document.getElementById('nepaliYear').addEventListener('change', updateNepaliDateDisplay);
         document.getElementById('nepaliWeekday').addEventListener('change', updateNepaliDateDisplay);
+
+        // Program Start Time -> save immediately on change (realtime countdown)
+        document.getElementById('programStartTime').addEventListener('change', saveProgramStartTimeLive);
+
+        // Notice Text -> debounced live save while typing, and immediate save on blur
+        document.getElementById('noticeText').addEventListener('input', function () {
+            clearTimeout(__noticeTextSaveTimeout);
+            __noticeTextSaveTimeout = setTimeout(saveNoticeTextLive, 800);
+        });
+        document.getElementById('noticeText').addEventListener('blur', function () {
+            clearTimeout(__noticeTextSaveTimeout);
+            saveNoticeTextLive();
+        });
     </script>
 </body>
 </html>
