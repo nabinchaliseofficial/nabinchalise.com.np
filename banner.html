@@ -1211,11 +1211,24 @@
             playTypewriter(nameText, 3);
         }
 
+        function showCurtainAgain() {
+            const startScreen = document.getElementById('startScreen');
+            const startBtn = document.getElementById('startProgramBtn');
+            if (!startScreen) return;
+
+            // Don't interrupt the curtain-opening animation itself
+            if (startScreen.classList.contains('opening')) return;
+
+            startScreen.classList.remove('hidden');
+            if (startBtn) startBtn.disabled = false;
+        }
+
         function applyChiefGuestModeUI() {
             if (!currentChiefGuestMode) {
                 revealBannerDirectly();
+            } else {
+                showCurtainAgain();
             }
-            // ON: leave the curtain + button showing as-is, no change needed
         }
 
         async function loadChiefGuestMode() {
