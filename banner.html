@@ -1183,6 +1183,80 @@
             }
         }
 
+        // ============================================================
+        // ===== CHIEF GUEST MODE =====
+        // ON  -> keep the curtain + "🎬 कार्यक्रमको सुरुवात गर्नुहोस्" button
+        //        exactly as before (someone must click it, locally or via
+        //        the remote trigger from cg.html / adminbanner.html)
+        // OFF -> no chief guest ceremony needed: skip the curtain/button
+        //        entirely and reveal the banner directly
+        // ============================================================
+        let currentChiefGuestMode = true; // safe default: ON (keep existing click-to-start behavior)
+
+        function revealBannerDirectly() {
+            const startScreen = document.getElementById('startScreen');
+            const startBtn = document.getElementById('startProgramBtn');
+            if (!startScreen) return;
+
+            // Already started/animating — nothing to do
+            if (startScreen.classList.contains('hidden') || startScreen.classList.contains('opening')) {
+                return;
+            }
+
+            if (startBtn) startBtn.disabled = true;
+            startScreen.classList.add('hidden');
+
+            const nameEl = document.getElementById('meetingName');
+            const nameText = window.__currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
+            playTypewriter(nameText, 3);
+        }
+
+        function applyChiefGuestModeUI() {
+            if (!currentChiefGuestMode) {
+                revealBannerDirectly();
+            }
+            // ON: leave the curtain + button showing as-is, no change needed
+        }
+
+        async function loadChiefGuestMode() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'chief_guest_mode')
+                    .maybeSingle();
+
+                if (error || !data) {
+                    currentChiefGuestMode = true; // default ON if missing/unreadable
+                } else {
+                    currentChiefGuestMode = data.setting_value === 'true' || data.setting_value === true;
+                }
+            } catch (err) {
+                console.error('Error loading chief guest mode:', err);
+                currentChiefGuestMode = true;
+            }
+            applyChiefGuestModeUI();
+        }
+
+        let chiefGuestChannel = null;
+        function setupChiefGuestRealtime() {
+            if (chiefGuestChannel) {
+                supabaseClient.removeChannel(chiefGuestChannel);
+            }
+            chiefGuestChannel = supabaseClient
+                .channel('public:app_settings:chief_guest_mode')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'app_settings', filter: 'setting_key=eq.chief_guest_mode' },
+                    () => {
+                        console.log('🔄 Chief Guest Mode changed, updating start screen...');
+                        loadChiefGuestMode();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Chief Guest Mode channel status:', status);
+                });
+        }
+
         let realtimeChannel = null;
 
         function setupRealtime() {
@@ -1357,13 +1431,15 @@
         document.addEventListener('fullscreenchange', updateFullscreenBorder);
         document.addEventListener('webkitfullscreenchange', updateFullscreenBorder);
 
-        window.onload = () => {
+        window.onload = async () => {
             const cached = loadBannerCache();
             if (cached) {
                 applyBannerData(cached);
             }
-            fetchBannerData();
+            await fetchBannerData();
             setupRealtime();
+            await loadChiefGuestMode();
+            setupChiefGuestRealtime();
             updateClock();
             setInterval(updateClock, 1000);
             setInterval(fetchBannerData, 30000);
