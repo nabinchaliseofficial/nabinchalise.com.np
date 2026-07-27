@@ -294,6 +294,41 @@
             font-size: calc(var(--time-size, 1.6rem) * var(--font-scale, 1));
         }
 
+        .footer-left-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .anthem-play-btn {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(3px);
+            transition: all 0.25s ease;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .anthem-play-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .anthem-play-btn.playing {
+            color: rgba(255, 255, 255, 0.85);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
         .open-link-btn {
             position: absolute;
             top: 20px;
@@ -610,8 +645,11 @@
 
         <!-- Footer: Date & Time in Nepali -->
         <div class="footer-section">
-            <span class="nepali-date-display" id="dateDisplay">
-                <span id="dateText">मिति: --</span>
+            <span class="footer-left-group">
+                <button class="anthem-play-btn" id="anthemPlayBtn" onclick="toggleNationalAnthem()" title="राष्ट्रिय गान" aria-label="राष्ट्रिय गान">▶</button>
+                <span class="nepali-date-display" id="dateDisplay">
+                    <span id="dateText">मिति: --</span>
+                </span>
             </span>
             <span class="time-display" id="timeDisplay">
                 <span id="timeText">समय: --</span>
@@ -642,12 +680,44 @@
         <iframe class="iframe-overlay-frame" id="iframeOverlayFrame" src="" title="Content"></iframe>
     </div>
 
+    <!-- National Anthem Audio -->
+    <audio id="nationalAnthemAudio" src="/r/national_anthem.mp3" preload="none"></audio>
+
     <script>
         // ===== SUPABASE CONFIGURATION =====
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ===== NATIONAL ANTHEM PLAY/PAUSE =====
+        function toggleNationalAnthem() {
+            const audio = document.getElementById('nationalAnthemAudio');
+            const btn = document.getElementById('anthemPlayBtn');
+
+            if (audio.paused) {
+                audio.play().catch(err => console.log('Anthem play error:', err));
+            } else {
+                audio.pause();
+            }
+        }
+
+        (function setupAnthemButtonState() {
+            const audio = document.getElementById('nationalAnthemAudio');
+            const btn = document.getElementById('anthemPlayBtn');
+            audio.addEventListener('play', () => {
+                btn.textContent = '⏸';
+                btn.classList.add('playing');
+            });
+            audio.addEventListener('pause', () => {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            });
+            audio.addEventListener('ended', () => {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            });
+        })();
 
         // ===== NEPALI DATE SYSTEM =====
         const NepaliDate = {
