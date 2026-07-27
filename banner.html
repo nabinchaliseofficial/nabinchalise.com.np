@@ -329,6 +329,35 @@
             border-color: rgba(212, 175, 55, 0.6);
         }
 
+        .anthem-play-btn.recording {
+            color: #fff;
+            background: rgba(200, 30, 30, 0.55);
+            border-color: rgba(255, 90, 90, 0.7);
+            animation: recPulse 1.2s infinite;
+        }
+
+        @keyframes recPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 60, 0.5); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 60, 60, 0); }
+        }
+
+        .record-timer {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.75);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-variant-numeric: tabular-nums;
+            min-width: 40px;
+            text-align: center;
+            display: none;
+        }
+
+        .record-timer.visible {
+            display: inline-block;
+        }
+
         .open-link-btn {
             position: absolute;
             top: 20px;
@@ -651,8 +680,13 @@
                     <span id="dateText">मिति: --</span>
                 </span>
             </span>
-            <span class="time-display" id="timeDisplay">
-                <span id="timeText">समय: --</span>
+            <span class="footer-left-group">
+                <button class="anthem-play-btn" id="cameraBtn" onclick="capturePhoto()" title="फोटो खिच्नुहोस्" aria-label="फोटो खिच्नुहोस्">📷</button>
+                <button class="anthem-play-btn" id="videoRecordBtn" onclick="toggleVideoRecording()" title="भिडियो रेकर्ड" aria-label="भिडियो रेकर्ड">⏺</button>
+                <span class="record-timer" id="recordTimer"></span>
+                <span class="time-display" id="timeDisplay">
+                    <span id="timeText">समय: --</span>
+                </span>
             </span>
         </div>
 
@@ -718,6 +752,135 @@
                 btn.classList.remove('playing');
             });
         })();
+
+        // ===== CAMERA PHOTO / VIDEO RECORDING (with audio) =====
+        let __mediaStream = null;
+        let __mediaRecorder = null;
+        let __recordedChunks = [];
+        let __recordTimerInterval = null;
+        let __recordStartTime = null;
+
+        // Short synthesized beep — no external sound file needed.
+        function playBeep(freq, duration) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                gain.gain.setValueAtTime(0.18, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+                osc.onended = () => ctx.close();
+            } catch (e) {
+                console.log('Beep error:', e);
+            }
+        }
+
+        async function getMediaStream() {
+            if (__mediaStream) return __mediaStream;
+            __mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            return __mediaStream;
+        }
+
+        // ----- Photo capture -----
+        async function capturePhoto() {
+            playBeep(1300, 0.09); // shutter sound right at the moment of click
+            try {
+                const stream = await getMediaStream();
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.muted = true;
+                await video.play();
+                await new Promise(r => setTimeout(r, 150)); // let a frame render
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    if (!blob) return;
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `banner-photo-${Date.now()}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            } catch (err) {
+                console.error('Camera error:', err);
+                alert('क्यामेरा एक्सेस गर्न सकिएन: ' + err.message);
+            }
+        }
+
+        // ----- Video recording (video + audio) -----
+        function updateRecordTimer() {
+            const elapsed = Math.floor((Date.now() - __recordStartTime) / 1000);
+            const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const s = String(elapsed % 60).padStart(2, '0');
+            document.getElementById('recordTimer').textContent = `${m}:${s}`;
+        }
+
+        async function toggleVideoRecording() {
+            const btn = document.getElementById('videoRecordBtn');
+            const timerEl = document.getElementById('recordTimer');
+
+            if (!__mediaRecorder || __mediaRecorder.state === 'inactive') {
+                // Start recording
+                try {
+                    const stream = await getMediaStream();
+                    __recordedChunks = [];
+
+                    const mimeCandidates = ['video/webm;codecs=vp8,opus', 'video/webm'];
+                    const mimeType = mimeCandidates.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+
+                    __mediaRecorder = mimeType
+                        ? new MediaRecorder(stream, { mimeType })
+                        : new MediaRecorder(stream);
+
+                    __mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) __recordedChunks.push(e.data);
+                    };
+
+                    __mediaRecorder.onstop = () => {
+                        const blob = new Blob(__recordedChunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `banner-video-${Date.now()}.webm`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    };
+
+                    __mediaRecorder.start();
+                    playBeep(1500, 0.12); // record-start sound
+
+                    btn.textContent = '⏹';
+                    btn.classList.add('recording');
+                    __recordStartTime = Date.now();
+                    timerEl.classList.add('visible');
+                    updateRecordTimer();
+                    __recordTimerInterval = setInterval(updateRecordTimer, 1000);
+                } catch (err) {
+                    console.error('Recording error:', err);
+                    alert('रेकर्डिङ सुरु गर्न सकिएन: ' + err.message);
+                }
+            } else {
+                // Stop recording
+                __mediaRecorder.stop();
+                playBeep(700, 0.14); // record-stop sound
+
+                btn.textContent = '⏺';
+                btn.classList.remove('recording');
+                clearInterval(__recordTimerInterval);
+                timerEl.classList.remove('visible');
+                timerEl.textContent = '';
+            }
+        }
 
         // ===== NEPALI DATE SYSTEM =====
         const NepaliDate = {
