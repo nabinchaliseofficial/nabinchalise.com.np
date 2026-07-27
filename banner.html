@@ -2,8 +2,17 @@
 <html lang="ne">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digital Banner - Live Supabase with Nepali Date/Time</title>
+
+    <!-- PWA / "Add to Home Screen" support: launching from the home-screen
+         icon opens with NO address bar and already fullscreen, no tap needed. -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1078,7 +1087,65 @@
             setInterval(updateClock, 1000);
             setInterval(fetchBannerData, 30000);
             console.log('✅ Banner initialized successfully!');
+
+            requestAutoFullscreen();
         };
+
+        // ===== AUTO FULLSCREEN ON OPEN (also hides the browser's URL bar) =====
+        // Fullscreen mode is what hides the address bar — there is no separate
+        // "hide URL bar" API. Browsers only allow requestFullscreen() during a
+        // real user gesture (tap/click/keypress), so a call made straight from
+        // page-load is blocked in almost every normal browser tab. This tries
+        // immediately (works in kiosk/PWA/embedded contexts that permit it),
+        // and falls back to grabbing fullscreen on the very first tap/click/
+        // keypress anywhere on the page if the immediate attempt is blocked.
+        // For a truly zero-tap launch with no address bar at all, see the
+        // manifest.json "Add to Home Screen" note below.
+        let __fullscreenRequested = false;
+
+        function requestAutoFullscreen() {
+            if (document.fullscreenElement || __fullscreenRequested) return;
+            __fullscreenRequested = true;
+
+            const el = document.documentElement;
+            const request = el.requestFullscreen
+                ? el.requestFullscreen()
+                : el.webkitRequestFullscreen
+                    ? el.webkitRequestFullscreen()
+                    : null;
+
+            if (request && request.catch) {
+                request.catch(() => {
+                    __fullscreenRequested = false;
+                    armFirstInteractionFullscreen();
+                });
+            } else if (!request) {
+                armFirstInteractionFullscreen();
+            }
+        }
+
+        let __firstInteractionArmed = false;
+        function armFirstInteractionFullscreen() {
+            if (__firstInteractionArmed) return;
+            __firstInteractionArmed = true;
+
+            const grabFullscreen = () => {
+                if (document.fullscreenElement) return;
+                const el = document.documentElement;
+                const request = el.requestFullscreen
+                    ? el.requestFullscreen()
+                    : el.webkitRequestFullscreen
+                        ? el.webkitRequestFullscreen()
+                        : null;
+                if (request && request.catch) {
+                    request.catch(err => console.log('Fullscreen error:', err));
+                }
+            };
+
+            ['click', 'touchend', 'keydown'].forEach(evt => {
+                document.addEventListener(evt, grabFullscreen, { once: true });
+            });
+        }
     </script>
 </body>
 </html>
