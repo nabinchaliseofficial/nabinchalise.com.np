@@ -108,6 +108,35 @@
         .hidden {
             display: none !important;
         }
+        .presentation-link-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .presentation-link-row .presentation-link-name {
+            flex: 0 0 30%;
+        }
+        .presentation-link-row .presentation-link-input {
+            flex: 1;
+        }
+        .presentation-link-row .remove-link-btn {
+            flex-shrink: 0;
+            background: #c62828;
+            color: white;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .presentation-link-row .remove-link-btn:hover {
+            background: #8e0000;
+            transform: scale(1.05);
+        }
         .msg {
             text-align: center;
             margin-top: 12px;
@@ -420,6 +449,15 @@
             .image-preview-container {
                 flex-direction: column;
             }
+            .presentation-link-row {
+                flex-wrap: wrap;
+            }
+            .presentation-link-row .presentation-link-name {
+                flex: 1 1 100%;
+            }
+            .presentation-link-row .presentation-link-input {
+                flex: 1 1 auto;
+            }
         }
     </style>
 </head>
@@ -527,9 +565,11 @@
                 <label style="margin-top:14px;">🔗 Open Link URL (ब्यानरमा देखिने बटनको लिंक)</label>
                 <input type="text" id="openLinkUrl" placeholder="e.g., https://example.com">
 
-                <label style="margin-top:14px;">🎞️ Presentation Link (ब्यानरमा देखिने Presentation बटनको लिंक)</label>
-                <input type="text" id="presentationUrl" placeholder="e.g., https://docs.google.com/presentation/...">
+                <label style="margin-top:14px;">🎞️ Presentation Links (ब्यानरमा देखिने Presentation बटनहरूको लिंक)</label>
+                <div id="presentationLinksContainer"></div>
+                <button type="button" class="btn btn-secondary" style="width:auto; margin-top:6px; padding:8px 18px;" onclick="addPresentationLinkRow()">➕ थप्नुहोस् (Add More)</button>
             </div>
+
 
             <!-- Nepali Date & Time -->
             <div class="form-group">
@@ -826,6 +866,71 @@
         }
 
         // ===== IMAGE UPLOAD =====
+        // ===== PRESENTATION LINKS (name + link pairs, dynamic "Add More") =====
+        function addPresentationLinkRow(name = '', url = '') {
+            const container = document.getElementById('presentationLinksContainer');
+            const row = document.createElement('div');
+            row.className = 'presentation-link-row';
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.className = 'presentation-link-name';
+            nameInput.placeholder = 'नाम (e.g., मुख्य प्रस्तुति)';
+            nameInput.value = name || '';
+
+            const urlInput = document.createElement('input');
+            urlInput.type = 'text';
+            urlInput.className = 'presentation-link-input';
+            urlInput.placeholder = 'e.g., https://docs.google.com/presentation/...';
+            urlInput.value = url || '';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-link-btn';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = () => removePresentationLinkRow(removeBtn);
+
+            row.appendChild(nameInput);
+            row.appendChild(urlInput);
+            row.appendChild(removeBtn);
+            container.appendChild(row);
+        }
+
+        function removePresentationLinkRow(btn) {
+            const container = document.getElementById('presentationLinksContainer');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                // Keep at least one row visible; just clear it
+                const row = btn.parentElement;
+                row.querySelector('.presentation-link-name').value = '';
+                row.querySelector('.presentation-link-input').value = '';
+            }
+        }
+
+        function setPresentationLinks(items) {
+            const container = document.getElementById('presentationLinksContainer');
+            container.innerHTML = '';
+            // Normalize: accept array of {name, url} objects, plain strings (legacy), or empty
+            const list = (items && items.length)
+                ? items.map(it => (typeof it === 'string') ? { name: '', url: it } : (it || { name: '', url: '' }))
+                : [{ name: '', url: '' }];
+            list.forEach(it => addPresentationLinkRow(it.name, it.url));
+        }
+
+        function getPresentationLinks() {
+            const rows = document.querySelectorAll('.presentation-link-row');
+            const result = [];
+            rows.forEach(row => {
+                const url = row.querySelector('.presentation-link-input').value.trim();
+                const name = row.querySelector('.presentation-link-name').value.trim();
+                if (url !== '') {
+                    result.push({ name: name, url: url });
+                }
+            });
+            return result;
+        }
+
         async function uploadImage(file, folder) {
             if (!file) return null;
 
@@ -1100,6 +1205,7 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             initializeNepaliDateSelectors();
+            setPresentationLinks([]);
 
             bannerAdminLoginOn = await getBannerAdminLoginMode();
             applyLoginModeUI();
@@ -1205,6 +1311,7 @@
                     organized_by: 'आयोजकको नाम',
                     open_link_url: '',
                     presentation_url: '',
+                    presentation_urls: [],
                     date_text: 'मिति: २०८१ बैशाख १ गते, सोमबार',
                     time_text: 'बैठक सुरु समय: १०:०० बजे',
                     is_active: true,
@@ -1298,6 +1405,7 @@
                 organized_by: item.organized_by,
                 open_link_url: item.open_link_url,
                 presentation_url: item.presentation_url,
+                presentation_urls: item.presentation_urls || (item.presentation_url ? [item.presentation_url] : []),
                 date_text: item.date_text,
                 time_text: item.time_text,
                 is_active: false,
@@ -1405,7 +1513,11 @@
             document.getElementById('subMeetingName').value = item.sub_meeting_name || '';
             document.getElementById('organizedBy').value = item.organized_by || '';
             document.getElementById('openLinkUrl').value = item.open_link_url || '';
-            document.getElementById('presentationUrl').value = item.presentation_url || '';
+            setPresentationLinks(
+                (item.presentation_urls && item.presentation_urls.length)
+                    ? item.presentation_urls
+                    : (item.presentation_url ? [item.presentation_url] : [])
+            );
 
             // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
@@ -1511,7 +1623,7 @@
             const subMeetingName = document.getElementById('subMeetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
             const openLinkUrl = document.getElementById('openLinkUrl').value.trim();
-            const presentationUrl = document.getElementById('presentationUrl').value.trim();
+            const presentationUrls = getPresentationLinks();
             const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
             const dateText = document.getElementById('dateText').value;
             const timeText = document.getElementById('timeText').value;
@@ -1577,7 +1689,8 @@
                     sub_meeting_name: subMeetingName,
                     organized_by: organizedBy,
                     open_link_url: openLinkUrl,
-                    presentation_url: presentationUrl,
+                    presentation_url: (presentationUrls[0] && presentationUrls[0].url) || '',
+                    presentation_urls: presentationUrls,
                     date_text: dateText,
                     time_text: timeText,
                     font_scale: fontScale,

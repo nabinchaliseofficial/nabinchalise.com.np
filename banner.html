@@ -392,6 +392,21 @@
             top: 62px;
         }
 
+        .presentation-buttons-wrap {
+            position: absolute;
+            top: 62px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .presentation-buttons-wrap .open-link-btn {
+            position: static;
+            display: inline-block;
+        }
+
         @media (max-width: 768px) {
             .open-link-btn {
                 top: 10px;
@@ -402,6 +417,12 @@
 
             .open-presentation-btn {
                 top: 44px;
+            }
+
+            .presentation-buttons-wrap {
+                top: 44px;
+                left: 10px;
+                gap: 6px;
             }
         }
 
@@ -700,8 +721,8 @@
     <!-- Open Link Tab (Top Left) -->
     <a href="#" class="open-link-btn" id="openLinkBtn" onclick="return openInPageOverlay(event, 'openLinkBtn')">🔗 Open Link</a>
 
-    <!-- Open Presentation Tab (Top Left, below Open Link) -->
-    <a href="#" class="open-link-btn open-presentation-btn" id="openPresentationBtn" onclick="return openInPageOverlay(event, 'openPresentationBtn')">🎞️ Open Presentation</a>
+    <!-- Open Presentation Tab(s) (Top Left, below Open Link) — one button per saved presentation link -->
+    <div class="presentation-buttons-wrap" id="presentationButtonsWrap"></div>
 
     <!-- Fullscreen Toggle Button -->
     <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
@@ -1046,14 +1067,15 @@
                 openLinkBtn.classList.remove('visible');
             }
 
-            const openPresentationBtn = document.getElementById('openPresentationBtn');
-            if (data.presentation_url && data.presentation_url.trim() !== '') {
-                openPresentationBtn.dataset.url = data.presentation_url.trim();
-                openPresentationBtn.classList.add('visible');
-            } else {
-                delete openPresentationBtn.dataset.url;
-                openPresentationBtn.classList.remove('visible');
+            let presentationItems = [];
+            if (Array.isArray(data.presentation_urls) && data.presentation_urls.length) {
+                presentationItems = data.presentation_urls
+                    .map(it => (typeof it === 'string') ? { name: '', url: it.trim() } : { name: (it && it.name || '').trim(), url: (it && it.url || '').trim() })
+                    .filter(it => it.url !== '');
+            } else if (data.presentation_url && data.presentation_url.trim() !== '') {
+                presentationItems = [{ name: '', url: data.presentation_url.trim() }];
             }
+            renderPresentationButtons(presentationItems);
 
             const fontScale = data.font_scale || 100;
             document.documentElement.style.setProperty('--font-scale', fontScale / 100);
@@ -1210,14 +1232,40 @@
             return url;
         }
 
+        // Builds one "Open Presentation" button per saved presentation link, labeled with its name.
+        function renderPresentationButtons(items) {
+            const wrap = document.getElementById('presentationButtonsWrap');
+            wrap.innerHTML = '';
+            if (!items || items.length === 0) return;
+
+            items.forEach((item, idx) => {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.className = 'open-link-btn visible';
+                a.dataset.url = item.url;
+                const label = item.name && item.name !== ''
+                    ? item.name
+                    : (items.length > 1 ? `प्रस्तुति ${idx + 1}` : 'Open Presentation');
+                a.textContent = '🎞️ ' + label;
+                a.onclick = (event) => openInPageOverlay(event, null, item.url);
+                wrap.appendChild(a);
+            });
+        }
+
         // ===== OPEN LINK / OPEN PRESENTATION / LOGO — same-page iframe overlay =====
-        function openInPageOverlay(event, btnId) {
+        function openInPageOverlay(event, btnId, directUrl) {
             if (event) event.preventDefault();
-            const btn = document.getElementById(btnId);
-            let url = btn && btn.dataset.url;
+            let url = directUrl;
+            let isPresentation = !!directUrl;
+
+            if (!url) {
+                const btn = document.getElementById(btnId);
+                url = btn && btn.dataset.url;
+                isPresentation = btnId === 'openPresentationBtn';
+            }
             if (!url) return false;
 
-            if (btnId === 'openPresentationBtn') {
+            if (isPresentation) {
                 url = transformPresentationUrl(url);
             }
 
