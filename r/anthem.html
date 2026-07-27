@@ -414,7 +414,7 @@
             <!-- Cards Playlist Container -->
             <section class="track-list" id="playlist" aria-label="Song Tracks">
                 
-                <!-- Track 1 -->
+                <!-- Track 1: National Anthem -->
                 <div class="track-item" data-index="0" tabindex="0">
                     <div class="track-info">
                         <div class="track-title">National Anthem</div>
@@ -430,24 +430,8 @@
                     </button>
                 </div>
 
-                <!-- Track 2 -->
+                <!-- Track 2: Rotary Song (moved up) -->
                 <div class="track-item" data-index="1" tabindex="0">
-                    <div class="track-info">
-                        <div class="track-title">Rotaract Song</div>
-                        <div class="track-filename">rotaract_song.mp3</div>
-                    </div>
-                    <button class="btn-play" aria-label="Play Rotaract Song">
-                        <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
-                        <div class="wave-container">
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- Track 3 -->
-                <div class="track-item" data-index="2" tabindex="0">
                     <div class="track-info">
                         <div class="track-title">Rotary Song</div>
                         <div class="track-filename">rotary_song.mp3</div>
@@ -462,7 +446,23 @@
                     </button>
                 </div>
 
-                <!-- Track 4 -->
+                <!-- Track 3: Rotaract Song (moved down) -->
+                <div class="track-item" data-index="2" tabindex="0">
+                    <div class="track-info">
+                        <div class="track-title">Rotaract Song</div>
+                        <div class="track-filename">rotaract_song.mp3</div>
+                    </div>
+                    <button class="btn-play" aria-label="Play Rotaract Song">
+                        <svg viewBox="0 0 24 24" class="icon-control"><path d="M8 5v14l11-7z"/></svg>
+                        <div class="wave-container">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Track 4: Club Song -->
                 <div class="track-item" data-index="3" tabindex="0">
                     <div class="track-info">
                         <div class="track-title">Club Song</div>
@@ -522,20 +522,6 @@
                 ]
             },
             {
-                title: "Rotaract Song",
-                file: "rotaract_song.mp3",
-                lyrics: [
-                    { time: 0, text: "🎵 (रोट्रयाक्ट गीत धुन...) 🎵" },
-                    { time: 9, text: "फर्किएका ती हातहरू, उदाएका ती साथहरू\nरमाइला ती पलहरू, रमाएका ती यादहरू" },
-                    { time: 19, text: "एउटै धर्म हाम्रो हो, एउटै बाटो हाम्रो हो\n१८ पुगेका युवाहरूको सञ्जाल यो" },
-                    { time: 28, text: "रोट्रयाक्ट... रोट्रयाक्ट..." },
-                    { time: 38, text: "समाजका कुरीति पन्छाउँदै, समाजकै लागि लड्दै\nलक्ष्य हाम्रो धेरै टाढा छ, जोसका साथ अघि बढ्दै" },
-                    { time: 48, text: "रोटरीसँग हिँड्छौँ हामी एउटै पाइला बनाउँदै\nफोर-वे टेस्ट मान्दै हामी नाच्दै गाउँदै रमाउँदै" },
-                    { time: 57, text: "कलिला ओठहरूमा हामीले हाँसो छर्नु छ\nसमाज रूपान्तरण गर्न नेतृत्व नि गर्नु छ" },
-                    { time: 67, text: "फेलोसिप थ्रु सर्भिस भन्दै... जोड्छौँ सबैलाई\nत्यसैले त हामी हौँ रोट्रयाक्टर साथीभाइ\nत्यसैले हामी हौँ डिस्ट्रिक्ट ३२९२" }
-                ]
-            },
-            {
                 title: "Rotary Song",
                 file: "rotary_song.mp3",
                 lyrics: [
@@ -551,6 +537,20 @@
                     { time: 50, text: "फोर-वे हो पहिचान रोटरी" },
                     { time: 55, text: "फोर-वे टेस्टको अनुशासन" },
                     { time: 59, text: "स्वाभिमान हो रोटरी... रोटरी" }
+                ]
+            },
+            {
+                title: "Rotaract Song",
+                file: "rotaract_song.mp3",
+                lyrics: [
+                    { time: 0, text: "🎵 (रोट्रयाक्ट गीत धुन...) 🎵" },
+                    { time: 9, text: "फर्किएका ती हातहरू, उदाएका ती साथहरू\nरमाइला ती पलहरू, रमाएका ती यादहरू" },
+                    { time: 19, text: "एउटै धर्म हाम्रो हो, एउटै बाटो हाम्रो हो\n१८ पुगेका युवाहरूको सञ्जाल यो" },
+                    { time: 28, text: "रोट्रयाक्ट... रोट्रयाक्ट..." },
+                    { time: 38, text: "समाजका कुरीति पन्छाउँदै, समाजकै लागि लड्दै\nलक्ष्य हाम्रो धेरै टाढा छ, जोसका साथ अघि बढ्दै" },
+                    { time: 48, text: "रोटरीसँग हिँड्छौँ हामी एउटै पाइला बनाउँदै\nफोर-वे टेस्ट मान्दै हामी नाच्दै गाउँदै रमाउँदै" },
+                    { time: 57, text: "कलिला ओठहरूमा हामीले हाँसो छर्नु छ\nसमाज रूपान्तरण गर्न नेतृत्व नि गर्नु छ" },
+                    { time: 67, text: "फेलोसिप थ्रु सर्भिस भन्दै... जोड्छौँ सबैलाई\nत्यसैले त हामी हौँ रोट्रयाक्टर साथीभाइ\nत्यसैले हामी हौँ डिस्ट्रिक्ट ३२९२" }
                 ]
             },
             {

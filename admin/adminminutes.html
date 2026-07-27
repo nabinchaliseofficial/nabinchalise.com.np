@@ -864,7 +864,7 @@
 
             .content-section {
                 margin-bottom: 24px;
-                page-break-inside: avoid;
+                text-align: justify;
             }
             .content-section h4 {
                 color: var(--secondary);
@@ -880,6 +880,8 @@
             .agenda-item {
                 margin-bottom: 14px;
                 font-size: 13.5px;
+                page-break-inside: avoid;
+                text-align: justify;
             }
             .agenda-item strong {
                 color: #1e293b;
@@ -889,6 +891,7 @@
                 margin: 3px 0 0 15px;
                 color: #334155;
                 font-size: 12.5px;
+                text-align: justify;
             }
 
             .print-table {
@@ -930,6 +933,12 @@
                 text-align: center;
                 min-width: 200px;
             }
+            .footer-sign-img {
+                display: block;
+                max-width: 150px;
+                max-height: 55px;
+                margin: 0 auto 6px auto;
+            }
             .sign-line p {
                 margin: 0;
                 font-size: 13px;
@@ -951,6 +960,9 @@
             }
             .page-break {
                 page-break-before: always;
+            }
+            .no-print {
+                display: none !important;
             }
         }
 
@@ -983,12 +995,185 @@
             }
         }
 
+        /* --- ACTION ITEMS TRACKER --- */
+        .ai-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .ai-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.1rem 1.25rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            border-left: 4px solid var(--text-muted);
+            transition: var(--transition-smooth);
+        }
+        .ai-stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .ai-stat-card .ai-stat-num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .ai-stat-card .ai-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .ai-stat-card.stat-total { border-left-color: var(--primary); }
+        .ai-stat-card.stat-total .ai-stat-num { color: var(--primary); }
+        .ai-stat-card.stat-pending { border-left-color: #f59e0b; }
+        .ai-stat-card.stat-pending .ai-stat-num { color: #f59e0b; }
+        .ai-stat-card.stat-progress { border-left-color: #38bdf8; }
+        .ai-stat-card.stat-progress .ai-stat-num { color: #38bdf8; }
+        .ai-stat-card.stat-completed { border-left-color: #34d399; }
+        .ai-stat-card.stat-completed .ai-stat-num { color: #34d399; }
+
+        .ai-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .ai-filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1.1rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-smooth);
+        }
+        .ai-filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+        .ai-filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .ai-table-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            overflow-x: auto;
+        }
+        .ai-tracker-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            min-width: 640px;
+        }
+        .ai-tracker-table thead th {
+            text-align: left;
+            padding: 0.9rem 1.1rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        .ai-tracker-table tbody td {
+            padding: 0.9rem 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        .ai-tracker-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .ai-tracker-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .ai-task-cell {
+            font-weight: 600;
+            color: var(--text-main);
+            max-width: 320px;
+        }
+        .ai-meeting-cell {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .ai-coordinator-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+        .ai-coordinator-cell i {
+            color: var(--cls-personal);
+        }
+        .ai-deadline-cell {
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .ai-deadline-cell.overdue {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        .ai-status-select {
+            border: none;
+            border-radius: 999px;
+            padding: 0.4rem 0.9rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .ai-status-select.status-pending {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+        .ai-status-select.status-progress {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+        .ai-status-select.status-completed {
+            background-color: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+        .ai-empty-row td {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
             }
             .minutes-feed {
                 grid-template-columns: 1fr;
+            }
+            .ai-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .ai-tracker-table {
+                min-width: 560px;
             }
             .modal-content {
                 padding: 1.5rem;
@@ -1116,6 +1301,59 @@
         </div>
     </section>
 
+    <!-- ===== ACTION ITEMS TRACKER ===== -->
+    <section class="workspace-section" id="action-items-panel">
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Action Items Tracker</h2>
+            <div class="panel-actions">
+                <button class="action-btn" id="refresh-actions-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+        </div>
+
+        <div class="ai-stats-grid" id="aiStatsGrid">
+            <div class="ai-stat-card stat-total">
+                <span class="ai-stat-num" id="aiStatTotal">0</span>
+                <span class="ai-stat-label"><i class="fa-solid fa-list"></i> Total</span>
+            </div>
+            <div class="ai-stat-card stat-pending">
+                <span class="ai-stat-num" id="aiStatPending">0</span>
+                <span class="ai-stat-label"><i class="fa-solid fa-hourglass-half"></i> Pending</span>
+            </div>
+            <div class="ai-stat-card stat-progress">
+                <span class="ai-stat-num" id="aiStatProgress">0</span>
+                <span class="ai-stat-label"><i class="fa-solid fa-spinner"></i> In Progress</span>
+            </div>
+            <div class="ai-stat-card stat-completed">
+                <span class="ai-stat-num" id="aiStatCompleted">0</span>
+                <span class="ai-stat-label"><i class="fa-solid fa-circle-check"></i> Completed</span>
+            </div>
+        </div>
+
+        <div class="ai-filter-bar" id="aiFilterBar">
+            <button class="ai-filter-btn active" data-filter="All">All</button>
+            <button class="ai-filter-btn" data-filter="Pending">Pending</button>
+            <button class="ai-filter-btn" data-filter="In Progress">In Progress</button>
+            <button class="ai-filter-btn" data-filter="Completed">Completed</button>
+        </div>
+
+        <div class="ai-table-wrap">
+            <table class="ai-tracker-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Co-Ordinator</th>
+                        <th>Meeting</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="aiTrackerBody">
+                    <tr class="ai-empty-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i> Loading action items...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <!-- ===== PRINT PREVIEW - Same design as minutes.html ===== -->
     <div id="print-preview" style="display:none;">
         <div class="letterhead">
@@ -1130,7 +1368,7 @@
         <h3 id="outTitle">MINUTES OF MEETING</h3>
 
         <!-- Version Info -->
-        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+        <div class="no-print" style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
             <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
             <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
         </div>
@@ -1138,6 +1376,7 @@
         <table class="meta-table">
             <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
             <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Meeting Type</td><td colspan="3" id="outMeetType"></td></tr>
             <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
 
@@ -1176,25 +1415,21 @@
             <table class="print-table" style="width:100%;">
                 <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
                 <tr>
-                    <td style="text-align:center;">
-                        <div id="outSigPrepared">Rtr. Madan Subedi</div>
-                        <img id="outSigPreparedImg" src="/r/secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigPrepared" style="text-align:center;">Rtr. Madan Subedi</td>
                     <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
-                    <td style="text-align:center;">
-                        <div id="outSigApproved">Rtr. Nabin Chalise</div>
-                        <img id="outSigApprovedImg" src="/r/presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigApproved" style="text-align:center;">Rtr. Nabin Chalise</td>
                 </tr>
             </table>
         </div>
 
         <div class="footer-sign">
             <div class="sign-line">
+                <img id="outSigApprovedImg" src="/r/presidentsign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outChairSign">Rtr. Nabin Chalise</p>
                 <p class="sign-role">Meeting Chairperson</p>
             </div>
             <div class="sign-line">
+                <img id="outSigPreparedImg" src="/r/secretarysign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outSecretarySign">Rtr. Madan Subedi</p>
                 <p class="sign-role">Club Secretary</p>
             </div>
@@ -1227,19 +1462,21 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label for="editVenue">Venue</label><input type="text" id="editVenue" placeholder="e.g. Club Hall, Galkot" /></div>
-                    <div class="form-group"><label for="editChairperson">Chairperson</label><input type="text" id="editChairperson" placeholder="e.g. Rtr. Nabin Chalise" /></div>
+                    <div class="form-group"><label for="editChairperson">Chairperson</label><select id="editChairperson"></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label for="editMembersPresent">Members Present (Count)</label><input type="number" id="editMembersPresent" min="0" /></div>
-                    <div class="form-group"><label for="editGuestsCount">Guests Count</label><input type="number" id="editGuestsCount" min="0" /></div>
+                    <div class="form-group"><label for="editMembersPresent">Members Present (auto)</label><input type="number" id="editMembersPresent" min="0" readonly /></div>
+                    <div class="form-group"><label for="editGuestsCount">Guests Count (auto)</label><input type="number" id="editGuestsCount" min="0" readonly /></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label for="editMeetingType">Meeting Type</label>
                         <select id="editMeetingType">
-                            <option value="Regular">Regular</option>
-                            <option value="Special">Special</option>
-                            <option value="Board">Board</option>
-                            <option value="Emergency">Emergency</option>
+                            <option value="General Meeting">General Meeting</option>
+                            <option value="Board Meeting">Board Meeting</option>
+                            <option value="Special Board Meeting">Special Board Meeting</option>
+                            <option value="Club Assembly">Club Assembly</option>
+                            <option value="Special General Meeting">Special General Meeting</option>
+                            <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
                         </select>
                     </div>
                     <div class="form-group"><label for="editStatus">Status</label>
@@ -1254,7 +1491,7 @@
                 <!-- Discussions -->
                 <div class="form-group">
                     <label>Discussions &amp; Remarks</label>
-                    <textarea id="editDiscussions" placeholder="Sergeant-at-Arms, Happy Moments, President's Remarks, Committee Updates, Announcements, Open Floor..." rows="4"></textarea>
+                    <textarea id="editDiscussions" placeholder="Sergeant-at-Arms, Happy Moments, Opening Remarks, Committee Updates, Announcements, Open Floor..." rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1303,6 +1540,82 @@
             const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
             const SUPABASE_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // ============================================================
+            // ===== LIVE MEMBER NAMES (for dropdowns - no free typing) =====
+            // Every place in the edit form that needs a person's name uses
+            // a dropdown built from the `members` table, so saved names
+            // always match exactly - this is what the recognition /
+            // attendance-award feature depends on.
+            //
+            // FALLBACK_ROSTER below is only used until the live fetch in
+            // loadLiveMembers() resolves (or if it fails) - same idea as
+            // rosterData in minutes.html - so the dropdown is never blank
+            // if an admin opens the edit modal in the first instant after
+            // page load.
+            // ============================================================
+            const FALLBACK_ROSTER = [
+                "RTR. NEETU KHADKA", "RTR. NABIN CHALISE", "RTR. MADAN SHARMA", "RTR. MANISH KANDEL",
+                "RTR. ANIL SHRESTHA", "RTR. NABIN SUBEDI", "RTR. KAMAL KHAREL", "RTR. ISHOR GAUTAM",
+                "RTR. SAGAR CHALISE", "RTR. TIKA RAM GAUTAM", "RTR. DR. MANOJ KARKI", "RTR. LAXMI PUN",
+                "RTR. VIKASH SUBEDI", "RTR. BIPIN CHALISE", "RTR. RAJU SAHANI (RJ)", "RTR. LOKENDRA GAIRE",
+                "RTR. MANJEELA SHRESTHA", "RTR. SMRITI BUDHATHOKI", "RTR. MELINA KHAREL", "RTR. AMRIT SUBEDI",
+                "RTR. ANIL GANDARVA", "RTR. BALRAM ADHIKARI", "RTR. BIBEK KHAREL", "RTR. BIDUR KHAREL",
+                "RTR. DEEPAK KHATTRI", "RTR. DURGA DARLAMI", "RTR. GANESH SAPKOTA", "RIT. JIT BAHADUR B.K.",
+                "RTR. KRIPA KANDEL", "RTR. MANISH GURUNG", "RTR. MIN THAPA", "RTR. NABIN GAIRE",
+                "RTR. NABIN SHARMA POUDEL", "RTR. NETRA PRASAD LAMICHHANE", "RTR. PRAKASH KHADKA",
+                "RTR. PRANSU RAM REGMI", "RTR. PRATAP SEN", "RTR. PRATIKSHYA DARJI", "RTR. RADHA GAUTAM",
+                "RTR. ROMAN SUBEDI", "RTR. SANJU NEUPANE", "RTR. SANTOSH BOHORA CHETTRI", "RTR. SUNIL CHHETRI",
+                "RTR. SUNIL GAUTAM", "RTR. SUNIL KHATIWAL", "RTR. SUNIL ROKA MAGAR", "TARA PRASAD SUNAR",
+                "RTR. TUL BAHADUR B.K."
+            ];
+            let liveMemberNames = [...FALLBACK_ROSTER];
+
+            function memberOptionsHTML(selected) {
+                let names = liveMemberNames;
+                if (selected && !names.includes(selected)) {
+                    names = [selected, ...names];
+                }
+                const opts = ['<option value="">-- Select member --</option>'];
+                names.forEach(name => {
+                    opts.push(`<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`);
+                });
+                return opts.join('');
+            }
+
+            function refreshAllPersonSelects() {
+                document.querySelectorAll('#actionItemsEditor .ai-person').forEach(sel => {
+                    const current = sel.value;
+                    sel.innerHTML = memberOptionsHTML(current);
+                });
+                document.querySelectorAll('#membersEditor .member-name').forEach(sel => {
+                    const current = sel.value;
+                    sel.innerHTML = memberOptionsHTML(current);
+                });
+                const chairSel = document.getElementById('editChairperson');
+                if (chairSel) {
+                    const current = chairSel.value;
+                    chairSel.innerHTML = memberOptionsHTML(current);
+                }
+            }
+
+            async function loadLiveMembers() {
+                try {
+                    const { data, error } = await supabase
+                        .from('members')
+                        .select('name, status')
+                        .order('name', { ascending: true });
+                    if (error) throw error;
+                    const activeNames = (data || [])
+                        .filter(m => (m.status || '').toLowerCase() !== 'inactive')
+                        .map(m => m.name)
+                        .filter(Boolean);
+                    liveMemberNames = [...new Set(activeNames)].sort();
+                    refreshAllPersonSelects();
+                } catch (err) {
+                    console.error('❌ loadLiveMembers error:', err);
+                }
+            }
 
             // ============================================================
             // ===== SECURE ADMIN ACCESS CONTROL (Database-based) =====
@@ -1369,6 +1682,7 @@
             let allMinutesData = [];
             let editingId = null;
             let currentModeStatus = true;
+            let currentAiFilter = 'All';
 
             const escapeHtml = (str) => {
                 if (!str) return '';
@@ -1514,6 +1828,7 @@
                         selectDropdown.innerHTML = '<option value="">-- No meetings available --</option>';
                         feedContainer.innerHTML =
                             '📋 No meeting minutes found. Create one from the main admin panel.';
+                        renderActionItemsTracker();
                         return;
                     }
 
@@ -1532,7 +1847,7 @@
                         const memberCount = (m.members || []).length;
                         const agendaCount = (m.agendas || []).length;
                         const status = row.status || m.status || 'Draft';
-                        const meetingType = row.meeting_type || m.meeting_type || 'Regular';
+                        const meetingType = row.meeting_type || m.meeting_type || 'General Meeting';
                         const version = m._version || 'v1.0';
                         const savedAt = m._savedAt || m.created_at || row.created_at;
                         const savedAtDisplay = savedAt ? new Date(savedAt).toLocaleString() : 'N/A';
@@ -1558,7 +1873,7 @@
                                 </div>
                                 <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap;">
                                     <span><i class="fa-solid fa-users"></i> Members: ${memberCount}</span>
-                                    <span><i class="fa-solid fa-user-plus"></i> Guests: ${m.guests_count || 0}</span>
+                                    <span><i class="fa-solid fa-user-plus"></i> Guests: ${(m.guests || []).length}</span>
                                     <span><i class="fa-solid fa-list"></i> Agendas: ${agendaCount}</span>
                                 </div>
                                 ${m.agendas && m.agendas.length > 0 ? `
@@ -1587,6 +1902,8 @@
                         });
                     });
 
+                    renderActionItemsTracker();
+
                 } catch (err) {
                     feedContainer.innerHTML =
                         `<div class="status-msg" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message}</div>`;
@@ -1594,6 +1911,145 @@
                     showToast('Error loading minutes: ' + err.message, 'error');
                 }
             };
+
+            // ============================================================
+            // ===== ACTION ITEMS TRACKER (Task / Co-Ordinator / Status) =====
+            // Flattens actionItems from every meeting's `data` JSON into one
+            // tracker table, with live status counts and inline status
+            // updates that write straight back to meeting_minutes.data.
+            // ============================================================
+            const buildActionItemsList = () => {
+                const list = [];
+                allMinutesData.forEach(row => {
+                    const m = row.data || row;
+                    const items = Array.isArray(m.actionItems) ? m.actionItems : [];
+                    items.forEach((item, idx) => {
+                        list.push({
+                            meetingId: row.id,
+                            meetingLabel: m.meeting_number || 'Untitled Meeting',
+                            meetingDate: m.meeting_date || row.created_at,
+                            itemIndex: idx,
+                            task: (item.task || '').trim(),
+                            person: (item.person || '').trim(),
+                            deadline: item.deadline || '',
+                            status: item.status || 'Pending'
+                        });
+                    });
+                });
+                // Most recent meetings first, matching the minutes feed order
+                return list;
+            };
+
+            const isOverdue = (deadline, status) => {
+                if (!deadline || status === 'Completed') return false;
+                const d = new Date(deadline);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                return d < today;
+            };
+
+            const aiStatusClass = (status) => {
+                if (status === 'Completed') return 'status-completed';
+                if (status === 'In Progress') return 'status-progress';
+                return 'status-pending';
+            };
+
+            const renderActionItemsTracker = () => {
+                const tbody = document.getElementById('aiTrackerBody');
+                if (!tbody) return;
+
+                const allItems = buildActionItemsList();
+
+                const total = allItems.length;
+                const pending = allItems.filter(i => i.status === 'Pending').length;
+                const inProgress = allItems.filter(i => i.status === 'In Progress').length;
+                const completed = allItems.filter(i => i.status === 'Completed').length;
+
+                const setNum = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+                setNum('aiStatTotal', total);
+                setNum('aiStatPending', pending);
+                setNum('aiStatProgress', inProgress);
+                setNum('aiStatCompleted', completed);
+
+                const filtered = currentAiFilter === 'All'
+                    ? allItems
+                    : allItems.filter(i => i.status === currentAiFilter);
+
+                if (!filtered.length) {
+                    tbody.innerHTML = `<tr class="ai-empty-row"><td colspan="5"><i class="fa-solid fa-clipboard-list"></i> No ${currentAiFilter === 'All' ? '' : escapeHtml(currentAiFilter) + ' '}action items found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(item => {
+                    const deadlineText = item.deadline ? new Date(item.deadline).toLocaleDateString() : '—';
+                    const overdue = isOverdue(item.deadline, item.status);
+                    const statusClass = aiStatusClass(item.status);
+                    return `
+                        <tr>
+                            <td class="ai-task-cell">${escapeHtml(item.task || 'Untitled task')}</td>
+                            <td class="ai-coordinator-cell"><i class="fa-solid fa-user"></i> ${escapeHtml(item.person || 'Unassigned')}</td>
+                            <td class="ai-meeting-cell">${escapeHtml(item.meetingLabel)}</td>
+                            <td class="ai-deadline-cell ${overdue ? 'overdue' : ''}">${overdue ? '<i class="fa-solid fa-triangle-exclamation"></i> ' : ''}${deadlineText}</td>
+                            <td>
+                                <select class="ai-status-select ${statusClass}" data-meeting-id="${item.meetingId}" data-item-index="${item.itemIndex}">
+                                    <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tbody.querySelectorAll('.ai-status-select').forEach(sel => {
+                    sel.addEventListener('change', (e) => {
+                        const meetingId = e.target.dataset.meetingId;
+                        const itemIndex = parseInt(e.target.dataset.itemIndex, 10);
+                        updateActionItemStatus(meetingId, itemIndex, e.target.value);
+                    });
+                });
+            };
+
+            const updateActionItemStatus = async (meetingId, itemIndex, newStatus) => {
+                const row = allMinutesData.find(r => r.id == meetingId);
+                if (!row) { showToast('Meeting not found for this action item.', 'error'); return; }
+                const m = row.data || row;
+                const items = Array.isArray(m.actionItems) ? [...m.actionItems] : [];
+                if (!items[itemIndex]) { showToast('Action item not found.', 'error'); return; }
+
+                const updatedData = { ...m, actionItems: items.map((it, i) => i === itemIndex ? { ...it, status: newStatus } : it) };
+
+                try {
+                    const { error } = await supabase
+                        .from('meeting_minutes')
+                        .update({ data: updatedData })
+                        .eq('id', meetingId);
+                    if (error) throw error;
+
+                    // Reflect the change locally without a full reload
+                    row.data = updatedData;
+                    showToast(`✅ Status updated to "${newStatus}"`, 'success');
+                    renderActionItemsTracker();
+                } catch (err) {
+                    console.error('Action item status update error:', err);
+                    showToast('❌ Error updating status: ' + err.message, 'error');
+                    renderActionItemsTracker();
+                }
+            };
+
+            document.getElementById('aiFilterBar')?.addEventListener('click', (e) => {
+                const btn = e.target.closest('.ai-filter-btn');
+                if (!btn) return;
+                document.querySelectorAll('.ai-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAiFilter = btn.dataset.filter;
+                renderActionItemsTracker();
+            });
+
+            document.getElementById('refresh-actions-btn')?.addEventListener('click', () => {
+                showToast('🔄 Refreshing action items...', 'info');
+                loadMeetingMinutes();
+            });
 
             // ============================================================
             // ===== DELETE MINUTE =====
@@ -1656,8 +2112,9 @@
                 document.getElementById('outVenue').innerText = m.venue || 'N/A';
                 document.getElementById('outChair').innerText = m.chairperson || 'N/A';
                 document.getElementById('outChairSign').innerText = m.chairperson || 'N/A';
-                document.getElementById('outPres').innerText = m.members_present || 0;
-                document.getElementById('outGst').innerText = m.guests_count || 0;
+                document.getElementById('outMeetType').innerText = m.meeting_type || 'General Meeting';
+                document.getElementById('outPres').innerText = (m.members || []).length;
+                document.getElementById('outGst').innerText = (m.guests || []).length;
 
                 // Members
                 let memberHTML = '';
@@ -1719,7 +2176,7 @@
                 let discHTML = '';
                 if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${d.saa}</p>`;
                 if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${d.happy}</p>`;
-                if (d.president) discHTML += `<p><strong>President's Remarks:</strong> ${d.president}</p>`;
+                if (d.president) discHTML += `<p><strong>Opening Remarks:</strong> ${d.president}</p>`;
                 if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${d.committee}</p>`;
                 if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${d.announcements}</p>`;
                 if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${d.openFloor}</p>`;
@@ -1819,17 +2276,37 @@
             const editModal = document.getElementById('editModal');
             const editForm = document.getElementById('editMinuteForm');
 
+            const calculateEditCounts = () => {
+                const memberRows = document.querySelectorAll('#membersEditor .member-entry');
+                let memberCount = 0;
+                memberRows.forEach(row => {
+                    const name = row.querySelector('.member-name')?.value.trim() || '';
+                    const role = row.querySelector('.member-role')?.value.trim() || '';
+                    if (name || role) memberCount++;
+                });
+                const guestsText = document.getElementById('editGuests')?.value || '';
+                const guestCount = guestsText.split('\n').map(g => g.trim()).filter(g => g).length;
+
+                const membersPresentEl = document.getElementById('editMembersPresent');
+                const guestsCountEl = document.getElementById('editGuestsCount');
+                if (membersPresentEl) membersPresentEl.value = memberCount;
+                if (guestsCountEl) guestsCountEl.value = guestCount;
+            };
+
             const addMemberRow = (name = '', role = '') => {
                 const container = document.getElementById('membersEditor');
                 const div = document.createElement('div');
                 div.className = 'member-entry';
                 div.innerHTML = `
-                    <input type="text" placeholder="Member Name" value="${escapeHtml(name)}" class="member-name" style="flex:2;" />
+                    <select class="member-name" style="flex:2;">${memberOptionsHTML(name)}</select>
                     <input type="text" placeholder="Designation" value="${escapeHtml(role)}" class="member-role" style="flex:1;" />
                     <button type="button" class="remove-btn" title="Remove member"><i class="fa-solid fa-xmark"></i></button>
                 `;
-                div.querySelector('.remove-btn').addEventListener('click', () => div.remove());
+                div.querySelector('.remove-btn').addEventListener('click', () => { div.remove(); calculateEditCounts(); });
+                div.querySelector('.member-name').addEventListener('change', calculateEditCounts);
+                div.querySelector('.member-role').addEventListener('input', calculateEditCounts);
                 container.appendChild(div);
+                calculateEditCounts();
             };
 
             const addAgendaRow = (title = '', description = '') => {
@@ -1851,7 +2328,7 @@
                 div.className = 'member-entry';
                 div.innerHTML = `
                     <input type="text" placeholder="Task" value="${escapeHtml(task)}" class="ai-task" style="flex:2;" />
-                    <input type="text" placeholder="Responsible" value="${escapeHtml(person)}" class="ai-person" style="flex:1;" />
+                    <select class="ai-person" style="flex:1;">${memberOptionsHTML(person)}</select>
                     <input type="date" value="${deadline}" class="ai-deadline" style="flex:0.8;" />
                     <select class="ai-status" style="flex:0.8;">
                         <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
@@ -1885,10 +2362,10 @@
                 document.getElementById('editMeetingDate').value = m.meeting_date ? new Date(m.meeting_date).toISOString()
                     .slice(0, 16) : '';
                 document.getElementById('editVenue').value = m.venue || '';
-                document.getElementById('editChairperson').value = m.chairperson || '';
+                document.getElementById('editChairperson').innerHTML = memberOptionsHTML(m.chairperson || '');
                 document.getElementById('editMembersPresent').value = m.members_present || 0;
                 document.getElementById('editGuestsCount').value = m.guests_count || 0;
-                document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'Regular';
+                document.getElementById('editMeetingType').value = minuteData.meeting_type || m.meeting_type || 'General Meeting';
                 document.getElementById('editStatus').value = minuteData.status || m.status || 'Draft';
 
                 // Discussions
@@ -1896,7 +2373,7 @@
                 const discText = [
                     d.saa ? `Sergeant-at-Arms: ${d.saa}` : '',
                     d.happy ? `Happy Moments: ${d.happy}` : '',
-                    d.president ? `President's Remarks: ${d.president}` : '',
+                    d.president ? `Opening Remarks: ${d.president}` : '',
                     d.committee ? `Committee Updates: ${d.committee}` : '',
                     d.announcements ? `Announcements: ${d.announcements}` : '',
                     d.openFloor ? `Open Floor: ${d.openFloor}` : ''
@@ -1926,6 +2403,8 @@
                     .status));
                 if ((m.actionItems || []).length === 0) addActionItemRow('', '', '', 'Pending');
 
+                calculateEditCounts();
+
                 editModal.classList.add('active');
             };
 
@@ -1941,6 +2420,7 @@
             document.getElementById('addMemberBtn')?.addEventListener('click', () => addMemberRow('', ''));
             document.getElementById('addAgendaBtn')?.addEventListener('click', () => addAgendaRow('', ''));
             document.getElementById('addActionItemBtn')?.addEventListener('click', () => addActionItemRow('', '', '', 'Pending'));
+            document.getElementById('editGuests')?.addEventListener('input', calculateEditCounts);
 
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1950,8 +2430,6 @@
                 const meetingDate = document.getElementById('editMeetingDate').value;
                 const venue = document.getElementById('editVenue').value.trim();
                 const chairperson = document.getElementById('editChairperson').value.trim();
-                const membersPresent = parseInt(document.getElementById('editMembersPresent').value) || 0;
-                const guestsCount = parseInt(document.getElementById('editGuestsCount').value) || 0;
                 const meetingType = document.getElementById('editMeetingType').value;
                 const status = document.getElementById('editStatus').value;
                 const closingRemarks = document.getElementById('editClosingRemarks').value.trim();
@@ -1991,6 +2469,9 @@
                 const guestsText = document.getElementById('editGuests').value;
                 const guests = guestsText.split('\n').map(g => g.trim()).filter(g => g);
 
+                const membersPresent = members.length;
+                const guestsCount = guests.length;
+
                 const agendaRows = document.querySelectorAll('#agendasEditor .member-entry');
                 const agendas = [];
                 agendaRows.forEach(row => {
@@ -2022,11 +2503,15 @@
 
                 const nowIso = new Date().toISOString();
 
+                const originalMinute = allMinutesData.find(item => item.id == editingId);
+                const originalData = originalMinute ? (originalMinute.data || originalMinute) : {};
+
                 const updatedData = {
                     meeting_number: meetingNumber || 'Unnamed Meeting',
                     meeting_date: meetingDate || new Date().toISOString(),
                     venue: venue || 'N/A',
                     chairperson: chairperson || 'N/A',
+                    meeting_type: meetingType,
                     members_present: membersPresent,
                     guests_count: guestsCount,
                     members: members,
@@ -2034,6 +2519,7 @@
                     agendas: agendas,
                     discussions: discussions,
                     actionItems: actionItems,
+                    signatures: originalData.signatures || {},
                     closing_remarks: closingRemarks,
                     _version: newVersion,
                     _savedAt: nowIso
@@ -2223,6 +2709,7 @@
             // ============================================================
             document.addEventListener('DOMContentLoaded', () => {
                 verifySecureAuthentication();
+                loadLiveMembers();
             });
 
         })();

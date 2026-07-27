@@ -1066,6 +1066,8 @@
         .action-item-row .ai-person {
             flex: 1;
             min-width: 100px;
+            max-width: 100%;
+            transition: width 0.15s ease;
         }
         .action-item-row .ai-deadline {
             flex: 0.8;
@@ -1264,7 +1266,7 @@
             }
             .content-section {
                 margin-bottom: 24px;
-                page-break-inside: avoid;
+                text-align: justify;
             }
             .content-section h4 {
                 color: var(--secondary);
@@ -1279,6 +1281,8 @@
             .agenda-item {
                 margin-bottom: 14px;
                 font-size: 13.5px;
+                page-break-inside: avoid;
+                text-align: justify;
             }
             .agenda-item strong {
                 color: #1e293b;
@@ -1288,6 +1292,7 @@
                 margin: 3px 0 0 15px;
                 color: #334155;
                 font-size: 12.5px;
+                text-align: justify;
             }
             .print-table {
                 width: 100%;
@@ -1327,10 +1332,19 @@
                 text-align: center;
                 min-width: 200px;
             }
+            .footer-sign-img {
+                display: block;
+                max-width: 150px;
+                max-height: 55px;
+                margin: 0 auto 6px auto;
+            }
             .sign-line p {
                 margin: 0;
                 font-size: 13px;
                 color: #1e293b;
+            }
+            .no-print {
+                display: none !important;
             }
             .sign-line p:first-child {
                 font-weight: 700;
@@ -1529,7 +1543,26 @@
             </div>
             <div class="grid-2">
                 <div class="form-group"><label for="meetVenue">Venue Location</label><input type="text" id="meetVenue" value="Club Office, Galkot" /></div>
-                <div class="form-group"><label for="meetChair">Meeting Chairperson</label><input type="text" id="meetChair" value="Rtr. Nabin Chalise" /></div>
+                <div class="form-group"><label for="meetChair">Meeting Chairperson</label><select id="meetChair"><option value="Rtr. Nabin Chalise" selected>Rtr. Nabin Chalise</option></select></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="meetType">Meeting Type</label>
+                    <select id="meetType">
+                        <option value="General Meeting" selected>General Meeting</option>
+                        <option value="Board Meeting">Board Meeting</option>
+                        <option value="Special Board Meeting">Special Board Meeting</option>
+                        <option value="Club Assembly">Club Assembly</option>
+                        <option value="Special General Meeting">Special General Meeting</option>
+                        <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">
+                        ℹ️ Club Members are recognized/attendance-counted only for General Meeting, Club Assembly, Special General Meeting &amp; AGM. Board Meeting and Special Board Meeting count for board roster members only.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -1574,7 +1607,7 @@
             <div class="grid-2">
                 <div class="form-group"><label>Sergeant-at-Arms</label><textarea id="saaReport" rows="2" placeholder="Attendance, discipline..."></textarea></div>
                 <div class="form-group"><label>Happy Moments</label><textarea id="happyMoments" rows="2" placeholder="Good news, celebrations..."></textarea></div>
-                <div class="form-group"><label>President's Remarks</label><textarea id="presidentRemarks" rows="2" placeholder="Opening remarks..."></textarea></div>
+                <div class="form-group"><label>Opening Remarks</label><textarea id="presidentRemarks" rows="2" placeholder="Opening remarks..."></textarea></div>
                 <div class="form-group"><label>Committee Updates</label><textarea id="committeeUpdates" rows="2" placeholder="Updates from committees..."></textarea></div>
                 <div class="form-group"><label>Announcements</label><textarea id="announcements" rows="2" placeholder="Upcoming events..."></textarea></div>
                 <div class="form-group"><label>Open Floor</label><textarea id="openFloor" rows="2" placeholder="General discussion..."></textarea></div>
@@ -1611,7 +1644,7 @@
             <div id="action-items-container">
                 <div class="action-item-row">
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" />
+                    <select class="ai-person"><option value="">-- Select member --</option></select>
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -1644,11 +1677,6 @@
                 <div class="signature-field">
                     <label>Prepared By</label>
                     <input type="text" id="sigPrepared" value="Rtr. Madan Subedi" />
-                    <div class="auto-signature-preview">
-                        <span class="label">📄 Signature:</span>
-                        <img id="autoPreparedImg" src="secretarysign.png" alt="Secretary Signature" onerror="this.style.display='none'" />
-                        <span class="status">secretarysign.png</span>
-                    </div>
                 </div>
                 <div class="signature-field">
                     <label>Reviewed By</label>
@@ -1659,11 +1687,6 @@
                 <div class="signature-field">
                     <label>Approved By</label>
                     <input type="text" id="sigApproved" value="Rtr. Nabin Chalise" />
-                    <div class="auto-signature-preview">
-                        <span class="label">📄 Signature:</span>
-                        <img id="autoApprovedImg" src="presidentsign.png" alt="President Signature" onerror="this.style.display='none'" />
-                        <span class="status">presidentsign.png</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1692,13 +1715,14 @@
             </div>
         </div>
         <h3 id="outTitle">MINUTES OF MEETING</h3>
-        <div style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
+        <div class="no-print" style="display:flex; gap:20px; font-size:13px; background:#f8fafc; padding:8px 16px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:20px;">
             <span><strong>📌 Version:</strong> <span id="outVersion">v1.0</span></span>
             <span><strong>🕒 Last Saved:</strong> <span id="outSavedAt">---</span></span>
         </div>
         <table class="meta-table">
             <tr><td class="meta-title">Meeting Title</td><td id="outMeetNo" class="width-30"></td><td class="meta-title">Date / Time</td><td id="outDate"></td></tr>
             <tr><td class="meta-title">Venue</td><td id="outVenue"></td><td class="meta-title">Chairperson</td><td id="outChair"></td></tr>
+            <tr><td class="meta-title">Meeting Type</td><td colspan="3" id="outMeetType"></td></tr>
             <tr><td class="meta-title">Attendance</td><td colspan="3">Total Present Members: <span id="outPres"></span> | Guests: <span id="outGst"></span></td></tr>
         </table>
         <div class="content-section" id="print-section-members"><h4>Attended Members</h4><div id="outPresentMembersNames"></div></div>
@@ -1711,22 +1735,20 @@
             <table class="print-table" style="width:100%;">
                 <tr><th>Prepared By</th><th>Reviewed By</th><th>Approved By</th></tr>
                 <tr>
-                    <td style="text-align:center;"><div id="outSigPrepared">Rtr. Madan Subedi</div>
-                        <img id="outSigPreparedImg" src="secretarysign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigPrepared" style="text-align:center;">Rtr. Madan Subedi</td>
                     <td id="outSigReviewed" style="text-align:center;">Rtr. Anil Shrestha</td>
-                    <td style="text-align:center;"><div id="outSigApproved">Rtr. Nabin Chalise</div>
-                        <img id="outSigApprovedImg" src="presidentsign.png" style="max-width:150px; max-height:60px; margin-top:5px; display:block;" onerror="this.style.display='none'" />
-                    </td>
+                    <td id="outSigApproved" style="text-align:center;">Rtr. Nabin Chalise</td>
                 </tr>
             </table>
         </div>
         <div class="footer-sign">
             <div class="sign-line">
+                <img id="outSigApprovedImg" src="presidentsign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outChairSign">Rtr. Nabin Chalise</p>
                 <p class="sign-role">Meeting Chairperson</p>
             </div>
             <div class="sign-line">
+                <img id="outSigPreparedImg" src="secretarysign.png" class="footer-sign-img" onerror="this.style.display='none'" />
                 <p id="outSecretarySign">Rtr. Madan Subedi</p>
                 <p class="sign-role">Club Secretary</p>
             </div>
@@ -1860,6 +1882,33 @@
             if (accessDeniedOverlay) accessDeniedOverlay.classList.remove('active');
         }
 
+        // ============================================================
+        //  ROLE-BASED EDIT PERMISSIONS
+        //  - Admin: can create new meetings AND edit existing ones.
+        //  - Secretary: can create/save a NEW meeting, but cannot edit
+        //    an existing (already-saved) meeting record.
+        //  - President / Editor: can search/view only, no saving.
+        // ============================================================
+        function canCreateNewMeeting() {
+            return currentUserRole === 'admin' || currentUserRole === 'secretary';
+        }
+
+        function canEditExistingMeeting() {
+            return currentUserRole === 'admin';
+        }
+
+        function applyRolePermissionsToUI() {
+            const saveBtn = document.getElementById('saveBtn');
+            const allowed = canCreateNewMeeting();
+
+            if (saveBtn) {
+                saveBtn.disabled = !allowed;
+                saveBtn.style.opacity = allowed ? '1' : '0.5';
+                saveBtn.style.cursor = allowed ? 'pointer' : 'not-allowed';
+                saveBtn.title = allowed ? '' : 'Only Admin/Secretary can save meeting minutes.';
+            }
+        }
+
         function updateUIAfterAuth(user, role) {
             currentUser = user;
             currentUserRole = role;
@@ -1886,6 +1935,7 @@
 
             fetchAllMeetings();
             calculateAttendanceCounts();
+            applyRolePermissionsToUI();
 
             showToast('✅ Welcome', `Logged in as ${role.toUpperCase()}`, 'success');
         }
@@ -2074,7 +2124,7 @@
             { role: "ROTARACT YOUNG LEADERS CONTACT", name: "RTR. MELINA KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. AMRIT SUBEDI" },
             { role: "CLUB MEMBER", name: "RTR. ANIL GANDARVA" },
-            { role: "CLUB MEMBER", name: "RTR. BALARAM ADHIKARI" },
+            { role: "CLUB MEMBER", name: "RTR. BALRAM ADHIKARI" },
             { role: "CLUB MEMBER", name: "RTR. BIBEK KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. BIDUR KHAREL" },
             { role: "CLUB MEMBER", name: "RTR. DEEPAK KHATTRI" },
@@ -2104,24 +2154,129 @@
         ];
 
         // ============================================================
+        //  LIVE MEMBER NAMES (pulled from the `members` table)
+        //  Every place on this form that needs a person's name now uses
+        //  a dropdown built from this list instead of a free-text field,
+        //  so the name saved always matches the `members` table exactly
+        //  (rosterData above is only a fallback for when Supabase is
+        //  unreachable/unconfigured) - this is what makes attendance and
+        //  the recognition/attendance-award feature match reliably.
+        // ============================================================
+        let liveMemberNames = rosterData.map(m => m.name);
+
+        function memberOptionsHTML(selected) {
+            let names = liveMemberNames;
+            if (selected && !names.includes(selected)) {
+                names = [selected, ...names];
+            }
+            const opts = ['<option value="">-- Select member --</option>'];
+            names.forEach(name => {
+                opts.push(`<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`);
+            });
+            return opts.join('');
+        }
+
+        function refreshAllPersonSelects() {
+            document.querySelectorAll('.ai-person').forEach(sel => {
+                const current = sel.value;
+                sel.innerHTML = memberOptionsHTML(current);
+            });
+            document.querySelectorAll('.add-member-name').forEach(sel => {
+                const current = sel.value;
+                sel.innerHTML = memberOptionsHTML(current);
+            });
+            const chairSel = document.getElementById('meetChair');
+            if (chairSel) {
+                const current = chairSel.value;
+                chairSel.innerHTML = memberOptionsHTML(current);
+            }
+        }
+
+        async function loadResponsibleNames() {
+            // Show something immediately, then upgrade to live DB data
+            refreshAllPersonSelects();
+
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('members')
+                    .select('name, status, position, designation')
+                    .order('name', { ascending: true });
+                if (error) throw error;
+                const activeMembers = (data || [])
+                    .filter(m => (m.status || '').toLowerCase() !== 'inactive' && m.name);
+                if (activeMembers.length) {
+                    liveMemberNames = [...new Set(activeMembers.map(m => m.name))].sort();
+                    refreshAllPersonSelects();
+
+                    // Rebuild the attendance checklist from the same live
+                    // roster the dropdowns use, so a name only ever has
+                    // to match itself.
+                    const liveRoster = activeMembers
+                        .map(m => ({ name: m.name, role: m.position || m.designation || 'CLUB MEMBER' }))
+                        .sort((a, b) => a.name.localeCompare(b.name));
+                    renderMembersChecklist(liveRoster);
+                }
+            } catch (err) {
+                console.error('❌ loadResponsibleNames error (using local roster as fallback):', err);
+            }
+        }
+
+        // ============================================================
         //  MOUNT CHECKLIST
+        //  Renders from whichever roster list is passed in. Called once
+        //  immediately with the hardcoded `rosterData` fallback so the
+        //  form is usable right away, then re-called with the LIVE
+        //  `members` table roster once it loads (see loadResponsibleNames
+        //  below) - this keeps the checklist's name spelling/casing in
+        //  sync with the `members` table, which is what the person
+        //  dropdowns already do. Without this, a checklist entry whose
+        //  hardcoded name doesn't exactly match the `members` table row
+        //  (after normalization) would silently fail to count toward
+        //  attendance on the recognition page. Checked state is
+        //  preserved across re-renders by matching on a normalized key.
         // ============================================================
         const checklistContainer = document.getElementById('members-checklist');
-        if (checklistContainer) {
-            rosterData.forEach((member, i) => {
+
+        function normalizeChecklistKey(str) {
+            return (str || '').toString().trim().toLowerCase()
+                .replace(/^rtr\.?\s+/, '')
+                .replace(/^dr\.?\s+/, '')
+                .replace(/\s+/g, ' ');
+        }
+
+        function renderMembersChecklist(list) {
+            if (!checklistContainer || !Array.isArray(list) || list.length === 0) return;
+
+            // Preserve any currently-checked members (by normalized name)
+            // across a re-render, so a live refresh never un-checks
+            // someone the user already selected.
+            const previouslyChecked = new Set();
+            checklistContainer.querySelectorAll('.member-checkbox:checked').forEach(cb => {
+                previouslyChecked.add(normalizeChecklistKey(cb.dataset.name));
+            });
+
+            checklistContainer.innerHTML = '';
+            list.forEach((member, i) => {
+                const key = normalizeChecklistKey(member.name);
+                const wasChecked = previouslyChecked.has(key);
                 const div = document.createElement('div');
                 div.className = 'checklist-item';
                 div.dataset.name = member.name.toLowerCase();
                 div.innerHTML = `
-                    <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${member.name}" data-role="${member.role}" onchange="calculateAttendanceCounts()">
+                    <input type="checkbox" id="memb_${i}" class="member-checkbox" data-name="${escapeHtml(member.name)}" data-role="${escapeHtml(member.role)}" ${wasChecked ? 'checked' : ''} onchange="calculateAttendanceCounts()">
                     <label for="memb_${i}">
-                        <span>${member.name}</span>
-                        <span class="member-role">${member.role}</span>
+                        <span>${escapeHtml(member.name)}</span>
+                        <span class="member-role">${escapeHtml(member.role)}</span>
                     </label>
                 `;
                 checklistContainer.appendChild(div);
             });
+            calculateAttendanceCounts();
         }
+
+        // Immediate render so the form is usable before Supabase responds
+        renderMembersChecklist(rosterData);
 
         // ============================================================
         //  DATE INIT
@@ -2160,7 +2315,7 @@
             row.className = 'dynamic-row';
             row.innerHTML = `
                 <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
-                <input type="text" class="add-member-name" placeholder="Rtr. Name" style="flex:1;" oninput="calculateAttendanceCounts()">
+                <select class="add-member-name" style="flex:1;" onchange="calculateAttendanceCounts()">${memberOptionsHTML('')}</select>
                 <input type="text" class="add-member-role" value="CLUB MEMBER" placeholder="Designation" style="flex:1;">
             `;
             container.appendChild(row);
@@ -2239,6 +2394,15 @@
             }
         }
 
+        function autoGrowPersonField(el) {
+            if (!el) return;
+            const len = el.value.length;
+            // Grows with content, stays within sensible min/max bounds
+            const chWidth = Math.min(60, Math.max(12, len + 2));
+            el.style.width = chWidth + 'ch';
+            el.style.flex = 'none';
+        }
+
         function addActionItem() {
             const container = document.getElementById('action-items-container');
             if (!container) return;
@@ -2246,7 +2410,7 @@
             row.className = 'action-item-row';
             row.innerHTML = `
                 <input class="ai-task" placeholder="Task" />
-                <input class="ai-person" placeholder="Responsible" />
+                <select class="ai-person">${memberOptionsHTML('')}</select>
                 <input class="ai-deadline" type="date" />
                 <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                 <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2356,10 +2520,11 @@
                 const meeting = item.data || {};
                 const title = meeting.meeting_number || 'Untitled';
                 const date = meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString() : 'No date';
+                const type = meeting.meeting_type || 'General Meeting';
                 html += `
                     <div class="autocomplete-item" data-meeting-id="${escapeHtml(String(item.id))}" tabindex="0" role="option">
                         <span class="meeting-title">${escapeHtml(title)}</span>
-                        <span class="meeting-date">${escapeHtml(date)}</span>
+                        <span class="meeting-date">${escapeHtml(date)} · ${escapeHtml(type)}</span>
                     </div>
                 `;
             });
@@ -2476,6 +2641,7 @@
             const meetDate = document.getElementById('meetDate');
             const meetVenue = document.getElementById('meetVenue');
             const meetChair = document.getElementById('meetChair');
+            const meetType = document.getElementById('meetType');
 
             if (meetNo) meetNo.value = payload.meeting_number || '';
             if (payload.meeting_date && meetDate) {
@@ -2484,7 +2650,8 @@
                 meetDate.value = (new Date(date - off)).toISOString().slice(0, 16);
             }
             if (meetVenue) meetVenue.value = payload.venue || 'Club Office, Galkot';
-            if (meetChair) meetChair.value = payload.chairperson || 'Rtr. Nabin Chalise';
+            if (meetType) meetType.value = payload.meeting_type || 'General Meeting';
+            if (meetChair) meetChair.innerHTML = memberOptionsHTML(payload.chairperson || 'Rtr. Nabin Chalise');
 
             document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
             document.querySelectorAll('.add-member-checkbox').forEach(cb => {
@@ -2502,8 +2669,8 @@
                         row.className = 'dynamic-row';
                         row.innerHTML = `
                             <input type="checkbox" class="add-member-checkbox" checked onchange="calculateAttendanceCounts()" style="width:auto; margin-top:14px; transform:scale(1.25); accent-color:var(--primary);">
-                            <input type="text" class="add-member-name" value="${member.name}" style="flex:1;" oninput="calculateAttendanceCounts()">
-                            <input type="text" class="add-member-role" value="${member.role || 'CLUB MEMBER'}" style="flex:1;">
+                            <select class="add-member-name" style="flex:1;" onchange="calculateAttendanceCounts()">${memberOptionsHTML(member.name)}</select>
+                            <input type="text" class="add-member-role" value="${escapeHtml(member.role || 'CLUB MEMBER')}" style="flex:1;">
                         `;
                         container.appendChild(row);
                     }
@@ -2568,8 +2735,8 @@
                     const row = document.createElement('div');
                     row.className = 'action-item-row';
                     row.innerHTML = `
-                        <input class="ai-task" value="${item.task || ''}" placeholder="Task" />
-                        <input class="ai-person" value="${item.person || ''}" placeholder="Responsible" />
+                        <input class="ai-task" value="${escapeHtml(item.task || '')}" placeholder="Task" />
+                        <select class="ai-person">${memberOptionsHTML(item.person || '')}</select>
                         <input class="ai-deadline" type="date" value="${item.deadline || ''}" />
                         <select class="ai-status"><option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option><option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option><option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option></select>
                         <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2581,7 +2748,7 @@
                 row.className = 'action-item-row';
                 row.innerHTML = `
                     <input class="ai-task" placeholder="Task" />
-                    <input class="ai-person" placeholder="Responsible" />
+                    <select class="ai-person">${memberOptionsHTML('')}</select>
                     <input class="ai-deadline" type="date" />
                     <select class="ai-status"><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select>
                     <button class="ai-remove" onclick="this.parentElement.remove()">✕</button>
@@ -2618,6 +2785,7 @@
             const meetDateRaw = document.getElementById('meetDate')?.value || '';
             const meetVenue = document.getElementById('meetVenue')?.value.trim() || '';
             const meetChair = document.getElementById('meetChair')?.value.trim() || '';
+            const meetType = document.getElementById('meetType')?.value.trim() || 'General Meeting';
 
             const members = [];
             document.querySelectorAll('.member-checkbox:checked').forEach(cb => {
@@ -2674,6 +2842,7 @@
                 meeting_date: meetDateRaw ? new Date(meetDateRaw).toISOString() : null,
                 venue: meetVenue,
                 chairperson: meetChair,
+                meeting_type: meetType,
                 members,
                 guests,
                 agendas,
@@ -2697,6 +2866,7 @@
             setText('outDate', payload.meeting_date ? new Date(payload.meeting_date).toLocaleString() : '—');
             setText('outVenue', payload.venue || '—');
             setText('outChair', payload.chairperson || '—');
+            setText('outMeetType', payload.meeting_type || 'General Meeting');
             setText('outChairSign', payload.chairperson || '—');
             setText('outPres', payload.members.length);
             setText('outGst', payload.guests.length);
@@ -2720,7 +2890,7 @@
             }
 
             const discussionLabels = {
-                saa: 'Sergeant-at-Arms', happy: 'Happy Moments', president: "President's Remarks",
+                saa: 'Sergeant-at-Arms', happy: 'Happy Moments', president: "Opening Remarks",
                 committee: 'Committee Updates', announcements: 'Announcements', openFloor: 'Open Floor'
             };
             const discussionsEl = document.getElementById('outDiscussions');
@@ -2787,6 +2957,11 @@
             const btn = document.getElementById('saveBtn');
             if (!btn || btn.classList.contains('loading')) return;
 
+            if (!canCreateNewMeeting()) {
+                showToast('🔒 Not Allowed', 'Only Admin/Secretary can save meeting minutes.', 'error');
+                return;
+            }
+
             const modeEnabled = await checkMeetingMode();
             if (!modeEnabled) { showModeOffOverlay(); return; }
 
@@ -2806,15 +2981,20 @@
                 return;
             }
 
+            // Match against an existing meeting with the same meeting number (update in place)
+            const existing = allMeetings.find(item =>
+                (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
+            );
+
+            if (existing && !canEditExistingMeeting()) {
+                showToast('🔒 Not Allowed', 'This meeting already exists — only Admin can edit an existing meeting record.', 'error');
+                return;
+            }
+
             btn.classList.add('loading');
             btn.disabled = true;
 
             try {
-                // Match against an existing meeting with the same meeting number (update in place)
-                const existing = allMeetings.find(item =>
-                    (item.data?.meeting_number || '').toLowerCase() === payload.meeting_number.toLowerCase()
-                );
-
                 let versionNum = 1;
                 if (existing && existing.data?._version) {
                     const match = /v(\d+)/i.exec(existing.data._version);
@@ -2828,12 +3008,12 @@
                 if (existing) {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .update({ data: payload, closing_remarks: payload.closing_remarks, updated_at: payload._savedAt })
+                        .update({ data: payload, closing_remarks: payload.closing_remarks, updated_at: payload._savedAt, meeting_type: payload.meeting_type })
                         .eq('id', existing.id));
                 } else {
                     ({ error } = await supabaseClient
                         .from('meeting_minutes')
-                        .insert([{ data: payload, closing_remarks: payload.closing_remarks }]));
+                        .insert([{ data: payload, closing_remarks: payload.closing_remarks, meeting_type: payload.meeting_type }]));
                 }
                 if (error) throw error;
 
@@ -2865,6 +3045,7 @@
         window.addGuestRow = addGuestRow;
         window.addAgendaRow = addAgendaRow;
         window.addActionItem = addActionItem;
+        window.autoGrowPersonField = autoGrowPersonField;
         window.compileSaveAndEmail = compileSaveAndEmail;
         window.printMinutes = printMinutes;
         window.searchMeeting = searchMeeting;
@@ -2886,6 +3067,7 @@
 
             if (hasSession) {
                 await fetchAllMeetings();
+                await loadResponsibleNames();
                 calculateAttendanceCounts();
 
                 const searchInput = document.getElementById('searchMeetingNo');
