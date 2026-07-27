@@ -445,7 +445,7 @@
     <div class="container">
         <div id="dashboardSection" class="hidden">
 
-            <button class="btn btn-primary" style="background:linear-gradient(135deg,#d4af37,#b8860b); margin-bottom:20px;" onclick="window.open('banner.html', '_blank')">🎬 कार्यक्रमको सुरुवात गर्नुहोस्</button>
+            <button class="btn btn-primary" style="background:linear-gradient(135deg,#d4af37,#b8860b); margin-bottom:20px;" onclick="triggerProgramStart()">🎬 कार्यक्रमको सुरुवात गर्नुहोस्</button>
 
             <div class="saved-data-section">
                 <h3>📋 सेभ भएका ब्यानरहरूको सूची</h3>
@@ -1262,6 +1262,21 @@
         function toggleShowAllBanners() {
             __showAllBanners = !__showAllBanners;
             renderBannerTable();
+        }
+
+        // ===== TRIGGER LIVE PROGRAM START (real-time on banner.html) =====
+        async function triggerProgramStart() {
+            const { error } = await supabaseClient
+                .from('banner_settings')
+                .update({ program_start_trigger: Date.now() })
+                .eq('is_active', true);
+
+            if (error) {
+                alert('❌ सुरुवात गर्न असफल: ' + error.message);
+                return;
+            }
+
+            window.open('banner.html', '_blank');
         }
 
         async function setActiveBanner(id) {

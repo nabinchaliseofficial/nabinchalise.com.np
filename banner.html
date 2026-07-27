@@ -831,6 +831,20 @@
                 window.__lastTypewriterTrigger = data.typewriter_trigger;
                 playTypewriter(data.meeting_name || '', 3);
             }
+
+            // Remote "कार्यक्रमको सुरुवात गर्नुहोस्" trigger (admin clicks the button in adminbanner.html)
+            if (window.__lastProgramTrigger === undefined) {
+                // First load: just remember the current value, don't auto-start
+                window.__lastProgramTrigger = data.program_start_trigger || 0;
+            } else if (data.program_start_trigger && data.program_start_trigger != window.__lastProgramTrigger) {
+                window.__lastProgramTrigger = data.program_start_trigger;
+                const startScreen = document.getElementById('startScreen');
+                const startBtn = document.getElementById('startProgramBtn');
+                if (startScreen && startBtn && !startBtn.disabled &&
+                    !startScreen.classList.contains('hidden') && !startScreen.classList.contains('opening')) {
+                    startBtn.click();
+                }
+            }
         }
 
         // ===== TYPEWRITER ANIMATION (meeting name, repeats `times` times) =====
