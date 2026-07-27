@@ -42,8 +42,105 @@
             background-color: #1a1a2e;
         }
 
-        .banner-container.is-fullscreen {
-            border-color: #e53935;
+        .start-screen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            z-index: 5000;
+            overflow: hidden;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 2px, transparent 2px, transparent 34px),
+                linear-gradient(135deg, #8a0f0f 0%, #5c0808 45%, #8a0f0f 100%);
+            box-shadow: inset -30px 0 60px rgba(0,0,0,0.45);
+            transition: transform 3.2s cubic-bezier(0.65, 0, 0.35, 1);
+            z-index: 2;
+        }
+
+        .curtain-left {
+            left: 0;
+            border-right: 5px solid #d4af37;
+        }
+
+        .curtain-right {
+            right: 0;
+            border-left: 5px solid #d4af37;
+        }
+
+        .start-screen.opening .curtain-left {
+            transform: translateX(-100%);
+        }
+
+        .start-screen.opening .curtain-right {
+            transform: translateX(100%);
+        }
+
+        .start-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 22px;
+            z-index: 3;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.4s ease;
+        }
+
+        .start-screen.opening .start-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .start-screen h1 {
+            font-family: 'Mukta', 'Segoe UI', sans-serif;
+            font-size: 1.6rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .start-btn {
+            font-family: 'Mukta', 'Segoe UI', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #ffd76a, #d4af37);
+            border: none;
+            padding: 22px 55px;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 14px 38px rgba(212, 175, 55, 0.55);
+        }
+
+        .start-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        @media (max-width: 480px) {
+            .start-screen h1 { font-size: 1.1rem; }
+            .start-btn { font-size: 1.15rem; padding: 16px 34px; }
         }
 
         .header-section {
@@ -218,6 +315,10 @@
             border-color: rgba(255, 255, 255, 0.4);
         }
 
+        .open-presentation-btn {
+            top: 62px;
+        }
+
         @media (max-width: 768px) {
             .open-link-btn {
                 top: 10px;
@@ -225,6 +326,58 @@
                 padding: 5px 12px;
                 font-size: 0.65rem;
             }
+
+            .open-presentation-btn {
+                top: 44px;
+            }
+        }
+
+        /* ===== In-page iframe overlay (Open Link / Open Presentation) ===== */
+        .iframe-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 6000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .iframe-overlay.visible {
+            display: flex;
+        }
+
+        .iframe-overlay-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .iframe-overlay-close {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        .iframe-overlay-close:hover {
+            background: #fff;
+        }
+
+        .iframe-overlay-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #fff;
         }
 
         .fullscreen-btn {
@@ -415,11 +568,21 @@
 </head>
 <body>
 
+    <!-- Start Screen (shown first; program starts only after admin clicks) -->
+    <div class="start-screen" id="startScreen">
+        <div class="curtain curtain-left" id="curtainLeft"></div>
+        <div class="curtain curtain-right" id="curtainRight"></div>
+        <div class="start-content" id="startContent">
+            <h1>प्रस्तुत गर्न तयार हुँदा तल क्लिक गर्नुहोस्</h1>
+            <button class="start-btn" id="startProgramBtn" onclick="startProgram()">🎬 कार्यक्रमको सुरुवात गर्नुहोस्</button>
+        </div>
+    </div>
+
     <div class="banner-container" id="bannerBg">
         
         <!-- Logo - Center Top -->
-        <div class="center-logo-container">
-            <img id="centerLogo" src="" alt="Logo">
+        <div class="center-logo-container" onclick="openInPageOverlay(event, 'centerLogo')" style="cursor:pointer;" title="Admin Panel">
+            <img id="centerLogo" src="" alt="Logo" data-url="https://nabinchalise.com.np/adminbanner">
         </div>
 
         <!-- Top Header with Live Clock -->
@@ -454,10 +617,21 @@
     </div>
 
     <!-- Open Link Tab (Top Left) -->
-    <a href="#" class="open-link-btn" id="openLinkBtn" target="_blank" rel="noopener noreferrer">🔗 Open Link</a>
+    <a href="#" class="open-link-btn" id="openLinkBtn" onclick="return openInPageOverlay(event, 'openLinkBtn')">🔗 Open Link</a>
+
+    <!-- Open Presentation Tab (Top Left, below Open Link) -->
+    <a href="#" class="open-link-btn open-presentation-btn" id="openPresentationBtn" onclick="return openInPageOverlay(event, 'openPresentationBtn')">🎞️ Open Presentation</a>
 
     <!-- Fullscreen Toggle Button -->
     <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
+
+    <!-- In-page Iframe Overlay for Open Link / Open Presentation -->
+    <div class="iframe-overlay" id="iframeOverlay">
+        <div class="iframe-overlay-header">
+            <button class="iframe-overlay-close" onclick="closeInPageOverlay()">✕ Close</button>
+        </div>
+        <iframe class="iframe-overlay-frame" id="iframeOverlayFrame" src="" title="Content"></iframe>
+    </div>
 
     <script>
         // ===== SUPABASE CONFIGURATION =====
@@ -590,6 +764,7 @@
             if (!data) return;
 
             window.__liveBannerId = data.id;
+            window.__currentMeetingName = data.meeting_name || '';
             document.getElementById('meetingName').innerText = data.meeting_name || 'Loading...';
             document.getElementById('subMeetingName').innerText = data.sub_meeting_name || '';
             document.getElementById('organizedBy').innerText = data.organized_by || 'Loading...';
@@ -622,11 +797,20 @@
 
             const openLinkBtn = document.getElementById('openLinkBtn');
             if (data.open_link_url && data.open_link_url.trim() !== '') {
-                openLinkBtn.href = data.open_link_url.trim();
+                openLinkBtn.dataset.url = data.open_link_url.trim();
                 openLinkBtn.classList.add('visible');
             } else {
-                openLinkBtn.removeAttribute('href');
+                delete openLinkBtn.dataset.url;
                 openLinkBtn.classList.remove('visible');
+            }
+
+            const openPresentationBtn = document.getElementById('openPresentationBtn');
+            if (data.presentation_url && data.presentation_url.trim() !== '') {
+                openPresentationBtn.dataset.url = data.presentation_url.trim();
+                openPresentationBtn.classList.add('visible');
+            } else {
+                delete openPresentationBtn.dataset.url;
+                openPresentationBtn.classList.remove('visible');
             }
 
             const fontScale = data.font_scale || 100;
@@ -755,6 +939,42 @@
                 });
         }
 
+        // Converts a Google Slides link into an auto-starting, looping slideshow embed URL.
+        // Other URLs (PowerPoint Online, PDFs, general links) are returned unchanged.
+        function transformPresentationUrl(url) {
+            try {
+                const slidesMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+                if (slidesMatch) {
+                    const docId = slidesMatch[1];
+                    return `https://docs.google.com/presentation/d/${docId}/embed?start=true&loop=true&delayms=3000`;
+                }
+            } catch (e) {
+                console.log('Presentation URL transform skipped:', e);
+            }
+            return url;
+        }
+
+        // ===== OPEN LINK / OPEN PRESENTATION / LOGO — same-page iframe overlay =====
+        function openInPageOverlay(event, btnId) {
+            if (event) event.preventDefault();
+            const btn = document.getElementById(btnId);
+            let url = btn && btn.dataset.url;
+            if (!url) return false;
+
+            if (btnId === 'openPresentationBtn') {
+                url = transformPresentationUrl(url);
+            }
+
+            document.getElementById('iframeOverlayFrame').src = url;
+            document.getElementById('iframeOverlay').classList.add('visible');
+            return false;
+        }
+
+        function closeInPageOverlay() {
+            document.getElementById('iframeOverlay').classList.remove('visible');
+            document.getElementById('iframeOverlayFrame').src = '';
+        }
+
         function updateClock() {
             const time = getCurrentNepaliTime();
             document.getElementById('clockTime').textContent = time.formattedNepali;
@@ -766,6 +986,33 @@
         setViewportHeight();
         window.addEventListener('resize', setViewportHeight);
         window.addEventListener('orientationchange', setViewportHeight);
+
+        function startProgram() {
+            const startScreen = document.getElementById('startScreen');
+            const startProgramBtn = document.getElementById('startProgramBtn');
+            if (startProgramBtn) startProgramBtn.disabled = true;
+
+            // Request fullscreen now, while we still have the user gesture
+            const el = document.documentElement;
+            const request = el.requestFullscreen
+                ? el.requestFullscreen()
+                : el.webkitRequestFullscreen
+                    ? el.webkitRequestFullscreen()
+                    : null;
+            if (request && request.catch) {
+                request.catch(err => console.log('Fullscreen error:', err));
+            }
+
+            // Curtains open (parda khulcha)
+            startScreen.classList.add('opening');
+
+            setTimeout(() => {
+                startScreen.classList.add('hidden');
+                const nameEl = document.getElementById('meetingName');
+                const nameText = window.__currentMeetingName || (nameEl ? nameEl.innerText : '') || '';
+                playTypewriter(nameText, 3);
+            }, 3250);
+        }
 
         function toggleFullScreen() {
             if (!document.fullscreenElement) {

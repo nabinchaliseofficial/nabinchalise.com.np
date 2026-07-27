@@ -428,13 +428,13 @@
     <!-- Login Popup -->
     <div class="login-modal-overlay" id="loginSection">
         <div class="login-modal-box">
-            <h2>🔐 Admin Login</h2>
+            <h2 id="loginTitle">🔐 Admin Login</h2>
             <div class="form-group">
-                <label>📧 इमेल (Email)</label>
+                <label id="emailLabel">📧 इमेल (Email)</label>
                 <input type="email" id="adminEmail" placeholder="admin@example.com" autofocus>
             </div>
             <div class="form-group">
-                <label>🔑 पासवर्ड (Password)</label>
+                <label id="passwordLabel">🔑 पासवर्ड (Password)</label>
                 <input type="password" id="adminPassword" placeholder="********" onkeydown="if(event.key==='Enter') loginAdmin()">
             </div>
             <button class="btn btn-primary" onclick="loginAdmin()" id="loginBtn">लगइन गर्नुहोस् (Login)</button>
@@ -444,6 +444,8 @@
 
     <div class="container">
         <div id="dashboardSection" class="hidden">
+
+            <button class="btn btn-primary" style="background:linear-gradient(135deg,#d4af37,#b8860b); margin-bottom:20px;" onclick="window.open('banner.html', '_blank')">🎬 कार्यक्रमको सुरुवात गर्नुहोस्</button>
 
             <div class="saved-data-section">
                 <h3>📋 सेभ भएका ब्यानरहरूको सूची</h3>
@@ -524,6 +526,9 @@
 
                 <label style="margin-top:14px;">🔗 Open Link URL (ब्यानरमा देखिने बटनको लिंक)</label>
                 <input type="text" id="openLinkUrl" placeholder="e.g., https://example.com">
+
+                <label style="margin-top:14px;">🎞️ Presentation Link (ब्यानरमा देखिने Presentation बटनको लिंक)</label>
+                <input type="text" id="presentationUrl" placeholder="e.g., https://docs.google.com/presentation/...">
             </div>
 
             <!-- Nepali Date & Time -->
@@ -634,11 +639,18 @@
             </button>
             <p id="updateMsg" class="msg"></p>
 
-            <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 लगआउट</button>
+            <button class="btn btn-secondary" id="logoutBtn" onclick="logoutAdmin()">🚪 लगआउट</button>
         </div>
     </div>
 
     <script>
+        // ===== ACCESS CONTROL SETTING =====
+        // "Banner Admin Login" टगल अब Minutes एडमिन प्यानल (adminminutes.html) बाट
+        // नियन्त्रण हुन्छ र app_settings टेबलमा 'banner_admin_login' key मा सेभ हुन्छ।
+        //   ON  -> साधारण Supabase इमेल/पासवर्ड लगइन + admin role जाँच (सबैभन्दा सुरक्षित)
+        //   OFF -> छिटो पहुँचको लागि: Username 1111 / Password 0000 राखेर सिधै खुल्छ
+        let bannerAdminLoginOn = true;
+
         // ===== SUPABASE CONFIG =====
         const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
@@ -1042,38 +1054,99 @@
             }
         }
 
+        // ===== BANNER ADMIN LOGIN MODE (controlled from adminminutes.html) =====
+        async function getBannerAdminLoginMode() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'banner_admin_login')
+                    .maybeSingle();
+
+                if (!error && data) {
+                    return data.setting_value === 'true' || data.setting_value === true;
+                }
+
+                // Default row not set yet — insert default (ON) and treat as ON
+                await supabaseClient
+                    .from('app_settings')
+                    .insert([{ setting_key: 'banner_admin_login', setting_value: 'true' }]);
+                return true;
+            } catch (err) {
+                return true; // fail safe: default to secure admin login
+            }
+        }
+
+        function applyLoginModeUI() {
+            const title = document.getElementById('loginTitle');
+            const emailLabel = document.getElementById('emailLabel');
+            const passwordLabel = document.getElementById('passwordLabel');
+            const emailInput = document.getElementById('adminEmail');
+
+            if (bannerAdminLoginOn) {
+                title.textContent = '🔐 Admin Login';
+                emailLabel.textContent = '📧 इमेल (Email)';
+                emailInput.type = 'email';
+                emailInput.placeholder = 'admin@example.com';
+                passwordLabel.textContent = '🔑 पासवर्ड (Password)';
+            } else {
+                title.textContent = '⚡ Quick Login';
+                emailLabel.textContent = '👤 Username';
+                emailInput.type = 'text';
+                emailInput.placeholder = 'Username';
+                passwordLabel.textContent = '🔑 Password';
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             initializeNepaliDateSelectors();
 
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const allowed = await isAdminUser(session.user);
-                if (allowed) {
-                    showDashboard();
-                    return;
-                } else {
-                    await supabaseClient.auth.signOut();
+            bannerAdminLoginOn = await getBannerAdminLoginMode();
+            applyLoginModeUI();
+
+            if (bannerAdminLoginOn) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    const allowed = await isAdminUser(session.user);
+                    if (allowed) {
+                        showDashboard();
+                        return;
+                    } else {
+                        await supabaseClient.auth.signOut();
+                    }
                 }
             }
             document.getElementById('loginSection').classList.remove('hidden');
         });
 
         async function loginAdmin() {
-            const email = document.getElementById('adminEmail').value.trim();
+            const emailOrUser = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
             const msgEl = document.getElementById('loginMsg');
             const loginBtn = document.getElementById('loginBtn');
 
-            if (!email || !password) {
-                msgEl.innerText = "कृपया इमेल र पासवर्ड भर्नुहोस्";
+            if (!emailOrUser || !password) {
+                msgEl.innerText = bannerAdminLoginOn ? "कृपया इमेल र पासवर्ड भर्नुहोस्" : "कृपया Username र Password भर्नुहोस्";
                 msgEl.className = "msg error";
                 return;
             }
 
+            // ===== FAST LOGIN MODE (banner_admin_login OFF) =====
+            if (!bannerAdminLoginOn) {
+                if (emailOrUser === '1111' && password === '0000') {
+                    showDashboard();
+                } else {
+                    msgEl.innerText = "❌ गलत Username वा Password";
+                    msgEl.className = "msg error";
+                }
+                return;
+            }
+
+            // ===== NORMAL ADMIN LOGIN MODE (banner_admin_login ON) =====
             loginBtn.disabled = true;
             loginBtn.innerHTML = '⏳ लगइन हुँदै...';
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailOrUser, password });
 
             if (error) {
                 loginBtn.disabled = false;
@@ -1100,6 +1173,7 @@
         function showDashboard() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.toggle('hidden', !bannerAdminLoginOn);
             loadSavedData();
             loadGallery();
         }
@@ -1130,6 +1204,7 @@
                     sub_meeting_name: '',
                     organized_by: 'आयोजकको नाम',
                     open_link_url: '',
+                    presentation_url: '',
                     date_text: 'मिति: २०८१ बैशाख १ गते, सोमबार',
                     time_text: 'बैठक सुरु समय: १०:०० बजे',
                     is_active: true,
@@ -1207,6 +1282,7 @@
                 sub_meeting_name: item.sub_meeting_name,
                 organized_by: item.organized_by,
                 open_link_url: item.open_link_url,
+                presentation_url: item.presentation_url,
                 date_text: item.date_text,
                 time_text: item.time_text,
                 is_active: false,
@@ -1314,6 +1390,7 @@
             document.getElementById('subMeetingName').value = item.sub_meeting_name || '';
             document.getElementById('organizedBy').value = item.organized_by || '';
             document.getElementById('openLinkUrl').value = item.open_link_url || '';
+            document.getElementById('presentationUrl').value = item.presentation_url || '';
 
             // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
@@ -1419,6 +1496,7 @@
             const subMeetingName = document.getElementById('subMeetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
             const openLinkUrl = document.getElementById('openLinkUrl').value.trim();
+            const presentationUrl = document.getElementById('presentationUrl').value.trim();
             const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
             const dateText = document.getElementById('dateText').value;
             const timeText = document.getElementById('timeText').value;
@@ -1484,6 +1562,7 @@
                     sub_meeting_name: subMeetingName,
                     organized_by: organizedBy,
                     open_link_url: openLinkUrl,
+                    presentation_url: presentationUrl,
                     date_text: dateText,
                     time_text: timeText,
                     font_scale: fontScale,

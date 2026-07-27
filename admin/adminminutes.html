@@ -1277,6 +1277,24 @@
                 <i class="fa-solid fa-spinner fa-spin"></i> Updating...
             </span>
         </div>
+
+        <!-- ===== BANNER ADMIN LOGIN TOGGLE ===== -->
+        <div class="mode-toggle-container">
+            <span class="mode-toggle-label">
+                <i class="fa-solid fa-shield-halved" style="font-size:1.2rem;"></i>
+                Banner Admin Login
+            </span>
+
+            <div class="toggle-switch" id="bannerLoginToggle" onclick="toggleBannerAdminLogin()">
+                <div class="toggle-knob"></div>
+            </div>
+
+            <span class="mode-status-text" id="bannerLoginStatusText">Loading...</span>
+
+            <span class="toggle-loading" id="bannerLoginToggleLoading">
+                <i class="fa-solid fa-spinner fa-spin"></i> Updating...
+            </span>
+        </div>
     </header>
 
     <!-- ===== MEETING MINUTES ===== -->
@@ -1801,6 +1819,108 @@
                 const status = await getMeetingMode();
                 currentModeStatus = status;
                 updateModeUI(status);
+                return status;
+            };
+
+            // ============================================================
+            // ===== BANNER ADMIN LOGIN TOGGLE FUNCTIONS =====
+            // Controls whether adminbanner.html requires full Supabase admin
+            // login (ON) or a fast fixed username/password login (OFF).
+            // ============================================================
+            let currentBannerLoginStatus = true;
+
+            const getBannerAdminLogin = async () => {
+                try {
+                    const { data, error } = await supabase
+                        .from('app_settings')
+                        .select('setting_value')
+                        .eq('setting_key', 'banner_admin_login')
+                        .maybeSingle();
+
+                    if (error) {
+                        console.error('Error fetching banner admin login mode:', error);
+                        return true;
+                    }
+
+                    if (data) {
+                        return data.setting_value === 'true' || data.setting_value === true;
+                    }
+
+                    await supabase
+                        .from('app_settings')
+                        .insert([{ setting_key: 'banner_admin_login', setting_value: 'true' }]);
+
+                    return true;
+                } catch (err) {
+                    console.error('Error in getBannerAdminLogin:', err);
+                    return true;
+                }
+            };
+
+            const setBannerAdminLogin = async (enabled) => {
+                const value = enabled ? 'true' : 'false';
+
+                try {
+                    const { error } = await supabase
+                        .from('app_settings')
+                        .upsert({
+                            setting_key: 'banner_admin_login',
+                            setting_value: value,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'setting_key' });
+
+                    if (error) throw error;
+
+                    currentBannerLoginStatus = enabled;
+                    updateBannerLoginUI(enabled);
+                    showToast(`Banner Admin Login ${enabled ? 'ON' : 'OFF'}`, 'success');
+                    return true;
+                } catch (err) {
+                    console.error('Error setting banner admin login mode:', err);
+                    showToast('Error updating Banner Admin Login: ' + err.message, 'error');
+                    return false;
+                }
+            };
+
+            const updateBannerLoginUI = (enabled) => {
+                const toggle = document.getElementById('bannerLoginToggle');
+                const statusText = document.getElementById('bannerLoginStatusText');
+
+                if (enabled) {
+                    toggle.classList.add('active');
+                    statusText.className = 'mode-status-text on';
+                    statusText.textContent = '🟢 ON';
+                } else {
+                    toggle.classList.remove('active');
+                    statusText.className = 'mode-status-text off';
+                    statusText.textContent = '🔴 OFF (1111/0000)';
+                }
+            };
+
+            window.toggleBannerAdminLogin = async function() {
+                const toggle = document.getElementById('bannerLoginToggle');
+                const loading = document.getElementById('bannerLoginToggleLoading');
+
+                if (loading.classList.contains('show')) return;
+
+                loading.classList.add('show');
+                toggle.style.pointerEvents = 'none';
+
+                const newMode = !currentBannerLoginStatus;
+                const success = await setBannerAdminLogin(newMode);
+
+                if (success) {
+                    currentBannerLoginStatus = newMode;
+                }
+
+                loading.classList.remove('show');
+                toggle.style.pointerEvents = 'auto';
+            };
+
+            const loadBannerAdminLogin = async () => {
+                const status = await getBannerAdminLogin();
+                currentBannerLoginStatus = status;
+                updateBannerLoginUI(status);
                 return status;
             };
 
@@ -2648,6 +2768,20 @@
                     .subscribe((status) => {
                         console.log('📡 Settings subscription status:', status);
                     });
+
+                supabase.channel('banner-login-settings-changes')
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'app_settings',
+                        filter: 'setting_key=eq.banner_admin_login'
+                    }, () => {
+                        console.log('🔄 Banner Admin Login mode changed, updating...');
+                        loadBannerAdminLogin();
+                    })
+                    .subscribe((status) => {
+                        console.log('📡 Banner login settings subscription status:', status);
+                    });
             };
 
             // ============================================================
@@ -2668,6 +2802,7 @@
                     if (isAuthorized) {
                         await Promise.all([
                             loadMeetingMode(),
+                            loadBannerAdminLogin(),
                             loadMeetingMinutes()
                         ]);
                         setupRealtimeSubscriptions();

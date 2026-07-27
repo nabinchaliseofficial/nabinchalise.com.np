@@ -351,6 +351,7 @@ button{ font-family:inherit; }
 .module-card .icon-wrap{
     width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem;
 }
+.module-card.c-banner .icon-wrap{ background:rgba(67,201,138,0.14); color:var(--success); }
 .module-card.c-members .icon-wrap{ background:rgba(240,85,95,0.14); color:var(--danger); }
 .module-card.c-projects .icon-wrap{ background:rgba(226,130,63,0.14); color:var(--accent); }
 .module-card.c-minutes .icon-wrap{ background:rgba(155,140,240,0.14); color:var(--purple); }
@@ -504,6 +505,7 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
             <button class="nav-item" data-view="more"><i class="fa-solid fa-layer-group"></i> More pages</button>
 
             <div class="nav-group-label">Modules</div>
+            <button class="nav-item" data-module="/adminbanner.html"><i class="fa-solid fa-rectangle-ad"></i> Banner</button>
             <button class="nav-item" data-module="adminmembers.html"><i class="fa-solid fa-users"></i> Members</button>
             <button class="nav-item" data-module="adminupcomingproject.html"><i class="fa-solid fa-diagram-project"></i> Projects</button>
             <button class="nav-item" data-module="adminminutes.html"><i class="fa-solid fa-file-lines"></i> Minutes</button>
@@ -564,6 +566,12 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
                 <h2><i class="fa-solid fa-grid-2"></i> Modules</h2>
             </div>
             <div class="module-grid">
+                <div class="module-card c-banner" data-module="adminbanner.html" role="button" tabindex="0">
+                    <span class="icon-wrap"><i class="fa-solid fa-rectangle-ad"></i></span>
+                    <h3>Banner</h3>
+                    <p>Live meeting banner display settings</p>
+                    <span class="go">Open <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
                 <div class="module-card c-members" data-module="adminmembers.html" role="button" tabindex="0">
                     <span class="icon-wrap"><i class="fa-solid fa-users"></i></span>
                     <h3>Members</h3>
@@ -939,6 +947,7 @@ footer.app-footer{ padding:1.5rem 2.2rem 2.5rem; color:var(--text-faint); font-s
     // Modules (Members / Projects / Minutes / Inquiries) open inline,
     // inside Central Hub, via an iframe — not as a separate page.
     const MODULE_META = {
+        'adminbanner.html': { title: 'Banner', icon: 'fa-solid fa-rectangle-ad', sub: 'Live meeting banner display settings.' },
         'adminmembers.html': { title: 'Members', icon: 'fa-solid fa-users', sub: 'Active members and registration requests.' },
         'adminupcomingproject.html': { title: 'Projects', icon: 'fa-solid fa-diagram-project', sub: 'Upcoming projects and applications.' },
         'adminminutes.html': { title: 'Minutes', icon: 'fa-solid fa-file-lines', sub: 'View, edit and print meeting minutes.' },
