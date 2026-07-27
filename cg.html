@@ -145,14 +145,13 @@
             btn.disabled = true;
             statusMsg.textContent = '⏳ पठाइँदैछ...';
 
-            const { error } = await supabaseClient
-                .from('banner_settings')
-                .update({ program_start_trigger: Date.now() })
-                .eq('is_active', true);
+            // Uses a SECURITY DEFINER function so this works without an admin login.
+            const { error } = await supabaseClient.rpc('trigger_program_start');
 
             if (error) {
+                console.error('trigger_program_start error:', error);
                 statusMsg.textContent = '❌ असफल: ' + error.message;
-                btn.disabled = !chiefGuestModeEnabled ? true : false;
+                btn.disabled = !chiefGuestModeEnabled;
                 return;
             }
 
