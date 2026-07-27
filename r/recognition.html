@@ -353,13 +353,16 @@
       ).join('');
     }
 
-    // --- Board classification, driven by the `position` column ------------
-    // Board membership is now read directly from each member's `position`
-    // field in the `members` table (set via a fixed dropdown in the admin
-    // panel - see adminmembers.html) instead of a hardcoded name list.
-    // This means recognition no longer breaks when a name is spelled
-    // slightly differently in different places - as long as the admin
-    // picks a position from the dropdown, classification always works.
+    // --- Board classification, driven by the `designation` column ---------
+    // Board membership is read from each member's free-text `designation`
+    // field (not `position` - the admin-panel dropdown often lags behind
+    // what's actually written in designation, e.g. someone can be
+    // "Rotaract Vice President" in designation but still "Club Member" in
+    // position). designation text varies ("Rotaract Vice President",
+    // "PP/ISD/Advisor", "IPP/Mentor") so it's normalized (strip
+    // Rotaract/Rotary/PP words, turn "/" into spaces) and compared against
+    // BOARD_DESIGNATIONS. `position` is only used as a fallback when
+    // designation is empty.
     const BOARD_DESIGNATIONS = [
       'President',
       'President Elect',
@@ -388,12 +391,32 @@
         .replace(/\s+/g, ' ');
     }
 
+    // Strips words/characters that vary between designation and the
+    // canonical BOARD_DESIGNATIONS labels ("Rotaract"/"Rotary"/"PP" prefixes,
+    // slashes) so "Rotaract Vice President" and "Vice President" line up.
+    function normalizeDesignationText(str) {
+      return (str || '').toString().toLowerCase()
+        .replace(/\brotaract\b/g, ' ')
+        .replace(/\brotary\b/g, ' ')
+        .replace(/\bpp\b/g, ' ')
+        .replace(/\//g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    const NORMALIZED_BOARD_DESIGNATIONS = BOARD_DESIGNATIONS.map(normalizeDesignationText);
+
     function classifyMember(m) {
-      const position = (m.position || m.designation || '').toString().trim();
-      const isBoard = BOARD_DESIGNATIONS.includes(position);
+      const rawDesignation = (m.designation || m.position || '').toString().trim();
+      const normalized = normalizeDesignationText(rawDesignation);
+      const matchIndex = NORMALIZED_BOARD_DESIGNATIONS.indexOf(normalized);
+      const isBoard = matchIndex !== -1;
+      // Show the canonical BOARD_DESIGNATIONS label when matched (consistent
+      // spelling), otherwise show whatever was actually written.
+      const displayDesignation = isBoard ? BOARD_DESIGNATIONS[matchIndex] : (rawDesignation || 'Club Member');
       return {
-        designation: position || 'Club Member',
-        isPresident: position === 'President',
+        designation: displayDesignation,
+        isPresident: isBoard && displayDesignation === 'President',
         isBoard
       };
     }

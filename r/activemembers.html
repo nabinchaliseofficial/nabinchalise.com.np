@@ -7,7 +7,7 @@
     <meta name="description" content="Active member directory for Rotaract Club of Galkot Baglung — search members, view contact details, and upcoming birthdays." />
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%232563eb'/></svg>">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnXOs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <!-- html2pdf library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
@@ -1463,10 +1463,13 @@
             let recognitionDataCache = null;
             let recognitionShownAutomatically = false;
 
-            // Board classification is driven by each member's `position`
-            // column (set via the fixed dropdown in adminmembers.html)
-            // instead of a hardcoded name list - see recognition.html for
-            // the same fix and the reasoning behind it.
+            // Board classification is driven by each member's free-text
+            // `designation` column (not `position` - the admin dropdown
+            // often lags behind what's actually written in designation).
+            // Same fix as recognition.html: normalize away Rotaract/Rotary/
+            // PP prefixes and slashes, then match against
+            // BOARD_DESIGNATIONS. `position` is only a fallback when
+            // designation is empty.
             const BOARD_DESIGNATIONS = [
                 'President',
                 'President Elect',
@@ -1495,12 +1498,27 @@
                     .replace(/\s+/g, ' ');
             }
 
+            function rpNormalizeDesignationText(str) {
+                return (str || '').toString().toLowerCase()
+                    .replace(/\brotaract\b/g, ' ')
+                    .replace(/\brotary\b/g, ' ')
+                    .replace(/\bpp\b/g, ' ')
+                    .replace(/\//g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+
+            const NORMALIZED_BOARD_DESIGNATIONS = BOARD_DESIGNATIONS.map(rpNormalizeDesignationText);
+
             function rpClassifyMember(m) {
-                const position = (m.position || m.designation || '').toString().trim();
-                const isBoard = BOARD_DESIGNATIONS.includes(position);
+                const rawDesignation = (m.designation || m.position || '').toString().trim();
+                const normalized = rpNormalizeDesignationText(rawDesignation);
+                const matchIndex = NORMALIZED_BOARD_DESIGNATIONS.indexOf(normalized);
+                const isBoard = matchIndex !== -1;
+                const displayDesignation = isBoard ? BOARD_DESIGNATIONS[matchIndex] : (rawDesignation || 'Club Member');
                 return {
-                    designation: position || 'Club Member',
-                    isPresident: position === 'President',
+                    designation: displayDesignation,
+                    isPresident: isBoard && displayDesignation === 'President',
                     isBoard
                 };
             }
