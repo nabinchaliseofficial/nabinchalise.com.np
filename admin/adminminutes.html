@@ -1295,6 +1295,24 @@
                 <i class="fa-solid fa-spinner fa-spin"></i> Updating...
             </span>
         </div>
+
+        <!-- ===== CHIEF GUEST MODE TOGGLE ===== -->
+        <div class="mode-toggle-container">
+            <span class="mode-toggle-label">
+                <i class="fa-solid fa-clapperboard" style="font-size:1.2rem;"></i>
+                Chief Guest Mode
+            </span>
+
+            <div class="toggle-switch" id="chiefGuestToggle" onclick="toggleChiefGuestMode()">
+                <div class="toggle-knob"></div>
+            </div>
+
+            <span class="mode-status-text" id="chiefGuestStatusText">Loading...</span>
+
+            <span class="toggle-loading" id="chiefGuestToggleLoading">
+                <i class="fa-solid fa-spinner fa-spin"></i> Updating...
+            </span>
+        </div>
     </header>
 
     <!-- ===== MEETING MINUTES ===== -->
@@ -1921,6 +1939,108 @@
                 const status = await getBannerAdminLogin();
                 currentBannerLoginStatus = status;
                 updateBannerLoginUI(status);
+                return status;
+            };
+
+            // ============================================================
+            // ===== CHIEF GUEST MODE TOGGLE FUNCTIONS =====
+            // Controls whether the 🎬 कार्यक्रमको सुरुवात गर्नुहोस् button
+            // in cg.html (and adminbanner.html) is enabled (ON) or disabled (OFF).
+            // ============================================================
+            let currentChiefGuestStatus = true;
+
+            const getChiefGuestMode = async () => {
+                try {
+                    const { data, error } = await supabase
+                        .from('app_settings')
+                        .select('setting_value')
+                        .eq('setting_key', 'chief_guest_mode')
+                        .maybeSingle();
+
+                    if (error) {
+                        console.error('Error fetching chief guest mode:', error);
+                        return true;
+                    }
+
+                    if (data) {
+                        return data.setting_value === 'true' || data.setting_value === true;
+                    }
+
+                    await supabase
+                        .from('app_settings')
+                        .insert([{ setting_key: 'chief_guest_mode', setting_value: 'true' }]);
+
+                    return true;
+                } catch (err) {
+                    console.error('Error in getChiefGuestMode:', err);
+                    return true;
+                }
+            };
+
+            const setChiefGuestMode = async (enabled) => {
+                const value = enabled ? 'true' : 'false';
+
+                try {
+                    const { error } = await supabase
+                        .from('app_settings')
+                        .upsert({
+                            setting_key: 'chief_guest_mode',
+                            setting_value: value,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'setting_key' });
+
+                    if (error) throw error;
+
+                    currentChiefGuestStatus = enabled;
+                    updateChiefGuestModeUI(enabled);
+                    showToast(`Chief Guest Mode ${enabled ? 'ON' : 'OFF'}`, 'success');
+                    return true;
+                } catch (err) {
+                    console.error('Error setting chief guest mode:', err);
+                    showToast('Error updating Chief Guest Mode: ' + err.message, 'error');
+                    return false;
+                }
+            };
+
+            const updateChiefGuestModeUI = (enabled) => {
+                const toggle = document.getElementById('chiefGuestToggle');
+                const statusText = document.getElementById('chiefGuestStatusText');
+
+                if (enabled) {
+                    toggle.classList.add('active');
+                    statusText.className = 'mode-status-text on';
+                    statusText.textContent = '🟢 ON';
+                } else {
+                    toggle.classList.remove('active');
+                    statusText.className = 'mode-status-text off';
+                    statusText.textContent = '🔴 OFF';
+                }
+            };
+
+            window.toggleChiefGuestMode = async function() {
+                const toggle = document.getElementById('chiefGuestToggle');
+                const loading = document.getElementById('chiefGuestToggleLoading');
+
+                if (loading.classList.contains('show')) return;
+
+                loading.classList.add('show');
+                toggle.style.pointerEvents = 'none';
+
+                const newMode = !currentChiefGuestStatus;
+                const success = await setChiefGuestMode(newMode);
+
+                if (success) {
+                    currentChiefGuestStatus = newMode;
+                }
+
+                loading.classList.remove('show');
+                toggle.style.pointerEvents = 'auto';
+            };
+
+            const loadChiefGuestMode = async () => {
+                const status = await getChiefGuestMode();
+                currentChiefGuestStatus = status;
+                updateChiefGuestModeUI(status);
                 return status;
             };
 
@@ -2782,6 +2902,20 @@
                     .subscribe((status) => {
                         console.log('📡 Banner login settings subscription status:', status);
                     });
+
+                supabase.channel('chief-guest-settings-changes')
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'app_settings',
+                        filter: 'setting_key=eq.chief_guest_mode'
+                    }, () => {
+                        console.log('🔄 Chief Guest Mode changed, updating...');
+                        loadChiefGuestMode();
+                    })
+                    .subscribe((status) => {
+                        console.log('📡 Chief Guest Mode subscription status:', status);
+                    });
             };
 
             // ============================================================
@@ -2803,6 +2937,7 @@
                         await Promise.all([
                             loadMeetingMode(),
                             loadBannerAdminLogin(),
+                            loadChiefGuestMode(),
                             loadMeetingMinutes()
                         ]);
                         setupRealtimeSubscriptions();

@@ -85,8 +85,60 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let chiefGuestModeEnabled = true;
+
+        // ===== CHIEF GUEST MODE (controlled from adminminutes.html) =====
+        async function loadChiefGuestMode() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'chief_guest_mode')
+                    .maybeSingle();
+
+                if (error) {
+                    console.error('Error fetching chief guest mode:', error);
+                    return;
+                }
+
+                chiefGuestModeEnabled = data ? (data.setting_value === 'true' || data.setting_value === true) : true;
+                updateButtonState();
+            } catch (err) {
+                console.error('Error in loadChiefGuestMode:', err);
+            }
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('startProgramBtn');
+            const statusMsg = document.getElementById('statusMsg');
+
+            if (chiefGuestModeEnabled) {
+                btn.disabled = false;
+                statusMsg.textContent = '';
+            } else {
+                btn.disabled = true;
+                statusMsg.textContent = '🔴 Chief Guest Mode बन्द छ (Admin ले खोल्नुपर्छ)';
+            }
+        }
+
+        function setupChiefGuestRealtime() {
+            supabaseClient
+                .channel('cg-chief-guest-mode-changes')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'app_settings',
+                    filter: 'setting_key=eq.chief_guest_mode'
+                }, () => {
+                    loadChiefGuestMode();
+                })
+                .subscribe();
+        }
+
         // ===== TRIGGER LIVE PROGRAM START (real-time on banner.html) =====
         async function triggerProgramStart() {
+            if (!chiefGuestModeEnabled) return;
+
             const btn = document.getElementById('startProgramBtn');
             const statusMsg = document.getElementById('statusMsg');
 
@@ -98,20 +150,22 @@
                 .update({ program_start_trigger: Date.now() })
                 .eq('is_active', true);
 
-            btn.disabled = false;
-
             if (error) {
                 statusMsg.textContent = '❌ असफल: ' + error.message;
+                btn.disabled = !chiefGuestModeEnabled ? true : false;
                 return;
             }
 
             statusMsg.textContent = '✅ सुरुवात संकेत पठाइयो!';
-            setTimeout(() => { statusMsg.textContent = ''; }, 3000);
+            setTimeout(() => { if (chiefGuestModeEnabled) statusMsg.textContent = ''; }, 3000);
 
-            window.open('banner.html', '_blank');
+            btn.disabled = !chiefGuestModeEnabled;
 
             window.open('banner.html', '_blank');
         }
+
+        loadChiefGuestMode();
+        setupChiefGuestRealtime();
     </script>
 </body>
 </html>
