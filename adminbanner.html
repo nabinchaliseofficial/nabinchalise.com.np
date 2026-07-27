@@ -521,6 +521,9 @@
 
                 <label style="margin-top:14px;">🏢 आयोजक (Organized By)</label>
                 <input type="text" id="organizedBy" placeholder="e.g., गलकोट नगरपालिका">
+
+                <label style="margin-top:14px;">🔗 Open Link URL (ब्यानरमा देखिने बटनको लिंक)</label>
+                <input type="text" id="openLinkUrl" placeholder="e.g., https://example.com">
             </div>
 
             <!-- Nepali Date & Time -->
@@ -1126,6 +1129,7 @@
                     meeting_name: 'बैठकको नाम',
                     sub_meeting_name: '',
                     organized_by: 'आयोजकको नाम',
+                    open_link_url: '',
                     date_text: 'मिति: २०८१ बैशाख १ गते, सोमबार',
                     time_text: 'बैठक सुरु समय: १०:०० बजे',
                     is_active: true,
@@ -1202,6 +1206,7 @@
                 meeting_name: item.meeting_name,
                 sub_meeting_name: item.sub_meeting_name,
                 organized_by: item.organized_by,
+                open_link_url: item.open_link_url,
                 date_text: item.date_text,
                 time_text: item.time_text,
                 is_active: false,
@@ -1308,6 +1313,7 @@
             document.getElementById('meetingName').value = item.meeting_name || '';
             document.getElementById('subMeetingName').value = item.sub_meeting_name || '';
             document.getElementById('organizedBy').value = item.organized_by || '';
+            document.getElementById('openLinkUrl').value = item.open_link_url || '';
 
             // Set font scale
             document.getElementById('fontScale').value = item.font_scale || 100;
@@ -1412,6 +1418,7 @@
             const meetingName = document.getElementById('meetingName').value.trim();
             const subMeetingName = document.getElementById('subMeetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
+            const openLinkUrl = document.getElementById('openLinkUrl').value.trim();
             const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
             const dateText = document.getElementById('dateText').value;
             const timeText = document.getElementById('timeText').value;
@@ -1476,6 +1483,7 @@
                     meeting_name: meetingName,
                     sub_meeting_name: subMeetingName,
                     organized_by: organizedBy,
+                    open_link_url: openLinkUrl,
                     date_text: dateText,
                     time_text: timeText,
                     font_scale: fontScale,

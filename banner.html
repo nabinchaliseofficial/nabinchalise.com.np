@@ -188,6 +188,45 @@
             font-size: calc(var(--time-size, 1.6rem) * var(--font-scale, 1));
         }
 
+        .open-link-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: none;
+        }
+
+        .open-link-btn.visible {
+            display: inline-block;
+        }
+
+        .open-link-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.95);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .open-link-btn {
+                top: 10px;
+                left: 10px;
+                padding: 5px 12px;
+                font-size: 0.65rem;
+            }
+        }
+
         .fullscreen-btn {
             position: absolute;
             bottom: 20px;
@@ -414,6 +453,9 @@
         </div>
     </div>
 
+    <!-- Open Link Tab (Top Left) -->
+    <a href="#" class="open-link-btn" id="openLinkBtn" target="_blank" rel="noopener noreferrer">🔗 Open Link</a>
+
     <!-- Fullscreen Toggle Button -->
     <button class="fullscreen-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
 
@@ -576,6 +618,15 @@
                 document.getElementById('centerLogo').style.display = 'block';
             } else {
                 document.getElementById('centerLogo').style.display = 'none';
+            }
+
+            const openLinkBtn = document.getElementById('openLinkBtn');
+            if (data.open_link_url && data.open_link_url.trim() !== '') {
+                openLinkBtn.href = data.open_link_url.trim();
+                openLinkBtn.classList.add('visible');
+            } else {
+                openLinkBtn.removeAttribute('href');
+                openLinkBtn.classList.remove('visible');
             }
 
             const fontScale = data.font_scale || 100;
