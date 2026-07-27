@@ -137,6 +137,46 @@
             background: #8e0000;
             transform: scale(1.05);
         }
+        .presentation-link-row.pdf-row {
+            align-items: flex-start;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .presentation-link-row.pdf-row .presentation-link-name {
+            flex: 0 0 26%;
+        }
+        .presentation-pdf-filewrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+        .presentation-pdf-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .presentation-pdf-status.uploaded {
+            color: #2e7d32;
+        }
+        .presentation-pdf-status.pending-upload {
+            color: #b8860b;
+        }
+        .presentation-pdf-view {
+            font-size: 0.85rem;
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .presentation-pdf-view:hover {
+            text-decoration: underline;
+        }
+        .presentation-pdf-file {
+            font-size: 0.85rem;
+        }
         .msg {
             text-align: center;
             margin-top: 12px;
@@ -565,9 +605,9 @@
                 <label style="margin-top:14px;">🔗 Open Link URL (ब्यानरमा देखिने बटनको लिंक)</label>
                 <input type="text" id="openLinkUrl" placeholder="e.g., https://example.com">
 
-                <label style="margin-top:14px;">🎞️ Presentation Links (ब्यानरमा देखिने Presentation बटनहरूको लिंक)</label>
+                <label style="margin-top:14px;">📄 PDF प्रस्तुतिहरू (PDF Player) — ब्यानरमा देखिने PDF बटनहरू</label>
                 <div id="presentationLinksContainer"></div>
-                <button type="button" class="btn btn-secondary" style="width:auto; margin-top:6px; padding:8px 18px;" onclick="addPresentationLinkRow()">➕ थप्नुहोस् (Add More)</button>
+                <button type="button" class="btn btn-secondary" style="width:auto; margin-top:6px; padding:8px 18px;" onclick="addPresentationPdfRow()">➕ नयाँ PDF थप्नुहोस् (Add PDF)</button>
             </div>
 
 
@@ -866,11 +906,16 @@
         }
 
         // ===== IMAGE UPLOAD =====
-        // ===== PRESENTATION LINKS (name + link pairs, dynamic "Add More") =====
-        function addPresentationLinkRow(name = '', url = '') {
+        // ===== PRESENTATION PDFs (upload / replace / delete, stored in Supabase Storage) =====
+        // URLs of PDFs that need to be removed from Supabase Storage once the record is saved
+        // (populated when a row is deleted, or when an existing PDF is replaced with a new file).
+        let pendingPdfDeletions = [];
+
+        function addPresentationPdfRow(name = '', url = '') {
             const container = document.getElementById('presentationLinksContainer');
             const row = document.createElement('div');
-            row.className = 'presentation-link-row';
+            row.className = 'presentation-link-row pdf-row';
+            row.dataset.originalUrl = url || '';
 
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
@@ -878,57 +923,160 @@
             nameInput.placeholder = 'नाम (e.g., मुख्य प्रस्तुति)';
             nameInput.value = name || '';
 
-            const urlInput = document.createElement('input');
-            urlInput.type = 'text';
-            urlInput.className = 'presentation-link-input';
-            urlInput.placeholder = 'e.g., https://docs.google.com/presentation/...';
-            urlInput.value = url || '';
+            const fileWrap = document.createElement('div');
+            fileWrap.className = 'presentation-pdf-filewrap';
+
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'presentation-pdf-status' + (url ? ' uploaded' : '');
+            statusSpan.textContent = url ? '✅ PDF अपलोड भएको' : '📤 कुनै PDF अपलोड गरिएको छैन';
+
+            const viewLink = document.createElement('a');
+            viewLink.className = 'presentation-pdf-view';
+            viewLink.target = '_blank';
+            viewLink.rel = 'noopener';
+            if (url) {
+                viewLink.href = url;
+                viewLink.textContent = '👁 PDF हेर्नुहोस्';
+            } else {
+                viewLink.style.display = 'none';
+            }
+
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.className = 'presentation-pdf-file';
+            fileInput.addEventListener('change', () => {
+                const f = fileInput.files[0];
+                if (f) {
+                    statusSpan.textContent = '🆕 ' + f.name + ' (सेभ गर्दा अपलोड/बदल्ने छ)';
+                    statusSpan.className = 'presentation-pdf-status pending-upload';
+                }
+            });
+
+            fileWrap.appendChild(statusSpan);
+            fileWrap.appendChild(viewLink);
+            fileWrap.appendChild(fileInput);
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.className = 'remove-link-btn';
             removeBtn.textContent = '✕';
-            removeBtn.onclick = () => removePresentationLinkRow(removeBtn);
+            removeBtn.title = 'हटाउनुहोस् (Delete)';
+            removeBtn.onclick = () => removePresentationPdfRow(removeBtn, row);
 
             row.appendChild(nameInput);
-            row.appendChild(urlInput);
+            row.appendChild(fileWrap);
             row.appendChild(removeBtn);
             container.appendChild(row);
         }
 
-        function removePresentationLinkRow(btn) {
+        function removePresentationPdfRow(btn, row) {
             const container = document.getElementById('presentationLinksContainer');
+            // If this row already had a saved PDF, queue it for deletion from Storage on next save.
+            if (row.dataset.originalUrl) {
+                pendingPdfDeletions.push(row.dataset.originalUrl);
+            }
             if (container.children.length > 1) {
-                btn.parentElement.remove();
+                row.remove();
             } else {
-                // Keep at least one row visible; just clear it
-                const row = btn.parentElement;
-                row.querySelector('.presentation-link-name').value = '';
-                row.querySelector('.presentation-link-input').value = '';
+                // Keep at least one row visible; just reset it to empty/new.
+                row.remove();
+                addPresentationPdfRow('', '');
             }
         }
 
         function setPresentationLinks(items) {
             const container = document.getElementById('presentationLinksContainer');
             container.innerHTML = '';
+            pendingPdfDeletions = [];
             // Normalize: accept array of {name, url} objects, plain strings (legacy), or empty
             const list = (items && items.length)
                 ? items.map(it => (typeof it === 'string') ? { name: '', url: it } : (it || { name: '', url: '' }))
-                : [{ name: '', url: '' }];
-            list.forEach(it => addPresentationLinkRow(it.name, it.url));
+                : [];
+            if (list.length === 0) {
+                addPresentationPdfRow('', '');
+            } else {
+                list.forEach(it => addPresentationPdfRow(it.name, it.url));
+            }
         }
 
-        function getPresentationLinks() {
-            const rows = document.querySelectorAll('.presentation-link-row');
+        // Uploads any newly-chosen PDF files, keeps existing ones, and returns the final
+        // {name, url} array to save — plus queues old files for deletion from Storage.
+        async function collectPresentationPdfs() {
+            const rows = document.querySelectorAll('#presentationLinksContainer .pdf-row');
             const result = [];
-            rows.forEach(row => {
-                const url = row.querySelector('.presentation-link-input').value.trim();
+
+            for (const row of rows) {
                 const name = row.querySelector('.presentation-link-name').value.trim();
-                if (url !== '') {
-                    result.push({ name: name, url: url });
+                const fileInput = row.querySelector('.presentation-pdf-file');
+                const originalUrl = row.dataset.originalUrl || '';
+                const file = fileInput.files[0];
+
+                if (file) {
+                    const uploadedUrl = await uploadPdf(file);
+                    if (!uploadedUrl) {
+                        throw new Error('PDF अपलोड असफल भयो' + (name ? ' (' + name + ')' : ''));
+                    }
+                    if (originalUrl) {
+                        // Replacing an existing PDF — delete the old file after save succeeds.
+                        pendingPdfDeletions.push(originalUrl);
+                    }
+                    result.push({ name, url: uploadedUrl });
+                } else if (originalUrl) {
+                    result.push({ name, url: originalUrl });
                 }
-            });
+                // Rows with neither a new file nor an existing url are just empty/unused rows — skip them.
+            }
+
             return result;
+        }
+
+        // Actually removes queued PDF files from Supabase Storage. Call only after the
+        // database update has succeeded, so a failed save never orphans/loses a live file.
+        async function flushPendingPdfDeletions() {
+            const urls = pendingPdfDeletions;
+            pendingPdfDeletions = [];
+            for (const url of urls) {
+                await deletePdfFromStorage(url);
+            }
+        }
+
+        async function uploadPdf(file) {
+            if (!file) return null;
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            if (!isPdf) {
+                console.error('Only PDF files are allowed');
+                return null;
+            }
+
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const fileName = `presentations/${Date.now()}_${safeName}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: 'application/pdf'
+                });
+
+            if (error) {
+                console.error('PDF upload error:', error);
+                return null;
+            }
+
+            const { data: urlData } = supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(fileName);
+
+            return urlData.publicUrl;
+        }
+
+        async function deletePdfFromStorage(url) {
+            const path = extractStoragePath(url);
+            if (path) {
+                await supabaseClient.storage.from(STORAGE_BUCKET).remove([path]);
+            }
         }
 
         async function uploadImage(file, folder) {
@@ -1623,7 +1771,6 @@
             const subMeetingName = document.getElementById('subMeetingName').value.trim();
             const organizedBy = document.getElementById('organizedBy').value.trim();
             const openLinkUrl = document.getElementById('openLinkUrl').value.trim();
-            const presentationUrls = getPresentationLinks();
             const fontScale = parseInt(document.getElementById('fontScale').value) || 100;
             const dateText = document.getElementById('dateText').value;
             const timeText = document.getElementById('timeText').value;
@@ -1644,6 +1791,16 @@
 
             msgEl.innerText = "⏳ सेभ हुँदैछ...";
             msgEl.className = "msg info";
+
+            // Upload/replace any PDF presentations (Supabase Storage)
+            let presentationUrls;
+            try {
+                presentationUrls = await collectPresentationPdfs();
+            } catch (pdfErr) {
+                msgEl.innerText = "❌ " + pdfErr.message;
+                msgEl.className = "msg error";
+                return;
+            }
 
             // Upload background if new file selected
             const bgFile = document.getElementById('bgFile').files[0];
@@ -1722,11 +1879,14 @@
                 })
                 .neq('id', recordId);
 
+            // Now that the save succeeded, actually delete any replaced/removed PDF files from Storage.
+            await flushPendingPdfDeletions();
+
             if (syncError) {
                 msgEl.innerText = "✅ यो ब्यानर अपडेट भयो, तर बाँकीमा मिति/समय सिंक हुन असफल: " + syncError.message;
                 msgEl.className = "msg error";
             } else {
-                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! (मिति/समय सबै ब्यानरमा सिंक भयो)";
+                msgEl.innerText = "✅ सफलतापूर्वक अपडेट भयो! (मिति/समय सबै ब्यानरमा सिंक भयो, PDF अपडेट भयो)";
                 msgEl.className = "msg success";
             }
             loadSavedData();

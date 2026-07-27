@@ -467,11 +467,21 @@
             background: #fff;
         }
 
-        .iframe-overlay-frame {
+        .iframe-overlay-body {
             flex: 1;
-            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .iframe-overlay-frame {
             border: none;
             background: #fff;
+            width: 100%;
+            height: 100%;
         }
 
         .fullscreen-btn {
@@ -732,7 +742,9 @@
         <div class="iframe-overlay-header">
             <button class="iframe-overlay-close" onclick="closeInPageOverlay()">✕ Close</button>
         </div>
-        <iframe class="iframe-overlay-frame" id="iframeOverlayFrame" src="" title="Content"></iframe>
+        <div class="iframe-overlay-body" id="iframeOverlayBody">
+            <iframe class="iframe-overlay-frame" id="iframeOverlayFrame" src="" title="Content"></iframe>
+        </div>
     </div>
 
     <!-- National Anthem Audio -->
@@ -1307,6 +1319,15 @@
         // Converts a Google Slides link into a standard embed URL (no auto-slide, no loop).
         function transformPresentationUrl(url) {
             try {
+                // "Publish to the web" link (no Google login needed to view):
+                // https://docs.google.com/presentation/d/e/<PUB_ID>/pub?...
+                const publishedMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/e\/([a-zA-Z0-9_-]+)/);
+                if (publishedMatch) {
+                    const pubId = publishedMatch[1];
+                    return `https://docs.google.com/presentation/d/e/${pubId}/embed`;
+                }
+
+                // Regular share link: https://docs.google.com/presentation/d/<ID>/edit...
                 const slidesMatch = url.match(/^https:\/\/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
                 if (slidesMatch) {
                     const docId = slidesMatch[1];
@@ -1330,16 +1351,21 @@
                 a.href = '#';
                 a.className = 'open-link-btn visible';
                 a.dataset.url = item.url;
-                const label = item.name && item.name !== ''
-                    ? item.name
+                const isPdf = /\.pdf(\?|$)/i.test(item.url || '');
+                const icon = isPdf ? '📄' : '🎞️';
+                const fallback = isPdf
+                    ? (items.length > 1 ? `PDF ${idx + 1}` : 'Open PDF')
                     : (items.length > 1 ? `प्रस्तुति ${idx + 1}` : 'Open Presentation');
-                a.textContent = '🎞️ ' + label;
+                const label = item.name && item.name !== '' ? item.name : fallback;
+                a.textContent = icon + ' ' + label;
                 a.onclick = (event) => openInPageOverlay(event, null, item.url);
                 wrap.appendChild(a);
             });
         }
 
         // ===== OPEN LINK / OPEN PRESENTATION / LOGO — same-page iframe overlay =====
+        let __overlayIsPresentation = false;
+
         function openInPageOverlay(event, btnId, directUrl) {
             if (event) event.preventDefault();
             let url = directUrl;
@@ -1352,19 +1378,80 @@
             }
             if (!url) return false;
 
+            // PDFs (uploaded via the admin PDF Player) get full-size viewing instead of the
+            // 16:9 slide letterbox used for Google Slides embeds.
+            const isPdf = isPresentation && /\.pdf(\?|$)/i.test(url);
+
             if (isPresentation) {
                 url = transformPresentationUrl(url);
             }
 
+            __overlayIsPresentation = isPresentation && !isPdf;
+
             document.getElementById('iframeOverlayFrame').src = url;
             document.getElementById('iframeOverlay').classList.add('visible');
+
+            if (__overlayIsPresentation) {
+                // Let the overlay finish laying out, then letterbox-fit at 16:9
+                // so the full slide is always visible with nothing cropped off.
+                requestAnimationFrame(() => requestAnimationFrame(fitPresentationFrame));
+                setTimeout(fitPresentationFrame, 300);
+                setTimeout(fitPresentationFrame, 1000);
+            } else {
+                resetOverlayFrameSize();
+            }
             return false;
         }
 
         function closeInPageOverlay() {
             document.getElementById('iframeOverlay').classList.remove('visible');
             document.getElementById('iframeOverlayFrame').src = '';
+            __overlayIsPresentation = false;
         }
+
+        // Sizes the presentation iframe to fit fully inside its container at a
+        // 16:9 ratio (letterboxed), so no part of the slide is ever cut off.
+        function fitPresentationFrame() {
+            const body = document.getElementById('iframeOverlayBody');
+            const frame = document.getElementById('iframeOverlayFrame');
+            if (!body || !frame) return;
+
+            const targetRatio = 16 / 9;
+            const cw = body.clientWidth;
+            const ch = body.clientHeight;
+            if (!cw || !ch) return;
+
+            let w, h;
+            if (cw / ch > targetRatio) {
+                h = ch;
+                w = h * targetRatio;
+            } else {
+                w = cw;
+                h = w / targetRatio;
+            }
+
+            frame.style.width = Math.floor(w) + 'px';
+            frame.style.height = Math.floor(h) + 'px';
+        }
+
+        function resetOverlayFrameSize() {
+            const frame = document.getElementById('iframeOverlayFrame');
+            if (!frame) return;
+            frame.style.width = '100%';
+            frame.style.height = '100%';
+        }
+
+        function refitOverlayIfVisible() {
+            if (!document.getElementById('iframeOverlay').classList.contains('visible')) return;
+            if (__overlayIsPresentation) {
+                fitPresentationFrame();
+            }
+        }
+
+        window.addEventListener('resize', refitOverlayIfVisible);
+        window.addEventListener('orientationchange', refitOverlayIfVisible);
+        document.addEventListener('fullscreenchange', refitOverlayIfVisible);
+        document.addEventListener('webkitfullscreenchange', refitOverlayIfVisible);
 
         function updateClock() {
             const time = getCurrentNepaliTime();
