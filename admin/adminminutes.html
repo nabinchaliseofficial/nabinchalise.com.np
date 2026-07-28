@@ -2414,12 +2414,12 @@
                 // Discussions
                 const d = m.discussions || {};
                 let discHTML = '';
-                if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${d.saa}</p>`;
-                if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${d.happy}</p>`;
-                if (d.president) discHTML += `<p><strong>Opening Remarks:</strong> ${d.president}</p>`;
-                if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${d.committee}</p>`;
-                if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${d.announcements}</p>`;
-                if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${d.openFloor}</p>`;
+                if (d.saa) discHTML += `<p><strong>Sergeant-at-Arms:</strong> ${escapeHtml(d.saa)}</p>`;
+                if (d.happy) discHTML += `<p><strong>Happy Moments:</strong> ${escapeHtml(d.happy)}</p>`;
+                if (d.president) discHTML += `<p><strong>Opening Remarks:</strong> ${escapeHtml(d.president)}</p>`;
+                if (d.committee) discHTML += `<p><strong>Committee Updates:</strong> ${escapeHtml(d.committee)}</p>`;
+                if (d.announcements) discHTML += `<p><strong>Announcements:</strong> ${escapeHtml(d.announcements)}</p>`;
+                if (d.openFloor) discHTML += `<p><strong>Open Floor:</strong> ${escapeHtml(d.openFloor)}</p>`;
                 document.getElementById('outDiscussions').innerHTML = discHTML || '<p>No discussions recorded.</p>';
 
                 // Agendas
