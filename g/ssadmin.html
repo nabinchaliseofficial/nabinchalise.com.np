@@ -167,6 +167,7 @@
     font-size: .9rem;
     margin-bottom: 14px;
     display: none;
+    white-space: pre-line;
   }
   .message.show { display: block; }
   .message.success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
@@ -226,6 +227,155 @@
   .template-btn{width:100%}
 }
 
+/* Renew Button */
+.renew-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+.renew-btn {
+  background: #0f172a;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background .2s, transform .1s;
+  box-shadow: 0 4px 14px rgba(15,23,42,.3);
+  letter-spacing: .3px;
+}
+.renew-btn:hover {
+  background: #1e293b;
+}
+.renew-btn:active {
+  transform: scale(.97);
+}
+.renew-btn .icon {
+  font-size: 1.2rem;
+}
+
+/* ============================================================ */
+/* CSV Upload Redesigned Section */
+/* ============================================================ */
+.upload-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.upload-header-left {
+  flex: 1;
+  min-width: 260px;
+}
+.upload-header-left h2 {
+  margin-bottom: 6px;
+}
+.upload-header-left p {
+  color: #64748b;
+  font-size: .85rem;
+  line-height: 1.5;
+}
+.upload-header-left code {
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: .78rem;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.optional-headers {
+  margin-bottom: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.optional-headers summary {
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 600;
+  color: #475569;
+  list-style: none;
+}
+.optional-headers summary::-webkit-details-marker { display: none; }
+.optional-headers summary::before {
+  content: '▸ ';
+  display: inline-block;
+  transition: transform .2s;
+  margin-right: 4px;
+}
+.optional-headers[open] summary::before {
+  transform: rotate(90deg);
+}
+.optional-headers .headers-list {
+  margin-top: 10px;
+  font-size: .8rem;
+  color: #64748b;
+  line-height: 2;
+}
+.optional-headers .headers-list code {
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  font-size: .78rem;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+.upload-grid .upload-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 180px;
+}
+.template-info {
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+  border: 1.5px dashed #93c5fd;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.template-info .tpl-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.template-info .tpl-title {
+  font-weight: 700;
+  font-size: .95rem;
+  color: #1e40af;
+  margin-bottom: 6px;
+}
+.template-info ol {
+  font-size: .8rem;
+  color: #475569;
+  line-height: 1.7;
+  padding-left: 18px;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .upload-grid { grid-template-columns: 1fr; }
+  .upload-header .template-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .upload-header { flex-direction: column; }
+}
 </style>
 </head>
 <body>
@@ -270,6 +420,13 @@
       </div>
       <button class="btn btn-danger" onclick="logout()">Logout</button>
     </header>
+
+    <!-- Renew Button -->
+    <div class="renew-btn-wrap">
+      <button class="renew-btn" onclick="openRenewPage()">
+        <span class="icon">🔄</span> Renew
+      </button>
+    </div>
 
     <div class="stats-grid">
       <div class="stat-box stat-total">
@@ -319,7 +476,6 @@
           <h2 style="margin-bottom:4px;">🗃️ Database का सबै Records</h2>
           <p style="color:#64748b;font-size:.82rem;">Supabase मा रहेको <b>social_security_beneficiaries</b> table को data</p>
         </div>
-        <button class="btn btn-secondary template-btn" onclick="downloadCSVTemplate()">📥 CSV Template Download</button>
       </div>
       <div class="data-toolbar">
         <input id="dataSearch" type="search" placeholder="🔎 नाम, सामाजिक सुरक्षा ID, वडा, समूह, दर्ता नं. खोज्नुहोस्..." oninput="debouncedDataSearch()">
@@ -347,26 +503,68 @@
       </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- CSV UPLOAD SECTION (REDESIGNED) -->
+    <!-- ============================================================ -->
     <div class="card">
-      <h2>📤 CSV Upload</h2>
-      <p style="color:#64748b;font-size:.85rem;margin-bottom:16px;">
-        CSV फाइलमा यी headers हुनुपर्छ (कम्तीमा): <br>
-        <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.78rem;">
-          beneficiary_name, social_security_id
-        </code>
-        <br>
-        Optional: sn, ward_no, target_group, renewal_application_no,
-        renewal_application_date, system_renewal_date,
-        system_renewal_reg_no, renewal_method
-      </p>
+      <div class="upload-header">
+        <div class="upload-header-left">
+          <h2>📤 CSV Upload</h2>
+          <p>
+            तपाईंको CSV फाइलमा कम्तीमा यी headers अनिवार्य छन्:<br>
+            <code>beneficiary_name, social_security_id</code>
+          </p>
+        </div>
+
+        <!-- Template Download Button — Side मा -->
+        <button class="btn btn-primary template-btn"
+                onclick="downloadCSVTemplate()"
+                style="display:flex;align-items:center;gap:8px;padding:12px 22px;white-space:nowrap;">
+          📥 CSV Template Download
+        </button>
+      </div>
+
+      <!-- Info Box — Optional headers -->
+      <details class="optional-headers">
+        <summary>ℹ️ Optional headers हेर्नुहोस्</summary>
+        <div class="headers-list">
+          <code>sn</code>,
+          <code>ward_no</code>,
+          <code>target_group</code>,
+          <code>renewal_application_no</code>,
+          <code>renewal_application_date</code>,
+          <code>ward_secretary_signature</code>,
+          <code>system_renewal_date</code>,
+          <code>system_renewal_reg_no</code>,
+          <code>renewal_method</code>
+        </div>
+      </details>
 
       <div id="uploadMsg" class="message"></div>
 
-      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
-        <div class="icon">📄</div>
-        <div><strong>CSV फाइल छान्नुहोस्</strong> वा यहाँ drag गर्नुहोस्</div>
-        <div class="hint">UTF-8 encoded .csv फाइल मात्र</div>
-        <input id="csvFile" type="file" accept=".csv,text/csv" onchange="handleFile(this.files[0])" />
+      <!-- Upload Zone + Template Guide side-by-side -->
+      <div class="upload-grid">
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()">
+          <div class="icon">📄</div>
+          <div><strong>CSV फाइल छान्नुहोस्</strong> वा यहाँ drag गर्नुहोस्</div>
+          <div class="hint">UTF-8 encoded .csv फाइल मात्र</div>
+          <input id="csvFile" type="file" accept=".csv,text/csv" onchange="handleFile(this.files[0])" />
+        </div>
+
+        <!-- Template Guide -->
+        <div class="template-info">
+          <div class="tpl-icon">📋</div>
+          <div class="tpl-title">Template कसरी प्रयोग गर्ने?</div>
+          <ol>
+            <li>Template download गर्नुहोस्</li>
+            <li>Excel/Google Sheets मा खोल्नुहोस्</li>
+            <li>Data भर्नुहोस् (Nepali digits पनि हुन्छ)</li>
+            <li>CSV format मा save गर्नुहोस्</li>
+            <li>यहाँ upload गर्नुहोस्</li>
+          </ol>
+        </div>
       </div>
 
       <div class="progress-bar" id="progressBar">
@@ -388,6 +586,7 @@
         </button>
       </div>
     </div>
+
   </div>
 
 </div>
@@ -674,7 +873,7 @@ function cancelPreview() {
 }
 
 // ------------------------------------------------------------
-// Import to Supabase
+// Import to Supabase — DUPLICATE PREVENTION ADDED
 // ------------------------------------------------------------
 async function importCSV() {
   const msg = document.getElementById('uploadMsg');
@@ -1053,10 +1252,10 @@ function downloadCSVTemplate() {
     'सामान्य'
   ];
 
-  const csv = headers.join(',') + '\\n' +
+  const csv = headers.join(',') + '\n' +
     sample.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
 
-  const blob = new Blob(['\\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1136,6 +1335,13 @@ zone.addEventListener('drop', e => {
   zone.classList.remove('drag');
   if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
 });
+
+// ------------------------------------------------------------
+// Renew page navigation
+// ------------------------------------------------------------
+function openRenewPage() {
+  window.location.href = 'renew.html';
+}
 </script>
 </body>
 </html>
