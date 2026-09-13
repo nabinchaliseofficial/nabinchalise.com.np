@@ -117,6 +117,13 @@
         font-family:'Inter',sans-serif;
     }
 
+    .masthead-actions{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+    }
+
     .home-link{
         display:inline-flex;
         align-items:center;
@@ -138,7 +145,28 @@
         color:#fff;
     }
 
-    .home-link .ripple{
+    .login-link{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        font-size:0.85rem;
+        font-weight:600;
+        color:var(--blue);
+        text-decoration:none;
+        padding:8px 16px;
+        border:1px solid var(--blue);
+        border-radius:2px;
+        transition:background 0.25s, color 0.25s;
+        position:relative;
+        overflow:hidden;
+    }
+
+    .login-link:hover{
+        background:var(--blue);
+        color:#fff;
+    }
+
+    .home-link .ripple, .login-link .ripple{
         position:absolute;
         border-radius:50%;
         background:rgba(255,255,255,0.5);
@@ -149,7 +177,7 @@
 
     @keyframes ripple-effect{ to{ transform:scale(6); opacity:0; } }
 
-    .home-link.clicked-exit{
+    .home-link.clicked-exit, .login-link.clicked-exit{
         animation:exit-fade 0.4s ease forwards;
     }
 
@@ -383,10 +411,16 @@
                 <p>Unofficial Reference &middot; Galkot, Baglung</p>
             </div>
         </div>
-      
-         <a href="https://nabinchalise.com.np/" class="home-link" id="interactiveHomeBtn">
-            <i class="fa-solid fa-house"></i> लेखकको वेबसाइट
-        </a>
+
+        <div class="masthead-actions">
+            <a href="ssadmin.html" class="login-link" id="interactiveLoginBtn">
+                <i class="fa-solid fa-right-to-bracket"></i> लगइन
+            </a>
+
+            <a href="https://nabinchalise.com.np/" class="home-link" id="interactiveHomeBtn">
+                <i class="fa-solid fa-house"></i> लेखकको वेबसाइट
+            </a>
+        </div>
     </div>
 </header>
 
@@ -409,6 +443,13 @@
         <span class="btn-go">अगाडि बढ्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
     </a>
 
+    <a href="ss.html" class="portal-card">
+        <div class="seal"><i class="fa-solid fa-users"></i></div>
+        <h2>सामाजिक सुरक्षा लाभग्राही खोजी</h2>
+        <p>सामाजिक सुरक्षा लाभग्राहीहरूको विवरण खोज्न र हेर्नका लागि तयार पारिएको अनौपचारिक सन्दर्भ उपकरण।</p>
+        <span class="btn-go">अगाडि बढ्नुहोस् <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
     <div class="notice-wrap">
         <div class="notice-box">
             <i class="fa-solid fa-triangle-exclamation"></i>
@@ -425,7 +466,25 @@
 </footer>
 
 <script>
+// Home button
 document.getElementById('interactiveHomeBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    const targetUrl = this.getAttribute('href');
+    const button = this;
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+    button.appendChild(ripple);
+    button.classList.add('clicked-exit');
+    setTimeout(()=>{ window.location.href = targetUrl; }, 400);
+});
+
+// Login button
+document.getElementById('interactiveLoginBtn').addEventListener('click', function(e){
     e.preventDefault();
     const targetUrl = this.getAttribute('href');
     const button = this;

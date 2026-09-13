@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>सामाजिक सुरक्षा लाभग्राही खोज</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Noto Sans Devanagari', system-ui, sans-serif;
+    background: linear-gradient(135deg, #eef2ff 0%, #f3f6fb 100%);
+    color: #1e293b; min-height: 100vh; padding: 16px;
+    display: flex; align-items: flex-start; justify-content: center;
+  }
+  .container { max-width: 900px; width: 100%; margin: 24px auto 0; }
+  .hero {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff; padding: 28px 24px; border-radius: 18px;
+    margin-bottom: 18px; text-align: center;
+    box-shadow: 0 10px 30px rgba(13,110,253,.25);
+  }
+  .hero h1 { font-size: 1.35rem; margin-bottom: 6px; font-weight: 700; }
+  .hero p { opacity: .9; font-size: .88rem; line-height: 1.5; }
+  .hero .icon { font-size: 2.4rem; margin-bottom: 6px; }
+
+  .card {
+    background: #fff; border-radius: 18px; padding: 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06); margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1rem; margin-bottom: 14px; color: #0f172a; }
+  .card label {
+    display: block; font-size: .85rem; font-weight: 600;
+    color: #475569; margin-bottom: 8px;
+  }
+  .search-input {
+    width: 100%; padding: 15px 18px; font-size: 1rem;
+    border: 2px solid #e2e8f0; border-radius: 12px;
+    outline: none; transition: border-color .2s;
+  }
+  .search-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13,110,253,.1);
+  }
+  .search-btn {
+    width: 100%; margin-top: 12px; padding: 15px;
+    background: #0d6efd; color: #fff; border: none;
+    border-radius: 12px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: background .2s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .search-btn:hover:not(:disabled) { background: #0a58ca; }
+  .search-btn:active:not(:disabled) { transform: scale(.98); }
+  .search-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+  .hint {
+    text-align: center; font-size: .78rem; color: #64748b;
+    margin-top: 10px; line-height: 1.5;
+  }
+
+  /* Statistics */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .stat-mini {
+    background: #fff; border-radius: 12px; padding: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    border-left: 3px solid #0d6efd; text-align: center;
+  }
+  .stat-mini.green { border-left-color: #16a34a; }
+  .stat-mini.orange { border-left-color: #f59e0b; }
+  .stat-mini.purple { border-left-color: #8b5cf6; }
+  .stat-mini .lbl {
+    font-size: .68rem; color: #64748b; font-weight: 700;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .stat-mini .val { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
+
+  /* Results */
+  .results-header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 12px;
+  }
+  .results-header h2 { margin: 0; }
+  .results-count { font-size: .85rem; color: #475569; font-weight: 600; }
+  .export-bar {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .export-bar button {
+    padding: 7px 12px; border-radius: 8px; border: 1px solid #e2e8f0;
+    background: #fff; font-size: .8rem; font-weight: 600;
+    cursor: pointer; color: #334155;
+  }
+  .export-bar button:hover { background: #f1f5f9; }
+
+  .result-card {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 12px; padding: 14px; margin-bottom: 10px;
+  }
+  .result-card .name {
+    font-size: 1.05rem; font-weight: 800; color: #0d6efd;
+    margin-bottom: 8px; padding-bottom: 8px;
+    border-bottom: 2px solid #dbeafe;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .result-card .row {
+    display: flex; padding: 6px 0;
+    border-bottom: 1px dashed #e2e8f0;
+    font-size: .87rem; gap: 10px;
+  }
+  .result-card .row:last-child { border-bottom: none; }
+  .result-card .row .lbl {
+    flex: 0 0 40%; color: #64748b;
+    font-weight: 600; font-size: .8rem;
+  }
+  .result-card .row .val {
+    flex: 1; color: #0f172a; font-weight: 600; word-break: break-word;
+  }
+  .badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 999px; font-size: .72rem; font-weight: 700;
+  }
+  .badge-biometric { background: #dbeafe; color: #1e40af; }
+  .badge-general   { background: #fef3c7; color: #92400e; }
+
+  .btn-detail {
+    padding: 5px 12px; border-radius: 8px; border: 1px solid #0d6efd;
+    background: #fff; color: #0d6efd; font-size: .78rem;
+    font-weight: 700; cursor: pointer;
+  }
+  .btn-detail:hover { background: #eff6ff; }
+
+  /* Pagination */
+  .pagination {
+    display: flex; justify-content: center; gap: 4px;
+    margin-top: 14px; flex-wrap: wrap; align-items: center;
+  }
+  .pagination button {
+    padding: 6px 12px; border: 1px solid #e2e8f0;
+    border-radius: 6px; background: #fff; cursor: pointer;
+    font-size: .82rem;
+  }
+  .pagination button:hover:not(:disabled) { background: #f1f5f9; }
+  .pagination button.active { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+  .pagination button:disabled { opacity: .4; cursor: not-allowed; }
+  .pagination select {
+    padding: 5px 8px; border: 1px solid #e2e8f0;
+    border-radius: 6px; font-size: .82rem; background: #fff;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, .65);
+    display: none; align-items: center; justify-content: center;
+    padding: 16px; z-index: 1000;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 18px;
+    width: 100%; max-width: 700px; max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    animation: slideUp .25s ease; overflow: hidden;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .modal-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff; display: flex; justify-content: space-between;
+    align-items: center; gap: 10px;
+  }
+  .modal-header h3 { font-size: 1rem; font-weight: 700; }
+  .modal-close {
+    background: rgba(255,255,255,.15); border: none; color: #fff;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: rgba(255,255,255,.3); }
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 12px 20px; background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+  .btn {
+    padding: 9px 18px; border-radius: 9px;
+    border: none; font-weight: 700; cursor: pointer; font-size: .88rem;
+  }
+  .btn-secondary { background: #e2e8f0; color: #1e293b; }
+  .btn-secondary:hover { background: #cbd5e1; }
+
+  .state-box { text-align: center; padding: 30px 20px; }
+  .state-box .emoji { font-size: 2.8rem; margin-bottom: 10px; }
+  .state-box .title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .state-box .msg { font-size: .85rem; color: #64748b; line-height: 1.5; }
+
+  .spinner-lg {
+    display: inline-block; width: 40px; height: 40px;
+    border: 4px solid #e2e8f0; border-top-color: #0d6efd;
+    border-radius: 50%; animation: spin .8s linear infinite;
+    margin-bottom: 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+  }
+
+  @media (max-width: 600px) {
+    .container { margin-top: 12px; }
+    .hero h1 { font-size: 1.1rem; }
+    .hero { padding: 22px 16px; }
+    .result-card .row { flex-direction: column; gap: 2px; }
+    .result-card .row .lbl { flex: none; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="printArea">
+  <div class="hero">
+    <div class="icon">🔍</div>
+    <h1>सामाजिक सुरक्षा लाभग्राही खोजी गर्नुहोस् । </h1>
+    <p>गलकोट नगरपालिका — आ.व. २०८३/८४<br>नवीकरण भएका लाभग्राहीको विवरण</p>
+  </div>
+
+  <!-- Statistics strip -->
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-mini">
+      <div class="lbl">कुल लाभग्राही</div>
+      <div class="val" id="pStatTotal">—</div>
+    </div>
+    <div class="stat-mini orange">
+      <div class="lbl">बायोमेट्रिक</div>
+      <div class="val" id="pStatBio">—</div>
+    </div>
+    <div class="stat-mini purple">
+      <div class="lbl">सामान्य</div>
+      <div class="val" id="pStatGen">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="q">खोज्नुहोस्</label>
+    <input id="q" class="search-input" type="text"
+      placeholder="नाम वा सामाजिक सुरक्षा परिचयपत्र नं..." autocomplete="off" />
+    <button class="search-btn" id="searchBtn" onclick="doSearch()">
+      🔍 खोज्नुहोस्
+    </button>
+    <div class="hint">
+      लाभग्राहीको नाम वा सामाजिक सुरक्षा परिचयपत्र नं. लेखेर खोज्न सकिन्छ।
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card hidden" id="resultsCard" style="display:none;">
+    <div class="results-header">
+      <h2>📋 नतिजा</h2>
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+    <div class="export-bar">
+      <button onclick="printResults()">🖨️ Print</button>
+      <button onclick="exportResultsCSV()">📥 CSV Export</button>
+    </div>
+    <div id="resultsList"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modalTitle">🔍 नतिजा</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter" style="display:none;">
+      <button class="btn btn-secondary" onclick="closeModal()">बन्द गर्नुहोस्</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// Supabase
+// ============================================================
+const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// Digit helpers
+// ============================================================
+const neToEn = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
+const enToNe = {'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'7','8':'८','9':'९'};
+function neToEnDigits(s) { return String(s || '').replace(/[०-९]/g, d => neToEn[d]); }
+function enToNeDigits(s) { return String(s == null ? '' : s).replace(/[0-9]/g, d => enToNe[d]); }
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function val(v) { return (v === null || v === undefined || v === '') ? '—' : v; }
+
+// ============================================================
+// State
+// ============================================================
+let currentQuery = { text: '' };
+let currentPage = 1;
+let currentPageSize = 20;
+let totalCount = 0;
+let lastResults = [];
+
+// ============================================================
+// Statistics load
+// ============================================================
+async function loadStats() {
+  try {
+    const { count: total } = await supabaseClient
+      .from('social_security_beneficiaries')
+      .select('*', { count: 'exact', head: true });
+
+    document.getElementById('pStatTotal').textContent = enToNeDigits(total || 0);
+
+    // Biometric
+    const { count: bio } = await supabaseClient
+      .from('social_security_beneficiaries')
+      .select('*', { count: 'exact', head: true })
+      .eq('renewal_method', 'बायोमेट्रिक');
+    document.getElementById('pStatBio').textContent = enToNeDigits(bio || 0);
+
+    // General
+    const { count: gen } = await supabaseClient
+      .from('social_security_beneficiaries')
+      .select('*', { count: 'exact', head: true })
+      .eq('renewal_method', 'सामान्य');
+    document.getElementById('pStatGen').textContent = enToNeDigits(gen || 0);
+  } catch (e) {
+    console.error('Stats load error:', e);
+  }
+}
+
+// ============================================================
+// Search (server-side pagination)
+// ============================================================
+async function doSearch(page) {
+  const q = document.getElementById('q').value.trim();
+
+  // Must have search text
+  if (!q) {
+    openModal('⚠️ ध्यान दिनुहोस्',
+      `<div class="state-box">
+        <div class="emoji">✏️</div>
+        <div class="title">कृपया खोज्ने शब्द लेख्नुहोस्</div>
+        <div class="msg">Search box मा नाम वा परिचयपत्र नं. लेखेर खोज्नुहोस्।</div>
+      </div>`);
+    return;
+  }
+
+  currentQuery = { text: q };
+  currentPage = page || 1;
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '🔎 खोज्दै...';
+
+  try {
+    const qNum = neToEnDigits(q);
+    const safe = q.replace(/[%_]/g, m => '\\' + m);
+    const safeNum = qNum.replace(/[%_]/g, m => '\\' + m);
+
+    // Only search beneficiary_name and social_security_id
+    const orParts = [
+      `beneficiary_name.ilike.%${safe}%`,
+      `social_security_id.ilike.%${safeNum}%`
+    ];
+
+    let query = supabaseClient
+      .from('social_security_beneficiaries')
+      .select('*', { count: 'exact' })
+      .or(orParts.join(','));
+
+    const from = (currentPage - 1) * currentPageSize;
+    const to = from + currentPageSize - 1;
+
+    const { data, error, count } = await query
+      .order('sn', { ascending: true, nullsFirst: false })
+      .range(from, to);
+
+    btn.disabled = false;
+    btn.innerHTML = '🔍 खोज्नुहोस्';
+
+    if (error) {
+      openModal('❌ त्रुटि',
+        `<div class="state-box">
+          <div class="emoji">⚠️</div>
+          <div class="title">डाटा ल्याउँदा समस्या आयो</div>
+          <div class="msg">${escapeHtml(error.message)}</div>
+        </div>`);
+      return;
+    }
+
+    totalCount = count || 0;
+    lastResults = data || [];
+
+    if (!data || !data.length) {
+      document.getElementById('resultsCard').style.display = 'none';
+      openModal('🔍 कुनै नतिजा भेटिएन',
+        `<div class="state-box">
+          <div class="emoji">🕵️</div>
+          <div class="title">कुनै लाभग्राही भेटिएन</div>
+          <div class="msg">"<b>${escapeHtml(q || '—')}</b>" शब्दसँग मिल्ने कुनै record भेटिएन।<br>
+          कृपया नामको हिज्जे, वा परिचयपत्र नं. जाँच्नुहोस्।</div>
+        </div>`);
+      return;
+    }
+
+    renderResults();
+    document.getElementById('resultsCard').style.display = 'block';
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 खोज्नुहोस्';
+    openModal('❌ त्रुटि',
+      `<div class="state-box">
+        <div class="emoji">⚠️</div>
+        <div class="title">अप्रत्याशित त्रुटि</div>
+        <div class="msg">${escapeHtml(err.message)}</div>
+      </div>`);
+  }
+}
+
+function renderResults() {
+  const list = document.getElementById('resultsList');
+  const start = (currentPage - 1) * currentPageSize + 1;
+  const end = Math.min(currentPage * currentPageSize, totalCount);
+
+  document.getElementById('resultsCount').textContent =
+    `कुल ${enToNeDigits(totalCount)} records — देखाइएको ${enToNeDigits(start)}-${enToNeDigits(end)}`;
+
+  list.innerHTML = lastResults.map(r => {
+    const methodBadge = r.renewal_method === 'बायोमेट्रिक'
+      ? '<span class="badge badge-biometric">बायोमेट्रिक</span>'
+      : (r.renewal_method
+          ? '<span class="badge badge-general">' + escapeHtml(r.renewal_method) + '</span>'
+          : '');
+    return `
+      <div class="result-card">
+        <div class="name">
+          <span>👤 ${escapeHtml(val(r.beneficiary_name))}</span>
+          <button class="btn-detail" onclick='showFullDetail(${r.id})'>पूरा विवरण</button>
+        </div>
+        <div class="row"><div class="lbl">क्र.सं.</div><div class="val">${enToNeDigits(val(r.sn))}</div></div>
+        <div class="row"><div class="lbl">वडा नं.</div><div class="val">${enToNeDigits(val(r.ward_no))}</div></div>
+        <div class="row"><div class="lbl">सा.सु. परिचयपत्र नं.</div><div class="val">${enToNeDigits(val(r.social_security_id))}</div></div>
+        <div class="row"><div class="lbl">लक्षित समूह</div><div class="val">${escapeHtml(val(r.target_group))}</div></div>
+        <div class="row"><div class="lbl">नवीकरण निवेदन नं.</div><div class="val">${enToNeDigits(val(r.renewal_application_no))}</div></div>
+        <div class="row"><div class="lbl">दर्ता नवीकरण मिति</div><div class="val">${enToNeDigits(val(r.renewal_application_date))}</div></div>
+        <div class="row"><div class="lbl">प्रणालीमा नवीकरण मिति</div><div class="val">${enToNeDigits(val(r.system_renewal_date))}</div></div>
+        <div class="row"><div class="lbl">प्रणाली दर्ता नं.</div><div class="val">${enToNeDigits(val(r.system_renewal_reg_no))}</div></div>
+        <div class="row"><div class="lbl">नवीकरण विधि</div><div class="val">${methodBadge || '—'}</div></div>
+      </div>
+    `;
+  }).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const el = document.getElementById('pagination');
+  const totalPages = Math.ceil(totalCount / currentPageSize);
+  if (totalPages <= 1) {
+    el.innerHTML = `
+      <select onchange="changePageSize(this.value)">
+        <option value="20" ${currentPageSize===20?'selected':''}>२० प्रति पृष्ठ</option>
+        <option value="50" ${currentPageSize===50?'selected':''}>५० प्रति पृष्ठ</option>
+        <option value="100" ${currentPageSize===100?'selected':''}>१०० प्रति पृष्ठ</option>
+      </select>`;
+    return;
+  }
+
+  let html = `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(1)">«</button>`;
+  html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">‹</button>`;
+
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, currentPage + 2);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${enToNeDigits(i)}</button>`;
+  }
+
+  html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">›</button>`;
+  html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${totalPages})">»</button>`;
+  html += ` <select onchange="changePageSize(this.value)" style="margin-left:6px;">
+    <option value="20" ${currentPageSize===20?'selected':''}>२०</option>
+    <option value="50" ${currentPageSize===50?'selected':''}>५०</option>
+    <option value="100" ${currentPageSize===100?'selected':''}>१००</option>
+  </select>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) {
+  doSearch(p);
+  document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changePageSize(n) {
+  currentPageSize = parseInt(n, 10);
+  currentPage = 1;
+  doSearch(1);
+}
+
+// ============================================================
+// Full detail modal (dynamic — shows all DB columns)
+// ============================================================
+async function showFullDetail(id) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('social_security_beneficiaries')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    if (!data) throw new Error('Record भेटिएन');
+
+    // Dynamic field labels
+    const FIELD_LABELS = {
+      id: 'ID (Database)',
+      sn: 'क्र.सं.',
+      ward_no: 'वडा नं.',
+      beneficiary_name: 'लाभग्राहीको नाम',
+      social_security_id: 'सा.सु. परिचयपत्र नं.',
+      target_group: 'लक्षित समूह',
+      renewal_application_no: 'नवीकरण निवेदन नं.',
+      renewal_application_date: 'दर्ता नवीकरण मिति',
+      ward_secretary_signature: 'वडा सचिवको हस्ताक्षर',
+      system_renewal_date: 'प्रणालीमा नवीकरण मिति',
+      system_renewal_reg_no: 'प्रणाली दर्ता नं.',
+      renewal_method: 'नवीकरण विधि',
+      created_at: 'Created At',
+      updated_at: 'Updated At'
+    };
+
+    // Preferred order, then all remaining keys
+    const preferredOrder = ['sn','ward_no','beneficiary_name','social_security_id','target_group','renewal_application_no','renewal_application_date','ward_secretary_signature','system_renewal_date','system_renewal_reg_no','renewal_method'];
+    const allKeys = Object.keys(data);
+    const orderedKeys = [
+      ...preferredOrder.filter(k => allKeys.includes(k)),
+      ...allKeys.filter(k => !preferredOrder.includes(k))
+    ];
+
+    const rows = orderedKeys.map(k => {
+      const label = FIELD_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      let v = data[k];
+      if (v === null || v === undefined || v === '') v = '—';
+      else if (typeof v === 'number' || /^\d+$/.test(String(v))) v = enToNeDigits(v);
+      else if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) v = enToNeDigits(v.substring(0,10));
+      return `<div class="row"><div class="lbl">${escapeHtml(label)}</div><div class="val">${escapeHtml(String(v))}</div></div>`;
+    }).join('');
+
+    const body = `
+      <div style="font-size:1.05rem;font-weight:800;color:#0d6efd;margin-bottom:12px;">
+        👤 ${escapeHtml(data.beneficiary_name || '—')}
+      </div>
+      ${rows}
+    `;
+    openModal('📋 पूरा विवरण', body);
+  } catch (e) {
+    openModal('❌ त्रुटि',
+      `<div class="state-box">
+        <div class="emoji">⚠️</div>
+        <div class="title">विवरण ल्याउन सकिएन</div>
+        <div class="msg">${escapeHtml(e.message)}</div>
+      </div>`);
+  }
+}
+
+// ============================================================
+// Export / Print
+// ============================================================
+function exportResultsCSV() {
+  if (!lastResults.length) return;
+  const headers = ['sn','ward_no','beneficiary_name','social_security_id','target_group',
+    'renewal_application_no','renewal_application_date','system_renewal_date',
+    'system_renewal_reg_no','renewal_method'];
+  const csv = [headers.join(',')].concat(
+    lastResults.map(r => headers.map(h => {
+      const v = r[h] == null ? '' : String(r[h]).replace(/"/g,'""');
+      return `"${v}"`;
+    }).join(','))
+  ).join('\n');
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `search_results_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function printResults() {
+  const start = (currentPage - 1) * currentPageSize + 1;
+  const end = Math.min(currentPage * currentPageSize, totalCount);
+  const html = `
+    <div style="padding:20px;">
+      <h1 style="text-align:center;">गलकोट नगरपालिका</h1>
+      <h2 style="text-align:center;font-size:1rem;">सामाजिक सुरक्षा लाभग्राही — खोज नतिजा</h2>
+      <p style="text-align:center;font-size:.85rem;">आ.व. २०८३/८४ — कुल ${enToNeDigits(totalCount)} records (देखाइएको ${enToNeDigits(start)}-${enToNeDigits(end)})</p>
+      <p style="text-align:center;font-size:.8rem;color:#666;">मुद्रण मिति: ${enToNeDigits(new Date().toLocaleDateString('en-GB'))}</p>
+      <table border="1" cellpadding="6" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:14px;">
+        <thead style="background:#f1f5f9;">
+          <tr>
+            <th>क्र.सं.</th><th>वडा</th><th>नाम</th><th>परिचयपत्र नं.</th>
+            <th>समूह</th><th>निवेदन नं.</th><th>नवीकरण मिति</th><th>विधि</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${lastResults.map(r => `
+            <tr>
+              <td>${enToNeDigits(val(r.sn))}</td>
+              <td>${enToNeDigits(val(r.ward_no))}</td>
+              <td>${escapeHtml(val(r.beneficiary_name))}</td>
+              <td>${enToNeDigits(val(r.social_security_id))}</td>
+              <td>${escapeHtml(val(r.target_group))}</td>
+              <td>${enToNeDigits(val(r.renewal_application_no))}</td>
+              <td>${enToNeDigits(val(r.system_renewal_date))}</td>
+              <td>${escapeHtml(val(r.renewal_method))}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <p style="text-align:right;font-size:.75rem;margin-top:10px;">कुल: ${enToNeDigits(totalCount)}</p>
+    </div>
+  `;
+  const w = window.open('', '_blank');
+  w.document.write(`<html><head><title>Print</title></head><body onload="window.print();">${html}</body></html>`);
+  w.document.close();
+}
+
+// ============================================================
+// Modal helpers
+// ============================================================
+function openModal(title, bodyHtml, showFooter = true) {
+  document.getElementById('modalTitle').innerHTML = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalFooter').style.display = showFooter ? 'flex' : 'none';
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function closeModalOnOverlay(e) {
+  if (e.target.id === 'modal') closeModal();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// Init
+// ============================================================
+document.getElementById('q').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+window.addEventListener('DOMContentLoaded', loadStats);
+</script>
+</body>
+</html>
