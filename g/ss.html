@@ -1,679 +1,621 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>सामाजिक सुरक्षा लाभग्राही खोज</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', 'Noto Sans Devanagari', system-ui, sans-serif;
-    background: linear-gradient(135deg, #eef2ff 0%, #f3f6fb 100%);
-    color: #1e293b; min-height: 100vh; padding: 16px;
-    display: flex; align-items: flex-start; justify-content: center;
-  }
-  .container { max-width: 900px; width: 100%; margin: 24px auto 0; }
-  .hero {
-    background: linear-gradient(135deg, #0d6efd, #0a58ca);
-    color: #fff; padding: 28px 24px; border-radius: 18px;
-    margin-bottom: 18px; text-align: center;
-    box-shadow: 0 10px 30px rgba(13,110,253,.25);
-  }
-  .hero h1 { font-size: 1.35rem; margin-bottom: 6px; font-weight: 700; }
-  .hero p { opacity: .9; font-size: .88rem; line-height: 1.5; }
-  .hero .icon { font-size: 2.4rem; margin-bottom: 6px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIS · Social Security & Citizenship</title>
+  <!-- Google Fonts for modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free) for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  .card {
-    background: #fff; border-radius: 18px; padding: 22px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.06); margin-bottom: 16px;
-  }
-  .card h2 { font-size: 1rem; margin-bottom: 14px; color: #0f172a; }
-  .card label {
-    display: block; font-size: .85rem; font-weight: 600;
-    color: #475569; margin-bottom: 8px;
-  }
-  .search-input {
-    width: 100%; padding: 15px 18px; font-size: 1rem;
-    border: 2px solid #e2e8f0; border-radius: 12px;
-    outline: none; transition: border-color .2s;
-  }
-  .search-input:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 4px rgba(13,110,253,.1);
-  }
-  .search-btn {
-    width: 100%; margin-top: 12px; padding: 15px;
-    background: #0d6efd; color: #fff; border: none;
-    border-radius: 12px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: background .2s, transform .1s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .search-btn:hover:not(:disabled) { background: #0a58ca; }
-  .search-btn:active:not(:disabled) { transform: scale(.98); }
-  .search-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-  .hint {
-    text-align: center; font-size: .78rem; color: #64748b;
-    margin-top: 10px; line-height: 1.5;
-  }
+    body {
+      background: linear-gradient(145deg, #f0f4fa 0%, #e6ecf5 100%);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 2rem 1.5rem;
+      color: #1a2639;
+      line-height: 1.5;
+    }
 
-  /* Statistics */
-  .stats-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px; margin-bottom: 16px;
-  }
-  .stat-mini {
-    background: #fff; border-radius: 12px; padding: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.05);
-    border-left: 3px solid #0d6efd; text-align: center;
-  }
-  .stat-mini.green { border-left-color: #16a34a; }
-  .stat-mini.orange { border-left-color: #f59e0b; }
-  .stat-mini.purple { border-left-color: #8b5cf6; }
-  .stat-mini .lbl {
-    font-size: .68rem; color: #64748b; font-weight: 700;
-    text-transform: uppercase; margin-bottom: 4px;
-  }
-  .stat-mini .val { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
+    .page-wrapper {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
 
-  /* Results */
-  .results-header {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 10px; margin-bottom: 12px;
-  }
-  .results-header h2 { margin: 0; }
-  .results-count { font-size: .85rem; color: #475569; font-weight: 600; }
-  .export-bar {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
-  }
-  .export-bar button {
-    padding: 7px 12px; border-radius: 8px; border: 1px solid #e2e8f0;
-    background: #fff; font-size: .8rem; font-weight: 600;
-    cursor: pointer; color: #334155;
-  }
-  .export-bar button:hover { background: #f1f5f9; }
+    /* header */
+    .mis-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      box-shadow: 0 8px 20px rgba(0, 20, 50, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
 
-  .result-card {
-    background: #f8fafc; border: 1px solid #e2e8f0;
-    border-radius: 12px; padding: 14px; margin-bottom: 10px;
-  }
-  .result-card .name {
-    font-size: 1.05rem; font-weight: 800; color: #0d6efd;
-    margin-bottom: 8px; padding-bottom: 8px;
-    border-bottom: 2px solid #dbeafe;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px;
-  }
-  .result-card .row {
-    display: flex; padding: 6px 0;
-    border-bottom: 1px dashed #e2e8f0;
-    font-size: .87rem; gap: 10px;
-  }
-  .result-card .row:last-child { border-bottom: none; }
-  .result-card .row .lbl {
-    flex: 0 0 40%; color: #64748b;
-    font-weight: 600; font-size: .8rem;
-  }
-  .result-card .row .val {
-    flex: 1; color: #0f172a; font-weight: 600; word-break: break-word;
-  }
-  .badge {
-    display: inline-block; padding: 3px 10px;
-    border-radius: 999px; font-size: .72rem; font-weight: 700;
-  }
-  .badge-biometric { background: #dbeafe; color: #1e40af; }
-  .badge-general   { background: #fef3c7; color: #92400e; }
+    .mis-header i {
+      font-size: 2.2rem;
+      color: #1e4a7a;
+      background: #ffffff;
+      padding: 0.6rem;
+      border-radius: 50%;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03);
+    }
 
-  .btn-detail {
-    padding: 5px 12px; border-radius: 8px; border: 1px solid #0d6efd;
-    background: #fff; color: #0d6efd; font-size: .78rem;
-    font-weight: 700; cursor: pointer;
-  }
-  .btn-detail:hover { background: #eff6ff; }
+    .mis-header h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #0b2b4a;
+      line-height: 1.2;
+    }
 
-  /* Pagination */
-  .pagination {
-    display: flex; justify-content: center; gap: 4px;
-    margin-top: 14px; flex-wrap: wrap; align-items: center;
-  }
-  .pagination button {
-    padding: 6px 12px; border: 1px solid #e2e8f0;
-    border-radius: 6px; background: #fff; cursor: pointer;
-    font-size: .82rem;
-  }
-  .pagination button:hover:not(:disabled) { background: #f1f5f9; }
-  .pagination button.active { background: #0d6efd; color: #fff; border-color: #0d6efd; }
-  .pagination button:disabled { opacity: .4; cursor: not-allowed; }
-  .pagination select {
-    padding: 5px 8px; border: 1px solid #e2e8f0;
-    border-radius: 6px; font-size: .82rem; background: #fff;
-  }
+    .mis-header span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #1e4a7a;
+      color: white;
+      padding: 0.25rem 1rem;
+      border-radius: 30px;
+      margin-left: 0.5rem;
+      letter-spacing: 0.3px;
+    }
 
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, .65);
-    display: none; align-items: center; justify-content: center;
-    padding: 16px; z-index: 1000;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: #fff; border-radius: 18px;
-    width: 100%; max-width: 700px; max-height: 90vh;
-    display: flex; flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    animation: slideUp .25s ease; overflow: hidden;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .modal-header {
-    padding: 16px 20px;
-    background: linear-gradient(135deg, #0d6efd, #0a58ca);
-    color: #fff; display: flex; justify-content: space-between;
-    align-items: center; gap: 10px;
-  }
-  .modal-header h3 { font-size: 1rem; font-weight: 700; }
-  .modal-close {
-    background: rgba(255,255,255,.15); border: none; color: #fff;
-    width: 32px; height: 32px; border-radius: 50%;
-    font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .modal-close:hover { background: rgba(255,255,255,.3); }
-  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-  .modal-footer {
-    padding: 12px 20px; background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    display: flex; justify-content: flex-end; gap: 8px;
-  }
-  .btn {
-    padding: 9px 18px; border-radius: 9px;
-    border: none; font-weight: 700; cursor: pointer; font-size: .88rem;
-  }
-  .btn-secondary { background: #e2e8f0; color: #1e293b; }
-  .btn-secondary:hover { background: #cbd5e1; }
+    /* intro badges */
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #d9e6f5;
+      color: #1e4a7a;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.35rem 1.2rem;
+      border-radius: 40px;
+      margin: 2rem 0 1rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-  .state-box { text-align: center; padding: 30px 20px; }
-  .state-box .emoji { font-size: 2.8rem; margin-bottom: 10px; }
-  .state-box .title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-  .state-box .msg { font-size: .85rem; color: #64748b; line-height: 1.5; }
+    .section-badge i {
+      font-size: 1rem;
+    }
 
-  .spinner-lg {
-    display: inline-block; width: 40px; height: 40px;
-    border: 4px solid #e2e8f0; border-top-color: #0d6efd;
-    border-radius: 50%; animation: spin .8s linear infinite;
-    margin-bottom: 14px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    /* grid & cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
 
-  @media print {
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; }
-    #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
-  }
+    .card {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 1.6rem 1.8rem;
+      box-shadow: 0 12px 30px -8px rgba(0, 20, 40, 0.12);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(2px);
+    }
 
-  @media (max-width: 600px) {
-    .container { margin-top: 12px; }
-    .hero h1 { font-size: 1.1rem; }
-    .hero { padding: 22px 16px; }
-    .result-card .row { flex-direction: column; gap: 2px; }
-    .result-card .row .lbl { flex: none; }
-    .card { padding: 16px; }
-  }
-</style>
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 40px -12px rgba(0, 50, 100, 0.2);
+      border-color: #c2d6ed;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      margin-bottom: 1.1rem;
+      border-bottom: 2px solid #ecf2fa;
+      padding-bottom: 0.9rem;
+    }
+
+    .q-icon {
+      background: #1e4a7a;
+      color: white;
+      font-weight: 700;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      box-shadow: 0 6px 12px rgba(30, 74, 122, 0.25);
+    }
+
+    .card-header h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0d2f4f;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .card-content {
+      flex: 1;
+      font-size: 0.96rem;
+      color: #2d3f5e;
+    }
+
+    .card-content p {
+      margin-bottom: 0.75rem;
+    }
+
+    .card-content ul, .card-content ol {
+      padding-left: 1.4rem;
+      margin: 0.6rem 0;
+    }
+
+    .card-content li {
+      margin-bottom: 0.35rem;
+    }
+
+    .highlight-box {
+      background: #f4f9ff;
+      border-left: 5px solid #1e4a7a;
+      padding: 0.9rem 1.2rem;
+      border-radius: 16px;
+      margin: 1rem 0;
+      font-size: 0.94rem;
+    }
+
+    /* table styling */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      margin: 0.8rem 0 1rem;
+    }
+
+    .data-table th {
+      background: #1e4a7a;
+      color: white;
+      font-weight: 600;
+      padding: 0.7rem 0.8rem;
+      text-align: left;
+      font-size: 0.82rem;
+      letter-spacing: 0.3px;
+    }
+
+    .data-table td {
+      padding: 0.65rem 0.8rem;
+      border-bottom: 1px solid #e0ebf5;
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background-color: #f6fafe;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e0ebf5;
+      color: #1e4a7a;
+      font-weight: 500;
+      border-radius: 30px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .amount {
+      font-weight: 700;
+      color: #1a5d3a;
+      background: #e2f0e9;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #5f6f88;
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    /* compact list for citizenship docs */
+    .doc-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin: 0.6rem 0;
+    }
+
+    .doc-list span {
+      background: #eef4fb;
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #1e4a7a;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      .mis-header { flex-direction: column; align-items: flex-start; border-radius: 30px; }
+      .mis-header h1 { font-size: 1.6rem; }
+      .card { padding: 1.2rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .data-table { font-size: 0.78rem; }
+    }
+
+    /* custom scroll for wide tables */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 16px;
+      margin: 0.8rem 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      color: #6c7d96;
+      border-top: 1px solid #cbdae9;
+      padding-top: 1.8rem;
+    }
+  </style>
 </head>
 <body>
+<div class="page-wrapper">
 
-<div class="container" id="printArea">
-  <div class="hero">
-    <div class="icon">🔍</div>
-    <h1>सामाजिक सुरक्षा लाभग्राही खोजी गर्नुहोस् । </h1>
-    <p>गलकोट नगरपालिका — आ.व. २०८३/८४<br>नवीकरण भएका लाभग्राहीको विवरण</p>
+  <!-- HEADER -->
+  <div class="mis-header">
+    <i class="fas fa-database"></i>
+    <h1>MANAGEMENT INFORMATION SYSTEM <span>MIS</span></h1>
   </div>
 
-  <!-- Statistics strip -->
-  <div class="stats-strip" id="statsStrip">
-    <div class="stat-mini">
-      <div class="lbl">कुल लाभग्राही</div>
-      <div class="val" id="pStatTotal">—</div>
-    </div>
-    <div class="stat-mini orange">
-      <div class="lbl">बायोमेट्रिक</div>
-      <div class="val" id="pStatBio">—</div>
-    </div>
-    <div class="stat-mini purple">
-      <div class="lbl">सामान्य</div>
-      <div class="val" id="pStatGen">—</div>
-    </div>
+  <!-- ========== SOCIAL SECURITY SECTION ========== -->
+  <div class="section-badge">
+    <i class="fas fa-shield-alt"></i> सामाजिक सुरक्षा · Social Security
   </div>
 
-  <div class="card">
-    <label for="q">खोज्नुहोस्</label>
-    <input id="q" class="search-input" type="text"
-      placeholder="नाम वा सामाजिक सुरक्षा परिचयपत्र नं..." autocomplete="off" />
-    <button class="search-btn" id="searchBtn" onclick="doSearch()">
-      🔍 खोज्नुहोस्
-    </button>
-    <div class="hint">
-      लाभग्राहीको नाम वा सामाजिक सुरक्षा परिचयपत्र नं. लेखेर खोज्न सकिन्छ।
+  <div class="card-grid">
+    <!-- Q1: Definition -->
+    <div class="card">
+      <div class="card-header">
+        <div class="q-icon">१</div>
+        <h3>सामाजिक सुरक्षा कार्यक्रम भनेको के हो ?</h3>
+      </div>
+      <div class="card-content">
+        <p>निश्चित उमेर समूहका जेष्ठ नागरिक, एकल महिला, आर्थिक रुपले विपन्न, अशक्त र असहाय, अपांगता भएका, बालबालिका, आफ्नो हेरचाह आफैं गर्न नसक्ने तथा लोपोन्मुख जातिका नागरिकको जीवनयापनमा आइपर्ने सम्भावित जोखिम न्यूनीकरण गर्न तथा उपभोगमा सहयोग पुर्याउने उद्देश्यले नेपाल सरकारबाट सञ्चालित <strong>गैर योगदानमुलक कार्यक्रम</strong> नै सामाजिक सुरक्षा कार्यक्रम हो ।</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Results -->
-  <div class="card hidden" id="resultsCard" style="display:none;">
-    <div class="results-header">
-      <h2>📋 नतिजा</h2>
-      <span class="results-count" id="resultsCount"></span>
-    </div>
-    <div class="export-bar">
-      <button onclick="printResults()">🖨️ Print</button>
-      <button onclick="exportResultsCSV()">📥 CSV Export</button>
-    </div>
-    <div id="resultsList"></div>
-    <div class="pagination" id="pagination"></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 id="modalTitle">🔍 नतिजा</h3>
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer" id="modalFooter" style="display:none;">
-      <button class="btn btn-secondary" onclick="closeModal()">बन्द गर्नुहोस्</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ============================================================
-// Supabase
-// ============================================================
-const SUPABASE_URL = "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ============================================================
-// Digit helpers
-// ============================================================
-const neToEn = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
-const enToNe = {'0':'०','1':'१','2':'२','3':'३','4':'४','5':'५','6':'६','7':'7','8':'८','9':'९'};
-function neToEnDigits(s) { return String(s || '').replace(/[०-९]/g, d => neToEn[d]); }
-function enToNeDigits(s) { return String(s == null ? '' : s).replace(/[0-9]/g, d => enToNe[d]); }
-function escapeHtml(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-function val(v) { return (v === null || v === undefined || v === '') ? '—' : v; }
-
-// ============================================================
-// State
-// ============================================================
-let currentQuery = { text: '' };
-let currentPage = 1;
-let currentPageSize = 20;
-let totalCount = 0;
-let lastResults = [];
-
-// ============================================================
-// Statistics load
-// ============================================================
-async function loadStats() {
-  try {
-    const { count: total } = await supabaseClient
-      .from('social_security_beneficiaries')
-      .select('*', { count: 'exact', head: true });
-
-    document.getElementById('pStatTotal').textContent = enToNeDigits(total || 0);
-
-    // Biometric
-    const { count: bio } = await supabaseClient
-      .from('social_security_beneficiaries')
-      .select('*', { count: 'exact', head: true })
-      .eq('renewal_method', 'बायोमेट्रिक');
-    document.getElementById('pStatBio').textContent = enToNeDigits(bio || 0);
-
-    // General
-    const { count: gen } = await supabaseClient
-      .from('social_security_beneficiaries')
-      .select('*', { count: 'exact', head: true })
-      .eq('renewal_method', 'सामान्य');
-    document.getElementById('pStatGen').textContent = enToNeDigits(gen || 0);
-  } catch (e) {
-    console.error('Stats load error:', e);
-  }
-}
-
-// ============================================================
-// Search (server-side pagination)
-// ============================================================
-async function doSearch(page) {
-  const q = document.getElementById('q').value.trim();
-
-  // Must have search text
-  if (!q) {
-    openModal('⚠️ ध्यान दिनुहोस्',
-      `<div class="state-box">
-        <div class="emoji">✏️</div>
-        <div class="title">कृपया खोज्ने शब्द लेख्नुहोस्</div>
-        <div class="msg">Search box मा नाम वा परिचयपत्र नं. लेखेर खोज्नुहोस्।</div>
-      </div>`);
-    return;
-  }
-
-  currentQuery = { text: q };
-  currentPage = page || 1;
-
-  const btn = document.getElementById('searchBtn');
-  btn.disabled = true;
-  btn.innerHTML = '🔎 खोज्दै...';
-
-  try {
-    const qNum = neToEnDigits(q);
-    const safe = q.replace(/[%_]/g, m => '\\' + m);
-    const safeNum = qNum.replace(/[%_]/g, m => '\\' + m);
-
-    // Only search beneficiary_name and social_security_id
-    const orParts = [
-      `beneficiary_name.ilike.%${safe}%`,
-      `social_security_id.ilike.%${safeNum}%`
-    ];
-
-    let query = supabaseClient
-      .from('social_security_beneficiaries')
-      .select('*', { count: 'exact' })
-      .or(orParts.join(','));
-
-    const from = (currentPage - 1) * currentPageSize;
-    const to = from + currentPageSize - 1;
-
-    const { data, error, count } = await query
-      .order('sn', { ascending: true, nullsFirst: false })
-      .range(from, to);
-
-    btn.disabled = false;
-    btn.innerHTML = '🔍 खोज्नुहोस्';
-
-    if (error) {
-      openModal('❌ त्रुटि',
-        `<div class="state-box">
-          <div class="emoji">⚠️</div>
-          <div class="title">डाटा ल्याउँदा समस्या आयो</div>
-          <div class="msg">${escapeHtml(error.message)}</div>
-        </div>`);
-      return;
-    }
-
-    totalCount = count || 0;
-    lastResults = data || [];
-
-    if (!data || !data.length) {
-      document.getElementById('resultsCard').style.display = 'none';
-      openModal('🔍 कुनै नतिजा भेटिएन',
-        `<div class="state-box">
-          <div class="emoji">🕵️</div>
-          <div class="title">कुनै लाभग्राही भेटिएन</div>
-          <div class="msg">"<b>${escapeHtml(q || '—')}</b>" शब्दसँग मिल्ने कुनै record भेटिएन।<br>
-          कृपया नामको हिज्जे, वा परिचयपत्र नं. जाँच्नुहोस्।</div>
-        </div>`);
-      return;
-    }
-
-    renderResults();
-    document.getElementById('resultsCard').style.display = 'block';
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerHTML = '🔍 खोज्नुहोस्';
-    openModal('❌ त्रुटि',
-      `<div class="state-box">
-        <div class="emoji">⚠️</div>
-        <div class="title">अप्रत्याशित त्रुटि</div>
-        <div class="msg">${escapeHtml(err.message)}</div>
-      </div>`);
-  }
-}
-
-function renderResults() {
-  const list = document.getElementById('resultsList');
-  const start = (currentPage - 1) * currentPageSize + 1;
-  const end = Math.min(currentPage * currentPageSize, totalCount);
-
-  document.getElementById('resultsCount').textContent =
-    `कुल ${enToNeDigits(totalCount)} records — देखाइएको ${enToNeDigits(start)}-${enToNeDigits(end)}`;
-
-  list.innerHTML = lastResults.map(r => {
-    const methodBadge = r.renewal_method === 'बायोमेट्रिक'
-      ? '<span class="badge badge-biometric">बायोमेट्रिक</span>'
-      : (r.renewal_method
-          ? '<span class="badge badge-general">' + escapeHtml(r.renewal_method) + '</span>'
-          : '');
-    return `
-      <div class="result-card">
-        <div class="name">
-          <span>👤 ${escapeHtml(val(r.beneficiary_name))}</span>
-          <button class="btn-detail" onclick='showFullDetail(${r.id})'>पूरा विवरण</button>
+    <!-- Q2: Beneficiaries & rates (main table) -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-header">
+        <div class="q-icon">२</div>
+        <h3>सामाजिक सुरक्षा कार्यक्रमका योग्य लाभग्राहीहरु को को हुन्छन् र भत्ता दर कति छ ?</h3>
+      </div>
+      <div class="card-content">
+        <p>सामाजिक सुरक्षा (पहिलो संशोधन) ऐन, २०७९ मा उल्लेख भए अनुसार लाभग्राही तथा भत्ता दर:</p>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr><th>क्र.सं.</th><th>लाभान्वित वर्ग</th><th>योग्यता</th><th>मासिक रकम (रु.)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>१</td><td>जेष्ठ नागरिक</td><td>७० वर्ष उमेर पुगेको</td><td><span class="amount">४,०००</span></td></tr>
+              <tr><td>२</td><td>अन्य जेष्ठ नागरिक</td><td>६० वर्ष उमेर पुगेका साविक कर्णालीका जिल्लाहरुका नागरिक र देशभरीका दलित नागरिक</td><td><span class="amount">२,६६०</span></td></tr>
+              <tr><td>३</td><td>एकल महिला</td><td>विवाह नगरी बसेका ६० वर्ष उमेर पुगेका महिला, सम्बन्ध विच्छेद वा न्यायिक पृथकीकरण गरी बसेका ६० वर्ष उमेर पुगेका र पतिको मृत्यु भएका ६० वर्ष उमेर पुगेका</td><td><span class="amount">२,६६०</span></td></tr>
+              <tr><td>४</td><td>विधवा</td><td>पतिको मृत्यु भएका जुनसुकै उमेरका</td><td><span class="amount">२,६६०</span></td></tr>
+              <tr><td>५</td><td>पूर्ण अपाङ्गता भएका</td><td>क वर्ग (रातो रंगको अपाङ्गता परिचय पत्र) प्राप्त गरेका जुनसुकै उमेरका नागरिक</td><td><span class="amount">३,९९०</span></td></tr>
+              <tr><td>६</td><td>अति अशक्त अपाङ्गता</td><td>ख वर्ग (नीलो रंगको अपाङ्गता परिचय पत्र) प्राप्त गरेका जुनसुकै उमेरका नागरिक</td><td><span class="amount">२,१२८</span></td></tr>
+              <tr><td>७</td><td>लोपोन्मुख आदिवासी/जनजाति</td><td>कुसुन्डा, बनकरिया, राउटे, सुरेल, हायु, राजी, किसान, लेप्चा, मेचे, कुसवडिया, पत्थरकट्टा, सिलकट, कुशवधिया, कुचबधिया</td><td><span class="amount">३,९९०</span></td></tr>
+              <tr><td>८</td><td>बालबालिका</td><td>अनुसूची ५ बमोजिम नेपाल सरकारले तोकेका क्षेत्र तथा जिल्ला र देशभरिका दलित परिवारका पाँच वर्ष उमेर ननाघेका एक आमाबाट जन्मिएका बढीमा दुई सन्तानलाई</td><td><span class="amount">५३२</span></td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="row"><div class="lbl">क्र.सं.</div><div class="val">${enToNeDigits(val(r.sn))}</div></div>
-        <div class="row"><div class="lbl">वडा नं.</div><div class="val">${enToNeDigits(val(r.ward_no))}</div></div>
-        <div class="row"><div class="lbl">सा.सु. परिचयपत्र नं.</div><div class="val">${enToNeDigits(val(r.social_security_id))}</div></div>
-        <div class="row"><div class="lbl">लक्षित समूह</div><div class="val">${escapeHtml(val(r.target_group))}</div></div>
-        <div class="row"><div class="lbl">नवीकरण निवेदन नं.</div><div class="val">${enToNeDigits(val(r.renewal_application_no))}</div></div>
-        <div class="row"><div class="lbl">दर्ता नवीकरण मिति</div><div class="val">${enToNeDigits(val(r.renewal_application_date))}</div></div>
-        <div class="row"><div class="lbl">प्रणालीमा नवीकरण मिति</div><div class="val">${enToNeDigits(val(r.system_renewal_date))}</div></div>
-        <div class="row"><div class="lbl">प्रणाली दर्ता नं.</div><div class="val">${enToNeDigits(val(r.system_renewal_reg_no))}</div></div>
-        <div class="row"><div class="lbl">नवीकरण विधि</div><div class="val">${methodBadge || '—'}</div></div>
+        <div class="note">* ऐन तथा संशोधन अनुसार दरहरू परिवर्तन हुन सक्छन् ।</div>
       </div>
-    `;
-  }).join('');
-
-  renderPagination();
-}
-
-function renderPagination() {
-  const el = document.getElementById('pagination');
-  const totalPages = Math.ceil(totalCount / currentPageSize);
-  if (totalPages <= 1) {
-    el.innerHTML = `
-      <select onchange="changePageSize(this.value)">
-        <option value="20" ${currentPageSize===20?'selected':''}>२० प्रति पृष्ठ</option>
-        <option value="50" ${currentPageSize===50?'selected':''}>५० प्रति पृष्ठ</option>
-        <option value="100" ${currentPageSize===100?'selected':''}>१०० प्रति पृष्ठ</option>
-      </select>`;
-    return;
-  }
-
-  let html = `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(1)">«</button>`;
-  html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">‹</button>`;
-
-  const start = Math.max(1, currentPage - 2);
-  const end = Math.min(totalPages, currentPage + 2);
-  for (let i = start; i <= end; i++) {
-    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${enToNeDigits(i)}</button>`;
-  }
-
-  html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">›</button>`;
-  html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${totalPages})">»</button>`;
-  html += ` <select onchange="changePageSize(this.value)" style="margin-left:6px;">
-    <option value="20" ${currentPageSize===20?'selected':''}>२०</option>
-    <option value="50" ${currentPageSize===50?'selected':''}>५०</option>
-    <option value="100" ${currentPageSize===100?'selected':''}>१००</option>
-  </select>`;
-  el.innerHTML = html;
-}
-
-function goPage(p) {
-  doSearch(p);
-  document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function changePageSize(n) {
-  currentPageSize = parseInt(n, 10);
-  currentPage = 1;
-  doSearch(1);
-}
-
-// ============================================================
-// Full detail modal (dynamic — shows all DB columns)
-// ============================================================
-async function showFullDetail(id) {
-  try {
-    const { data, error } = await supabaseClient
-      .from('social_security_beneficiaries')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    if (!data) throw new Error('Record भेटिएन');
-
-    // Dynamic field labels
-    const FIELD_LABELS = {
-      id: 'ID (Database)',
-      sn: 'क्र.सं.',
-      ward_no: 'वडा नं.',
-      beneficiary_name: 'लाभग्राहीको नाम',
-      social_security_id: 'सा.सु. परिचयपत्र नं.',
-      target_group: 'लक्षित समूह',
-      renewal_application_no: 'नवीकरण निवेदन नं.',
-      renewal_application_date: 'दर्ता नवीकरण मिति',
-      ward_secretary_signature: 'वडा सचिवको हस्ताक्षर',
-      system_renewal_date: 'प्रणालीमा नवीकरण मिति',
-      system_renewal_reg_no: 'प्रणाली दर्ता नं.',
-      renewal_method: 'नवीकरण विधि',
-      created_at: 'Created At',
-      updated_at: 'Updated At'
-    };
-
-    // Preferred order, then all remaining keys
-    const preferredOrder = ['sn','ward_no','beneficiary_name','social_security_id','target_group','renewal_application_no','renewal_application_date','ward_secretary_signature','system_renewal_date','system_renewal_reg_no','renewal_method'];
-    const allKeys = Object.keys(data);
-    const orderedKeys = [
-      ...preferredOrder.filter(k => allKeys.includes(k)),
-      ...allKeys.filter(k => !preferredOrder.includes(k))
-    ];
-
-    const rows = orderedKeys.map(k => {
-      const label = FIELD_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      let v = data[k];
-      if (v === null || v === undefined || v === '') v = '—';
-      else if (typeof v === 'number' || /^\d+$/.test(String(v))) v = enToNeDigits(v);
-      else if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) v = enToNeDigits(v.substring(0,10));
-      return `<div class="row"><div class="lbl">${escapeHtml(label)}</div><div class="val">${escapeHtml(String(v))}</div></div>`;
-    }).join('');
-
-    const body = `
-      <div style="font-size:1.05rem;font-weight:800;color:#0d6efd;margin-bottom:12px;">
-        👤 ${escapeHtml(data.beneficiary_name || '—')}
-      </div>
-      ${rows}
-    `;
-    openModal('📋 पूरा विवरण', body);
-  } catch (e) {
-    openModal('❌ त्रुटि',
-      `<div class="state-box">
-        <div class="emoji">⚠️</div>
-        <div class="title">विवरण ल्याउन सकिएन</div>
-        <div class="msg">${escapeHtml(e.message)}</div>
-      </div>`);
-  }
-}
-
-// ============================================================
-// Export / Print
-// ============================================================
-function exportResultsCSV() {
-  if (!lastResults.length) return;
-  const headers = ['sn','ward_no','beneficiary_name','social_security_id','target_group',
-    'renewal_application_no','renewal_application_date','system_renewal_date',
-    'system_renewal_reg_no','renewal_method'];
-  const csv = [headers.join(',')].concat(
-    lastResults.map(r => headers.map(h => {
-      const v = r[h] == null ? '' : String(r[h]).replace(/"/g,'""');
-      return `"${v}"`;
-    }).join(','))
-  ).join('\n');
-
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `search_results_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function printResults() {
-  const start = (currentPage - 1) * currentPageSize + 1;
-  const end = Math.min(currentPage * currentPageSize, totalCount);
-  const html = `
-    <div style="padding:20px;">
-      <h1 style="text-align:center;">गलकोट नगरपालिका</h1>
-      <h2 style="text-align:center;font-size:1rem;">सामाजिक सुरक्षा लाभग्राही — खोज नतिजा</h2>
-      <p style="text-align:center;font-size:.85rem;">आ.व. २०८३/८४ — कुल ${enToNeDigits(totalCount)} records (देखाइएको ${enToNeDigits(start)}-${enToNeDigits(end)})</p>
-      <p style="text-align:center;font-size:.8rem;color:#666;">मुद्रण मिति: ${enToNeDigits(new Date().toLocaleDateString('en-GB'))}</p>
-      <table border="1" cellpadding="6" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:14px;">
-        <thead style="background:#f1f5f9;">
-          <tr>
-            <th>क्र.सं.</th><th>वडा</th><th>नाम</th><th>परिचयपत्र नं.</th>
-            <th>समूह</th><th>निवेदन नं.</th><th>नवीकरण मिति</th><th>विधि</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${lastResults.map(r => `
-            <tr>
-              <td>${enToNeDigits(val(r.sn))}</td>
-              <td>${enToNeDigits(val(r.ward_no))}</td>
-              <td>${escapeHtml(val(r.beneficiary_name))}</td>
-              <td>${enToNeDigits(val(r.social_security_id))}</td>
-              <td>${escapeHtml(val(r.target_group))}</td>
-              <td>${enToNeDigits(val(r.renewal_application_no))}</td>
-              <td>${enToNeDigits(val(r.system_renewal_date))}</td>
-              <td>${escapeHtml(val(r.renewal_method))}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      <p style="text-align:right;font-size:.75rem;margin-top:10px;">कुल: ${enToNeDigits(totalCount)}</p>
     </div>
-  `;
-  const w = window.open('', '_blank');
-  w.document.write(`<html><head><title>Print</title></head><body onload="window.print();">${html}</body></html>`);
-  w.document.close();
-}
+  </div>
 
-// ============================================================
-// Modal helpers
-// ============================================================
-function openModal(title, bodyHtml, showFooter = true) {
-  document.getElementById('modalTitle').innerHTML = title;
-  document.getElementById('modalBody').innerHTML = bodyHtml;
-  document.getElementById('modalFooter').style.display = showFooter ? 'flex' : 'none';
-  document.getElementById('modal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-  document.body.style.overflow = '';
-}
-function closeModalOnOverlay(e) {
-  if (e.target.id === 'modal') closeModal();
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
+  <!-- Additional Q's in compact grid -->
+  <div class="card-grid">
+    <!-- Q3: where to apply -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">३</div><h3>कहिले, कहाँ र कसरी निवेदन दिने?</h3></div>
+      <div class="card-content">
+        <p>योग्य लाभग्राहीले जुनसुकै समयमा आफ्नो स्थायी बसोबास भएको <strong>वडा कार्यालयमा</strong> उपस्थित भई सामाजिक सुरक्षा (पहिलो संशोधन) ऐन, २०७९ को अनुसूची १ बमोजिमको तोकिएको ढाँचामा निवेदन दिनुपर्छ।</p>
+        <p>निवेदन दिई छानविन भई प्रणालिमा प्रविष्ट भएको <strong>अर्को महिनाबाट</strong> भत्ता प्राप्त गर्न सक्दछन्।</p>
+      </div>
+    </div>
 
-// ============================================================
-// Init
-// ============================================================
-document.getElementById('q').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
-});
-window.addEventListener('DOMContentLoaded', loadStats);
-</script>
+    <!-- Q4: documents -->
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-header"><div class="q-icon">४</div><h3>सामाजिक सुरक्षा भत्ता प्राप्त गर्न के कागजपत्र चाहिन्छ?</h3></div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>लाभग्राहीको प्रकार</th><th>कागजपत्र</th></tr></thead>
+            <tbody>
+              <tr><td>ज्येष्ठ नागरिक (७० वर्ष)</td><td>नेपाली नागरिकता प्रमाणपत्र, तोकिएको ढाँचामा निवेदन</td></tr>
+              <tr><td>ज्येष्ठ नागरिक दलित/क्षेत्र (६० वर्ष)</td><td>नेपाली नागरिकता प्रमाणपत्र, तोकिएको ढाँचामा निवेदन</td></tr>
+              <tr><td>ज्येष्ठ नागरिक एकल महिला</td><td>नेपाली नागरिकता, न्यायिक पृथकीकरण/सम्बन्ध विच्छेद/विवाह नगरेको सिफारिस</td></tr>
+              <tr><td>विधवा</td><td>नेपाली नागरिकता, पतिको मृत्यु दर्ता प्रमाणपत्र</td></tr>
+              <tr><td>पूर्ण अपाङ्गता</td><td>'क' वर्ग रातो कार्ड, १६ वर्ष पुगेको नागरिकता / नाबालकको जन्मदर्ता</td></tr>
+              <tr><td>अति अशक्त अपाङ्ग</td><td>'ख' वर्ग निलो कार्ड, १६ वर्ष नागरिकता / नाबालक जन्मदर्ता</td></tr>
+              <tr><td>लोपोन्मुख जाति</td><td>नेपाली नागरिकता, सामाजिक सुरक्षा ऐन २०७५ अनुसूची १ अनुसारको जातजाती</td></tr>
+              <tr><td>बालपोषण भत्ता</td><td>जन्म दर्ता, बाबु/आमाको नागरिकता, संरक्षकको नागरिकता (आवश्यक अनुसार)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5: ward office duties -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">५</div><h3>वडा कार्यालयले के गर्नुपर्छ?</h3></div>
+      <div class="card-content">
+        <ul>
+          <li>निवेदन लिने र दर्ता गर्ने</li>
+          <li>कागजात रुजु गर्ने</li>
+          <li>प्रणालीमा नाम प्रविष्टी गर्ने</li>
+          <li>लगत कट्टा गर्ने</li>
+          <li>गुनासो सम्बोधन गर्ने</li>
+          <li>भत्ता वितरण पश्चात नाम सार्वजनिक गर्ने</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q6-8 bank related -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">६-८</div><h3>बैंक खाता सम्बन्धी</h3></div>
+      <div class="card-content">
+        <p><strong>खाता खोल्न उपस्थिति:</strong> स्थानीय तहले सूची बैंकमा पठाएपछि शून्य मौज्दातमा खाता खुल्छ। तर पहिलो भुक्तानी लिन नागरिकता, फोटो सहित स्वयं उपस्थित हुनुपर्छ।</p>
+        <p><strong>रकम निकाल्न:</strong> आफ्नो अनुकूल समयमा निकाल्न सकिन्छ, ब्याज समेत पाइन्छ। एक आर्थिक वर्षमा कारोबार नभएमा स्थानीय तह र बैंकले अवस्था यकिन गर्नुपर्छ।</p>
+        <p><strong>शाखा:</strong> चेक बुक तथा एटिएम मार्फत बैंकको जुनसुकै शाखाबाट झिक्न सकिन्छ।</p>
+      </div>
+    </div>
+
+    <!-- Q9-10 services & 90+ -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">९-१०</div><h3>बैंक सुविधा & ९० वर्ष माथि</h3></div>
+      <div class="card-content">
+        <p>लाभग्राहीको खाता रहेको बैंकले नियमानुसार चेक, एटिएम, मोबाइल बैंकिङ, एसएमएस बैंकिङ सुविधा दिन्छ।</p>
+        <p><strong>९० वर्ष माथिका ज्येष्ठ नागरिक, पूर्ण अपाङ्गता:</strong> संरक्षक, माथवर वा स्याहार गर्ने व्यक्तिले निवेदन दिन सक्ने, संयुक्त खाता सञ्चालन वा संरक्षकको दस्तखतबाट मात्र पनि खाता सञ्चालन गरी भत्ता प्राप्त गर्न सकिन्छ।</p>
+      </div>
+    </div>
+
+    <!-- Q11-15 quick facts -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">११-१५</div><h3>थप जानकारी</h3></div>
+      <div class="card-content">
+        <p><strong>बाँकी रकम फिर्ता:</strong> ब्याज सहित नेपाल सरकारको सञ्चित कोषमा फिर्ता गर्नुपर्छ।</p>
+        <p><strong>समन्वय:</strong> स्थानीय तह बैंकिङ समस्या समाधान समिति मार्फत, नभएमा राष्ट्रिय परिचयपत्र तथा पञ्जीकरण विभागबाट।</p>
+        <p><strong>Forward/Reverse Feed:</strong> स्थानीय तहको लाभग्राही सूची Forward Feed, बैंकले खाता सहित फर्काएको सूची Reverse Feed।</p>
+        <p><strong>उमेर गणना:</strong> नागरिकता/जन्मदर्ता अनुसार; गते नखुले महिनाको मसान्त, साल मात्र भए जारी मिति।</p>
+        <p><strong>४० वर्षे एकल महिला:</strong> हाल राजपत्रमा सूचना प्रकाशित नभएकोले भत्ता पाउने अवस्था छैन।</p>
+      </div>
+    </div>
+
+    <!-- Q16-20 renewal, double, etc -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">१६-२०</div><h3>नवीकरण, दोहोरो, बसाइँसराइ</h3></div>
+      <div class="card-content">
+        <p><strong>नवीकरण:</strong> प्रत्येक आर्थिक वर्षको श्रावण–भाद्र मसान्तभित्र वडा कार्यालयमा उपस्थित भई नवीकरण गर्नुपर्छ। छुटे पुनः नयाँ लाभग्राही सरह नाम दर्ता गराउनुपर्छ, अर्को महिनाबाट भत्ता।</p>
+        <p><strong>दोहोरो भत्ता:</strong> एक व्यक्तिले एक भन्दा बढी समूहबाट भत्ता लिन मिल्दैन। दोहोरो बुझेमा नाम हटाई कानून बमोजिम बिगो असुल र जरिवाना।</p>
+        <p><strong>बसाइँसराइ:</strong> स्थायी बसोबास भएको वडामा मात्र दर्ता। सरेपछि नयाँ वडामा बसाइँसराइ प्रमाणपत्र र लगत कट्टा विवरण बुझाउनुपर्छ।</p>
+      </div>
+    </div>
+
+    <!-- Q22-30 miscellaneous -->
+    <div class="card">
+      <div class="card-header"><div class="q-icon">२२-३०</div><h3>लगत कट्टा, गुनासो, कारवाही</h3></div>
+      <div class="card-content">
+        <p><strong>लगत कट्टा हुने:</strong> मृत्यु, बालबालिकाको ५ वर्ष पुगेमा, बसाइँसराइ, एकल/विधवाले विवाह गरेमा, दोहोरो दर्ता, सरकारी पद/पारिश्रमिक, नवीकरण नगरेमा, स्वेच्छाले त्याग।</p>
+        <p><strong>स्वेच्छाले त्याग:</strong> वडा कार्यालयमा निवेदन, लगत कट्टा, सम्मान गरी प्रमाणपत्र।</p>
+        <p><strong>विवाह दर्ता नभएको:</strong> स्थानीय जनप्रतिनिधि/विश्वासनीय स्रोतबाट पुष्टि भएमा लगत कट्टा गर्नुपर्छ।</p>
+        <p><strong>दलित थर:</strong> राष्ट्रिय दलित आयोगको अनुसूची अनुसार, अन्यथा जिल्ला प्रशासनको सिफारिस।</p>
+        <p><strong>निवृत्तभरण र सामाजिक सुरक्षा:</strong> एक रोज्नुपर्ने, निवृत्तभरण रोजे सामाजिक सुरक्षा कट्टा।</p>
+        <p><strong>मृत्यु भएमा:</strong> लगत कट्टा गरी बाँकी रकम सञ्चित कोषमा फिर्ता।</p>
+        <p><strong>गुनासो:</strong> वडा कार्यालय, स्थानीय तह, विभाग वा सम्बन्धित निकायमा।</p>
+        <p><strong>कसूर सजाय:</strong> स्थानीय तहको न्यायिक समितिले कानून अनुसार कारवाही गर्छ।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CITIZENSHIP SECTION ========== -->
+  <div class="section-badge">
+    <i class="fas fa-id-card"></i> नागरिकता · Citizenship (FAQ)
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-header"><div class="q-icon">१</div><h3>नेपाली नागरिकता भनेको के हो? किन चाहिन्छ?</h3></div>
+      <div class="card-content">नेपालको नागरिक हो भनी राज्यले दिएको प्रमाण। शिक्षा, व्यापार, सम्पत्ति, राहदानी, मताधिकार, बैंक खाता जस्ता काममा अनिवार्य।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">२</div><h3>नागरिकता कति किसिमका?</h3></div>
+      <div class="card-content">वंशज, जन्मको आधार, अङ्गीकृत, सम्मानार्थ – ४ किसिमका।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">३</div><h3>हिफाजत कसरी गर्ने?</h3></div>
+      <div class="card-content">खोल हाल्ने वा लेमिनेशन गर्न सकिन्छ। नयाँ कार्डमा मसि सेट हुन २ हप्ता लाग्ने हुँदा पछि मात्र लेमिनेशन गर्नु राम्रो।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">४</div><h3>कहिले बनाउने? उमेर?</h3></div>
+      <div class="card-content">१६ वर्ष पूरा भएपछि आवश्यक परे जुनसुकै दिन।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">५</div><h3>कागजपत्र सक्कलै?</h3></div>
+      <div class="card-content">फोटोकपी आवेदनसँगै, सक्कल हेरेर रुजु गरिन्छ, रुजु पछि सक्कल फिर्ता।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">६</div><h3>फोटो कस्तो?</h3></div>
+      <div class="card-content">२.५x३ से.मी., रातो पृष्ठभूमी नभएको, बोर्डर नभएको, दुवै कान सहित, चश्मा नलगाएको, रंगिन। जम्मा ३ प्रति।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">७-८</div><h3>समय र प्रक्रिया</h3></div>
+      <div class="card-content">वडा सिफारिश सहितको आवेदन एक घण्टाभित्र। अनुसूची फारम, फोटो टाँस, वडा सिफारिश, कागजात रुजु, सनाखत, कार्ड तयार।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">९-१०</div><h3>शुल्क र स्थान</h3></div>
+      <div class="card-content">रु. १० टिकट (नयाँ), रु. १३ (प्रतिलिपि)। जिल्ला प्रशासन कार्यालय वा इलाका प्रशासन कार्यालय।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">११-१५</div><h3>सनाखत, मिति/नाम फरक</h3></div>
+      <div class="card-content">बाबु/आमा वा तीन पुस्ताभित्रको नातेदारले सनाखत। शैक्षिक प्रमाणपत्रको मिति/नाम मान्य, वडा सिफारिश आवश्यक।</div>
+    </div>
+  </div>
+
+  <!-- Citizenship copy & registration -->
+  <div class="card-grid">
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-header"><div class="q-icon">प्रतिलिपि</div><h3>नागरिकता प्रतिलिपि सम्बन्धी</h3></div>
+      <div class="card-content">
+        <p><strong>कहिले पाइन्छ:</strong> च्यातिए, हराए, नष्ट भए, झुत्रो भए। पुरानो फोटोकपी/नम्बर र जारी मिति खुल्ने कागज, वडा सिफारिश, २ फोटो।</p>
+        <p><strong>कतिपटक:</strong> जति पटक पनि, तर ३ पटक भन्दा बढी माग गरे स्थलगत/प्रहरी सर्जमिन।</p>
+        <p><strong>सच्याउन:</strong> थर, उमेर, वतन आदि त्रुटी भए प्रमाण सहित निवेदन, साक्षी सर्जमिन, पुरानो खिची नयाँ।</p>
+        <p><strong>महिला पतिको नाम:</strong> विवाह दर्ता/सम्बन्ध विच्छेद प्रमाण पेश।</p>
+        <p><strong>स्वयं उपस्थित:</strong> प्रतिलिपि लिन निवेदक स्वयं उपस्थित हुनुपर्छ।</p>
+        <p><strong>मृत्यु/विदेश:</strong> सरोकारवालालाई प्रमाणित गरि दिन सकिन्छ (कार्ड प्रतिलिपि पाइँदैन)।</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">दण्ड</div><h3>कानुन विपरीत कार्य गरेमा सजाय</h3></div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>कसूर</th><th>सजाय</th></tr></thead>
+            <tbody>
+              <tr><td>झुठो विवरण दिई विदेशीले नागरिकता</td><td>१–५ वर्ष कैद वा ५०,०००–१,००,००० जरिवाना वा दुवै</td></tr>
+              <tr><td>विदेशीलाई झुठो नागरिकता दिलाउने सनाखत/सिफारिस</td><td>६ महिना–३ वर्ष कैद वा २५,०००–५०,००० जरिवाना वा दुवै</td></tr>
+              <tr><td>झुठो/किर्ते नागरिकता खडा वा सिफारिस</td><td>१–५ वर्ष कैद वा २०,०००–१,००,००० जरिवाना वा दुवै</td></tr>
+              <tr><td>विवरण आफुखुसी सच्याएमा</td><td>३ महिना सम्म कैद वा १०,००० सम्म जरिवाना वा दुवै</td></tr>
+              <tr><td>नेपाली नागरिकले झुठो विवरण दिई नागरिकता</td><td>१५,००० सम्म जरिवाना</td></tr>
+              <tr><td>ऐन विपरित कार्य</td><td>१५,००० सम्म जरिवाना</td></tr>
+              <tr><td>कर्मचारीले बदनियतपूर्वक नागरिकता/विवरण सच्याए</td><td>विभागीय कारबाही</td></tr>
+              <tr><td>कसूर गर्न उद्योग/मद्दत</td><td>मुख्य कसूरको आधा सजाय</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== VITAL REGISTRATION ========== -->
+  <div class="section-badge">
+    <i class="fas fa-registered"></i> व्यक्तिगत घटना दर्ता · Vital Registration
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-header"><div class="q-icon">१</div><h3>व्यक्तिगत घटना दर्ता के हो? किन अनिवार्य?</h3></div>
+      <div class="card-content">जन्म, मृत्यु, विवाह, सम्बन्ध विच्छेद, बसाईसराई जस्ता घटना स्थायी ठेगाना भएको वडा कार्यालयमा दर्ता गर्ने कार्य। ३५ दिनभित्र निःशूल्क, पहिचानको पहिलो आधार।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">२</div><h3>सूचक को हुन्छ?</h3></div>
+      <div class="card-content">जन्म/मृत्यु/बसाइँसराइ: एकाघरका १८ वर्ष पुगेका नागरिक। विवाह: पति र पत्नी दुवै। सम्बन्ध विच्छेद: पति वा पत्नी एक। नभए संरक्षक/माथवर/वडाध्यक्ष।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">३</div><h3>अभिलेख नभए नक्कल?</h3></div>
+      <div class="card-content">सूचना फाराम/प्रमाणपत्रको प्रतिलिपि अन्यत्र भए सो आधारमा वा नियमावली नियम २१(४) बमोजिम प्रतिलिपि खडा।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">४-५</div><h3>कहाँ, कहिले, दायित्व?</h3></div>
+      <div class="card-content">स्थायी ठेगाना वडा वा घटना घटेको स्थानको पञ्जिकाधिकारीमा ३५ दिनभित्र। दायित्व सम्बन्धित व्यक्ति र स्थानीय पञ्जिकाधिकारीको।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">६-८</div><h3>२०३४ अघिको घटना, प्रतिलिपि</h3></div>
+      <div class="card-content">२०३४ अघिको घटना दर्ता गर्न मिल्दैन, वडाध्यक्षबाट प्रमाणित कागज। घटना सम्बन्धित व्यक्तिले निवेदन दिई प्रतिलिपि।</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">९-११</div><h3>वडाको दायित्व, झुटा विवरण</h3></div>
+      <div class="card-content">सूचना फाराम, कागजात रुजु, दर्ता, अभिलेख, प्रमाणपत्र जारी। झुटा विवरण पाईएमा प्रमुख जिल्ला अधिकारीबाट दर्ता रद्द, कानूनी कारवाही।</div>
+    </div>
+  </div>
+
+  <!-- Birth, Marriage, Migration, Divorce, Death compact -->
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-header"><div class="q-icon">जन्म</div><h3>जन्म दर्ता</h3></div>
+      <div class="card-content">
+        <p><strong>कागजात:</strong> आमा/बाबुको नागरिकता, स्वास्थ्य संस्थाको जन्म प्रमाणित वा खोप कार्ड, घरमा जन्मिए खोप कार्ड। बेपत्ता भए अदालतको आदेश/मानव अधिकार/प्रहरी प्रतिवेदन।</p>
+        <p><strong>सूचक:</strong> आमा/बाबु वा परिवारको १८ वर्षे सदस्य।</p>
+        <p><strong>समय:</strong> ३५ दिनभित्र, पछि विलम्ब शुल्क।</p>
+        <p><strong>विदेशी आमा:</strong> बाबुको नागरिकताको आधारमा। बाबु ठेगाना नभए आमाको माइती थर/ठेगाना।</p>
+        <p><strong>बाल/बहुविवाह:</strong> २० वर्ष पुगेपछि मात्र दर्ता, तर बच्चा जन्मिए आमा–बाबु दुवै उपस्थित।</p>
+        <p><strong>अनाथ/धर्मपुत्र/कारागार/विदेश:</strong> संरक्षक/माथवर/वडाध्यक्ष, दुवै सूचक, कारागार प्रमुख, दुतावासबाट प्रमाणित।</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">विवाह</div><h3>विवाह दर्ता</h3></div>
+      <div class="card-content">
+        <p><strong>कागजात:</strong> दुलाहा–दुलहीको नागरिकता, फोटो, अदालतबाट नाता कायम भएको कागज (यदि लागू)।</p>
+        <p><strong>सूचक:</strong> पति र पत्नी दुवै, नभए वारेसनामा।</p>
+        <p><strong>वेपत्ता/इन्कार:</strong> अदालतबाट नाता कायम गरी दर्ता।</p>
+        <p><strong>मृत्यु पूर्व:</strong> विवाह प्रमाणित गरी नाता कायम गराउनु।</p>
+        <p><strong>विदेशी:</strong> अदालतबाट दर्ता पश्चात, दुतावास/नियोगको सिफारिस।</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">बसाइँ</div><h3>बसाईसराई</h3></div>
+      <div class="card-content">
+        <p><strong>जाँदा:</strong> सूचकको नागरिकता, परिवारका सबैको नागरिकता (भए), लगत हस्तान्तरण फाराम।</p>
+        <p><strong>आउँदा:</strong> घरमुली/सूचकको नागरिकता, लगत हस्तान्तरण फाराम।</p>
+        <p><strong>सूचक:</strong> घरमुली वा १८ वर्षे सदस्य।</p>
+        <p><strong>दर्ता नगरे:</strong> सेवा सुविधाबाट बञ्चित।</p>
+        <p><strong>समय:</strong> ३५ दिनभित्र निःशूल्क, पछि विलम्ब शुल्क।</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">सम्बन्ध</div><h3>सम्बन्ध विच्छेद</h3></div>
+      <div class="card-content">
+        <p><strong>कागजात:</strong> सूचना फाराम, नागरिकता, अदालतको फैसला, विदेशी भए कुटनीतिक नियोगबाट प्रमाणित अनुवाद।</p>
+        <p><strong>सूचक:</strong> पति वा पत्नी एक।</p>
+        <p><strong>विदेशमा:</strong> सम्बन्धित राष्ट्रको अदालतबाट प्रमाण पेश।</p>
+        <p><strong>बच्चाको जन्म दर्ता:</strong> आमासँग रहे पनि बाबुको स्थायी ठेगानामा दर्ता भए नभएको यकिन।</p>
+        <p><strong>पत्नी ठेगाना:</strong> सम्बन्ध विच्छेद पछि पत्नीको स्थायी ठेगानामा दर्ता मिल्छ, पति तर्फ दर्ता भए नभएको यकिन।</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="q-icon">मृत्यु</div><h3>मृत्यु दर्ता</h3></div>
+      <div class="card-content">
+        <p><strong>कागजात:</strong> मृतकको नागरिकता/जन्मदर्ता, सूचकको सहिछाप सहित सूचना फाराम, सूचकको नागरिकता। विदेशी भए राहदानी, प्रवेशाज्ञा, बसोबास प्रमाण, नियोगको सिफारिस। स्वास्थ्य संस्थामा मृत्यु भए प्रतिवेदन।</p>
+        <p><strong>सूचक:</strong> बाबु/आमा, पति/पत्नी, छोरा/छोरी, नभए १८ वर्षे परिवारको अन्य सदस्य।</p>
+        <p><strong>किन:</strong> अद्यावधिक, कानुनी/प्रशासनिक, सम्पत्ति हस्तान्तरण, सामाजिक सुरक्षा लगत कट्टा, विधवा प्रमाणित।</p>
+        <p><strong>विदेश/विदेशी/बेपत्ता:</strong> नियोगबाट प्रमाणित, प्रहरी रिपोर्ट, अदालतको न्यायिक मृत्यु घोषणा।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="footer-note">
+    <i class="fas fa-circle-info"></i> MANAGEMENT INFORMATION SYSTEM · सामाजिक सुरक्षा, नागरिकता तथा व्यक्तिगत घटना दर्ता · जानकारी स्रोत: दोनिदसर.gov.np
+  </div>
+
+</div>
 </body>
 </html>
