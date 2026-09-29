@@ -284,6 +284,7 @@ async function getSignedUrl(path){
   return data.signedUrl;
 }
 
+console.log('panprint build-2: upload-first save active');
 async function saveRecord(e){
   e.preventDefault();
   if(!currentUser) return;
@@ -297,18 +298,34 @@ async function saveRecord(e){
     let id=$('recordId').value;
     if(!id){
       id=crypto.randomUUID();
-      const {error}=await sb.from('pan_records').insert({
-        id,pan_type:selectedType,person_name:name,parent_name:parent,pan_number:pan,
-        certificate_path:null,card_path:null,status:'active',created_by:currentUser.id
-      });
-      if(error) throw error;
+      // पहिले files upload, त्यसपछि मात्र DB insert (constraint pan_records_file_rule पूरा हुन्छ)
+      let certPath=null, cardPath=null;
+      try{
+        certPath=await uploadPdf(certificate,id,'certificate');
+        if(selectedType==='business') cardPath=await uploadPdf(card,id,'card');
+        window.__dbg={op:'insert',type:selectedType,cert:certPath,card:cardPath};
+        const {error}=await sb.from('pan_records').insert({
+          id,pan_type:selectedType,person_name:name,parent_name:parent,pan_number:pan,
+          certificate_path:certPath,card_path:cardPath,status:'active',created_by:currentUser.id
+        });
+        if(error) throw error;
+      }catch(insertError){
+        // fail भए upload भएका files हटाउने (orphan file नरहोस्)
+        if(certPath) await removeFile(certPath);
+        if(cardPath) await removeFile(cardPath);
+        throw insertError;
+      }
+      clearForm(); await loadRecords(); toast('PAN record saved successfully.');
+      return;
     }else{
       const {data:old,error}=await sb.from('pan_records').select('*').eq('id',id).single();
       if(error) throw error;
       let certificatePath=old.certificate_path, cardPath=old.card_path;
+      if(selectedType==='business' && !card && !cardPath) throw new Error('Business PAN requires PAN Card PDF too.');
       if(certificate){if(certificatePath) await removeFile(certificatePath); certificatePath=await uploadPdf(certificate,id,'certificate');}
       if(selectedType==='business' && card){if(cardPath) await removeFile(cardPath); cardPath=await uploadPdf(card,id,'card');}
       if(selectedType==='personal' && cardPath){await removeFile(cardPath);cardPath=null;}
+      window.__dbg={op:'update',type:selectedType,cert:certificatePath,card:cardPath};
       const {error:updateError}=await sb.from('pan_records').update({
         pan_type:selectedType,person_name:name,parent_name:parent,pan_number:pan,
         certificate_path:certificatePath,card_path:cardPath,status:'active',archived_at:null
@@ -317,20 +334,7 @@ async function saveRecord(e){
       clearForm(); await loadRecords(); toast('PAN record updated.');
       return;
     }
-    let certPath=null, cardPath=null;
-    try{
-      certPath=await uploadPdf(certificate,id,'certificate');
-      if(selectedType==='business') cardPath=await uploadPdf(card,id,'card');
-      const {error:updateError}=await sb.from('pan_records').update({certificate_path:certPath,card_path:cardPath}).eq('id',id);
-      if(updateError) throw updateError;
-    }catch(uploadError){
-      await sb.from('pan_records').delete().eq('id',id);
-      if(certPath) await removeFile(certPath);
-      if(cardPath) await removeFile(cardPath);
-      throw uploadError;
-    }
-    clearForm(); await loadRecords(); toast('PAN record saved successfully.');
-  }catch(err){toast(err.message||'Save failed.',true);}
+  }catch(err){console.error('PAN save error [build-2]',{type:selectedType,hasCert:!!certificate,hasCard:!!card,err});toast((err.message||'Save failed.')+(window.__dbg?` [v2 ${window.__dbg.op} type=${window.__dbg.type} cert=${window.__dbg.cert?'YES':'NULL'} card=${window.__dbg.card?'YES':'NULL'}]`:' [v2 no-db-call]'),true);window.__dbg=null;}
   finally{$('saveBtn').disabled=false;}
 }
 
