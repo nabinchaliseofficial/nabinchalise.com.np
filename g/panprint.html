@@ -32,6 +32,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.topbar{height:auto;padding:15px;gap:12px;flex-wrap:wrap}.actions{width:100%}.actions .btn{flex:1;justify-content:center}}
 @media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.container{padding:15px}.card-body{padding:15px}}
 </style>
+<style>.role-pan button[onclick^="editRecord"]{display:none!important}</style>
 </head>
 <body>
 
@@ -51,6 +52,8 @@ button,input,select{font:inherit}.hidden{display:none!important}
   <div class="lock-inner">
     <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
     <div class="lock-title">SYSTEM LOCKED</div>
+    <div id="lockClock" style="font-size:clamp(22px,4vw,40px);font-weight:700;color:#fff;margin:6px 0 4px"></div>
+    <div id="lockDate" class="lock-note" style="margin:0 0 14px"></div>
     <div id="lockSeconds" class="lock-count">0</div>
     <div class="lock-note">Inactive for 1 minute. Any mouse or keyboard movement will log out and return to the login screen.</div>
     <div class="lock-progress"><i id="lockProgress"></i></div>
@@ -231,9 +234,22 @@ async function doLogout(fromLock=false){
   $('loginScreen').classList.remove('hidden');
   if(fromLock) toast('You were logged out because the locked system received input.',true);
 }
+let currentRole=null;
 async function ensurePanRole(userId){
-  const {data,error}=await sb.from('user_roles').select('role,status').eq('user_id',userId).eq('role','pan').eq('status','active').limit(1);
-  return !error && data && data.length>0;
+  const {data,error}=await sb.from('user_roles').select('role,status').eq('user_id',userId).in('role',['admin','pan']).eq('status','active').limit(1);
+  const ok=!error && data && data.length>0;
+  currentRole=ok?data[0].role:null;
+  if(ok) applyRoleUI();
+  return ok;
+}
+// Add / Edit PAN admin लाई मात्र देखाउने; 'pan' role लाई लुकाउने
+function applyRoleUI(){
+  const isAdmin=currentRole==='admin';
+  document.body.classList.toggle('role-pan',!isAdmin);
+  const formSection=$('panForm').closest('section');
+  if(formSection) formSection.style.display=isAdmin?'':'none';
+  const grid=document.querySelector('.grid');
+  if(grid) grid.style.gridTemplateColumns=isAdmin?'':'1fr';
 }
 async function login(){
   const email=$('loginEmail').value.trim(), password=$('loginPassword').value;
@@ -288,6 +304,7 @@ console.log('panprint build-2: upload-first save active');
 async function saveRecord(e){
   e.preventDefault();
   if(!currentUser) return;
+  if(currentRole!=='admin'){toast('Only admin can add or edit PAN records.',true);return;}
   const name=$('personName').value.trim(), parent=$('parentName').value.trim(), pan=$('panNumber').value.trim();
   const certificate=$('certificateFile').files[0], card=$('cardFile').files[0];
   if(!name||!parent||!pan){toast('Please fill all required fields.',true);return;}
@@ -369,6 +386,7 @@ function filterRecords(){
   renderRecords(records.filter(r=>[r.person_name,r.parent_name,r.pan_number,r.pan_type].some(v=>String(v||'').toLowerCase().includes(q))));
 }
 async function editRecord(id){
+  if(currentRole!=='admin') return;
   const r=records.find(x=>x.id===id); if(!r)return;
   editing=true;$('recordId').value=r.id;$('personName').value=r.person_name;$('parentName').value=r.parent_name;$('panNumber').value=r.pan_number;
   setType(r.pan_type);$('editMode').textContent='EDIT';$('saveBtn').innerHTML='<i class="fa-solid fa-floppy-disk"></i> Update PAN';
@@ -477,6 +495,19 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_OUT' && !locked){$('loginScreen').classList.remove('hidden');}
 });
 init();
+</script>
+<script>
+// Lock screen live clock (अरू code नछोइकन थपिएको)
+(function(){
+  function tick(){
+    var c=document.getElementById('lockClock'), d=document.getElementById('lockDate');
+    if(!c||!d) return;
+    var n=new Date();
+    c.textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    d.textContent=n.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  }
+  tick(); setInterval(tick,1000);
+})();
 </script>
 </body>
 </html>
