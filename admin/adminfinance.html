@@ -277,12 +277,6 @@ label{
     }
 }
 
-/* =========================================================
-   DASHBOARD UI
-   Everything below is scoped to #dashboard so the other
-   pages, modals and forms keep their existing styling.
-========================================================= */
-
 #dashboard{
     --db-ink:#0f1e36;
     --db-text:#172033;
@@ -335,8 +329,6 @@ label{
     vertical-align:.12em;
 }
 
-/* ---------- loading bar ---------- */
-
 #dashboard .db-topbar{
     position:absolute;
     left:0;right:0;top:-8px;
@@ -362,8 +354,6 @@ label{
     from{transform:translateX(-100%)}
     to{transform:translateX(290%)}
 }
-
-/* ---------- header + quick actions ---------- */
 
 #dashboard .db-head{
     display:flex;
@@ -416,8 +406,6 @@ label{
 #dashboard .db-act.is-primary svg{color:#fff}
 #dashboard .db-act.is-primary:hover{background:#1d4fd0;border-color:#1d4fd0}
 
-/* ---------- alert banner ---------- */
-
 #dashboard .db-alert{
     display:flex;
     align-items:center;
@@ -441,8 +429,6 @@ label{
     white-space:nowrap;
 }
 #dashboard .db-alert button:hover{background:#fff}
-
-/* ---------- KPI cards ---------- */
 
 #dashboard .db-kpis{
     display:grid;
@@ -506,8 +492,6 @@ label{
     color:var(--c,var(--db-blue));
 }
 
-/* ---------- panels + layout ---------- */
-
 #dashboard .db-grid{
     display:grid;
     grid-template-columns:repeat(12,minmax(0,1fr));
@@ -556,8 +540,6 @@ label{
     color:var(--db-muted);
 }
 
-/* ---------- shared bars ---------- */
-
 #dashboard .db-bar{
     height:8px;
     border-radius:99px;
@@ -582,8 +564,6 @@ label{
     background:var(--db-ink);
     opacity:.45;
 }
-
-/* ---------- assets & liabilities ---------- */
 
 #dashboard .db-group + .db-group{
     margin-top:16px;
@@ -625,8 +605,6 @@ label{
     color:var(--db-faint);
 }
 #dashboard .db-line-top b{font-weight:700}
-
-/* ---------- income vs expense ---------- */
 
 #dashboard .db-flow-sum{
     display:grid;
@@ -743,8 +721,6 @@ label{
     background:var(--c);
 }
 
-/* ---------- lists: transactions + dues ---------- */
-
 #dashboard .db-list{list-style:none;padding:0;margin:0}
 #dashboard .db-tx{
     display:flex;
@@ -844,8 +820,6 @@ label{
 #dashboard .db-pill.is-soon{background:var(--db-amber-bg);color:#8a5600}
 #dashboard .db-pill.is-later{background:var(--db-soft);color:var(--db-muted)}
 
-/* ---------- goals ---------- */
-
 #dashboard .db-goal-sum{
     display:flex;
     align-items:center;
@@ -909,8 +883,6 @@ label{
 }
 #dashboard .db-meta-row .is-bad{color:var(--db-rose);font-weight:700}
 
-/* ---------- budgets ---------- */
-
 #dashboard .db-bud{padding:12px 0}
 #dashboard .db-note{
     margin-bottom:4px;
@@ -920,8 +892,6 @@ label{
     font-size:12px;
     color:var(--db-muted);
 }
-
-/* ---------- investment portfolio ---------- */
 
 #dashboard .db-port{
     display:grid;
@@ -987,8 +957,6 @@ label{
 #dashboard .db-hold-end{text-align:right;flex:none}
 #dashboard .db-hold-end b{display:block;font-size:13px;font-weight:700;white-space:nowrap}
 
-/* ---------- financial health ---------- */
-
 #dashboard .db-health{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
@@ -1039,8 +1007,6 @@ label{
 #dashboard .db-health-tile.is-watch .db-health-top em{background:var(--db-rose-bg);color:#b3243a}
 #dashboard .db-health-tile.is-none{--c:var(--db-faint)}
 
-/* ---------- empty + error states ---------- */
-
 #dashboard .db-empty{
     display:flex;
     flex-direction:column;
@@ -1063,8 +1029,6 @@ label{
 #dashboard .db-empty b{font-size:14px;font-weight:700}
 #dashboard .db-empty p{max-width:290px;font-size:12.5px;line-height:1.5;color:var(--db-muted)}
 #dashboard .db-empty .db-act{margin-top:10px}
-
-/* ---------- skeletons ---------- */
 
 @keyframes db-shimmer{
     from{background-position:100% 0}
@@ -1099,8 +1063,6 @@ label{
 #dashboard .db-skel-lines{flex:1}
 #dashboard .db-skel-block{height:170px}
 #dashboard .db-skel-tile{height:118px;border-radius:12px}
-
-/* ---------- responsive ---------- */
 
 @media(max-width:1180px){
     #dashboard .db-s5,
@@ -1163,7 +1125,6 @@ label{
     }
 }
 
-/* ---------- finance extensions ---------- */
 #dashboard .db-monthly-grid{
     grid-column:1/-1;
     width:100%;
@@ -1202,7 +1163,6 @@ label{
     #dashboard .db-monthly-grid,.business-summary,.business-filter{grid-template-columns:1fr}
 }
 
-/* ===== PERSONAL FINANCE V3 ADDITIONS ===== */
 .db-extra-grid,#dbExtraGrid{grid-column:1/-1;width:100%;min-width:0}
 .pf-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}.pf-col-12{grid-column:span 12}.pf-col-8{grid-column:span 8}.pf-col-6{grid-column:span 6}.pf-col-4{grid-column:span 4}.pf-card{background:#fff;border:1px solid #e5eaf0;border-radius:16px;padding:18px;box-shadow:0 6px 22px rgba(15,23,42,.04)}.pf-card h3{margin-bottom:6px}.pf-muted{color:#64748b;font-size:13px}.pf-kpi{font-size:24px;font-weight:800;margin-top:6px}.pf-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pf-actions .btn-secondary,.pf-actions .btn-primary{white-space:nowrap}.pf-table-wrap{overflow:auto}.pf-table{width:100%;border-collapse:collapse}.pf-table th,.pf-table td{padding:10px 9px;border-bottom:1px solid #eef2f7;text-align:left;white-space:nowrap}.pf-table th{font-size:12px;color:#64748b;background:#f8fafc;position:sticky;top:0;z-index:1}.pf-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef2ff;font-size:12px;font-weight:700}.pf-alert{padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;margin-bottom:10px}.pf-alert strong{display:block}.pf-progress{height:9px;background:#edf2f7;border-radius:99px;overflow:hidden;margin-top:9px}.pf-progress>span{display:block;height:100%;background:#2563eb;border-radius:99px}.pf-search{max-width:360px}.pf-chart{height:250px;width:100%;display:block}.pf-empty{padding:24px;text-align:center;color:#64748b}.pf-fab{position:fixed;right:20px;bottom:20px;z-index:40;width:58px;height:58px;border-radius:50%;font-size:24px;box-shadow:0 12px 30px rgba(37,99,235,.3)}.pf-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pf-mini{padding:12px;border-radius:12px;background:#f8fafc}.pf-mini b{display:block;font-size:18px;margin-top:4px}.pf-source-row,.pf-cat-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eef2f7}.pf-section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.pf-danger{color:#b91c1c}.pf-success{color:#047857}.pf-warning{color:#b45309}.pf-blue{color:#1d4ed8}
 @media(max-width:900px){.pf-col-8,.pf-col-6,.pf-col-4{grid-column:span 12}.pf-mini-grid{grid-template-columns:1fr}.pf-table th,.pf-table td{padding:8px 6px}.pf-search{max-width:none}.pf-fab{right:14px;bottom:14px}}
@@ -1219,6 +1179,149 @@ label{
 .pf-goal-bank-card .sub{font-size:12px;color:#6b7280;margin-top:5px;}
 @media(max-width:800px){.pf-goal-bank-summary{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:520px){.pf-goal-bank-summary{grid-template-columns:1fr;}}
+</style>
+
+<style id="finance-ui-v4">
+:root{--fx-blue:#2563eb;--fx-navy:#0b1220;--fx-ink:#172033;--fx-soft:#f4f7fb}
+body{
+  background:
+    radial-gradient(circle at 15% 10%,rgba(37,99,235,.10),transparent 28%),
+    radial-gradient(circle at 85% 15%,rgba(15,157,138,.08),transparent 25%),
+    linear-gradient(135deg,#f7faff 0%,#eef4fb 100%);
+}
+.login{
+  background:
+    radial-gradient(circle at 20% 20%,rgba(255,255,255,.14),transparent 25%),
+    radial-gradient(circle at 85% 75%,rgba(14,165,233,.20),transparent 28%),
+    linear-gradient(135deg,#07111f,#12356d 58%,#0f766e);
+}
+.login-box{
+  backdrop-filter:blur(18px);
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:0 30px 90px rgba(3,12,28,.35);
+  animation:fx-enter .55s cubic-bezier(.2,.8,.2,1);
+}
+.login-box h1{letter-spacing:-.04em}
+#app{animation:fx-app-in .42s ease both}
+.sidebar{
+  z-index:100;
+  background:linear-gradient(180deg,#09111f 0%,#101b31 58%,#0b1322 100%);
+  border-right:1px solid rgba(255,255,255,.06);
+  box-shadow:12px 0 40px rgba(8,18,35,.12);
+}
+.sidebar .logo{
+  letter-spacing:-.03em;
+  background:linear-gradient(135deg,rgba(37,99,235,.22),rgba(15,157,138,.12));
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+}
+.nav-btn{
+  position:relative;
+  overflow:hidden;
+  transition:transform .22s ease,background .22s ease,color .22s ease;
+}
+.nav-btn::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:#60a5fa;transform:scaleY(0);transition:transform .25s ease;
+}
+.nav-btn:hover{transform:translateX(4px)}
+.nav-btn.active::before{transform:scaleY(1)}
+.nav-btn.active{box-shadow:0 8px 24px rgba(37,99,235,.18)}
+.main{min-width:0}
+.topbar{
+  position:sticky;top:12px;z-index:30;
+  padding:12px 14px;border:1px solid rgba(226,232,240,.8);
+  background:rgba(255,255,255,.84);backdrop-filter:blur(16px);
+  border-radius:18px;box-shadow:0 10px 30px rgba(15,23,42,.05);
+}
+.card,.section,#dashboard .db-panel,#dashboard .db-kpi,.pf-card{
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.card:hover,.section:hover,#dashboard .db-panel:hover,#dashboard .db-kpi:hover,.pf-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 34px rgba(15,23,42,.08);
+}
+button,input,select,textarea{transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease}
+button:active{transform:scale(.98)}
+input:focus,select:focus,textarea:focus{
+  border-color:#8ab4ff;box-shadow:0 0 0 4px rgba(37,99,235,.10)
+}
+.fx-mobile-menu,.fx-mobile-lock{display:none}
+.fx-lock-overlay{
+  position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(37,99,235,.24),transparent 30%),
+    linear-gradient(135deg,rgba(3,9,20,.98),rgba(10,25,48,.98));
+  color:#fff;padding:22px;
+}
+.fx-lock-overlay.show{display:flex;animation:fx-fade .25s ease}
+.fx-lock-card{
+  width:min(520px,100%);text-align:center;padding:34px 24px;border-radius:28px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 30px 100px rgba(0,0,0,.4);backdrop-filter:blur(20px);
+}
+.fx-lock-icon{font-size:54px;animation:fx-float 2.6s ease-in-out infinite}
+.fx-lock-title{font-size:clamp(26px,6vw,42px);font-weight:800;margin-top:8px}
+.fx-lock-time{font-size:clamp(48px,13vw,92px);font-weight:900;letter-spacing:.04em;line-height:1;margin:22px 0 10px;font-variant-numeric:tabular-nums}
+.fx-lock-sub{color:rgba(255,255,255,.68);font-size:13px;margin-bottom:18px}
+.fx-pin{
+  max-width:300px;margin:0 auto 10px!important;text-align:center;font-size:22px!important;letter-spacing:.35em;
+  background:rgba(255,255,255,.10)!important;color:#fff!important;border-color:rgba(255,255,255,.2)!important
+}
+.fx-lock-msg{min-height:20px;color:#fca5a5;font-size:13px}
+.fx-settings{
+  max-width:820px;margin:auto;
+}
+.fx-settings-hero{
+  padding:24px;border-radius:22px;color:#fff;
+  background:linear-gradient(135deg,#0b1630,#174ea6 60%,#0f766e);
+  box-shadow:0 18px 45px rgba(16,55,110,.22);margin-bottom:18px;
+}
+.fx-settings-card{background:#fff;border:1px solid #e4e9f1;border-radius:18px;padding:20px;margin-bottom:14px}
+.fx-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fx-typewriter{display:inline-block;overflow:hidden;white-space:nowrap;border-right:2px solid currentColor;animation:fx-type 1.4s steps(28,end),fx-caret .8s step-end infinite}
+.fx-menu-pulse{animation:fx-menu .42s ease both}
+.fx-page-in{animation:fx-page .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fx-enter{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes fx-app-in{from{opacity:0}to{opacity:1}}
+@keyframes fx-fade{from{opacity:0}to{opacity:1}}
+@keyframes fx-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes fx-page{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@keyframes fx-menu{0%{transform:translateX(-8px);opacity:.5}100%{transform:none;opacity:1}}
+@keyframes fx-type{from{width:0}to{width:100%}}
+@keyframes fx-caret{50%{border-color:transparent}}
+@media(max-width:800px){
+  .fx-mobile-menu,.fx-mobile-lock{
+    display:grid;place-items:center;position:fixed;z-index:220;width:46px;height:46px;
+    border-radius:14px;color:#fff;border:1px solid rgba(255,255,255,.14);
+    background:rgba(10,20,38,.92);box-shadow:0 10px 25px rgba(0,0,0,.18);font-size:20px
+  }
+  .fx-mobile-menu{left:12px;top:12px}
+  .fx-mobile-lock{right:12px;top:12px}
+  .sidebar{
+    width:280px;height:100vh;position:fixed;left:0;top:0;bottom:auto;
+    transform:translateX(-105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);
+    padding-top:72px;box-shadow:18px 0 45px rgba(0,0,0,.25)
+  }
+  .sidebar.fx-open{transform:translateX(0)}
+  .sidebar::after{
+    content:"";position:fixed;inset:0;left:280px;background:rgba(2,8,20,.5);
+    opacity:0;pointer-events:none;transition:opacity .25s
+  }
+  .sidebar.fx-open::after{opacity:1;pointer-events:auto}
+  .main{margin-left:0;padding:70px 14px 20px}
+  .topbar{top:58px;padding:10px 12px;border-radius:15px}
+  .topbar .pf-search{order:3;flex:1 1 100%}
+  .topbar .pf-search input{margin-bottom:0}
+  .topbar>div:first-child{padding-left:42px}
+  .fx-settings-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .login-box{padding:25px 20px}
+  .fx-lock-card{padding:28px 16px}
+  .main{padding-left:10px;padding-right:10px}
+}
 </style>
 
 </head>
@@ -1345,7 +1448,6 @@ label{
 
             <div class="db-topbar" aria-hidden="true"></div>
 
-            <!-- Header + quick actions -->
             <div class="db-head">
 
                 <div class="db-meta">
@@ -1389,10 +1491,8 @@ label{
 
             </div>
 
-            <!-- Due-date alert (shown only when something is overdue or due soon) -->
             <div id="dbAlert" class="db-alert hidden" role="status"></div>
 
-            <!-- Key figures -->
             <div class="db-kpis">
 
                 <article class="db-kpi is-hero" id="dbNetCard">
@@ -1435,7 +1535,6 @@ label{
 
             <div class="db-grid">
 
-                <!-- Assets and liabilities breakdown -->
                 <section class="db-panel db-s5" aria-labelledby="dbBreakTitle">
 
                     <div class="db-panel-head">
@@ -1528,7 +1627,6 @@ label{
 
                 </section>
 
-                <!-- Monthly income vs expense -->
                 <section class="db-panel db-s7" aria-labelledby="dbFlowTitle">
 
                     <div class="db-panel-head">
@@ -1541,7 +1639,6 @@ label{
 
                 </section>
 
-                <!-- Monthly financial summary -->
                 <section class="db-panel db-s12" aria-labelledby="dbMonthlyTitle">
 
                     <div class="db-panel-head">
@@ -1553,7 +1650,6 @@ label{
 
                 </section>
 
-                <!-- Recent transactions -->
                 <section class="db-panel db-s7" aria-labelledby="dbRecentTitle">
 
                     <div class="db-panel-head">
@@ -1566,7 +1662,6 @@ label{
 
                 </section>
 
-                <!-- Upcoming dues -->
                 <section class="db-panel db-s5" id="dbDuePanel" aria-labelledby="dbDueTitle">
 
                     <div class="db-panel-head">
@@ -1578,7 +1673,6 @@ label{
 
                 </section>
 
-                <!-- Goals -->
                 <section class="db-panel db-s6" aria-labelledby="dbGoalTitle">
 
                     <div class="db-panel-head">
@@ -1591,7 +1685,6 @@ label{
 
                 </section>
 
-                <!-- Budgets -->
                 <section class="db-panel db-s6" aria-labelledby="dbBudgetTitle">
 
                     <div class="db-panel-head">
@@ -1604,7 +1697,6 @@ label{
 
                 </section>
 
-                <!-- Investment portfolio -->
                 <section class="db-panel db-s12" aria-labelledby="dbPortTitle">
 
                     <div class="db-panel-head">
@@ -1622,7 +1714,6 @@ label{
                     <div id="dashboardSmartAlerts" class="pf-grid"></div>
                 </section>
 
-                <!-- Financial health -->
                 <section class="db-panel db-s12" aria-labelledby="dbHealthTitle">
 
                     <div class="db-panel-head">
@@ -1965,7 +2056,12 @@ label{
 
         </section>
 
-    </main>
+    
+<!-- Finance UI v4 additions -->
+<button class="fx-mobile-menu" id="fxMobileMenu" type="button" aria-label="Open menu" onclick="fxToggleMenu()">☰</button>
+
+
+</main>
 
 </div>
 
@@ -1995,10 +2091,6 @@ label{
 
 <script>
 
-/* =========================================================
-   SUPABASE CONFIG
-========================================================= */
-
 const SUPABASE_URL =
     "https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
 
@@ -2013,10 +2105,6 @@ const supabaseClient =
 
 let currentUser = null;
 
-
-/* =========================================================
-   HELPERS
-========================================================= */
 
 function money(value){
     return "NPR " +
@@ -2041,10 +2129,6 @@ function showMessage(message){
     alert(message);
 }
 
-
-/* =========================================================
-   AUTH
-========================================================= */
 
 async function login(){
 
@@ -2153,10 +2237,6 @@ async function logout(){
 }
 
 
-/* =========================================================
-   SESSION
-========================================================= */
-
 supabaseClient.auth.onAuthStateChange(
     async(event,session)=>{
 
@@ -2176,10 +2256,6 @@ supabaseClient.auth.onAuthStateChange(
     }
 );
 
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
 
 function showPage(id,button){
 
@@ -2254,12 +2330,6 @@ function showPage(id,button){
 }
 
 
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-/* ---------- icons (inline SVG, no external files) ---------- */
-
 const DB_ICONS = {
     wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
     bank:'<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
@@ -2307,8 +2377,6 @@ function dbHydrateIcons(){
 
 dbHydrateIcons();
 
-
-/* ---------- formatting + date helpers ---------- */
 
 const DB_MONTHS = [
     "Jan","Feb","Mar","Apr","May","Jun",
@@ -2359,7 +2427,6 @@ function dbSetMoney(id,value,decimals){
 
 }
 
-/* plain-text amount for lists: decimals only when needed */
 function dbAmount(value){
 
     const n = Number(value || 0);
@@ -2436,7 +2503,6 @@ function dbClamp(v,min,max){
     return Math.max(min,Math.min(max,v));
 }
 
-/* ignore cancelled / failed rows when adding up transactions */
 function dbIsLive(t){
     return !/^(cancel|void|fail|delet|reject)/i.test(String(t.status || ""));
 }
@@ -2457,7 +2523,6 @@ function dbScrollTo(id){
 
 }
 
-/* jump to another page using the existing navigation */
 function dbGo(page){
 
     const btn = document.querySelector(
@@ -2468,8 +2533,6 @@ function dbGo(page){
 
 }
 
-
-/* ---------- shared states ---------- */
 
 function dbEmpty(icon,title,hint,actionLabel,actionJs,tone){
 
@@ -2543,7 +2606,6 @@ function dbShowSkeletons(){
 
 }
 
-/* bars start collapsed and grow once the data has rendered */
 function dbW(pct,animate){
     const p = Math.round(dbClamp(pct,0,100) * 10) / 10;
     return 'style="width:' + (animate ? 0 : p) + '%" data-w="' + p + '"';
@@ -2576,10 +2638,6 @@ function dbGrow(root){
 }
 
 
-/* ---------- data access ---------- */
-
-/* always resolves to { data, error } so one failing query
-   never blanks the whole dashboard */
 function dbSettle(query){
 
     return Promise.resolve(query)
@@ -2627,8 +2685,6 @@ async function dbFetchTransactions(uid,fromKey){
 
 }
 
-/* budgets shown on the dashboard: those running today,
-   otherwise the most recent few */
 function dbPickBudgets(list,todayKey){
 
     const active = list
@@ -2648,8 +2704,6 @@ function dbPickBudgets(list,todayKey){
 
 }
 
-
-/* ---------- main loader ---------- */
 
 let dbSeq = 0;
 let dbLoadedFor = null;
@@ -2687,8 +2741,6 @@ async function loadDashboard(){
                 .order("start_date",{ascending:false})
         );
 
-        /* transactions are fetched from the earliest date needed by the
-           six-month chart or by any budget shown on the dashboard */
         const txRes = budgetsRes.then(b=>{
 
             const pick = dbPickBudgets(b.data,todayKey);
@@ -2743,10 +2795,7 @@ async function loadDashboard(){
 
         ]);
 
-        /* a newer refresh has started - let it render instead */
         if(seq !== dbSeq) return;
-
-        /* ----- totals (same rules as before) ----- */
 
         let cash = 0;
         let bank = 0;
@@ -2803,8 +2852,6 @@ async function loadDashboard(){
 
         totals.netWorth = totals.assets - totals.liabilities;
 
-        /* ----- month buckets for the last six months ----- */
-
         const months = [];
 
         for(let i = 5; i >= 0; i--){
@@ -2856,8 +2903,6 @@ async function loadDashboard(){
             budgetsRes:budRes
         };
 
-        /* ----- render (each panel isolated so one failure stays local) ----- */
-
         dbSafe("dbTotals",  ()=>dbRenderTotals(totals));
         dbSafe("dbFlowSummary",()=>dbRenderCashflow(ctx));
         dbSafe("dbMonthlySummary",()=>dbRenderMonthlySummary(ctx));
@@ -2895,7 +2940,6 @@ async function loadDashboard(){
         document.getElementById("dbUpdated").textContent =
             "Some figures could not be loaded. Press Refresh to try again.";
 
-        /* replace any skeleton that is still showing */
         [
             "dbFlowSummary","dbChart","dbMonthlySummary","dbRecent","dueDashboard",
             "goalDashboard","dbBudgets","dbPortfolio","dbHealth"
@@ -2920,7 +2964,6 @@ async function loadDashboard(){
 
 }
 
-/* run one renderer; on failure show an error in that panel only */
 function dbSafe(containerId,fn){
 
     const fail = err => {
@@ -2940,7 +2983,6 @@ function dbSafe(containerId,fn){
 
         const result = fn();
 
-        /* async renderers reject instead of throwing */
         if(result && typeof result.catch === "function")
             result.catch(fail);
 
@@ -2952,8 +2994,6 @@ function dbSafe(containerId,fn){
 
 }
 
-
-/* ---------- key figures + breakdown ---------- */
 
 function dbRenderTotals(t){
 
@@ -3002,8 +3042,6 @@ function dbRenderTotals(t){
 
 }
 
-
-/* ---------- income vs expense ---------- */
 
 function dbDelta(cur,prev,upIsGood){
 
@@ -3128,7 +3166,6 @@ function dbRenderCashflow(ctx){
 }
 
 
-/* ---------- monthly financial summary ---------- */
 function dbRenderMonthlySummary(ctx){
     const el=document.getElementById("dbMonthlySummary"); if(!el) return;
     const cur=ctx.months[ctx.months.length-1];
@@ -3144,8 +3181,6 @@ function dbRenderMonthlySummary(ctx){
       '<div class="db-monthly-card"><small>Net saving</small><b class="'+(saving<0?'is-neg':'')+'">'+dbMoneyHTML(saving)+'</b><span>'+(cur.income?'Saving rate '+Math.round(rate)+'%':'No income recorded')+'</span></div>'+
       '<div class="db-monthly-card"><small>Saving / investment</small><b>'+dbMoneyHTML(inv)+'</b><span>Recorded this month</span></div>';
 }
-
-/* ---------- recent transactions ---------- */
 
 const DB_TX_STYLE = {
     income:{icon:"inflow",c:"var(--db-teal)",bg:"var(--db-teal-bg)",sign:"+",cls:"is-in"},
@@ -3220,8 +3255,6 @@ function dbRenderRecent(res,ctx){
 }
 
 
-/* ---------- upcoming due dates (loans, receivables, payables) ---------- */
-
 const DB_DUE_KIND = {
     loan_taken:{label:"Loan taken",pay:true},
     loan_given:{label:"Loan given",pay:false},
@@ -3293,7 +3326,6 @@ function dbDuePill(days){
 
 async function loadDueDashboard(loanRes,rpRes,ctx){
 
-    /* called with no arguments it fetches its own data */
     if(!loanRes){
 
         loanRes = await dbSettle(
@@ -3333,8 +3365,6 @@ async function loadDueDashboard(loanRes,rpRes,ctx){
 
     const overdue = items.filter(i => i.days < 0);
     const soon = items.filter(i => i.days >= 0 && i.days <= 7);
-
-    /* banner */
 
     if(overdue.length || soon.length){
 
@@ -3389,8 +3419,6 @@ async function loadDueDashboard(loanRes,rpRes,ctx){
             '<button type="button" onclick="dbScrollTo(\'dbDuePanel\')">See details</button>';
 
     }
-
-    /* panel */
 
     const bits = [];
 
@@ -3450,8 +3478,6 @@ async function loadDueDashboard(loanRes,rpRes,ctx){
 
 }
 
-
-/* ---------- goals ---------- */
 
 function dbGoalStatus(g,remaining,today){
 
@@ -3621,8 +3647,6 @@ async function loadGoalDashboard(res,ctx){
 }
 
 
-/* ---------- budgets ---------- */
-
 function dbRenderBudgets(ctx){
 
     const el = document.getElementById("dbBudgets");
@@ -3743,8 +3767,6 @@ function dbRenderBudgets(ctx){
 
 }
 
-
-/* ---------- investment portfolio ---------- */
 
 const DB_ALLOC_COLORS = [
     "var(--db-blue)",
@@ -3887,8 +3909,6 @@ function dbRenderPortfolio(res){
 }
 
 
-/* ---------- financial health indicators ---------- */
-
 const DB_LEVELS = {
     good:["is-good","Strong"],
     fair:["is-fair","Fair"],
@@ -3913,8 +3933,6 @@ function dbRenderHealth(ctx){
 
     const el = document.getElementById("dbHealth");
     const {totals,months,pick,tx,animate} = ctx;
-
-    /* 1. savings rate this month */
 
     const cur = months[5];
     let savings;
@@ -3941,8 +3959,6 @@ function dbRenderHealth(ctx){
 
     }
 
-    /* 2. liabilities compared with assets */
-
     let debt;
 
     if(totals.assets > 0){
@@ -3968,8 +3984,6 @@ function dbRenderHealth(ctx){
         );
 
     }
-
-    /* 3. how long available cash lasts at recent spending */
 
     let runway;
 
@@ -4002,8 +4016,6 @@ function dbRenderHealth(ctx){
         );
 
     }
-
-    /* 4. budgets within their limit */
 
     let budgets;
 
@@ -4057,10 +4069,6 @@ function dbRenderHealth(ctx){
 }
 
 
-/* =========================================================
-   ACCOUNTS
-========================================================= */
-
 async function loadAccounts(){
 
     const {data,error} =
@@ -4101,10 +4109,6 @@ async function loadAccounts(){
 
 }
 
-
-/* =========================================================
-   TRANSACTIONS
-========================================================= */
 
 async function loadTransactions(){
     const [txRes,accRes,bizRes]=await Promise.all([
@@ -4152,10 +4156,6 @@ function nextMonthKey(ym){
     const [y,m]=ym.split('-').map(Number); const d=new Date(y,m,1); return d.getFullYear()+"-"+dbPad(d.getMonth()+1);
 }
 
-
-/* =========================================================
-   LOANS
-========================================================= */
 
 async function loadLoans(){
 
@@ -4220,10 +4220,6 @@ async function loadLoans(){
 }
 
 
-/* =========================================================
-   RECEIVABLES / PAYABLES
-========================================================= */
-
 async function loadReceivables(){
 
     const {data,error} =
@@ -4264,10 +4260,6 @@ async function loadReceivables(){
 
 }
 
-
-/* =========================================================
-   GOALS
-========================================================= */
 
 async function loadGoals(){
 
@@ -4355,10 +4347,6 @@ async function loadGoals(){
 
 }
 
-/* =========================================================
-   BUDGETS
-========================================================= */
-
 async function loadBudgets(){
 
     const {data,error} =
@@ -4402,10 +4390,6 @@ async function loadBudgets(){
 
 }
 
-
-/* =========================================================
-   INVESTMENTS
-========================================================= */
 
 async function loadInvestments(){
 
@@ -4454,10 +4438,6 @@ async function loadInvestments(){
 }
 
 
-/* =========================================================
-   MODALS
-========================================================= */
-
 function openModal(title,content){
 
     document.getElementById("modalTitle")
@@ -4478,10 +4458,6 @@ function closeModal(){
 
 }
 
-
-/* =========================================================
-   ACCOUNT MODAL
-========================================================= */
 
 function openAccountModal(){
 
@@ -4581,10 +4557,6 @@ async function saveAccount(){
 
 }
 
-
-/* =========================================================
-   TRANSACTION MODAL
-========================================================= */
 
 async function getActiveAccounts(){
     const {data,error}=await supabaseClient.from("personal_finance_accounts")
@@ -4714,10 +4686,6 @@ async function saveBusinessTransaction(){
 }
 
 
-/* =========================================================
-   LOAN MODAL
-========================================================= */
-
 async function openLoanModal(){
 
     openModal(
@@ -4839,10 +4807,6 @@ async function saveLoan(){
 }
 
 
-/* =========================================================
-   REPAY / RECEIVE
-========================================================= */
-
 async function loanPayment(id){
     const {data:loan,error}=await supabaseClient.from("personal_finance_loans").select("*").eq("id",id).eq("user_id",currentUser.id).single();
     if(error){ showMessage(error.message); return; }
@@ -4889,10 +4853,6 @@ function receiveLoan(id){
 
 }
 
-
-/* =========================================================
-   RECEIVABLE / PAYABLE MODAL
-========================================================= */
 
 function openReceivableModal(){
 
@@ -4983,10 +4943,6 @@ async function saveReceivable(){
 
 }
 
-
-/* =========================================================
-   GOAL MODAL
-========================================================= */
 
 function openGoalModal(){
 
@@ -5080,10 +5036,6 @@ async function saveGoal(){
 }
 
 
-/* =========================================================
-   BUDGET MODAL
-========================================================= */
-
 function openBudgetModal(){
 
     openModal(
@@ -5166,10 +5118,6 @@ async function saveBudget(){
 
 }
 
-
-/* =========================================================
-   INVESTMENT MODAL
-========================================================= */
 
 function openInvestmentModal(){
 
@@ -5270,10 +5218,6 @@ async function saveInvestment(){
 }
 
 
-/* =========================================================
-   CSV EXPORT
-========================================================= */
-
 async function exportTransactionsCSV(){
 
     const {data,error} =
@@ -5343,10 +5287,6 @@ async function exportTransactionsCSV(){
 }
 
 
-/* =========================================================
-   INITIAL SESSION CHECK
-========================================================= */
-
 (async function(){
 
     const {
@@ -5370,7 +5310,6 @@ async function exportTransactionsCSV(){
 })();
 
 
-/* ===================== V3 FEATURE OVERRIDES ===================== */
 function nextMonthKey(ym){ const [y,m]=String(ym||'').split('-').map(Number); if(!y||!m) return ''; const d=new Date(y,m,1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01'; }
 function pfDate(v){ return v ? String(v).slice(0,10) : ''; }
 function pfToday(){ return new Date().toISOString().slice(0,10); }
@@ -5386,7 +5325,6 @@ async function pfDelete(table,id){
 async function pfRestore(table,id){ const {data,error}=await supabaseClient.from(table).select('*').eq('id',id).eq('user_id',currentUser.id).single(); if(error){showMessage(error.message);return} const {error:e}=await supabaseClient.from(table).update({deleted_at:null}).eq('id',id).eq('user_id',currentUser.id); if(e){showMessage(e.message);return} await pfAudit('RESTORE',table,id,data,null); refreshAllPages(); }
 function refreshAllPages(){loadDashboard();loadTransactions();loadAccounts();if(typeof loadLoans==='function')loadLoans();if(typeof loadReceivables==='function')loadReceivables();if(typeof loadBudgets==='function')loadBudgets();if(typeof loadGoals==='function')loadGoals();if(typeof loadInvestments==='function')loadInvestments();if(typeof loadBusinessTransactions==='function')loadBusinessTransactions();if(document.getElementById('recurring'))loadRecurring();if(document.getElementById('sinking'))loadSinking();if(document.getElementById('emergency'))loadEmergency();if(document.getElementById('networth'))loadNetWorth();}
 
-/* navigation override */
 const pfOriginalShowPage=showPage;
 showPage=function(id,button){
   document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); const el=document.getElementById(id); if(el)el.classList.remove('hidden');
@@ -5396,7 +5334,6 @@ showPage=function(id,button){
   const f={dashboard:loadDashboard,transactions:loadTransactions,business:loadBusinessTransactions,accounts:loadAccounts,loans:loadLoans,receivables:loadReceivables,budgets:loadBudgets,goals:loadGoals,investments:loadInvestments,recurring:loadRecurring,sinking:loadSinking,emergency:loadEmergency,networth:loadNetWorth,insights:loadInsightsPage}; if(f[id])f[id]();
 };
 
-/* account-aware transaction list + filters */
 async function loadTransactions(){
  const from=document.getElementById('txFilterFrom')?.value||'',to=document.getElementById('txFilterTo')?.value||'',type=document.getElementById('txFilterType')?.value||'',account=document.getElementById('txFilterAccount')?.value||'',scope=document.getElementById('txFilterScope')?.value||'',qtext=(document.getElementById('txFilterSearch')?.value||'').toLowerCase();
  let q=supabaseClient.from('personal_finance_transactions').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('transaction_date',{ascending:false}).limit(500);
@@ -5410,7 +5347,6 @@ function initTransactionFilters(){
  const a=document.getElementById('txFilterAccount'); if(!a)return; getActiveAccounts().then(xs=>{a.innerHTML='<option value="">All accounts</option>'+xs.map(x=>`<option value="${esc(x.id)}">${esc(x.account_name)}</option>`).join('')});
 }
 
-/* corrected transaction modal */
 async function openTransactionModal(){
  const accounts=await getActiveAccounts(), businesses=await getBusinesses(); if(!accounts.length){showMessage('Please add at least one active account first.');return}
  openModal('Add Transaction',`<div class="form-grid"><div><label>Date</label><input id="t_date" type="date" value="${pfToday()}"></div><div><label>Type</label><select id="t_type" onchange="toggleTransferFields()"><option value="income">Income</option><option value="expense">Expense</option><option value="giving">Giving</option><option value="investment">Investment</option><option value="saving">Saving</option><option value="adjustment">Adjustment</option><option value="transfer">Transfer</option></select></div><div><label>From / Account</label><select id="t_account_id" onchange="toggleTransferFields()">${accountOptions(accounts)}</select></div><div id="t_transfer_wrap" class="hidden"><label>To Account</label><select id="t_to_account_id">${accountOptions(accounts)}</select></div><div><label>Scope</label><select id="t_scope" onchange="toggleBusinessTransactionFields()"><option value="personal">Personal</option><option value="business">Business</option></select></div><div id="t_business_wrap" class="hidden"><label>Business</label><select id="t_business_id"><option value="">Select business</option>${businesses.map(b=>`<option value="${esc(b.id)}">${esc(b.business_name)}</option>`).join('')}</select></div><div><label>Amount</label><input id="t_amount" type="number" step="0.01" min="0"></div><div><label>Income Source</label><select id="t_income_source"><option value="">—</option><option>Salary</option><option>Galkot Tech</option><option>Freelancing</option><option>Business</option><option>Investment</option><option>Interest</option><option>Other</option></select></div><div><label>Expense Category</label><select id="t_expense_category"><option value="">—</option><option>Food</option><option>Transport</option><option>Education</option><option>Health</option><option>Bills</option><option>Entertainment</option><option>Shopping</option><option>Family</option><option>Donation</option><option>Business</option><option>Other</option></select></div><div class="full"><label>Description</label><textarea id="t_desc"></textarea></div></div><button class="btn-primary" onclick="saveTransaction()">Save Transaction</button>`);
@@ -5418,70 +5354,72 @@ async function openTransactionModal(){
 async function saveTransaction(){
  const amount=Number(document.getElementById('t_amount').value||0),type=document.getElementById('t_type').value,account_id=document.getElementById('t_account_id').value,to_account_id=type==='transfer'?document.getElementById('t_to_account_id').value:null,scope=document.getElementById('t_scope').value,business_id=scope==='business'?document.getElementById('t_business_id').value:null;
  if(!amount||!account_id){showMessage('Select account and valid amount.');return} if(type==='transfer'&&(!to_account_id||to_account_id===account_id)){showMessage('Select a different destination account.');return} if(scope==='business'&&!business_id){showMessage('Select business.');return}
+
+ if(type==='transfer'){
+   const {data,error}=await supabaseClient.rpc('personal_finance_transfer',{
+     p_from_account_id: account_id,
+     p_to_account_id:   to_account_id,
+     p_amount:          amount,
+     p_date:            document.getElementById('t_date').value,
+     p_description:     document.getElementById('t_desc').value || 'Own account transfer'
+   });
+   if(error){showMessage(error.message);return}
+   await pfAudit('CREATE','personal_finance_transactions',data,null,{amount,account_id,to_account_id});
+   closeModal();refreshAllPages();
+   return;
+ }
+
  const row={user_id:currentUser.id,transaction_date:document.getElementById('t_date').value,transaction_type:type,amount,description:document.getElementById('t_desc').value,account_id,to_account_id,business_id,income_source:type==='income'?document.getElementById('t_income_source').value||null:null,expense_category:['expense','giving'].includes(type)?document.getElementById('t_expense_category').value||null:null,deleted_at:null};
  const {data,error}=await supabaseClient.from('personal_finance_transactions').insert(row).select().single(); if(error){showMessage(error.message);return} await pfAudit('CREATE','personal_finance_transactions',data.id,null,data);closeModal();refreshAllPages();
 }
 async function editTransaction(id){const {data,error}=await supabaseClient.from('personal_finance_transactions').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(error){showMessage(error.message);return}const accounts=await getActiveAccounts();openModal('Edit Transaction',`<div class="form-grid"><div><label>Date</label><input id="et_date" type="date" value="${pfDate(data.transaction_date)}"></div><div><label>Type</label><select id="et_type"><option>income</option><option>expense</option><option>giving</option><option>investment</option><option>saving</option><option>adjustment</option><option>transfer</option></select></div><div><label>From Account</label><select id="et_account">${accountOptions(accounts,data.account_id)}</select></div><div><label>To Account</label><select id="et_to">${accountOptions(accounts,data.to_account_id)}</select></div><div><label>Amount</label><input id="et_amount" type="number" step="0.01" value="${Number(data.amount)||0}"></div><div><label>Income Source</label><input id="et_source" value="${esc(data.income_source||'')}"></div><div><label>Expense Category</label><input id="et_cat" value="${esc(data.expense_category||'')}"></div><div class="full"><label>Description</label><textarea id="et_desc">${esc(data.description||'')}</textarea></div></div><button class="btn-primary" onclick="updateTransaction('${id}')">Save Changes</button>`);document.getElementById('et_type').value=data.transaction_type}
 async function updateTransaction(id){const {data:old}=await supabaseClient.from('personal_finance_transactions').select('*').eq('id',id).eq('user_id',currentUser.id).single();const row={transaction_date:document.getElementById('et_date').value,transaction_type:document.getElementById('et_type').value,amount:Number(document.getElementById('et_amount').value||0),account_id:document.getElementById('et_account').value,to_account_id:document.getElementById('et_to').value||null,income_source:document.getElementById('et_source').value||null,expense_category:document.getElementById('et_cat').value||null,description:document.getElementById('et_desc').value};const {data,error}=await supabaseClient.from('personal_finance_transactions').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_transactions',id,old,data);closeModal();refreshAllPages()}
 
-/* business: fixed date comparison + edit/delete */
 async function loadBusinessTransactions(){
  const businesses=await getBusinesses(),select=document.getElementById('businessSelect');if(!select)return;const cur=select.value;select.innerHTML=businesses.map(b=>`<option value="${esc(b.id)}">${esc(b.business_name)}</option>`).join('');if(cur)select.value=cur;if(!select.value&&businesses[0])select.value=businesses[0].id;if(!select.value){document.getElementById('businessTransactionsTable').innerHTML='<tr><td colspan="7">No business configured.</td></tr>';return}const month=document.getElementById('businessMonth')?.value||'';let q=supabaseClient.from('personal_finance_transactions').select('*').eq('user_id',currentUser.id).eq('business_id',select.value).is('deleted_at',null).order('transaction_date',{ascending:false}).limit(500);if(/^\d{4}-\d{2}$/.test(month))q=q.gte('transaction_date',month+'-01').lt('transaction_date',nextMonthKey(month));const {data,error}=await q;if(error){showMessage(error.message);return}const amap=Object.fromEntries((await getActiveAccounts()).map(a=>[a.id,a]));let income=0,expense=0;data.forEach(t=>{if(t.transaction_type==='income')income+=+t.amount||0;if(['expense','giving'].includes(t.transaction_type))expense+=+t.amount||0});document.getElementById('bizIncome').textContent=money(income);document.getElementById('bizExpense').textContent=money(expense);document.getElementById('bizNet').textContent=money(income-expense);document.getElementById('bizCount').textContent=data.length.toLocaleString();document.getElementById('businessTransactionsTable').innerHTML=data.map(t=>`<tr><td>${esc(pfDate(t.transaction_date))}</td><td><span class="badge">${esc(t.transaction_type)}</span></td><td>${esc(amap[t.account_id]?.account_name||'-')}</td><td>${money(t.amount)}</td><td>${esc(t.description||'-')}</td><td>${esc(t.income_source||t.expense_category||'-')}</td><td><button class="btn-secondary" onclick="editTransaction('${t.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_transactions','${t.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="7" class="pf-empty">No business transactions.</td></tr>';
 }
 
-/* account list with edit/delete */
 async function loadAccounts(){const {data,error}=await supabaseClient.from('personal_finance_accounts').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('account_name');if(error){showMessage(error.message);return}document.getElementById('accountsTable').innerHTML=(data||[]).map(a=>`<tr><td>${esc(a.account_name)}</td><td><span class="badge">${esc(a.account_type)}</span></td><td>${esc(a.bank_name||'-')}</td><td>${money(a.current_balance)}</td><td><button class="btn-secondary" onclick="editAccount('${a.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_accounts','${a.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="5" class="pf-empty">No accounts.</td></tr>'}
 async function editAccount(id){const {data,error}=await supabaseClient.from('personal_finance_accounts').select('*').eq('id',id).eq('user_id',currentUser.id).single();if(error){showMessage(error.message);return}openModal('Edit Account',`<label>Account Name</label><input id="ea_name" value="${esc(data.account_name||'')}"><label>Type</label><select id="ea_type"><option>cash</option><option>bank</option><option>savings</option><option>investment</option><option>other</option></select><label>Bank Name</label><input id="ea_bank" value="${esc(data.bank_name||'')}"><label>Current Balance</label><input id="ea_balance" type="number" step="0.01" value="${Number(data.current_balance)||0}"><button class="btn-primary" onclick="updateAccount('${id}')">Save Changes</button>`);document.getElementById('ea_type').value=data.account_type||'other'}
 async function updateAccount(id){const {data:old}=await supabaseClient.from('personal_finance_accounts').select('*').eq('id',id).single();const row={account_name:document.getElementById('ea_name').value,account_type:document.getElementById('ea_type').value,bank_name:document.getElementById('ea_bank').value,current_balance:Number(document.getElementById('ea_balance').value||0)};const {data,error}=await supabaseClient.from('personal_finance_accounts').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_accounts',id,old,data);closeModal();refreshAllPages()}
 
-/* recurring */
 async function loadRecurring(){const {data,error}=await supabaseClient.from('personal_finance_recurring_items').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('next_due_date');if(error){showMessage(error.message);return}const amap=Object.fromEntries((await getActiveAccounts()).map(a=>[a.id,a]));const today=new Date();document.getElementById('recurringAlerts').innerHTML=(data||[]).filter(x=>x.is_active&&x.next_due_date&&Math.ceil((new Date(x.next_due_date)-today)/86400000)<=7).map(x=>`<div class="pf-alert">🔔 <strong>${esc(x.name)} — NPR ${Number(x.amount||0).toLocaleString()}</strong>Due ${esc(pfDate(x.next_due_date))}. ${Math.ceil((new Date(x.next_due_date)-today)/86400000)<=0?'Payment is due/overdue.':'Prepare payment in advance.'}</div>`).join('');document.getElementById('recurringTable').innerHTML=(data||[]).map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.item_type)}</td><td>${money(x.amount)}</td><td>${esc(pfDate(x.next_due_date))}</td><td>${esc(x.frequency)}</td><td>${esc(amap[x.account_id]?.account_name||'-')}</td><td><button class="btn-secondary" onclick="editRecurring('${x.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_recurring_items','${x.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="7" class="pf-empty">No recurring items.</td></tr>'}
 async function openRecurringModal(){const accounts=await getActiveAccounts();openModal('Add Recurring Payment',`<label>Name</label><input id="ri_name" placeholder="Internet Payment"><label>Type</label><select id="ri_type"><option>expense</option><option>income</option><option>payable</option><option>receivable</option></select><label>Amount</label><input id="ri_amount" type="number" step="0.01"><label>Next Due Date</label><input id="ri_date" type="date"><label>Frequency</label><select id="ri_freq"><option>monthly</option><option>weekly</option><option>quarterly</option><option>yearly</option></select><label>Account</label><select id="ri_account">${accountOptions(accounts)}</select><label>Notes</label><textarea id="ri_notes"></textarea><button class="btn-primary" onclick="saveRecurring()">Save</button>`)}
 async function saveRecurring(){const row={user_id:currentUser.id,name:document.getElementById('ri_name').value,item_type:document.getElementById('ri_type').value,amount:Number(document.getElementById('ri_amount').value||0),next_due_date:document.getElementById('ri_date').value,frequency:document.getElementById('ri_freq').value,account_id:document.getElementById('ri_account').value||null,notes:document.getElementById('ri_notes').value,is_active:true};const {data,error}=await supabaseClient.from('personal_finance_recurring_items').insert(row).select().single();if(error){showMessage(error.message);return}await pfAudit('CREATE','personal_finance_recurring_items',data.id,null,data);closeModal();loadRecurring()}
 async function editRecurring(id){const {data,error}=await supabaseClient.from('personal_finance_recurring_items').select('*').eq('id',id).single();if(error){showMessage(error.message);return}const accounts=await getActiveAccounts();openModal('Edit Recurring Payment',`<label>Name</label><input id="ri_name" value="${esc(data.name)}"><label>Amount</label><input id="ri_amount" type="number" value="${Number(data.amount)||0}"><label>Next Due</label><input id="ri_date" type="date" value="${pfDate(data.next_due_date)}"><label>Frequency</label><select id="ri_freq"><option>monthly</option><option>weekly</option><option>quarterly</option><option>yearly</option></select><label>Account</label><select id="ri_account">${accountOptions(accounts,data.account_id)}</select><button class="btn-primary" onclick="updateRecurring('${id}')">Save</button>`);document.getElementById('ri_freq').value=data.frequency||'monthly'}
 async function updateRecurring(id){const {data:old}=await supabaseClient.from('personal_finance_recurring_items').select('*').eq('id',id).single();const row={name:document.getElementById('ri_name').value,amount:Number(document.getElementById('ri_amount').value||0),next_due_date:document.getElementById('ri_date').value,frequency:document.getElementById('ri_freq').value,account_id:document.getElementById('ri_account').value||null};const {data,error}=await supabaseClient.from('personal_finance_recurring_items').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_recurring_items',id,old,data);closeModal();loadRecurring()}
 
-/* sinking funds */
 async function loadSinking(){const {data,error}=await supabaseClient.from('personal_finance_sinking_funds').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('fund_name');if(error){showMessage(error.message);return}document.getElementById('sinkingGrid').innerHTML=(data||[]).map(x=>{const p=x.target_amount>0?Math.min(100,Number(x.current_amount||0)/Number(x.target_amount)*100):0;return `<div class="pf-card pf-col-4"><h3>${esc(x.fund_name)}</h3><div class="pf-kpi">${money(x.current_amount)} / ${money(x.target_amount)}</div><div class="pf-progress"><span style="width:${p}%"></span></div><p class="pf-muted">${p.toFixed(0)}% complete · Monthly contribution ${money(x.monthly_contribution)}</p><br><button class="btn-secondary" onclick="editSinking('${x.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_sinking_funds','${x.id}')">Delete</button></div>`}).join('')||'<div class="pf-card pf-col-12 pf-empty">No sinking funds yet.</div>'}
 function openSinkingModal(){openModal('Add Sinking Fund',`<label>Fund Name</label><input id="sf_name" placeholder="Laptop Fund"><label>Target Amount</label><input id="sf_target" type="number"><label>Saved Amount</label><input id="sf_current" type="number" value="0"><label>Monthly Contribution</label><input id="sf_monthly" type="number" value="0"><label>Target Date</label><input id="sf_date" type="date"><button class="btn-primary" onclick="saveSinking()">Save Fund</button>`)}
 async function saveSinking(){const row={user_id:currentUser.id,fund_name:document.getElementById('sf_name').value,target_amount:Number(document.getElementById('sf_target').value||0),current_amount:Number(document.getElementById('sf_current').value||0),monthly_contribution:Number(document.getElementById('sf_monthly').value||0),target_date:document.getElementById('sf_date').value||null};const {data,error}=await supabaseClient.from('personal_finance_sinking_funds').insert(row).select().single();if(error){showMessage(error.message);return}await pfAudit('CREATE','personal_finance_sinking_funds',data.id,null,data);closeModal();loadSinking()}
 async function editSinking(id){const {data,error}=await supabaseClient.from('personal_finance_sinking_funds').select('*').eq('id',id).single();if(error){showMessage(error.message);return}openModal('Edit Sinking Fund',`<label>Fund Name</label><input id="sf_name" value="${esc(data.fund_name)}"><label>Target</label><input id="sf_target" type="number" value="${Number(data.target_amount)||0}"><label>Saved</label><input id="sf_current" type="number" value="${Number(data.current_amount)||0}"><label>Monthly Contribution</label><input id="sf_monthly" type="number" value="${Number(data.monthly_contribution)||0}"><label>Target Date</label><input id="sf_date" type="date" value="${pfDate(data.target_date)}"><button class="btn-primary" onclick="updateSinking('${id}')">Save</button>`)}
 async function updateSinking(id){const {data:old}=await supabaseClient.from('personal_finance_sinking_funds').select('*').eq('id',id).single();const row={fund_name:document.getElementById('sf_name').value,target_amount:Number(document.getElementById('sf_target').value||0),current_amount:Number(document.getElementById('sf_current').value||0),monthly_contribution:Number(document.getElementById('sf_monthly').value||0),target_date:document.getElementById('sf_date').value||null};const {data,error}=await supabaseClient.from('personal_finance_sinking_funds').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_sinking_funds',id,old,data);closeModal();loadSinking()}
 
-/* emergency */
 async function loadEmergency(){const {data,error}=await supabaseClient.from('personal_finance_emergency_funds').select('*').eq('user_id',currentUser.id).limit(1).maybeSingle();if(error){showMessage(error.message);return}if(!data){document.getElementById('emergencyCard').innerHTML='<div class="pf-card"><p>No emergency fund settings yet.</p><br><button class="btn-primary" onclick="openEmergencyModal()">Set Up Emergency Fund</button></div>';return}const p=data.target_amount>0?Math.min(100,Number(data.current_amount||0)/Number(data.target_amount)*100):0;const monthlyExpense=await pfMonthlyExpense();const months=monthlyExpense>0?Number(data.current_amount||0)/monthlyExpense:0;document.getElementById('emergencyCard').innerHTML=`<div class="pf-grid"><div class="pf-card pf-col-4"><span class="pf-muted">Emergency Fund</span><div class="pf-kpi">${money(data.current_amount)} / ${money(data.target_amount)}</div><div class="pf-progress"><span style="width:${p}%"></span></div><p class="pf-muted">${p.toFixed(0)}% complete</p></div><div class="pf-card pf-col-4"><span class="pf-muted">Monthly Contribution</span><div class="pf-kpi">${money(data.monthly_contribution)}</div></div><div class="pf-card pf-col-4"><span class="pf-muted">Expenses Covered</span><div class="pf-kpi">${months.toFixed(1)} months</div><p class="pf-muted">Target date: ${esc(pfDate(data.target_date)||'-')}</p></div></div>`}
 async function pfMonthlyExpense(){const first=new Date();first.setDate(1);const {data}=await supabaseClient.from('personal_finance_transactions').select('amount').eq('user_id',currentUser.id).is('deleted_at',null).in('transaction_type',['expense','giving']).gte('transaction_date',first.toISOString().slice(0,10));return (data||[]).reduce((s,x)=>s+Number(x.amount||0),0)}
 async function openEmergencyModal(){const {data}=await supabaseClient.from('personal_finance_emergency_funds').select('*').eq('user_id',currentUser.id).limit(1).maybeSingle();openModal('Emergency Fund Settings',`<label>Target Emergency Fund</label><input id="ef_target" type="number" value="${Number(data?.target_amount)||300000}"><label>Current Emergency Fund</label><input id="ef_current" type="number" value="${Number(data?.current_amount)||0}"><label>Monthly Contribution</label><input id="ef_monthly" type="number" value="${Number(data?.monthly_contribution)||0}"><label>Target Date</label><input id="ef_date" type="date" value="${pfDate(data?.target_date)}"><button class="btn-primary" onclick="saveEmergency('${data?.id||''}')">Save</button>`)}
 async function saveEmergency(id){const row={user_id:currentUser.id,target_amount:Number(document.getElementById('ef_target').value||0),current_amount:Number(document.getElementById('ef_current').value||0),monthly_contribution:Number(document.getElementById('ef_monthly').value||0),target_date:document.getElementById('ef_date').value||null};let r;if(id)r=await supabaseClient.from('personal_finance_emergency_funds').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();else r=await supabaseClient.from('personal_finance_emergency_funds').insert(row).select().single();if(r.error){showMessage(r.error.message);return}await pfAudit(id?'UPDATE':'CREATE','personal_finance_emergency_funds',r.data.id,id?null:null,r.data);closeModal();loadEmergency()}
 
-/* net worth */
 async function calcNetWorth(){const {data:a}=await supabaseClient.from('personal_finance_accounts').select('current_balance').eq('user_id',currentUser.id).eq('is_active',true).is('deleted_at',null);const assets=(a||[]).reduce((s,x)=>s+Number(x.current_balance||0),0);const {data:r}=await supabaseClient.from('personal_finance_receivables_payables').select('direction,remaining_amount').eq('user_id',currentUser.id);const rec=(r||[]).filter(x=>x.direction==='receivable').reduce((s,x)=>s+Number(x.remaining_amount||0),0),pay=(r||[]).filter(x=>x.direction==='payable').reduce((s,x)=>s+Number(x.remaining_amount||0),0);const {data:l}=await supabaseClient.from('personal_finance_loans').select('direction,remaining_balance').eq('user_id',currentUser.id).neq('status','returned');const debt=(l||[]).filter(x=>x.direction==='taken').reduce((s,x)=>s+Number(x.remaining_balance||0),0);return {assets:assets+rec,liabilities:pay+debt,net:assets+rec-pay-debt}}
 async function captureNetWorthSnapshot(){const v=await calcNetWorth(),month=pfToday().slice(0,7);const {data,error}=await supabaseClient.from('personal_finance_net_worth_history').upsert({user_id:currentUser.id,snapshot_date:pfToday(),month_key:month,assets:v.assets,liabilities:v.liabilities,net_worth:v.net},{onConflict:'user_id,month_key'}).select().single();if(error){showMessage(error.message);return}await pfAudit('CREATE','personal_finance_net_worth_history',data.id,null,data);loadNetWorth()}
 async function loadNetWorth(){const {data,error}=await supabaseClient.from('personal_finance_net_worth_history').select('*').eq('user_id',currentUser.id).order('snapshot_date',{ascending:true}).limit(120);if(error){showMessage(error.message);return}document.getElementById('netWorthTable').innerHTML=(data||[]).map(x=>`<tr><td>${esc(x.month_key||pfDate(x.snapshot_date))}</td><td>${money(x.net_worth)}</td><td>${money(x.assets)}</td><td>${money(x.liabilities)}</td></tr>`).join('')||'<tr><td colspan="4" class="pf-empty">No snapshots yet. Click Snapshot Now.</td></tr>';drawNetWorth(data||[])}
 function drawNetWorth(rows){const c=document.getElementById('netWorthCanvas');if(!c)return;const d=devicePixelRatio||1,w=c.clientWidth||800,h=250;c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.scale(d,d);x.clearRect(0,0,w,h);if(!rows.length)return;const vals=rows.map(r=>Number(r.net_worth)||0),min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;x.beginPath();rows.forEach((r,i)=>{const px=40+i*(w-60)/Math.max(1,rows.length-1),py=20+(h-50)*(1-(vals[i]-min)/range);i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle='#2563eb';x.lineWidth=3;x.stroke();x.fillStyle='#64748b';x.font='12px Arial';x.fillText(money(min),4,h-10);x.fillText(money(max),4,18)}
 
-/* insights */
 async function loadInsightsPage(){const from=new Date();from.setDate(1);const prev=new Date(from.getFullYear(),from.getMonth()-1,1);const [cur,pr]=await Promise.all([pfMonthStats(from),pfMonthStats(prev)]);const rate=cur.income?((cur.income-cur.expense)/cur.income*100):0;const diff=cur.expense-pr.expense;const html=`<div class="pf-card pf-col-4"><h3>Monthly cash flow</h3><div class="pf-kpi">${money(cur.income-cur.expense)}</div><p class="pf-muted">Income ${money(cur.income)} · Expense ${money(cur.expense)}</p></div><div class="pf-card pf-col-4"><h3>Savings rate</h3><div class="pf-kpi">${rate.toFixed(1)}%</div><p class="pf-muted">Based on current month's recorded income and expenditure.</p></div><div class="pf-card pf-col-4"><h3>Expense change</h3><div class="pf-kpi ${diff>0?'pf-warning':'pf-success'}">${diff>=0?'+':''}${money(diff)}</div><p class="pf-muted">Compared with previous month.</p></div><div class="pf-card pf-col-6"><h3>💰 Income Sources</h3>${cur.sources.map(x=>`<div class="pf-source-row"><span>${esc(x.name)}</span><b>${x.p.toFixed(0)}%</b></div>`).join('')||'<p class="pf-muted">No income sources recorded.</p>'}</div><div class="pf-card pf-col-6"><h3>💸 Where did my money go?</h3>${cur.categories.map(x=>`<div class="pf-cat-row"><span>${esc(x.name)}</span><b>${money(x.amount)}</b></div>`).join('')||'<p class="pf-muted">No expense categories recorded.</p>'}</div>`;document.getElementById('insightsContent').innerHTML=html}
 async function pfMonthStats(d){const from=new Date(d.getFullYear(),d.getMonth(),1),to=new Date(d.getFullYear(),d.getMonth()+1,1);const {data}=await supabaseClient.from('personal_finance_transactions').select('transaction_type,amount,income_source,expense_category,business_id').eq('user_id',currentUser.id).is('deleted_at',null).gte('transaction_date',from.toISOString().slice(0,10)).lt('transaction_date',to.toISOString().slice(0,10));let income=0,expense=0,sm={},cm={};(data||[]).forEach(t=>{const a=Number(t.amount)||0;if(t.transaction_type==='income'){income+=a;sm[t.income_source||'Other']=(sm[t.income_source||'Other']||0)+a}if(['expense','giving'].includes(t.transaction_type)){expense+=a;cm[t.expense_category||'Other']=(cm[t.expense_category||'Other']||0)+a}});const sources=Object.entries(sm).sort((a,b)=>b[1]-a[1]).map(([name,a])=>({name,a,p:income?a/income*100:0}));const categories=Object.entries(cm).sort((a,b)=>b[1]-a[1]).map(([name,amount])=>({name,amount}));return{income,expense,sources,categories}}
 
-/* dashboard smart alerts + financial insights */
 async function loadSmartDashboard(){const box=document.getElementById('dashboardSmartAlerts');if(!box)return;const alerts=[];const s=await pfMonthStats(new Date());const prev=await pfMonthStats(new Date(new Date().getFullYear(),new Date().getMonth()-1,1));if(s.expense>prev.expense&&prev.expense>0)alerts.push(`<div class="pf-card pf-col-4"><b>💡 Expenses increased</b><p class="pf-muted">This month is ${money(s.expense-prev.expense)} higher than last month.</p></div>`);if(s.income>0)alerts.push(`<div class="pf-card pf-col-4"><b>💡 Savings rate</b><p class="pf-muted">Your current recorded savings rate is ${((s.income-s.expense)/s.income*100).toFixed(1)}%.</p></div>`);if(s.categories[0])alerts.push(`<div class="pf-card pf-col-4"><b>💡 Largest expense category</b><p class="pf-muted">${esc(s.categories[0].name)} — ${money(s.categories[0].amount)}.</p></div>`);const {data:rb}=await supabaseClient.from('personal_finance_recurring_items').select('*').eq('user_id',currentUser.id).eq('is_active',true).is('deleted_at',null).lte('next_due_date',new Date(Date.now()+3*86400000).toISOString().slice(0,10));(rb||[]).slice(0,3).forEach(x=>alerts.push(`<div class="pf-card pf-col-4"><b>🔔 Payment due</b><p class="pf-muted">${esc(x.name)} — ${money(x.amount)} by ${esc(pfDate(x.next_due_date))}.</p></div>`));box.innerHTML=alerts.join('')||'<div class="pf-card pf-col-12">No smart alerts right now.</div>'}
 
-/* wrap dashboard loader so original dashboard remains intact */
 const pfOldDashboard=loadDashboard;loadDashboard=async function(){await pfOldDashboard();await loadSmartDashboard();try{const month=pfToday().slice(0,7);const {data}=await supabaseClient.from('personal_finance_net_worth_history').select('id').eq('user_id',currentUser.id).eq('month_key',month).limit(1);if(!(data||[]).length)await captureNetWorthSnapshot()}catch(e){console.warn(e)}};
 
-/* edit/delete investment with P/L */
 const pfOldLoadInvestments=loadInvestments;loadInvestments=async function(){await pfOldLoadInvestments();const table=document.getElementById('investmentTable');if(!table)return;const {data}=await supabaseClient.from('personal_finance_investments').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('investment_date',{ascending:false});if(!data)return;table.innerHTML=data.map(i=>{const pl=Number(i.current_value||0)-Number(i.invested_amount||0),pct=Number(i.invested_amount)?pl/Number(i.invested_amount)*100:0;return `<tr><td>${esc(i.investment_name)}</td><td>${esc(i.investment_type)}</td><td>${money(i.invested_amount)}</td><td>${money(i.current_value)}</td><td class="${pl>=0?'pf-success':'pf-danger'}">${money(pl)} (${pct.toFixed(1)}%)</td><td>${esc(pfDate(i.investment_date)||'-')}</td><td><button class="btn-secondary" onclick="editInvestment('${i.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_investments','${i.id}')">Delete</button></td></tr>`}).join('')||'<tr><td colspan="7" class="pf-empty">No investments.</td></tr>'}
 async function editInvestment(id){const {data,error}=await supabaseClient.from('personal_finance_investments').select('*').eq('id',id).single();if(error){showMessage(error.message);return}openModal('Edit Investment',`<label>Name</label><input id="ei_name" value="${esc(data.investment_name||'')}"><label>Type</label><input id="ei_type" value="${esc(data.investment_type||'')}"><label>Invested Amount</label><input id="ei_invested" type="number" value="${Number(data.invested_amount)||0}"><label>Current Value</label><input id="ei_current" type="number" value="${Number(data.current_value)||0}"><label>Dividend</label><input id="ei_dividend" type="number" value="${Number(data.dividend)||0}"><label>Date</label><input id="ei_date" type="date" value="${pfDate(data.investment_date)}"><button class="btn-primary" onclick="updateInvestment('${id}')">Save</button>`)}
 async function updateInvestment(id){const {data:old}=await supabaseClient.from('personal_finance_investments').select('*').eq('id',id).single();const row={investment_name:document.getElementById('ei_name').value,investment_type:document.getElementById('ei_type').value,invested_amount:Number(document.getElementById('ei_invested').value||0),current_value:Number(document.getElementById('ei_current').value||0),investment_date:document.getElementById('ei_date').value||null};if(document.getElementById('ei_dividend'))row.dividend=Number(document.getElementById('ei_dividend').value||0);const {data,error}=await supabaseClient.from('personal_finance_investments').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_investments',id,old,data);closeModal();loadInvestments()}
 
-/* quick add */
 function openQuickAdd(){openModal('Quick Add',`<div class="pf-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='income',200)">💰 Income</button><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='expense',200)">💸 Expense</button><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='transfer',200)">🔄 Transfer</button><button class="btn-primary" onclick="closeModal();openInvestmentModal()">📈 Investment</button><button class="btn-primary" onclick="closeModal();showPage('loans',null);setTimeout(openLoanModal,100)">🤝 Loan</button><button class="btn-primary" onclick="closeModal();showPage('receivables',null);setTimeout(openReceivableModal,100)">🔁 Receivable/Payable</button></div>`)}
 
-/* global search */
 async function globalSearchRun(value){const qtext=(value!==undefined?value:document.getElementById('globalSearch')?.value||'').trim().toLowerCase();if(!qtext)return;const [tx,ac,lo,bu,go,iv]=await Promise.all([supabaseClient.from('personal_finance_transactions').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100),supabaseClient.from('personal_finance_accounts').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100),supabaseClient.from('personal_finance_loans').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_businesses').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_goals').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_investments').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100)]);const sets=[['Transactions',tx.data],['Accounts',ac.data],['Loans',lo.data],['Businesses',bu.data],['Goals',go.data],['Investments',iv.data]];const rows=[];sets.forEach(([label,list])=>(list||[]).forEach(x=>{if(JSON.stringify(x).toLowerCase().includes(qtext))rows.push(`<div class="pf-source-row"><span><b>${label}</b> · ${esc(x.description||x.account_name||x.counterparty||x.business_name||x.goal_name||x.investment_name||x.name||x.id)}</span><span>${x.amount?money(x.amount):x.current_balance?money(x.current_balance):''}</span></div>`)}));const out=document.getElementById('globalSearchResults');if(out)out.innerHTML=rows.slice(0,50).join('')||'<p class="pf-empty">No results.</p>';if(document.getElementById('globalSearch')&&value===undefined)showPage('datacenter',null)}
 
-/* data center exports */
 function safeExcel(v){let s=v==null?'':String(v);return s.length>32000?s.slice(0,32000)+' [TRUNCATED]':s}
 async function fetchAll(table){const {data,error}=await supabaseClient.from(table).select('*').eq('user_id',currentUser.id);return {data:data||[],error}}
 async function exportAllExcel(){if(!window.XLSX){showMessage('Excel library not loaded.');return}const tables=['personal_finance_accounts','personal_finance_transactions','personal_finance_loans','personal_finance_receivables_payables','personal_finance_budgets','personal_finance_goals','personal_finance_investments','personal_finance_businesses','personal_finance_recurring_items','personal_finance_sinking_funds','personal_finance_emergency_funds'];const wb=XLSX.utils.book_new();for(const t of tables){const r=await fetchAll(t);if(r.error)continue;const rows=(r.data||[]).map(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[k,safeExcel(v)])));const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{}]);XLSX.utils.book_append_sheet(wb,ws,t.replace('personal_finance_','').slice(0,31))}XLSX.writeFile(wb,'personal_finance_export.xlsx')}
@@ -5492,13 +5430,8 @@ async function importTransactionsCSV(file){if(!file)return;const rows=parseCSV(a
 async function backupJSON(){const tables=['personal_finance_accounts','personal_finance_transactions','personal_finance_loans','personal_finance_receivables_payables','personal_finance_budgets','personal_finance_goals','personal_finance_investments','personal_finance_businesses','personal_finance_recurring_items','personal_finance_sinking_funds','personal_finance_emergency_funds','personal_finance_net_worth_history'];const out={backup_version:1,created_at:new Date().toISOString(),tables:{}};for(const t of tables){const r=await fetchAll(t);out.tables[t]=r.data||[]}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));a.download='personal_finance_backup.json';a.click()}
 async function restoreJSON(file){if(!file)return;const obj=JSON.parse(await file.text());for(const [table,rows] of Object.entries(obj.tables||{})){if(!Array.isArray(rows)||!rows.length)continue;const clean=rows.map(x=>{const y={...x};delete y.id;delete y.created_at;delete y.updated_at;return y});const {error}=await supabaseClient.from(table).insert(clean);if(error){showMessage(table+': '+error.message);return}}showMessage('Backup restored.');refreshAllPages()}
 
-/* make transaction filter controls available in existing transaction page */
 (function injectTransactionFilters(){const sec=document.getElementById('transactions');if(!sec)return;const section=sec.querySelector('.section');const first=section?.firstElementChild;if(!first)return;const box=document.createElement('div');box.className='pf-card';box.style.margin='14px 0';box.innerHTML=`<div class="pf-actions"><input id="txFilterSearch" placeholder="Search description/account..." oninput="loadTransactions()"><input id="txFilterFrom" type="date" onchange="loadTransactions()"><input id="txFilterTo" type="date" onchange="loadTransactions()"><select id="txFilterType" onchange="loadTransactions()"><option value="">All types</option><option>income</option><option>expense</option><option>giving</option><option>investment</option><option>saving</option><option>transfer</option><option>adjustment</option></select><select id="txFilterAccount" onchange="loadTransactions()"><option value="">All accounts</option></select><select id="txFilterScope" onchange="loadTransactions()"><option value="">All scopes</option><option value="personal">Personal</option><option value="business">Business</option></select><button class="btn-secondary" onclick="document.getElementById('txFilterSearch').value='';document.getElementById('txFilterFrom').value='';document.getElementById('txFilterTo').value='';document.getElementById('txFilterType').value='';document.getElementById('txFilterAccount').value='';document.getElementById('txFilterScope').value='';loadTransactions()">Reset</button></div>`;section.insertBefore(box,first.nextSibling);setTimeout(initTransactionFilters,300)})()
 
-/* add action columns to existing tables where possible */
-
-
-/* ===== CRUD OVERRIDES FOR EXISTING MODULES ===== */
 async function loadLoans(){const {data,error}=await supabaseClient.from('personal_finance_loans').select('*').eq('user_id',currentUser.id).is('deleted_at',null).order('date_taken_given',{ascending:false});if(error){showMessage(error.message);return}document.getElementById('loansTable').innerHTML=(data||[]).map(l=>`<tr><td>${esc(l.direction)}</td><td>${esc(l.counterparty)}</td><td>${money(l.principal_amount)}</td><td>${money(l.remaining_balance)}</td><td>${esc(pfDate(l.due_date)||'-')}</td><td><span class="badge">${esc(l.status)}</span></td><td>${l.direction==='taken'?`<button class="btn-success" onclick="repayLoan('${l.id}')">Repay</button>`:`<button class="btn-success" onclick="receiveLoan('${l.id}')">Receive</button>`} <button class="btn-secondary" onclick="editLoan('${l.id}')">Edit</button> <button class="btn-secondary" onclick="pfDelete('personal_finance_loans','${l.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="7" class="pf-empty">No loans.</td></tr>'}
 async function editLoan(id){const {data,error}=await supabaseClient.from('personal_finance_loans').select('*').eq('id',id).single();if(error){showMessage(error.message);return}const accounts=await getActiveAccounts();openModal('Edit Loan',`<label>Direction</label><select id="el_dir"><option>taken</option><option>given</option></select><label>Counterparty</label><input id="el_person" value="${esc(data.counterparty||'')}"><label>Principal</label><input id="el_principal" type="number" value="${Number(data.principal_amount)||0}"><label>Interest Rate</label><input id="el_rate" type="number" value="${Number(data.interest_rate)||0}"><label>Interest Amount</label><input id="el_interest" type="number" value="${Number(data.interest_amount)||0}"><label>Date</label><input id="el_date" type="date" value="${pfDate(data.date_taken_given)}"><label>Due Date</label><input id="el_due" type="date" value="${pfDate(data.due_date)}"><label>Account</label><select id="el_account">${accountOptions(accounts,data.account_id)}</select><label>Notes</label><textarea id="el_notes">${esc(data.notes||'')}</textarea><button class="btn-primary" onclick="updateLoan('${id}')">Save</button>`);document.getElementById('el_dir').value=data.direction}
 async function updateLoan(id){const {data:old}=await supabaseClient.from('personal_finance_loans').select('*').eq('id',id).single();const row={direction:document.getElementById('el_dir').value,counterparty:document.getElementById('el_person').value,principal_amount:Number(document.getElementById('el_principal').value||0),interest_rate:Number(document.getElementById('el_rate').value||0),interest_amount:Number(document.getElementById('el_interest').value||0),date_taken_given:document.getElementById('el_date').value,due_date:document.getElementById('el_due').value||null,account_id:document.getElementById('el_account').value||null,notes:document.getElementById('el_notes').value};const {data,error}=await supabaseClient.from('personal_finance_loans').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_loans',id,old,data);closeModal();refreshAllPages()}
@@ -5512,39 +5445,23 @@ async function loadGoals(){const {data,error}=await supabaseClient.from('persona
 async function editGoal(id){const {data,error}=await supabaseClient.from('personal_finance_goals').select('*').eq('id',id).single();if(error){showMessage(error.message);return}openModal('Edit Goal',`<label>Name</label><input id="eg_name" value="${esc(data.goal_name||'')}"><label>Target</label><input id="eg_target" type="number" value="${Number(data.target_amount)||0}"><label>Current</label><input id="eg_current" type="number" value="${Number(data.current_amount)||0}"><label>Target Date</label><input id="eg_date" type="date" value="${pfDate(data.target_date)}"><label>Monthly Contribution</label><input id="eg_monthly" type="number" value="${Number(data.monthly_contribution)||0}"><button class="btn-primary" onclick="updateGoal('${id}')">Save</button>`)}
 async function updateGoal(id){const {data:old}=await supabaseClient.from('personal_finance_goals').select('*').eq('id',id).single();const row={goal_name:document.getElementById('eg_name').value,target_amount:Number(document.getElementById('eg_target').value||0),current_amount:Number(document.getElementById('eg_current').value||0),target_date:document.getElementById('eg_date').value||null,monthly_contribution:Number(document.getElementById('eg_monthly').value||0)};const {data,error}=await supabaseClient.from('personal_finance_goals').update(row).eq('id',id).eq('user_id',currentUser.id).select().single();if(error){showMessage(error.message);return}await pfAudit('UPDATE','personal_finance_goals',id,old,data);closeModal();refreshAllPages()}
 
-
-/* ===== FINAL V3 POLISH ===== */
 async function openInvestmentModal(){openModal('Add Investment',`<label>Investment Name</label><input id="i_name"><label>Asset Type</label><select id="i_type"><option>stock</option><option>mutual_fund</option><option>fixed_deposit</option><option>bond</option><option>crypto</option><option>business</option><option>real_estate</option><option>other</option></select><label>Invested Amount</label><input id="i_invested" type="number"><label>Current Value</label><input id="i_current" type="number"><label>Dividend</label><input id="i_dividend" type="number" value="0"><label>Investment Date</label><input id="i_date" type="date"><label>Notes</label><textarea id="i_notes"></textarea><button class="btn-primary" onclick="saveInvestmentV3()">Save Investment</button>`)}
 async function saveInvestmentV3(){const row={user_id:currentUser.id,investment_name:document.getElementById('i_name').value,investment_type:document.getElementById('i_type').value,invested_amount:Number(document.getElementById('i_invested').value||0),current_value:Number(document.getElementById('i_current').value||0),dividend:Number(document.getElementById('i_dividend').value||0),investment_date:document.getElementById('i_date').value||null,notes:document.getElementById('i_notes').value,deleted_at:null};const {data,error}=await supabaseClient.from('personal_finance_investments').insert(row).select().single();if(error){showMessage(error.message);return}await pfAudit('CREATE','personal_finance_investments',data.id,null,data);closeModal();loadInvestments();loadDashboard()}
 
-/* richer Galkot Tech dashboard */
 async function loadBusinessExtraSummary(){const box=document.getElementById('bizExtraSummary');if(!box)return;const {data:tx}=await supabaseClient.from('personal_finance_transactions').select('transaction_type,amount').eq('user_id',currentUser.id).not('business_id','is',null).is('deleted_at',null);let rev=0,exp=0;for(const t of tx||[]){if(t.transaction_type==='income')rev+=+t.amount||0;if(['expense','giving'].includes(t.transaction_type))exp+=+t.amount||0}const {data:rp}=await supabaseClient.from('personal_finance_receivables_payables').select('direction,remaining_amount').eq('user_id',currentUser.id).is('deleted_at',null);const receivable=(rp||[]).filter(x=>x.direction==='receivable').reduce((s,x)=>s+Number(x.remaining_amount||0),0),payable=(rp||[]).filter(x=>x.direction==='payable').reduce((s,x)=>s+Number(x.remaining_amount||0),0);const {data:inv}=await supabaseClient.from('personal_finance_investments').select('current_value,invested_amount').eq('user_id',currentUser.id).is('deleted_at',null).eq('investment_type','business');const businessInvestment=(inv||[]).reduce((s,x)=>s+Number(x.current_value||0),0);const accounts=await getActiveAccounts();const businessCash=accounts.filter(a=>a.account_scope==='business').reduce((s,a)=>s+Number(a.current_balance||0),0);box.innerHTML=`<div class="pf-card"><small>Business revenue</small><div class="pf-kpi">${money(rev)}</div></div><div class="pf-card"><small>Business expenses</small><div class="pf-kpi">${money(exp)}</div></div><div class="pf-card"><small>Business profit</small><div class="pf-kpi ${rev-exp>=0?'pf-success':'pf-danger'}">${money(rev-exp)}</div></div><div class="pf-card"><small>Business cash</small><div class="pf-kpi">${money(businessCash)}</div></div><div class="pf-card"><small>Receivables</small><div class="pf-kpi">${money(receivable)}</div></div><div class="pf-card"><small>Payables</small><div class="pf-kpi">${money(payable)}</div></div><div class="pf-card"><small>Business investment</small><div class="pf-kpi">${money(businessInvestment)}</div></div><div class="pf-card"><small>Personal vs Business</small><div class="pf-muted">Business transactions are tagged with <b>business_id</b>; personal transactions have no business tag.</div></div>`}
 const pfOldBiz=loadBusinessTransactions;loadBusinessTransactions=async function(){await pfOldBiz();let b=document.getElementById('bizExtraSummary');if(!b){const sec=document.querySelector('#business .section');if(sec){b=document.createElement('div');b.id='bizExtraSummary';b.className='pf-grid';b.style.marginTop='16px';sec.insertBefore(b,sec.querySelector('.business-filter'))}}await loadBusinessExtraSummary()}
 
-/* richer smart alerts */
 const pfOldSmart=loadSmartDashboard;loadSmartDashboard=async function(){await pfOldSmart();const box=document.getElementById('dashboardSmartAlerts');if(!box)return;const alerts=[];const {data:loans}=await supabaseClient.from('personal_finance_loans').select('*').eq('user_id',currentUser.id).is('deleted_at',null).neq('status','returned');(loans||[]).filter(l=>l.due_date&&new Date(l.due_date)<new Date()).slice(0,3).forEach(l=>alerts.push(`<div class="pf-card pf-col-4"><b>🔴 Loan overdue</b><p class="pf-muted">${esc(l.counterparty||'Loan')} — due ${esc(pfDate(l.due_date))}.</p></div>`));const accounts=await getActiveAccounts();accounts.filter(a=>Number(a.current_balance||0)<0).slice(0,3).forEach(a=>alerts.push(`<div class="pf-card pf-col-4"><b>🔵 Low account balance</b><p class="pf-muted">${esc(a.account_name)} is below zero: ${money(a.current_balance)}.</p></div>`));const {data:goals}=await supabaseClient.from('personal_finance_goals').select('*').eq('user_id',currentUser.id).is('deleted_at',null);(goals||[]).filter(g=>Number(g.current_amount)>=Number(g.target_amount)&&Number(g.target_amount)>0).slice(0,2).forEach(g=>alerts.push(`<div class="pf-card pf-col-4"><b>🟢 Goal reached</b><p class="pf-muted">${esc(g.goal_name)} has reached its target.</p></div>`));const {data:inv}=await supabaseClient.from('personal_finance_investments').select('*').eq('user_id',currentUser.id).is('deleted_at',null);(inv||[]).filter(i=>Number(i.current_value)-Number(i.invested_amount)>=50000).slice(0,2).forEach(i=>alerts.push(`<div class="pf-card pf-col-4"><b>🟣 Investment milestone</b><p class="pf-muted">${esc(i.investment_name)} has unrealized profit of ${money(Number(i.current_value)-Number(i.invested_amount))}.</p></div>`));if(alerts.length)box.innerHTML+=alerts.join('')}
 
-/* audit viewer */
 (function addAuditViewer(){const dc=document.querySelector('#datacenter .pf-grid');if(!dc)return;const card=document.createElement('div');card.className='pf-card pf-col-12';card.innerHTML='<h3>🔐 Recent Audit Log</h3><div class="pf-table-wrap"><table class="pf-table"><thead><tr><th>Time</th><th>Action</th><th>Table</th><th>Record</th></tr></thead><tbody id="auditTable"></tbody></table></div>';dc.appendChild(card)})();
 async function loadAuditLogs(){const el=document.getElementById('auditTable');if(!el)return;const {data,error}=await supabaseClient.from('personal_finance_audit_logs').select('created_at,action,table_name,record_id').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(50);if(error){el.innerHTML='<tr><td colspan="4">'+esc(error.message)+'</td></tr>';return}el.innerHTML=(data||[]).map(x=>`<tr><td>${esc(new Date(x.created_at).toLocaleString())}</td><td>${esc(x.action)}</td><td>${esc(x.table_name)}</td><td>${esc(x.record_id||'-')}</td></tr>`).join('')||'<tr><td colspan="4" class="pf-empty">No audit records.</td></tr>'}
 const pfOldShow=showPage;showPage=function(id,button){pfOldShow(id,button);if(id==='datacenter')setTimeout(loadAuditLogs,100)};
 
-/* make account creation capable of business/personal tagging */
 async function openAccountModal(){const businesses=await getBusinesses();openModal('Add Account',`<label>Account Name</label><input id="a_name" placeholder="Nabil Bank"><label>Account Type</label><select id="a_type"><option>cash</option><option>bank</option><option>savings</option><option>investment</option><option>other</option></select><label>Account Scope</label><select id="a_scope"><option value="personal">Personal</option><option value="business">Business</option></select><label>Business</label><select id="a_business"><option value="">None</option>${businesses.map(b=>`<option value="${esc(b.id)}">${esc(b.business_name)}</option>`).join('')}</select><label>Opening Balance</label><input id="a_balance" type="number" step="0.01" value="0"><label>Bank Name</label><input id="a_bank"><button class="btn-primary" onclick="saveAccountV3()">Save Account</button>`)}
 async function saveAccountV3(){const row={user_id:currentUser.id,account_name:document.getElementById('a_name').value,account_type:document.getElementById('a_type').value,account_scope:document.getElementById('a_scope').value,business_id:document.getElementById('a_business').value||null,bank_name:document.getElementById('a_bank').value,opening_balance:Number(document.getElementById('a_balance').value||0),current_balance:Number(document.getElementById('a_balance').value||0),is_active:true,deleted_at:null};const {data,error}=await supabaseClient.from('personal_finance_accounts').insert(row).select().single();if(error){showMessage(error.message);return}await pfAudit('CREATE','personal_finance_accounts',data.id,null,data);closeModal();refreshAllPages()}
 
-
-/* final account query: never show soft-deleted accounts */
 async function getActiveAccounts(){const {data,error}=await supabaseClient.from('personal_finance_accounts').select('id,account_name,account_type,bank_name,current_balance,account_scope,business_id').eq('user_id',currentUser.id).eq('is_active',true).is('deleted_at',null).order('account_name');if(error){showMessage(error.message);return []}return data||[]}
 
-
-
-/* ============================================================
-   ACCOUNT + GOAL ENHANCEMENTS
-   - Bank account number + branch
-   - Conditional bank fields on add/edit
-   - Goal funding compared with total bank balances
-   ============================================================ */
 (function(){
     function setBankFieldsVisibility(typeId, wrapId){
         const type=document.getElementById(typeId);
@@ -5678,7 +5595,52 @@ async function getActiveAccounts(){const {data,error}=await supabaseClient.from(
     };
 })();
 
+
+
+
 </script>
 
+<script id="finance-idle-screen">
+(function(){
+  "use strict";
+  var IDLE_MS = 60000;
+  var idleSince = Date.now();
+
+  // keep mobile menu working (previously defined in the removed script)
+  window.fxToggleMenu = function(){ var s=document.querySelector(".sidebar"); if(s) s.classList.toggle("fx-open"); };
+  window.fxCloseMenu  = function(){ var s=document.querySelector(".sidebar"); if(s) s.classList.remove("fx-open"); };
+
+  var ov = document.createElement("div");
+  ov.id = "fxIdleScreen";
+  ov.style.cssText = "position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:22px;color:#fff;background:linear-gradient(135deg,#050b16,#0f2a52 60%,#0f766e)";
+  ov.innerHTML =
+    '<div id="fxIdleTime" style="font-size:clamp(48px,14vw,110px);font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums;line-height:1">00:00:00</div>' +
+    '<div style="margin-top:18px;font-size:15px;color:rgba(255,255,255,.7)">Session idle — activity will resume automatically</div>' +
+    '<button id="fxIdleResume" class="btn-primary" type="button" style="margin-top:26px;min-width:160px">Resume</button>';
+  document.body.appendChild(ov);
+
+  function visible(){ return ov.style.display === "flex"; }
+  function pad(n){ return String(n).padStart(2,"0"); }
+  function tick(){
+    var d = new Date();
+    document.getElementById("fxIdleTime").textContent = pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+  }
+  function hide(){ ov.style.display = "none"; idleSince = Date.now(); }
+  function activity(){ if(visible()) hide(); else idleSince = Date.now(); }
+
+  ["pointerdown","keydown","touchstart","scroll","mousemove"].forEach(function(evt){
+    document.addEventListener(evt, activity, {passive:true});
+  });
+  document.getElementById("fxIdleResume").addEventListener("click", hide);
+
+  setInterval(function(){
+    if(visible()) tick();
+    if(typeof currentUser !== "undefined" && currentUser && !visible() && Date.now() - idleSince >= IDLE_MS){
+      tick();
+      ov.style.display = "flex";
+    }
+  }, 1000);
+})();
+</script>
 </body>
 </html>
