@@ -1324,6 +1324,19 @@ input:focus,select:focus,textarea:focus{
 }
 </style>
 
+<style id="pf-datacenter-style">
+.pf-dc-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.pf-dc-filters input,.pf-dc-filters select{margin:0}
+.pf-dc-filters .dc-wide{grid-column:1/-1}
+.pf-sr{cursor:pointer}
+.pf-sr:hover td{background:#f1f5f9}
+.pf-sr:focus-visible{outline:2px solid #2563eb;outline-offset:-2px}
+.pf-tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800;background:#eef2f7;color:#475569}
+.pf-tag.in{background:#dcfce7;color:#047857}
+.pf-tag.out{background:#fee2e2;color:#b91c1c}
+.pf-num{text-align:right}
+.pf-hit td{background:#fef08a!important}
+</style>
 </head>
 
 <body>
@@ -1408,10 +1421,6 @@ input:focus,select:focus,textarea:focus{
             📈 Investments
         </button>
 
-        <button class="nav-btn"
-                onclick="showPage('reports',this)">
-            📑 Reports
-        </button>
         <button class="nav-btn" onclick="showPage('recurring',this)">🔁 Recurring Payments</button>
         <button class="nav-btn" onclick="showPage('sinking',this)">🎯 Sinking Funds</button>
         <button class="nav-btn" onclick="showPage('emergency',this)">🛡️ Emergency Fund</button>
@@ -1439,7 +1448,6 @@ input:focus,select:focus,textarea:focus{
                     onclick="loadDashboard()">
                 🔄 Refresh
             </button>
-            <div class="pf-search"><input id="globalSearch" type="search" placeholder="🔎 Search finance..." onkeydown="if(event.key==='Enter') globalSearchRun()"></div>
             <button class="btn-primary" onclick="openQuickAdd()">＋ Add</button>
         </div>
 
@@ -1841,13 +1849,28 @@ input:focus,select:focus,textarea:focus{
             <div id="insightsContent" class="pf-grid"></div>
         </div></section>
 
-        <!-- DATA CENTER -->
+        <!-- DATA CENTER (Reports merged in) -->
         <section id="datacenter" class="page hidden"><div class="section">
-            <div class="topbar"><div><h2>📦 Data Center</h2><small>Import, export and backup your finance records.</small></div></div>
+            <div class="topbar"><div><h2>📦 Data Center</h2><small>Reports, full export and advanced search for your finance records.</small></div></div>
             <div class="pf-grid">
-              <div class="pf-card pf-col-6"><h3>📤 Export</h3><p class="pf-muted">Excel export safely handles long text cells under Excel's 32,767 character limit.</p><br><div class="pf-actions"><button class="btn-primary" onclick="exportAllExcel()">Excel</button><button class="btn-secondary" onclick="exportAllCSV()">CSV</button><button class="btn-secondary" onclick="backupJSON()">JSON Backup</button></div></div>
-              <div class="pf-card pf-col-6"><h3>📥 Import / Restore</h3><p class="pf-muted">Use the template for transactions, or restore a JSON backup.</p><br><div class="pf-actions"><button class="btn-secondary" onclick="downloadImportTemplate()">Download Template</button><label class="btn-secondary" style="display:inline-flex;align-items:center;gap:6px">Import CSV <input id="csvImportInput" type="file" accept=".csv" hidden onchange="importTransactionsCSV(this.files[0])"></label><label class="btn-secondary" style="display:inline-flex;align-items:center;gap:6px">Restore JSON <input id="jsonRestoreInput" type="file" accept=".json" hidden onchange="restoreJSON(this.files[0])"></label></div></div>
-              <div class="pf-card pf-col-12"><h3>🔎 Global Search</h3><input id="dataCenterSearch" type="search" placeholder="Search transactions, accounts, loans, businesses, goals, investments..." oninput="globalSearchRun(this.value)"><div id="globalSearchResults"></div></div>
+              <div class="pf-card pf-col-6"><h3>📤 Export (Full Backup)</h3><p class="pf-muted">One Excel file with every table in the database: one sheet per table, plus a summary sheet.</p><br><div class="pf-actions"><button id="pfExportBtn" class="btn-primary" onclick="exportAllExcel()">📦 Export All Tables (Excel)</button></div></div>
+              <div class="pf-card pf-col-6"><h3>📑 Reports</h3><p class="pf-muted">Download all transactions as CSV, or print the current page.</p><br><div class="pf-actions"><button class="btn-primary" onclick="exportTransactionsCSV()">📥 Export Transactions CSV</button><button class="btn-secondary" onclick="window.print()">🖨 Print</button></div></div>
+              <div class="pf-card pf-col-12"><h3>🔎 Global Search</h3><p class="pf-muted">Search transactions, accounts, loans, receivables/payables, budgets, goals, investments, businesses, recurring items and sinking funds. Click a result to open it; a transaction opens in the Transactions page and is highlighted.</p>
+                <div class="pf-dc-filters">
+                  <input id="dcQuery" class="dc-wide" type="search" placeholder="Keyword: item, person, account, category, amount… (several words = all must match)" oninput="pfSearchDebounce()" onkeydown="if(event.key==='Enter')globalSearchRun()">
+                  <select id="dcModule" onchange="globalSearchRun()">
+                    <option value="">All modules</option><option value="transactions">Transactions</option><option value="accounts">Accounts</option><option value="loans">Loans</option><option value="receivables">Receivables &amp; Payables</option><option value="budgets">Budgets</option><option value="goals">Goals</option><option value="investments">Investments</option><option value="business">Businesses</option><option value="recurring">Recurring payments</option><option value="sinking">Sinking funds</option>
+                  </select>
+                  <select id="dcType" onchange="globalSearchRun()">
+                    <option value="">Any transaction type</option><option value="income">Income</option><option value="expense">Expense (incl. giving)</option><option value="transfer">Transfer</option><option value="investment">Investment</option><option value="saving">Saving</option><option value="adjustment">Adjustment</option>
+                  </select>
+                  <input id="dcFrom" type="date" title="From date" onchange="globalSearchRun()">
+                  <input id="dcTo" type="date" title="To date" onchange="globalSearchRun()">
+                  <input id="dcMin" type="number" step="0.01" placeholder="Min amount" oninput="pfSearchDebounce()">
+                  <input id="dcMax" type="number" step="0.01" placeholder="Max amount" oninput="pfSearchDebounce()">
+                  <button class="btn-secondary" type="button" onclick="pfSearchReset()">Reset</button>
+                </div>
+                <div id="globalSearchResults"></div></div>
             </div>
         </div></section>
 
@@ -2033,28 +2056,7 @@ input:focus,select:focus,textarea:focus{
 
         </section>
 
-        <!-- REPORTS -->
-        <section id="reports" class="page hidden">
 
-            <div class="section">
-
-                <h2>📑 Financial Reports</h2>
-
-                <br>
-
-                <button class="btn-primary"
-                        onclick="exportTransactionsCSV()">
-                    📥 Export Transactions CSV
-                </button>
-
-                <button class="btn-secondary"
-                        onclick="window.print()">
-                    🖨 Print
-                </button>
-
-            </div>
-
-        </section>
 
     
 <!-- Finance UI v4 additions -->
@@ -5418,17 +5420,166 @@ async function updateInvestment(id){const {data:old}=await supabaseClient.from('
 
 function openQuickAdd(){openModal('Quick Add',`<div class="pf-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='income',200)">💰 Income</button><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='expense',200)">💸 Expense</button><button class="btn-primary" onclick="closeModal();openTransactionModal();setTimeout(()=>document.getElementById('t_type').value='transfer',200)">🔄 Transfer</button><button class="btn-primary" onclick="closeModal();openInvestmentModal()">📈 Investment</button><button class="btn-primary" onclick="closeModal();showPage('loans',null);setTimeout(openLoanModal,100)">🤝 Loan</button><button class="btn-primary" onclick="closeModal();showPage('receivables',null);setTimeout(openReceivableModal,100)">🔁 Receivable/Payable</button></div>`)}
 
-async function globalSearchRun(value){const qtext=(value!==undefined?value:document.getElementById('globalSearch')?.value||'').trim().toLowerCase();if(!qtext)return;const [tx,ac,lo,bu,go,iv]=await Promise.all([supabaseClient.from('personal_finance_transactions').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100),supabaseClient.from('personal_finance_accounts').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100),supabaseClient.from('personal_finance_loans').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_businesses').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_goals').select('*').eq('user_id',currentUser.id).limit(100),supabaseClient.from('personal_finance_investments').select('*').eq('user_id',currentUser.id).is('deleted_at',null).limit(100)]);const sets=[['Transactions',tx.data],['Accounts',ac.data],['Loans',lo.data],['Businesses',bu.data],['Goals',go.data],['Investments',iv.data]];const rows=[];sets.forEach(([label,list])=>(list||[]).forEach(x=>{if(JSON.stringify(x).toLowerCase().includes(qtext))rows.push(`<div class="pf-source-row"><span><b>${label}</b> · ${esc(x.description||x.account_name||x.counterparty||x.business_name||x.goal_name||x.investment_name||x.name||x.id)}</span><span>${x.amount?money(x.amount):x.current_balance?money(x.current_balance):''}</span></div>`)}));const out=document.getElementById('globalSearchResults');if(out)out.innerHTML=rows.slice(0,50).join('')||'<p class="pf-empty">No results.</p>';if(document.getElementById('globalSearch')&&value===undefined)showPage('datacenter',null)}
+let pfSearchSeq=0;
+function pfSearchDebounce(){ clearTimeout(window.pfSearchTimer); window.pfSearchTimer=setTimeout(function(){globalSearchRun()},300); }
+function pfSearchReset(){ ['dcQuery','dcModule','dcType','dcFrom','dcTo','dcMin','dcMax'].forEach(function(id){var e=document.getElementById(id); if(e) e.value='';}); var o=document.getElementById('globalSearchResults'); if(o) o.innerHTML=''; }
+function pfKind(t){ const k=String(t||'').toLowerCase(); if(k==='income') return ['Income','in']; if(k==='expense') return ['Expense','out']; if(k==='giving') return ['Giving','out']; return [k?k.charAt(0).toUpperCase()+k.slice(1):'-','']; }
+function pfSearchOpen(page,id,date){
+  if(page==='transactions' && id){
+    const safeId=String(id).replace(/[^\w-]/g,''), d=/^\d{4}-\d{2}-\d{2}$/.test(date||'')?date:'';
+    const set=(k,v)=>{ const e=document.getElementById(k); if(e) e.value=v; };
+    set('txFilterSearch',''); set('txFilterFrom',d); set('txFilterTo',d); set('txFilterType',''); set('txFilterAccount',''); set('txFilterScope','');
+    const body=document.getElementById('transactionsTable'); if(body) body.innerHTML='';
+    dbGo('transactions');
+    let tries=0;
+    const iv=setInterval(function(){
+      tries++;
+      const btn=document.querySelector('#transactionsTable button[onclick*="editTransaction(\''+safeId+'\')"]');
+      if(btn){
+        clearInterval(iv);
+        const tr=btn.closest('tr');
+        if(tr){ tr.classList.add('pf-hit'); tr.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){tr.classList.remove('pf-hit')},6000); }
+      }else if(tries>40){ clearInterval(iv); }
+    },150);
+  }else{
+    dbGo(page);
+  }
+}
+async function globalSearchRun(){
+  const out=document.getElementById('globalSearchResults');
+  if(!out || !currentUser) return;
+  const g=id=>(document.getElementById(id)||{}).value||'';
+  const q=g('dcQuery').trim().toLowerCase(), mod=g('dcModule'), typ=g('dcType'), from=g('dcFrom'), to=g('dcTo');
+  const min=g('dcMin')!==''?Number(g('dcMin')):null, max=g('dcMax')!==''?Number(g('dcMax')):null;
+  if(!q && !typ && !from && !to && min===null && max===null){ out.innerHTML='<p class="pf-empty">Type a keyword or choose a filter to search.</p>'; return; }
+  const seq=++pfSearchSeq;
+  out.innerHTML='<p class="pf-empty">Searching…</p>';
+  try{
+    const uid=currentUser.id;
+    const fetchRows=async(table,tx)=>{
+      try{
+        let qy=supabaseClient.from(table).select('*').eq('user_id',uid);
+        if(tx){ qy=qy.order('transaction_date',{ascending:false}); if(from) qy=qy.gte('transaction_date',from); if(to) qy=qy.lte('transaction_date',to); qy=qy.limit(3000); }
+        else qy=qy.limit(1500);
+        const {data,error}=await qy;
+        return error?[]:(data||[]).filter(x=>!x.deleted_at);
+      }catch(e){ return []; }
+    };
+    const want=k=>(!mod||mod===k)&&(!typ||k==='transactions');
+    const [txs,accs,bizs,loans,rps,buds,goals,invs,recs,sinks]=await Promise.all([
+      want('transactions')?fetchRows('personal_finance_transactions',true):[],
+      fetchRows('personal_finance_accounts'),
+      fetchRows('personal_finance_businesses'),
+      want('loans')?fetchRows('personal_finance_loans'):[],
+      want('receivables')?fetchRows('personal_finance_receivables_payables'):[],
+      want('budgets')?fetchRows('personal_finance_budgets'):[],
+      want('goals')?fetchRows('personal_finance_goals'):[],
+      want('investments')?fetchRows('personal_finance_investments'):[],
+      want('recurring')?fetchRows('personal_finance_recurring_items'):[],
+      want('sinking')?fetchRows('personal_finance_sinking_funds'):[]
+    ]);
+    if(seq!==pfSearchSeq) return;
+    const amap=Object.fromEntries(accs.map(a=>[String(a.id),a])), bmap=Object.fromEntries(bizs.map(b=>[String(b.id),b]));
+    const res=[];
+    txs.forEach(t=>{
+      const k=pfKind(t.transaction_type), a=amap[String(t.account_id)], ta=amap[String(t.to_account_id)], b=bmap[String(t.business_id)];
+      const acct=(a?a.account_name:'-')+(String(t.transaction_type)==='transfer'&&ta?' → '+ta.account_name:'');
+      res.push({page:'transactions',id:t.id,module:'Transactions',date:pfDate(t.transaction_date),kind:k[0],cls:k[1],typeRaw:String(t.transaction_type||'').toLowerCase(),title:t.description||(k[0]+' transaction'),sub:[t.income_source,t.expense_category,b&&b.business_name].filter(Boolean).join(' · '),account:acct,amount:Number(t.amount)||0,
+        hay:[t.description,t.transaction_type,t.amount,t.income_source,t.expense_category,a&&a.account_name,a&&a.bank_name,ta&&ta.account_name,b&&b.business_name,pfDate(t.transaction_date)].join(' ')});
+    });
+    const simple=(list,page,module,f)=>list.forEach(x=>{ const o=f(x); o.page=page; o.module=module; o.id=''; o.typeRaw=''; o.hay=(o.hay||'')+' '+o.title+' '+o.kind+' '+(o.sub||''); res.push(o); });
+    if(want('accounts')) simple(accs,'accounts','Accounts',a=>({date:pfDate(a.created_at),kind:pfKind(a.account_type)[0],cls:'',title:a.account_name||'-',sub:[a.bank_name,a.branch_name,a.account_number].filter(Boolean).join(' · '),account:a.bank_name||'-',amount:Number(a.current_balance)||0,hay:[a.account_name,a.bank_name,a.account_number,a.branch_name].join(' ')}));
+    if(want('business')) simple(bizs,'business','Businesses',b=>({date:pfDate(b.created_at),kind:'Business',cls:'',title:b.business_name||'-',sub:b.description||'',account:'-',amount:0,hay:[b.business_name,b.description].join(' ')}));
+    simple(loans,'loans','Loans',l=>({date:pfDate(l.date_taken_given),kind:pfKind(l.direction)[0]+' loan',cls:'',title:l.counterparty||'-',sub:l.notes||'',account:(amap[String(l.account_id)]||{}).account_name||'-',amount:Number(l.remaining_balance!=null?l.remaining_balance:l.principal_amount)||0,hay:[l.counterparty,l.notes,l.direction,l.principal_amount,l.status].join(' ')}));
+    simple(rps,'receivables','Receivables & Payables',r=>({date:pfDate(r.due_date),kind:pfKind(r.direction)[0],cls:'',title:r.person_name||'-',sub:r.notes||'',account:'-',amount:Number(r.remaining_amount!=null?r.remaining_amount:r.amount)||0,hay:[r.person_name,r.notes,r.direction,r.amount,r.status].join(' ')}));
+    simple(buds,'budgets','Budgets',b=>({date:pfDate(b.start_date),kind:'Budget',cls:'',title:b.budget_name||'-',sub:pfDate(b.start_date)+' → '+pfDate(b.end_date),account:'-',amount:Number(b.budget_amount)||0,hay:[b.budget_name,b.budget_amount,b.period_type].join(' ')}));
+    simple(goals,'goals','Goals',x=>({date:pfDate(x.target_date),kind:'Goal',cls:'',title:x.goal_name||'-',sub:x.notes||'',account:'-',amount:Number(x.target_amount)||0,hay:[x.goal_name,x.notes,x.target_amount].join(' ')}));
+    simple(invs,'investments','Investments',i=>({date:pfDate(i.investment_date),kind:pfKind(i.investment_type)[0],cls:'',title:i.investment_name||'-',sub:i.notes||'',account:'-',amount:Number(i.current_value)||0,hay:[i.investment_name,i.investment_type,i.notes,i.current_value,i.invested_amount].join(' ')}));
+    simple(recs,'recurring','Recurring',r=>({date:pfDate(r.next_due_date),kind:pfKind(r.item_type)[0],cls:'',title:r.name||'-',sub:r.frequency||'',account:(amap[String(r.account_id)]||{}).account_name||'-',amount:Number(r.amount)||0,hay:[r.name,r.item_type,r.frequency,r.notes,r.amount].join(' ')}));
+    simple(sinks,'sinking','Sinking funds',f=>({date:pfDate(f.target_date),kind:'Sinking fund',cls:'',title:f.fund_name||'-',sub:'',account:'-',amount:Number(f.target_amount)||0,hay:[f.fund_name,f.target_amount].join(' ')}));
+    const rows=res.filter(r=>{
+      if(typ){ if(r.module!=='Transactions') return false; if(typ==='expense'){ if(r.typeRaw!=='expense'&&r.typeRaw!=='giving') return false; } else if(r.typeRaw!==typ) return false; }
+      if(from&&(!r.date||r.date<from)) return false;
+      if(to&&(!r.date||r.date>to)) return false;
+      if(min!==null&&!(r.amount>=min)) return false;
+      if(max!==null&&!(r.amount<=max)) return false;
+      if(q){ const h=String(r.hay).toLowerCase(); return q.split(/\s+/).every(w=>h.includes(w)); }
+      return true;
+    }).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    if(!rows.length){ out.innerHTML='<p class="pf-empty">No results.</p>'; return; }
+    const shown=rows.slice(0,200);
+    out.innerHTML='<p class="pf-muted" style="margin:8px 0">'+rows.length.toLocaleString()+' result'+(rows.length===1?'':'s')+(rows.length>shown.length?' · showing the latest '+shown.length:'')+' · click a row to open it</p>'+
+      '<div class="pf-table-wrap"><table class="pf-table"><thead><tr><th>Date</th><th>Module</th><th>Type</th><th>Item</th><th>Account</th><th class="pf-num">Amount</th></tr></thead><tbody>'+
+      shown.map(r=>'<tr class="pf-sr" tabindex="0" role="link" title="Open" onclick="pfSearchOpen(\''+r.page+'\',\''+esc(String(r.id).replace(/[^\w-]/g,''))+'\',\''+esc(r.date)+'\')" onkeydown="if(event.key===\'Enter\')this.click()">'+
+        '<td>'+esc(r.date||'-')+'</td><td>'+esc(r.module)+'</td><td><span class="pf-tag '+r.cls+'">'+esc(r.kind)+'</span></td>'+
+        '<td>'+esc(r.title)+(r.sub?'<br><small class="pf-muted">'+esc(r.sub)+'</small>':'')+'</td><td>'+esc(r.account)+'</td><td class="pf-num">'+(r.amount?money(r.amount):'-')+'</td></tr>').join('')+
+      '</tbody></table></div>';
+  }catch(e){
+    console.error(e);
+    out.innerHTML='<p class="pf-empty">Search failed: '+esc(e.message||e)+'</p>';
+  }
+}
 
 function safeExcel(v){let s=v==null?'':String(v);return s.length>32000?s.slice(0,32000)+' [TRUNCATED]':s}
 async function fetchAll(table){const {data,error}=await supabaseClient.from(table).select('*').eq('user_id',currentUser.id);return {data:data||[],error}}
-async function exportAllExcel(){if(!window.XLSX){showMessage('Excel library not loaded.');return}const tables=['personal_finance_accounts','personal_finance_transactions','personal_finance_loans','personal_finance_receivables_payables','personal_finance_budgets','personal_finance_goals','personal_finance_investments','personal_finance_businesses','personal_finance_recurring_items','personal_finance_sinking_funds','personal_finance_emergency_funds'];const wb=XLSX.utils.book_new();for(const t of tables){const r=await fetchAll(t);if(r.error)continue;const rows=(r.data||[]).map(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[k,safeExcel(v)])));const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{}]);XLSX.utils.book_append_sheet(wb,ws,t.replace('personal_finance_','').slice(0,31))}XLSX.writeFile(wb,'personal_finance_export.xlsx')}
-async function exportAllCSV(){const r=await fetchAll('personal_finance_transactions');if(r.error){showMessage(r.error.message);return}const rows=[Object.keys(r.data[0]||{date:'',type:'',amount:''}),...(r.data||[]).map(x=>Object.values(x))];const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='personal_finance_transactions.csv';a.click()}
-function downloadImportTemplate(){const rows=[['transaction_date','transaction_type','amount','account_id','to_account_id','business_id','income_source','expense_category','description'],['2026-09-21','expense','1000','','','','','Food','Example']];const csv=rows.map(r=>r.map(v=>'"'+v+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='personal_finance_transaction_import_template.csv';a.click()}
-function parseCSV(text){const lines=text.split(/\r?\n/).filter(Boolean);const parse=l=>{const out=[];let cur='',q=false;for(let i=0;i<l.length;i++){const c=l[i];if(c==='"'&&l[i+1]==='"'){cur+='"';i++;continue}if(c==='"'){q=!q;continue}if(c===','&&!q){out.push(cur);cur='';continue}cur+=c}out.push(cur);return out};const h=parse(lines.shift());return lines.map(l=>Object.fromEntries(parse(l).map((v,i)=>[h[i],v])))}
-async function importTransactionsCSV(file){if(!file)return;const rows=parseCSV(await file.text());const payload=rows.filter(r=>r.transaction_date&&r.transaction_type&&r.amount).map(r=>({user_id:currentUser.id,transaction_date:r.transaction_date,transaction_type:r.transaction_type,amount:Number(r.amount),account_id:r.account_id||null,to_account_id:r.to_account_id||null,business_id:r.business_id||null,income_source:r.income_source||null,expense_category:r.expense_category||null,description:r.description||''}));const {data,error}=await supabaseClient.from('personal_finance_transactions').insert(payload).select();if(error){showMessage(error.message);return}for(const x of data||[])await pfAudit('IMPORT','personal_finance_transactions',x.id,null,x);showMessage(`${data.length} transactions imported.`);refreshAllPages()}
-async function backupJSON(){const tables=['personal_finance_accounts','personal_finance_transactions','personal_finance_loans','personal_finance_receivables_payables','personal_finance_budgets','personal_finance_goals','personal_finance_investments','personal_finance_businesses','personal_finance_recurring_items','personal_finance_sinking_funds','personal_finance_emergency_funds','personal_finance_net_worth_history'];const out={backup_version:1,created_at:new Date().toISOString(),tables:{}};for(const t of tables){const r=await fetchAll(t);out.tables[t]=r.data||[]}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));a.download='personal_finance_backup.json';a.click()}
-async function restoreJSON(file){if(!file)return;const obj=JSON.parse(await file.text());for(const [table,rows] of Object.entries(obj.tables||{})){if(!Array.isArray(rows)||!rows.length)continue;const clean=rows.map(x=>{const y={...x};delete y.id;delete y.created_at;delete y.updated_at;return y});const {error}=await supabaseClient.from(table).insert(clean);if(error){showMessage(table+': '+error.message);return}}showMessage('Backup restored.');refreshAllPages()}
+async function pfListExportTables(){
+  const fallback=['personal_finance_accounts','personal_finance_transactions','personal_finance_loans','personal_finance_loan_payments','personal_finance_receivables_payables','personal_finance_budgets','personal_finance_goals','personal_finance_investments','personal_finance_businesses','personal_finance_recurring_items','personal_finance_sinking_funds','personal_finance_emergency_funds','personal_finance_net_worth_history','personal_finance_audit_logs'];
+  try{
+    const {data,error}=await supabaseClient.rpc('pf_list_export_tables');
+    if(!error && Array.isArray(data) && data.length) return {tables:data.map(x=>typeof x==='string'?x:x.table_name).filter(Boolean),fromDb:true};
+  }catch(e){ console.warn('pf_list_export_tables:',e); }
+  return {tables:fallback,fromDb:false};
+}
+async function pfFetchWholeTable(table){
+  const rows=[]; let useOrder=true;
+  for(let guard=0; guard<500; guard++){
+    const from=rows.length;
+    let q=supabaseClient.from(table).select('*');
+    if(useOrder) q=q.order('id',{ascending:true});
+    const {data,error}=await q.range(from,from+999);
+    if(error){
+      if(useOrder && /column|does not exist|42703/i.test((error.code||'')+' '+(error.message||''))){ useOrder=false; continue; }
+      return {rows,error};
+    }
+    if(!data || !data.length) break;
+    rows.push(...data);
+  }
+  return {rows,error:null};
+}
+function pfCell(v){
+  if(v===null||v===undefined) return '';
+  if(typeof v==='number'||typeof v==='boolean') return v;
+  if(typeof v==='object') v=JSON.stringify(v);
+  return safeExcel(v);
+}
+async function exportAllExcel(){
+  if(!window.XLSX){showMessage('Excel library not loaded.');return}
+  const btn=document.getElementById('pfExportBtn'); const label=btn?btn.textContent:'';
+  const setBtn=t=>{ if(btn) btn.textContent=t; };
+  if(btn) btn.disabled=true;
+  try{
+    setBtn('Preparing…');
+    const {tables,fromDb}=await pfListExportTables();
+    const wb=XLSX.utils.book_new(), summary=[], sheets=[], used=new Set(['_summary']);
+    for(let i=0;i<tables.length;i++){
+      const t=tables[i]; setBtn('Exporting '+(i+1)+'/'+tables.length+'…');
+      const r=await pfFetchWholeTable(t);
+      const base=(t.replace(/^personal_finance_/,'').replace(/[\[\]:*?\/\\]/g,'_').slice(0,28))||('table_'+(i+1));
+      let name=base, n=2; while(used.has(name.toLowerCase())) name=base+'_'+(n++);
+      used.add(name.toLowerCase());
+      const rows=(r.rows||[]).map(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[k,pfCell(v)])));
+      const ws=rows.length?XLSX.utils.json_to_sheet(rows):XLSX.utils.aoa_to_sheet([[r.error?('Could not read: '+r.error.message):'(no rows)']]);
+      sheets.push([name,ws]);
+      summary.push({Table:t,Sheet:name,Rows:rows.length,Status:r.error?('Error: '+r.error.message):'OK'});
+    }
+    summary.push({});
+    summary.push({Table:'Exported at',Sheet:new Date().toLocaleString(),Rows:'',Status:fromDb?'Table list read from the database':'Built-in table list used (run the pf_list_export_tables SQL to include every table)'});
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),'_Summary');
+    sheets.forEach(([n,ws])=>XLSX.utils.book_append_sheet(wb,ws,n));
+    XLSX.writeFile(wb,'personal_finance_full_backup_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }catch(e){ console.error(e); showMessage('Export failed: '+(e.message||e)); }
+  finally{ if(btn){ btn.textContent=label; btn.disabled=false; } }
+}
 
 (function injectTransactionFilters(){const sec=document.getElementById('transactions');if(!sec)return;const section=sec.querySelector('.section');const first=section?.firstElementChild;if(!first)return;const box=document.createElement('div');box.className='pf-card';box.style.margin='14px 0';box.innerHTML=`<div class="pf-actions"><input id="txFilterSearch" placeholder="Search description/account..." oninput="loadTransactions()"><input id="txFilterFrom" type="date" onchange="loadTransactions()"><input id="txFilterTo" type="date" onchange="loadTransactions()"><select id="txFilterType" onchange="loadTransactions()"><option value="">All types</option><option>income</option><option>expense</option><option>giving</option><option>investment</option><option>saving</option><option>transfer</option><option>adjustment</option></select><select id="txFilterAccount" onchange="loadTransactions()"><option value="">All accounts</option></select><select id="txFilterScope" onchange="loadTransactions()"><option value="">All scopes</option><option value="personal">Personal</option><option value="business">Business</option></select><button class="btn-secondary" onclick="document.getElementById('txFilterSearch').value='';document.getElementById('txFilterFrom').value='';document.getElementById('txFilterTo').value='';document.getElementById('txFilterType').value='';document.getElementById('txFilterAccount').value='';document.getElementById('txFilterScope').value='';loadTransactions()">Reset</button></div>`;section.insertBefore(box,first.nextSibling);setTimeout(initTransactionFilters,300)})()
 
