@@ -1,14 +1,13 @@
-/* Admin login popup on the public pages (index.html). Shortcut: Ctrl + Shift + A */
+/* Admin login popup on the public pages (index.html). Opened only with the hidden shortcut Ctrl + Shift + A (no visible button). */
 (() => {
   const $ = id => document.getElementById(id);
   const open = () => { $('adminModal').hidden = false; $('adminEmail').focus(); };
   const close = () => { $('adminModal').hidden = true; $('adminLoginMsg').textContent = ''; };
 
-  $('adminOpen').addEventListener('click', open);
   $('adminClose').addEventListener('click', close);
   $('adminModal').addEventListener('click', e => { if (e.target === $('adminModal')) close(); });
   document.addEventListener('keydown', e => {
-    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') { e.preventDefault(); open(); }
+    if (e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey && (e.code === 'KeyA' || String(e.key).toLowerCase() === 'a')) { e.preventDefault(); e.stopPropagation(); open(); }
     if (e.key === 'Escape' && !$('adminModal').hidden) close();
   });
 
