@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EFT Admin · गलकोट नगरपालिका</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.3/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#080c1a;--text:#eef2ff;--muted:#9aa6c7;
+  --glass:rgba(255,255,255,.06);--glass-2:rgba(255,255,255,.1);--stroke:rgba(255,255,255,.14);
+  --accent:#6ea8ff;--ok:#34d399;--warn:#fbbf24;--err:#fb7185;
+  --r:22px;--font:'Inter','Noto Sans Devanagari',system-ui,sans-serif;--head:'Poppins','Noto Sans Devanagari',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.55;overflow-x:hidden}
+.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.55;z-index:0;pointer-events:none}
+.b1{width:360px;height:360px;background:#2b5bff;top:-100px;left:-100px}
+.b2{width:320px;height:320px;background:#8b5cf6;bottom:-90px;right:-90px}
+.b3{width:240px;height:240px;background:#0ea5a4;top:45%;left:55%;opacity:.3}
+.hidden{display:none!important}
+.glass{background:var(--glass);border:1px solid var(--stroke);border-radius:var(--r);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);box-shadow:0 10px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+h1,h2,h3{font-family:var(--head);letter-spacing:-.01em}
+.muted{color:var(--muted);font-size:.86rem}
+i[data-lucide],svg.lucide{width:18px;height:18px;stroke-width:2;flex-shrink:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--stroke);background:var(--glass-2);color:var(--text);padding:11px 16px;border-radius:14px;font:600 .88rem var(--font);cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s;min-height:44px}
+.btn:hover{background:rgba(255,255,255,.17);transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,#3b82f6,#7c3aed);border-color:transparent;box-shadow:0 8px 24px rgba(79,70,229,.4)}
+.btn.danger{background:rgba(251,113,133,.16);border-color:rgba(251,113,133,.4);color:#ffc2cb}
+.btn.edit{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.4);color:#fde68a}
+.btn.sm{padding:7px 11px;min-height:36px;font-size:.8rem;border-radius:11px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:6px}
+input,select,textarea{width:100%;padding:12px 14px;border-radius:13px;border:1px solid var(--stroke);background:rgba(8,12,26,.55);color:var(--text);font:inherit;outline:none;transition:border .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(110,168,255,.22)}
+select option{background:#10172e;color:#eef2ff}
+input[type=file]{padding:10px}
+input[type=checkbox]{width:20px;height:20px;accent-color:#6ea8ff}
+.msg{padding:11px 14px;border-radius:12px;font-size:.88rem;margin:10px 0;display:none;white-space:pre-wrap}
+.msg.show{display:block}.msg.ok{background:rgba(52,211,153,.14);color:#a7f3d0}.msg.err{background:rgba(251,113,133,.14);color:#fecdd3}.msg.info{background:rgba(110,168,255,.14);color:#cfe1ff}
+
+#loginView{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:420px;padding:30px 24px}
+.logo{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);margin-bottom:16px;box-shadow:0 10px 30px rgba(99,102,241,.5)}
+.logo svg{width:28px;height:28px}
+
+#app{position:relative;z-index:2}
+header.top{position:sticky;top:0;z-index:20;margin:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:20px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .logo{width:42px;height:42px;border-radius:14px;margin:0}.brand .logo svg{width:22px;height:22px}
+.brand h1{font-size:1rem;white-space:nowrap}
+.brand .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw;font-size:.74rem}
+.nav{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:30;display:flex;gap:4px;padding:8px;overflow-x:auto;border-radius:22px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:1 0 64px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--muted);font:600 .65rem var(--font);padding:8px 6px;border-radius:14px;cursor:pointer;transition:.25s;white-space:nowrap}
+.nav button.active{background:linear-gradient(135deg,rgba(59,130,246,.35),rgba(124,58,237,.35));color:#fff}
+main{padding:4px 12px 110px;max-width:1280px;margin:auto}
+.view{display:none}.view.active{display:block}
+.view>h2{font-size:1.25rem;margin:10px 4px 4px}.view>.muted{margin:0 4px 14px;display:block}
+
+.bento{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.tile{padding:18px;position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
+.tile:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.28)}
+.tile.span2{grid-column:span 2}
+.tile .ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.1);margin-bottom:10px}
+.tile small{color:var(--muted);font-weight:600;font-size:.76rem}
+.tile b{display:block;font-family:var(--head);font-size:1.9rem;line-height:1.15;margin-top:2px}
+.tile.hero{background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(124,58,237,.28))}
+.tile.hero h2{font-size:1.25rem;margin-bottom:6px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+.panel{padding:18px;margin-bottom:12px}
+.panel h3{font-size:1rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 12px}
+.list-item{padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);margin-bottom:10px}
+.list-item.off{opacity:.55}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(110,168,255,.16);font-size:.74rem;font-weight:600}
+.chip.ok{background:rgba(52,211,153,.16);color:#a7f3d0}.chip.warn{background:rgba(251,191,36,.16);color:#fde68a}.chip.bad{background:rgba(251,113,133,.16);color:#fecdd3}
+.tablebox{overflow:auto;border-radius:14px;border:1px solid var(--stroke);max-height:420px}
+table{border-collapse:collapse;width:100%;font-size:.78rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--stroke);text-align:left;white-space:nowrap}
+th{background:rgba(20,28,58,.95);position:sticky;top:0}
+.drop{border:2px dashed var(--stroke);border-radius:18px;padding:22px;text-align:center;color:var(--muted)}
+.toggle{display:flex;gap:12px;align-items:center;padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);margin-bottom:14px;cursor:pointer}
+.wa-list{display:flex;gap:8px;flex-wrap:wrap}
+.wa-list label{display:flex;gap:6px;align-items:center;padding:7px 11px;border-radius:12px;background:rgba(255,255,255,.07);font-size:.82rem;margin:0;color:var(--text)}
+.wa-list input{width:auto}
+.searchbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.searchbar input,.searchbar select{flex:1 1 160px}
+.editing{border-color:rgba(251,191,36,.6)!important}
+.colgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-bottom:14px}
+.coltog{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--stroke);cursor:pointer;font-size:.84rem;margin:0;color:var(--text);overflow-wrap:anywhere}
+.coltog:has(input:checked){border-color:rgba(52,211,153,.55);background:rgba(52,211,153,.08)}
+.subhead{font-size:.82rem;font-weight:700;color:var(--muted);margin:14px 0 8px}
+.kv{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.kv span{display:inline-flex;flex-direction:column;padding:6px 10px;border-radius:11px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);font-size:.78rem;max-width:100%;overflow-wrap:anywhere}
+.kv span small{color:var(--muted);font-size:.68rem}
+.kv span.off{background:rgba(255,255,255,.04);border-color:var(--stroke);opacity:.7}
+td.ck{text-align:center}
+.pick-actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+
+.modal{position:fixed;inset:0;z-index:80;background:rgba(3,6,18,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:14px}
+.modal.show{display:flex}
+.dialog{width:min(560px,100%);max-height:92vh;overflow:auto;padding:20px;background:rgba(18,26,56,.92)}
+
+#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px)}
+.toast{padding:12px 16px;border-radius:14px;font-size:.88rem;font-weight:500;background:rgba(15,22,48,.9);border:1px solid var(--stroke);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.ok{border-color:rgba(52,211,153,.6)}.toast.err{border-color:rgba(251,113,133,.6)}
+
+@media(min-width:700px){
+  .grid2{grid-template-columns:1fr 1fr}
+  .bento{grid-template-columns:repeat(4,1fr)}
+  .tile.hero{grid-row:span 2}
+}
+@media(min-width:1000px){
+  header.top{margin:16px auto;max-width:1256px}
+  .nav{position:sticky;top:84px;left:auto;right:auto;bottom:auto;margin:0 auto 14px;max-width:1256px;width:calc(100% - 24px);justify-content:center}
+  .nav button{flex-direction:row;flex:0 0 auto;font-size:.84rem;padding:10px 14px;gap:8px}
+  main{padding-bottom:40px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="toasts"></div>
+
+<!-- LOGIN -->
+<div id="loginView">
+  <div class="glass login-card">
+    <div class="logo"><i data-lucide="shield-check"></i></div>
+    <h1 style="font-size:1.5rem">EFT Admin Login</h1>
+    <p class="muted" style="margin:4px 0 18px">गलकोट नगरपालिका — सामाजिक सुरक्षा EFT व्यवस्थापन</p>
+    <div id="loginMsg" class="msg"></div>
+    <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+    <button id="loginBtn" class="btn primary" style="width:100%" onclick="login()"><i data-lucide="log-in"></i> Login</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <header class="top glass">
+    <div class="brand">
+      <div class="logo"><i data-lucide="landmark"></i></div>
+      <div><h1>EFT व्यवस्थापन</h1><div class="muted" id="who"></div></div>
+    </div>
+    <button class="btn danger sm" onclick="logout()"><i data-lucide="log-out"></i><span>Logout</span></button>
+  </header>
+
+  <nav class="nav glass" id="nav">
+    <button class="active" data-v="vDash"><i data-lucide="layout-dashboard"></i>अवलोकन</button>
+    <button data-v="vImport"><i data-lucide="file-spreadsheet"></i>Import</button>
+    <button data-v="vNotice"><i data-lucide="megaphone"></i>सूचना</button>
+    <button data-v="vContacts"><i data-lucide="phone"></i>सम्पर्क</button>
+    <button data-v="vInquiry"><i data-lucide="inbox"></i>Inquiry</button>
+    <button data-v="vDownloads"><i data-lucide="download-cloud"></i>Downloads</button>
+    <button data-v="vLogs"><i data-lucide="search-check"></i>खोजी Log</button>
+    <button data-v="vSettings"><i data-lucide="settings"></i>Settings</button>
+  </nav>
+
+  <main>
+    <!-- Dashboard -->
+    <section id="vDash" class="view active">
+      <div class="bento">
+        <div class="glass tile hero span2">
+          <h2>नमस्ते 👋</h2>
+          <p class="muted">सार्वजनिक EFT पोर्टलका खोजी, भुक्तानी, सूचना, सम्पर्क, Inquiry र डाउनलोड फाइल यहींबाट व्यवस्थापन गर्नुहोस्।</p>
+          <div class="actions">
+            <button class="btn primary" onclick="goView('vImport')"><i data-lucide="upload"></i>Excel Import</button>
+            <button class="btn" onclick="goView('vLogs')"><i data-lucide="search-check"></i>खोजी Log</button>
+            <button class="btn" onclick="eftRefresh()"><i data-lucide="refresh-cw"></i>Refresh</button>
+          </div>
+        </div>
+        <div class="glass tile"><div class="ico"><i data-lucide="mail"></i></div><small>आजका Inquiry</small><b id="eftInquiryCount">०</b></div>
+        <div class="glass tile"><div class="ico"><i data-lucide="search"></i></div><small>आजका खोजी</small><b id="eftSearchToday">०</b></div>
+        <div class="glass tile"><div class="ico"><i data-lucide="search-x"></i></div><small>नपाइएको खोजी</small><b id="eftMissCount">०</b></div>
+        <div class="glass tile"><div class="ico"><i data-lucide="wallet"></i></div><small>भुक्तानी Records</small><b id="eftPayCount">०</b></div>
+        <div class="glass tile"><div class="ico"><i data-lucide="files"></i></div><small>डाउनलोड फाइल</small><b id="eftFileCount">०</b></div>
+        <div class="glass tile span2"><div class="ico"><i data-lucide="info"></i></div><small>नियम</small>
+          <p class="muted" style="margin-top:4px">उही Personal ID + EFT No. + मिति + रकम + खाता भएको भुक्तानी दोहोरिएर Import हुँदैन। नयाँ भुक्तानी (फरक मिति/EFT No.) थपिन्छ र सार्वजनिक पेजमा मिति अनुसार देखिन्छ।</p></div>
+      </div>
+    </section>
+
+    <!-- Import -->
+    <section id="vImport" class="view">
+      <h2>Excel / CSV Import</h2><span class="muted">Bank, Branch Code, Bank Account Number, Payment Status, Transaction Amount, Transaction Date सहितको फाइल।</span>
+      <div class="glass panel">
+        <div class="drop"><i data-lucide="file-up" style="width:30px;height:30px"></i><p style="margin:6px 0 10px">.xlsx / .xls / .csv</p><input id="eftFile" type="file" accept=".xlsx,.xls,.csv"></div>
+      </div>
+      <div class="glass panel">
+        <h3><i data-lucide="columns-3"></i>Column Mapping</h3>
+        <div class="grid2">
+          <div class="field"><label>Personal ID column (अनिवार्य)</label><select id="eftMapId"></select></div>
+          <div class="field"><label>EFT No. column</label><select id="eftMapEft"></select></div>
+          <div class="field"><label>Bank column</label><select id="eftMapBank"></select></div>
+          <div class="field"><label>Branch Code column</label><select id="eftMapBranch"></select></div>
+          <div class="field"><label>Bank Account Number column</label><select id="eftMapAccount"></select></div>
+          <div class="field"><label>Payment Status column</label><select id="eftMapStatus"></select></div>
+          <div class="field"><label>Transaction Amount column</label><select id="eftMapAmount"></select></div>
+          <div class="field"><label>Transaction Date column</label><select id="eftMapDate"></select></div>
+        </div>
+        <div id="eftImportPreview" class="msg info show">फाइल छानेपछि preview देखिनेछ।</div>
+        <div id="eftPreviewTable" class="tablebox hidden" data-lenis-prevent></div>
+        <div id="eftColPick" class="hidden" style="margin-top:16px">
+          <h3 style="margin-bottom:4px"><i data-lucide="list-checks"></i>कुन Column Insert गर्ने? (Tick)</h3>
+          <p class="muted">Insert ✓ भएका Column मात्र Personal ID अनुसार सेभ हुन्छन्। "Public" ✓ भए Index पेजमा Personal ID मिल्दा देखिन्छ। पछि Settings बाट पनि बदल्न सकिन्छ।</p>
+          <div class="pick-actions">
+            <button type="button" class="btn sm" onclick="eftPickAll('ins',true)">सबै Insert</button>
+            <button type="button" class="btn sm" onclick="eftPickAll('ins',false)">कुनै पनि होइन</button>
+            <button type="button" class="btn sm" onclick="eftPickAll('show',true)">सबै Public देखाउने</button>
+            <button type="button" class="btn sm" onclick="eftPickAll('show',false)">सबै Public लुकाउने</button>
+          </div>
+          <div class="tablebox" data-lenis-prevent><table><thead><tr><th>Insert</th><th>Public</th><th>Column</th><th>नमुना data</th></tr></thead><tbody id="eftColPickBody"></tbody></table></div>
+        </div>
+        <button id="eftImportBtn" class="btn primary" style="margin-top:12px" onclick="eftImportRun()"><i data-lucide="database"></i>Import (नयाँ मात्र थप्ने)</button>
+      </div>
+
+      <div class="glass panel">
+        <h3><i data-lucide="search"></i>Imported Data खोज्नुहोस्</h3>
+        <div class="searchbar">
+          <input id="recQuery" placeholder="Personal ID खोज्नुहोस् (खाली = पछिल्ला)">
+          <button class="btn" onclick="eftSearchRecords()"><i data-lucide="search"></i>खोज्नुहोस्</button>
+        </div>
+        <div class="subhead">Personal ID अनुसार Column Data (हरियो = Public मा देखिने, धमिलो = लुकाइएको)</div>
+        <div id="profList"></div>
+        <div class="subhead">भुक्तानी Records</div>
+        <div id="recList"></div>
+      </div>
+    </section>
+
+    <!-- Notices -->
+    <section id="vNotice" class="view">
+      <h2>सूचना / Marquee</h2><span class="muted">सक्रिय सबै सूचना index पेजको माथि चल्छन्।</span>
+      <div class="glass panel" id="noticeForm">
+        <div class="field"><label id="noticeLabel">नयाँ सूचना</label><textarea id="eftNoticeText" rows="3"></textarea></div>
+        <div class="row">
+          <button class="btn primary" onclick="eftSaveNotice()"><i data-lucide="send"></i><span id="noticeBtnTxt">सूचना थप्नुहोस्</span></button>
+          <button id="noticeCancel" class="btn hidden" onclick="eftCancelNotice()">Cancel</button>
+        </div>
+      </div>
+      <div id="eftNoticeList"></div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="vContacts" class="view">
+      <h2>सम्पर्क विवरण</h2><span class="muted">MIS Operator, बैंक, वडा सचिव आदिको सम्पर्क।</span>
+      <div class="glass panel" id="contactForm">
+        <h3><i data-lucide="user-plus"></i><span id="contactHeading">नयाँ सम्पर्क</span></h3>
+        <div class="grid2">
+          <div class="field"><label>सम्पर्क प्रकार</label><select id="cType"><option>MIS Operator</option><option>Bank</option><option>Ward Secretary</option><option>Other</option></select></div>
+          <div class="field"><label>नाम / शीर्षक</label><input id="cTitle"></div>
+          <div class="field"><label>व्यक्तिको नाम</label><input id="cName"></div>
+          <div class="field"><label>वडा नं. (Ward भए)</label><input id="cWard" type="number" min="1" max="11"></div>
+          <div class="field"><label>बैंक नाम (Bank भए)</label><input id="cBank"></div>
+          <div class="field"><label>क्रम (Sort order)</label><input id="cSort" type="number" value="0"></div>
+          <div class="field"><label>Phone number (एक लाइनमा एउटा)</label><textarea id="cPhones" rows="3" placeholder="98XXXXXXXX"></textarea></div>
+          <div class="field"><label>Email ID (एक लाइनमा एउटा)</label><textarea id="cEmails" rows="3" placeholder="name@example.com"></textarea></div>
+          <div class="field"><label>WhatsApp नम्बर (टिक गर्नुहोस्)</label><div id="cWhatsappList" class="wa-list"><span class="muted">पहिले फोन नम्बर लेख्नुहोस्।</span></div></div>
+          <div class="field"><label>थप जानकारी</label><input id="cNote"></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" onclick="eftSaveContact()"><i data-lucide="save"></i><span id="contactBtnTxt">सम्पर्क Save गर्नुहोस्</span></button>
+          <button id="contactCancel" class="btn hidden" onclick="eftCancelContact()">Cancel</button>
+        </div>
+      </div>
+      <div id="eftContactList"></div>
+    </section>
+
+    <!-- Inquiry -->
+    <section id="vInquiry" class="view">
+      <h2>Inquiry Inbox</h2><span class="muted">नागरिक / वडा / बैंकबाट आएका जिज्ञासा।</span>
+      <div id="eftInquiryList"></div>
+    </section>
+
+    <!-- Downloads -->
+    <section id="vDownloads" class="view">
+      <h2>डाउनलोड केन्द्र</h2><span class="muted">फाराम तथा आवश्यक फाइल Upload गर्नुहोस्।</span>
+      <div class="glass panel" id="downloadForm">
+        <h3><i data-lucide="cloud-upload"></i><span id="downloadHeading">नयाँ फाइल</span></h3>
+        <div class="field"><label>शीर्षक</label><input id="dTitle"></div>
+        <div class="field"><label>विवरण</label><input id="dDescription"></div>
+        <div class="field"><label id="dFileLabel">फाइल (PDF, JPG, PNG, DOC/DOCX, XLS/XLSX)</label><input id="dFile" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"></div>
+        <div class="row">
+          <button class="btn primary" onclick="eftUploadFile()"><i data-lucide="save"></i><span id="downloadBtnTxt">Upload</span></button>
+          <button id="downloadCancel" class="btn hidden" onclick="eftCancelDownload()">Cancel</button>
+        </div>
+      </div>
+      <div id="eftDownloadList"></div>
+    </section>
+
+    <!-- Search logs -->
+    <section id="vLogs" class="view">
+      <h2>खोजी Log</h2><span class="muted">सार्वजनिक पेजमा कसैले खोजेका Personal ID हरू।</span>
+      <div class="glass panel">
+        <div class="searchbar">
+          <input id="logQuery" placeholder="Personal ID वा नाम">
+          <select id="logFilter"><option value="">सबै</option><option value="found">भेटिएको</option><option value="miss">नभेटिएको</option></select>
+          <button class="btn" onclick="eftLoadLogs()"><i data-lucide="refresh-cw"></i>Load</button>
+          <button class="btn danger" onclick="eftClearLogs()"><i data-lucide="trash-2"></i>सबै Log मेट्ने</button>
+        </div>
+        <p id="logCount" class="muted" style="margin-bottom:8px"></p>
+        <div class="tablebox" data-lenis-prevent><table><thead><tr><th>समय</th><th>खोजेको Personal ID</th><th>नतिजा</th><th>नाम</th><th>Visitor</th><th></th></tr></thead><tbody id="logBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="vSettings" class="view">
+      <h2>Settings</h2><span class="muted">गलत ID रोक तथा Public खोजीमा कुन Column देखाउने।</span>
+      <div class="glass panel">
+        <label class="toggle"><input id="eftLockEnabled" type="checkbox"><span>गलत ID मा अस्थायी रोक (Enable / Disable)</span></label>
+        <p class="muted" style="margin-bottom:14px">१ पटक गलत = १ मिनेट · २४ घण्टामा ३ पटक = १ घण्टा · ६ पटक = २४ घण्टा।</p>
+        <div class="field"><label>Data नभेटिँदा देखिने सन्देश</label><textarea id="eftNoMatch" rows="3"></textarea></div>
+        <button class="btn primary" onclick="eftSaveSettings()"><i data-lucide="save"></i>Settings Save गर्नुहोस्</button>
+      </div>
+      <div class="glass panel">
+        <h3><i data-lucide="eye"></i>Public खोजीमा देखिने Column</h3>
+        <p class="muted" style="margin-bottom:6px">Index पेजमा Personal ID मिल्दा पप-अपमा कुन Column देखाउने (✓) र कुन लुकाउने भन्ने यहाँबाट तोक्नुहोस्। बैंक खाता, मोबाइल, नागरिकता जस्ता संवेदनशील Column लुकाउनु उचित हुन्छ।</p>
+        <div class="subhead">मुख्य विवरण</div>
+        <div id="eftCoreSettings" class="colgrid"></div>
+        <div class="subhead">Import गरिएका Column</div>
+        <div id="eftColSettings" class="colgrid"><span class="muted">लोड हुँदैछ…</span></div>
+        <div class="row">
+          <button class="btn primary" onclick="eftSaveColSettings()"><i data-lucide="save"></i>Column Setting Save</button>
+          <button class="btn" onclick="eftLoadColSettings(true)"><i data-lucide="database"></i>Database बाट सबै Column ल्याउने</button>
+          <button class="btn" onclick="eftColSetAll(true)">सबै देखाउने</button>
+          <button class="btn" onclick="eftColSetAll(false)">सबै लुकाउने</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- payment edit modal -->
+<div id="payModal" class="modal" onclick="if(event.target===this)closePayModal()">
+  <div class="glass dialog" data-lenis-prevent>
+    <h3 style="margin-bottom:12px">भुक्तानी Record Edit</h3>
+    <p id="pmId" class="muted" style="margin-bottom:10px"></p>
+    <div class="grid2">
+      <div class="field"><label>EFT No.</label><input id="pmEft"></div>
+      <div class="field"><label>Bank</label><input id="pmBank"></div>
+      <div class="field"><label>Branch Code</label><input id="pmBranch"></div>
+      <div class="field"><label>Bank Account Number</label><input id="pmAcct"></div>
+      <div class="field"><label>Payment Status</label><input id="pmStatus"></div>
+      <div class="field"><label>Transaction Amount</label><input id="pmAmount"></div>
+      <div class="field"><label>Transaction Date</label><input id="pmDate"></div>
+    </div>
+    <div class="row"><button class="btn primary" onclick="savePayEdit()"><i data-lucide="save"></i>Save</button><button class="btn" onclick="closePayModal()">Cancel</button></div>
+  </div>
+</div>
+
+<script>
+/* ===== Supabase (same) ===== */
+const SUPABASE_URL="https://kbyfvqkfcxqgjjtfvvxf.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+/* ===== helpers ===== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nepaliDigits=s=>String(s??"").replace(/[0-9]/g,d=>"०१२३४५६७८९"[d]);
+const icons=()=>window.lucide&&lucide.createIcons();
+const fmtMoney=n=>n==null||n===""?"—":"रु. "+Number(n).toLocaleString("en-IN");
+function msg(id,type,text){const e=$(id);e.className="msg show "+type;e.textContent=text}
+function toast(text,type="ok"){
+  const t=document.createElement("div");t.className="toast "+type;t.textContent=text;$("toasts").appendChild(t);
+  gsap.fromTo(t,{y:-16,opacity:0},{y:0,opacity:1,duration:.35,ease:"power3.out"});
+  setTimeout(()=>gsap.to(t,{opacity:0,y:-10,duration:.3,onComplete:()=>t.remove()}),3400);
+}
+const eftMsg=(t,type)=>toast(t,type||"ok");
+
+/* ===== Lenis + GSAP ===== */
+let lenis;
+try{lenis=new Lenis({duration:1.1,smoothWheel:true});(function raf(t){lenis.raf(t);requestAnimationFrame(raf)})(0)}catch(e){}
+document.addEventListener("DOMContentLoaded",()=>{
+  icons();
+  gsap.from(".login-card",{y:30,opacity:0,duration:.8,ease:"power3.out"});
+  gsap.from(".blob",{scale:.6,opacity:0,duration:1.6,stagger:.2,ease:"power2.out"});
+});
+function animateIn(el){
+  gsap.fromTo(el.querySelectorAll(".glass,.list-item"),{y:22,opacity:0},{y:0,opacity:1,duration:.5,stagger:.05,ease:"power3.out",clearProps:"transform,opacity"});
+}
+
+/* ===== Auth (same login logic) ===== */
+async function login(){
+  let email=$("email").value.trim(),password=$("password").value;
+  let r=await sb.auth.signInWithPassword({email,password});
+  if(r.error)return msg("loginMsg","err",r.error.message);
+  let u=r.data.user;
+  let {data:role,error}=await sb.from("user_roles").select("role,status").eq("email",u.email).maybeSingle();
+  if(error||!role||role.role!=="admin"||role.status!=="active"){await sb.auth.signOut();return msg("loginMsg","err","Admin access छैन।")}
+  $("who").textContent=u.email;
+  $("loginView").classList.add("hidden");$("app").classList.remove("hidden");
+  icons();
+  gsap.from("header.top",{y:-40,opacity:0,duration:.6,ease:"power3.out"});
+  gsap.from("#nav",{y:40,opacity:0,duration:.6,ease:"power3.out"});
+  animateIn($("vDash"));
+  await eftOpen();
+}
+async function logout(){await sb.auth.signOut();location.reload()}
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("loginView").classList.contains("hidden")&&(e.target.id==="email"||e.target.id==="password"))login()});
+
+/* ===== Navigation ===== */
+function goView(id){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  const el=$(id);el.classList.add("active");
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===id));
+  const loaders={vDash:eftRefresh,vInquiry:eftLoadInquiries,vContacts:eftLoadContacts,vDownloads:eftLoadDownloads,vNotice:eftLoadNotices,vSettings:eftLoadSettings,vLogs:eftLoadLogs,vImport:eftSearchRecords};
+  if(loaders[id])loaders[id]();
+  icons();animateIn(el);
+  if(lenis)lenis.scrollTo(0,{immediate:true});else window.scrollTo(0,0);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("#nav button");if(b)goView(b.dataset.v)});
+
+/* ===== Dashboard ===== */
+let eftRealtimeChannel=null;
+async function eftOpen(){
+  if(!eftRealtimeChannel){
+    eftRealtimeChannel=sb.channel("eft-inquiry-alerts").on("postgres_changes",{event:"INSERT",schema:"public",table:"eft_inquiries"},p=>{
+      eftMsg("नयाँ Inquiry प्राप्त भयो: "+(p.new?.name||"नयाँ प्रयोगकर्ता"));eftRefresh();
+      if($("vInquiry").classList.contains("active"))eftLoadInquiries();
+    }).subscribe();
+  }
+  await eftLoadColumns();
+  await eftRefresh();
+}
+async function eftRefresh(){
+  const today=new Date(new Date().setHours(0,0,0,0)).toISOString();
+  const cnt=(t,f)=>{let q=sb.from(t).select("id",{count:"exact",head:true});return f?f(q):q};
+  const [inq,st,miss,files,pay]=await Promise.all([
+    cnt("eft_inquiries",q=>q.gte("created_at",today)),
+    cnt("eft_search_logs",q=>q.gte("created_at",today)),
+    cnt("eft_search_logs",q=>q.eq("matched",false)),
+    cnt("eft_downloads",q=>q.eq("is_active",true)),
+    cnt("eft_payments")
+  ]);
+  const set=(id,c)=>{const el=$(id),n=c??0;gsap.to({v:0},{v:n,duration:.9,ease:"power2.out",onUpdate:function(){el.textContent=nepaliDigits(Math.round(this.targets()[0].v))}})};
+  set("eftInquiryCount",inq.count);set("eftSearchToday",st.count);set("eftMissCount",miss.count);set("eftFileCount",files.count);set("eftPayCount",pay.count);
+}
+
+/* ===== Import ===== */
+let eftRows=[],eftHeaders=[];
+const MAPS=["eftMapId","eftMapEft","eftMapBank","eftMapBranch","eftMapAccount","eftMapStatus","eftMapAmount","eftMapDate"];
+function eftOptions(select,headers){select.innerHTML='<option value="">— चयन गर्नुहोस् —</option>'+headers.map((h,i)=>`<option value="${i}">${esc(h)}</option>`).join("")}
+$("eftFile").addEventListener("change",async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    if(/\.csv$/i.test(f.name)){
+      const parsed=Papa.parse(await f.text(),{header:true,skipEmptyLines:true});
+      eftRows=parsed.data;eftHeaders=parsed.meta.fields||Object.keys(eftRows[0]||{});
+    }else{
+      const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:false});
+      eftRows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});eftHeaders=Object.keys(eftRows[0]||{});
+    }
+  }catch(err){return msg("eftImportPreview","err","File पढ्न सकिएन: "+err.message)}
+  MAPS.forEach(id=>eftOptions($(id),eftHeaders));
+  const norm=h=>String(h).toLowerCase().replace(/[\s_.\-]+/g,"");
+  const guess=w=>eftHeaders.findIndex(h=>w.some(x=>norm(h).includes(x)));
+  const setGuess=(id,w)=>{const n=guess(w);if(n>=0)$(id).value=String(n)};
+  setGuess("eftMapId",["personalid","परिचय","लाभग्राहीसंकेत","beneficiaryid"]);
+  setGuess("eftMapEft",["eftno","eftnumber","eftn","eftid"]);
+  setGuess("eftMapBank",["bankname","बैंक"]); if(!$("eftMapBank").value)setGuess("eftMapBank",["bank"]);
+  setGuess("eftMapBranch",["branchcode","branch"]);
+  setGuess("eftMapAccount",["accountnumber","accountno","खाता","account"]);
+  setGuess("eftMapStatus",["paymentstatus","status","स्थिति"]);
+  setGuess("eftMapAmount",["transactionamount","amount","रकम"]);
+  setGuess("eftMapDate",["transactiondate","date","मिति"]);
+  msg("eftImportPreview","info",`${eftRows.length} records, ${eftHeaders.length} columns भेटिए। Mapping जाँचेर Import गर्नुहोस्।`);
+  const box=$("eftPreviewTable");box.classList.remove("hidden");
+  box.innerHTML=`<table><thead><tr>${eftHeaders.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${eftRows.slice(0,5).map(r=>`<tr>${eftHeaders.map(h=>`<td>${esc(r[h])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  gsap.from(box,{opacity:0,y:12,duration:.4});
+  if(!Object.keys(colRegistry).length)await eftLoadColumns();
+  eftBuildColPick();
+});
+$("eftMapId").addEventListener("change",()=>{if(eftHeaders.length)eftBuildColPick()});
+const cellStr=v=>{const s=String(v??"").trim();return s===""?null:s};
+const toNum=v=>{if(v===""||v==null)return null;const n=Number(String(v).replace(/,/g,"").trim());return Number.isFinite(n)?n:null};
+function cellDate(v){
+  if(typeof v==="number"&&v>20000&&v<80000){const d=new Date(Math.round((v-25569)*86400*1000));return d.toISOString().slice(0,10)}
+  return cellStr(v);
+}
+/* --- column registry + pick table --- */
+const PAY_MAPS=["eftMapEft","eftMapBank","eftMapBranch","eftMapAccount","eftMapStatus","eftMapAmount","eftMapDate"];
+const SENSITIVE=/mobile|phone|contact|email|account|citizen|password|dob|birth|bank|amount|eft|मोबाइल|फोन|खाता|नागरिकता|जन्म|बैंक|रकम/i;
+let colRegistry={},pickState=[];
+async function eftLoadColumns(){
+  const {data}=await sb.from("eft_column_settings").select("*").order("sort_order").order("column_key");
+  colRegistry=Object.fromEntries((data||[]).map(c=>[c.column_key,c]));return data||[];
+}
+function eftBuildColPick(){
+  const idH=eftHeaders[Number($("eftMapId").value)];
+  const mapped=new Set(PAY_MAPS.map(id=>$(id).value).filter(v=>v!=="").map(v=>eftHeaders[Number(v)]));
+  const sample=h=>{for(const r of eftRows.slice(0,50)){const v=cellStr(r[h]);if(v)return v}return""};
+  pickState=eftHeaders.filter(h=>h!==idH&&!/^__EMPTY/.test(String(h))&&String(h).trim()!=="").map(h=>{
+    const key=String(h).trim(),known=colRegistry[key];
+    return{h,key,isNew:!known,ins:!mapped.has(h),show:known?!!known.is_visible:!SENSITIVE.test(key),sample:sample(h)};
+  });
+  $("eftColPick").classList.remove("hidden");eftRenderPick();
+}
+function eftRenderPick(){
+  $("eftColPickBody").innerHTML=pickState.map((c,i)=>`<tr>
+    <td class="ck"><input type="checkbox" data-i="${i}" data-k="ins" ${c.ins?"checked":""}></td>
+    <td class="ck"><input type="checkbox" data-i="${i}" data-k="show" ${c.show?"checked":""} ${c.ins?"":"disabled"}></td>
+    <td><b>${esc(c.key)}</b> ${c.isNew?'<span class="chip ok">नयाँ</span>':""}</td>
+    <td class="muted">${esc(c.sample.slice(0,40))}</td></tr>`).join("")||'<tr><td colspan="4">अरू Column छैन।</td></tr>';
+}
+$("eftColPickBody").addEventListener("change",e=>{
+  const t=e.target;if(!t.dataset.k)return;pickState[Number(t.dataset.i)][t.dataset.k]=t.checked;
+  if(t.dataset.k==="ins")eftRenderPick();
+});
+function eftPickAll(k,v){pickState.forEach(c=>{if(k==="show"&&!c.ins)return;c[k]=v;if(k==="ins"&&!v)c.show=c.show});eftRenderPick()}
+const cellValueFor=(key,v)=>(typeof v==="number"&&/date|मिति/i.test(key))?cellDate(v):cellStr(v);
+
+async function eftImportRun(){
+  if(!eftRows.length)return eftMsg("पहिले Excel/CSV फाइल छान्नुहोस्।","err");
+  const ix=id=>$(id).value;
+  if(ix("eftMapId")==="")return eftMsg("Personal ID column अनिवार्य छ।","err");
+  const get=(row,id)=>ix(id)===""?"":row[eftHeaders[Number(ix(id))]];
+  const picked=pickState.filter(c=>c.ins);
+  const payMapped=PAY_MAPS.some(id=>ix(id)!=="");
+  if(!picked.length&&!payMapped)return eftMsg("कम्तीमा एक Column Insert वा Payment mapping गर्नुहोस्।","err");
+  const fileName=$("eftFile").files[0]?.name||null;
+  const people=new Map(),records=[];let rowsWithId=0;
+  eftRows.forEach(row=>{
+    const pid=cellStr(get(row,"eftMapId"));if(!pid)return;rowsWithId++;
+    const extra={};
+    picked.forEach(c=>{const v=cellValueFor(c.key,row[c.h]);if(v!==null)extra[c.key]=v});
+    if(Object.keys(extra).length)people.set(pid,{...(people.get(pid)||{}),...extra});
+    if(payMapped)records.push({personal_id:pid,eft_no:cellStr(get(row,"eftMapEft")),bank_name:cellStr(get(row,"eftMapBank")),branch_code:cellStr(get(row,"eftMapBranch")),
+      bank_account_no:cellStr(get(row,"eftMapAccount")),payment_status:cellStr(get(row,"eftMapStatus")),transaction_amount:toNum(get(row,"eftMapAmount")),
+      transaction_date:cellDate(get(row,"eftMapDate")),extra_data:extra,source_file:fileName,is_active:true});
+  });
+  if(!rowsWithId)return eftMsg("Personal ID भएको record भेटिएन।","err");
+  const btn=$("eftImportBtn"),reset=()=>{btn.disabled=false;btn.innerHTML='<i data-lucide="database"></i>Import (नयाँ मात्र थप्ने)';icons()};
+  btn.disabled=true;let added=0,persons=0;
+  // 1) Column registry (Public मा देखाउने/नदेखाउने सहित)
+  if(picked.length){
+    const {error}=await sb.rpc("eft_register_columns",{p_columns:picked.map(c=>({key:c.key,visible:!!c.show}))});
+    if(error){reset();return eftMsg("Column register error: "+error.message,"err")}
+  }
+  // 2) Personal ID अनुसार Column data merge
+  const peopleArr=[...people].map(([personal_id,data])=>({personal_id,data}));
+  for(let i=0;i<peopleArr.length;i+=200){
+    const {data,error}=await sb.rpc("eft_import_person_data",{p_rows:peopleArr.slice(i,i+200)});
+    if(error){reset();return eftMsg("Column data error: "+error.message,"err")}
+    persons+=Number(data)||0;btn.textContent=`Column data ${Math.min(i+200,peopleArr.length)}/${peopleArr.length}…`;
+  }
+  // 3) भुक्तानी records (mapping गरिएको भए)
+  for(let i=0;i<records.length;i+=200){
+    const {data,error}=await sb.from("eft_payments").upsert(records.slice(i,i+200),{onConflict:"dedupe_key",ignoreDuplicates:true}).select("id");
+    if(error){reset();return eftMsg("Import error: "+error.message,"err")}
+    added+=(data||[]).length;btn.textContent=`भुक्तानी ${Math.min(i+200,records.length)}/${records.length}…`;
+  }
+  reset();
+  const lines=[`✅ Personal ID अनुसार Column data अपडेट: ${persons} (Column: ${picked.length})`];
+  if(payMapped)lines.push(`✅ नयाँ भुक्तानी थपिए: ${added}`,`⏭️ पहिल्यै भएको (skip): ${records.length-added}`);
+  lines.push(`जम्मा पढिएको: ${rowsWithId}`);
+  msg("eftImportPreview","ok",lines.join("\n"));
+  eftMsg(`${persons} Personal ID को data अपडेट भयो${payMapped?`, ${added} नयाँ भुक्तानी`:""}।`);
+  await eftLoadColumns();eftRefresh();eftSearchRecords();
+}
+
+/* --- Personal ID अनुसार imported column data --- */
+async function eftSearchProfiles(){
+  const q=$("recQuery").value.trim();
+  if(!Object.keys(colRegistry).length)await eftLoadColumns();
+  let req=sb.from("eft_person_data").select("personal_id,data,updated_at");
+  if(q)req=req.ilike("personal_id","%"+q.replace(/[%,]/g,"")+"%");
+  const {data,error}=await req.order("updated_at",{ascending:false}).limit(30);
+  if(error)return $("profList").innerHTML=`<p class="muted">${esc(error.message)}</p>`;
+  $("profList").innerHTML=(data||[]).map(p=>{
+    const keys=Object.keys(p.data||{});
+    return `<div class="list-item"><div class="row"><b>${esc(p.personal_id)}</b><span class="chip">${nepaliDigits(keys.length)} Column</span>
+      <button class="btn sm danger" style="margin-left:auto" data-pid="${esc(p.personal_id)}" onclick="eftDeleteProfile(this.dataset.pid)"><i data-lucide="trash-2"></i></button></div>
+      <div class="kv">${keys.map(k=>{const vis=colRegistry[k]?.is_visible;return `<span class="${vis?"":"off"}" title="${vis?"Public मा देखिन्छ":"Public मा लुकाइएको"}"><small>${esc(k)}</small>${esc(p.data[k])}</span>`}).join("")}</div></div>`;
+  }).join("")||'<p class="muted">Column data भेटिएन।</p>';
+  icons();
+}
+async function eftDeleteProfile(pid){
+  if(!confirm("यो Personal ID को सबै Column data हटाउने? (भुक्तानी record हटाइँदैन)"))return;
+  const {error}=await sb.from("eft_person_data").delete().eq("personal_id",pid);
+  eftMsg(error?error.message:"Column data हटाइयो।",error?"err":"ok");eftSearchProfiles();
+}
+
+/* --- payment records manager --- */
+let payCache={},editingPayId=null;
+async function eftSearchRecords(){
+  eftSearchProfiles();
+  const q=$("recQuery").value.trim();
+  let req=sb.from("eft_payments").select("id,personal_id,eft_no,bank_name,branch_code,bank_account_no,payment_status,transaction_amount,transaction_date,is_active,created_at");
+  if(q)req=req.ilike("personal_id","%"+q.replace(/[%,]/g,"")+"%");
+  const {data,error}=await req.order("transaction_date",{ascending:false,nullsFirst:false}).order("created_at",{ascending:false}).limit(50);
+  if(error)return $("recList").innerHTML=`<p class="muted">${esc(error.message)}</p>`;
+  payCache=Object.fromEntries((data||[]).map(r=>[r.id,r]));
+  $("recList").innerHTML=(data||[]).map(r=>`<div class="list-item ${r.is_active?"":"off"}">
+    <div class="row"><b>${esc(r.personal_id)}</b><span class="chip">${esc(r.transaction_date||"—")}</span><span class="chip ok">${fmtMoney(r.transaction_amount)}</span>
+    <span class="chip ${r.is_active?"":"warn"}">${r.is_active?esc(r.payment_status||"—"):"Hidden"}</span></div>
+    <p class="muted">${esc(r.bank_name||"")} ${r.branch_code?"· Branch "+esc(r.branch_code):""} ${r.bank_account_no?"· "+esc(r.bank_account_no):""} ${r.eft_no?"· EFT "+esc(r.eft_no):""}</p>
+    <div class="row" style="margin-top:8px">
+      <button class="btn sm edit" onclick="openPayEdit('${r.id}')"><i data-lucide="pencil"></i>Edit</button>
+      <button class="btn sm" onclick="eftToggle('eft_payments','${r.id}',${!r.is_active})"><i data-lucide="${r.is_active?"eye-off":"eye"}"></i>${r.is_active?"Hide":"Show"}</button>
+      <button class="btn sm danger" onclick="eftDelete('eft_payments','${r.id}')"><i data-lucide="trash-2"></i>Delete</button></div></div>`).join("")||'<p class="muted">Record भेटिएन।</p>';
+  icons();
+}
+$("recQuery").addEventListener("keydown",e=>{if(e.key==="Enter")eftSearchRecords()});
+function openPayEdit(id){
+  const r=payCache[id];if(!r)return;editingPayId=id;
+  $("pmId").textContent="Personal ID: "+r.personal_id;
+  $("pmEft").value=r.eft_no||"";$("pmBank").value=r.bank_name||"";$("pmBranch").value=r.branch_code||"";$("pmAcct").value=r.bank_account_no||"";
+  $("pmStatus").value=r.payment_status||"";$("pmAmount").value=r.transaction_amount??"";$("pmDate").value=r.transaction_date||"";
+  $("payModal").classList.add("show");gsap.from("#payModal .dialog",{y:30,opacity:0,duration:.35,ease:"power3.out"});icons();
+}
+function closePayModal(){$("payModal").classList.remove("show");editingPayId=null}
+async function savePayEdit(){
+  if(!editingPayId)return;
+  const patch={eft_no:cellStr($("pmEft").value),bank_name:cellStr($("pmBank").value),branch_code:cellStr($("pmBranch").value),bank_account_no:cellStr($("pmAcct").value),
+    payment_status:cellStr($("pmStatus").value),transaction_amount:toNum($("pmAmount").value),transaction_date:cellStr($("pmDate").value)};
+  const {error}=await sb.from("eft_payments").update(patch).eq("id",editingPayId);
+  if(error)return eftMsg(error.message,"err");
+  eftMsg("Record अपडेट भयो।");closePayModal();eftSearchRecords();
+}
+
+/* ===== Notices (add / edit / hide / delete) ===== */
+let editingNoticeId=null,noticeCache={};
+async function eftLoadNotices(){
+  const {data,error}=await sb.from("eft_notices").select("*").order("sort_order").order("created_at",{ascending:false});
+  if(error)return $("eftNoticeList").innerHTML=`<p class="muted">${esc(error.message)}</p>`;
+  noticeCache=Object.fromEntries((data||[]).map(n=>[n.id,n]));
+  $("eftNoticeList").innerHTML=(data||[]).map(n=>`<div class="list-item ${n.is_active?"":"off"}">
+    <div class="row"><span class="chip ${n.is_active?"ok":"warn"}">${n.is_active?"Published":"Hidden"}</span><span class="muted">${new Date(n.created_at).toLocaleString()}</span></div>
+    <p style="margin:8px 0;white-space:pre-wrap">${esc(n.text)}</p>
+    <div class="row"><button class="btn sm edit" onclick="eftEditNotice('${n.id}')"><i data-lucide="pencil"></i>Edit</button>
+    <button class="btn sm" onclick="eftToggle('eft_notices','${n.id}',${!n.is_active})"><i data-lucide="${n.is_active?"eye-off":"eye"}"></i>${n.is_active?"Hide":"Publish"}</button>
+    <button class="btn sm danger" onclick="eftDelete('eft_notices','${n.id}')"><i data-lucide="trash-2"></i>Delete</button></div></div>`).join("")||'<p class="muted">कुनै सूचना छैन।</p>';
+  icons();
+}
+async function eftSaveNotice(){
+  const text=$("eftNoticeText").value.trim();if(!text)return eftMsg("सूचना लेख्नुहोस्।","err");
+  const {error}=editingNoticeId?await sb.from("eft_notices").update({text}).eq("id",editingNoticeId):await sb.from("eft_notices").insert({text,is_active:true});
+  if(error)return eftMsg(error.message,"err");
+  eftMsg(editingNoticeId?"सूचना अपडेट भयो।":"सूचना थपियो।");eftCancelNotice();eftLoadNotices();
+}
+function eftEditNotice(id){
+  const n=noticeCache[id];if(!n)return;editingNoticeId=id;$("eftNoticeText").value=n.text;
+  $("noticeLabel").textContent="सूचना Edit गर्नुहोस्";$("noticeBtnTxt").textContent="Update";$("noticeCancel").classList.remove("hidden");
+  $("noticeForm").classList.add("editing");$("eftNoticeText").focus();if(lenis)lenis.scrollTo(0);else scrollTo(0,0);
+}
+function eftCancelNotice(){editingNoticeId=null;$("eftNoticeText").value="";$("noticeLabel").textContent="नयाँ सूचना";$("noticeBtnTxt").textContent="सूचना थप्नुहोस्";$("noticeCancel").classList.add("hidden");$("noticeForm").classList.remove("editing")}
+
+/* ===== Settings ===== */
+async function eftSaveSettings(){
+  const enabled=$("eftLockEnabled").checked,text=$("eftNoMatch").value.trim();
+  const {error}=await sb.from("eft_settings").upsert([{key:"lock_enabled",value:{enabled}},{key:"no_match_message",value:{text}}],{onConflict:"key"});
+  eftMsg(error?error.message:"Settings सुरक्षित भयो।",error?"err":"ok");
+}
+const CORE_FIELDS=[["full_name","लाभग्राहीको नाम"],["target_group","लक्षित समूह"],["ward_no","वडा नं."],["gender","लिङ्ग"],["municipality","पालिका"],["district","जिल्ला"],["account_validation_status","खाता रुजु अवस्था"]];
+let colSynced=false;
+async function eftSyncColumns(manual){
+  const {data,error}=await sb.rpc("eft_sync_columns");
+  if(error){if(manual)eftMsg("Sync error: "+error.message+" (supabase_fix.sql Run गर्नुभयो?)","err");return false}
+  colSynced=true;
+  if(manual)eftMsg(`Database बाट Column ल्याइयो: नयाँ Column ${data?.new_columns??0}`);
+  return true;
+}
+async function eftLoadColSettings(manual){
+  if(!colSynced||manual===true)await eftSyncColumns(manual===true);
+  const cols=await eftLoadColumns();
+  const {data}=await sb.from("eft_settings").select("value").eq("key","hidden_core_fields").maybeSingle();
+  const hidden=new Set(data?.value?.keys||[]);
+  $("eftCoreSettings").innerHTML=CORE_FIELDS.map(([k,l])=>`<label class="coltog"><input type="checkbox" data-core="${esc(k)}" ${hidden.has(k)?"":"checked"}>${esc(l)}</label>`).join("");
+  $("eftColSettings").innerHTML=cols.map(c=>`<label class="coltog"><input type="checkbox" data-col="${esc(c.column_key)}" ${c.is_visible?"checked":""}>${esc(c.column_key)}</label>`).join("")||'<span class="muted">अहिलेसम्म कुनै Column Import गरिएको छैन।</span>';
+}
+function eftColSetAll(v){document.querySelectorAll("[data-core],[data-col]").forEach(x=>x.checked=v)}
+async function eftSaveColSettings(){
+  const hiddenCore=[...document.querySelectorAll("[data-core]")].filter(x=>!x.checked).map(x=>x.dataset.core);
+  const rows=[...document.querySelectorAll("[data-col]")].map(x=>({column_key:x.dataset.col,is_visible:x.checked,sort_order:colRegistry[x.dataset.col]?.sort_order??0}));
+  const r1=await sb.from("eft_settings").upsert([{key:"hidden_core_fields",value:{keys:hiddenCore}}],{onConflict:"key"});
+  if(r1.error)return eftMsg(r1.error.message,"err");
+  if(rows.length){const r2=await sb.from("eft_column_settings").upsert(rows,{onConflict:"column_key"});if(r2.error)return eftMsg(r2.error.message,"err")}
+  eftMsg("Column Setting सुरक्षित भयो।");eftLoadColSettings();
+}
+async function eftLoadSettings(){
+  eftLoadColSettings();
+  const {data}=await sb.from("eft_settings").select("key,value").in("key",["lock_enabled","no_match_message"]);
+  const map=Object.fromEntries((data||[]).map(x=>[x.key,x.value]));
+  $("eftLockEnabled").checked=map.lock_enabled?.enabled!==false;
+  $("eftNoMatch").value=map.no_match_message?.text||"तपाईंको विवरण भेटिएन। कृपया आफ्नो वडा कार्यालय वा सामाजिक सुरक्षा शाखामा सम्पर्क गर्नुहोस्।";
+}
+
+/* ===== Contacts (add / edit / hide / delete) ===== */
+const eftLines=t=>t.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+let editingContactId=null,contactCache={};
+function renderWaList(selected){
+  const checked=selected||new Set([...document.querySelectorAll('input[name="eftWhatsapp"]:checked')].map(x=>x.value));
+  const phones=eftLines($("cPhones").value);
+  $("cWhatsappList").innerHTML=phones.length?phones.map(p=>`<label><input type="checkbox" name="eftWhatsapp" value="${esc(p)}" ${checked.has(p)?"checked":""}> ${esc(p)}</label>`).join(""):'<span class="muted">पहिले फोन नम्बर लेख्नुहोस्।</span>';
+}
+$("cPhones").addEventListener("input",()=>renderWaList());
+function clearContactForm(){["cTitle","cName","cWard","cBank","cPhones","cEmails","cNote"].forEach(i=>$(i).value="");$("cSort").value=0;$("cType").value="MIS Operator";renderWaList(new Set())}
+function eftCancelContact(){editingContactId=null;clearContactForm();$("contactHeading").textContent="नयाँ सम्पर्क";$("contactBtnTxt").textContent="सम्पर्क Save गर्नुहोस्";$("contactCancel").classList.add("hidden");$("contactForm").classList.remove("editing")}
+async function eftSaveContact(){
+  const phones=eftLines($("cPhones").value),emails=eftLines($("cEmails").value);
+  const wa=[...document.querySelectorAll('input[name="eftWhatsapp"]:checked')].map(x=>x.value);
+  const type=$("cType").value;
+  const payload={contact_type:type,title:$("cTitle").value.trim()||type,person_name:$("cName").value.trim(),ward_no:Number($("cWard").value)||null,
+    bank_name:$("cBank").value.trim(),phone_numbers:phones.map(number=>({number,whatsapp:wa.includes(number)})),emails,note:$("cNote").value.trim(),sort_order:Number($("cSort").value)||0};
+  const {error}=editingContactId?await sb.from("eft_contacts").update(payload).eq("id",editingContactId):await sb.from("eft_contacts").insert({...payload,is_active:true});
+  if(error)return eftMsg(error.message,"err");
+  eftMsg(editingContactId?"सम्पर्क अपडेट भयो।":"सम्पर्क विवरण थपियो।");eftCancelContact();eftLoadContacts();
+}
+function eftEditContact(id){
+  const c=contactCache[id];if(!c)return;editingContactId=id;
+  $("cType").value=c.contact_type||"Other";$("cTitle").value=c.title||"";$("cName").value=c.person_name||"";$("cWard").value=c.ward_no||"";$("cBank").value=c.bank_name||"";
+  $("cSort").value=c.sort_order||0;$("cNote").value=c.note||"";$("cEmails").value=(c.emails||[]).join("\n");
+  $("cPhones").value=(c.phone_numbers||[]).map(p=>p.number).join("\n");
+  renderWaList(new Set((c.phone_numbers||[]).filter(p=>p.whatsapp).map(p=>p.number)));
+  $("contactHeading").textContent="सम्पर्क Edit गर्नुहोस्";$("contactBtnTxt").textContent="Update";$("contactCancel").classList.remove("hidden");$("contactForm").classList.add("editing");
+  if(lenis)lenis.scrollTo(0);else scrollTo(0,0);
+}
+async function eftLoadContacts(){
+  const {data,error}=await sb.from("eft_contacts").select("*").order("sort_order").order("created_at",{ascending:false});
+  if(error)return $("eftContactList").innerHTML=`<p class="muted">${esc(error.message)}</p>`;
+  contactCache=Object.fromEntries((data||[]).map(c=>[c.id,c]));
+  $("eftContactList").innerHTML=(data||[]).map(c=>`<div class="list-item ${c.is_active?"":"off"}"><div class="row"><b>${esc(c.title||c.contact_type)}</b><span class="chip">${esc(c.contact_type||"")}</span><span class="chip ${c.is_active?"ok":"warn"}">${c.is_active?"Published":"Hidden"}</span></div>
+    <p class="muted">${esc(c.person_name||"")} ${c.bank_name?"· "+esc(c.bank_name):""} ${c.ward_no?"· वडा "+esc(c.ward_no):""}</p>
+    <p class="muted">${(c.phone_numbers||[]).map(p=>esc(p.number)+(p.whatsapp?" 🟢":"")).join(" · ")} ${(c.emails||[]).map(esc).join(" · ")}</p>
+    <div class="row" style="margin-top:8px"><button class="btn sm edit" onclick="eftEditContact('${c.id}')"><i data-lucide="pencil"></i>Edit</button>
+    <button class="btn sm" onclick="eftToggle('eft_contacts','${c.id}',${!c.is_active})"><i data-lucide="${c.is_active?"eye-off":"eye"}"></i>${c.is_active?"Hide":"Publish"}</button>
+    <button class="btn sm danger" onclick="eftDelete('eft_contacts','${c.id}')"><i data-lucide="trash-2"></i>Delete</button></div></div>`).join("")||'<p class="muted">सम्पर्क विवरण छैन।</p>';
+  icons();
+}
+
+/* ===== Inquiries ===== */
+async function eftLoadInquiries(){
+  const {data,error}=await sb.from("eft_inquiries").select("*").order("created_at",{ascending:false}).limit(100);
+  if(error)return;
+  $("eftInquiryList").innerHTML=(data||[]).map(x=>`<div class="list-item"><div class="row"><b>${esc(x.name)}</b><span class="chip">${esc(x.source_type)}</span>
+    <span class="chip ${x.status==="new"?"warn":"ok"}">${esc(x.status)}</span></div>
+    <p class="muted">${new Date(x.created_at).toLocaleString()}</p>
+    <p class="muted">${esc(x.phone||"")} ${x.email?"· "+esc(x.email):""}</p>
+    <p style="white-space:pre-wrap;margin:8px 0">${esc(x.content)}</p>
+    ${x.admin_reply?`<p class="muted"><b>जवाफ:</b> ${esc(x.admin_reply)}</p>`:""}
+    <textarea id="reply_${x.id}" rows="2" placeholder="Admin response / message">${esc(x.admin_reply||"")}</textarea>
+    <div class="row" style="margin-top:8px"><button class="btn sm primary" onclick="eftReply('${x.id}')"><i data-lucide="reply"></i>Reply</button>
+    <button class="btn sm" onclick="eftSetStatus('${x.id}','resolved')"><i data-lucide="check"></i>Resolved</button>
+    <button class="btn sm danger" onclick="eftDelete('eft_inquiries','${x.id}')"><i data-lucide="trash-2"></i>Delete</button></div></div>`).join("")||'<p class="muted">नयाँ Inquiry छैन।</p>';
+  icons();
+}
+async function eftReply(id){
+  const {error}=await sb.from("eft_inquiries").update({admin_reply:$("reply_"+id).value,status:"replied"}).eq("id",id);
+  eftMsg(error?error.message:"जवाफ सुरक्षित भयो।",error?"err":"ok");eftLoadInquiries();
+}
+async function eftSetStatus(id,status){
+  const {error}=await sb.from("eft_inquiries").update({status}).eq("id",id);
+  if(error)eftMsg(error.message,"err");else eftLoadInquiries();
+}
+
+/* ===== Downloads (add / edit / hide / delete) ===== */
+const EFT_BUCKET="eft-public-files";
+let editingDownloadId=null,downloadCache={};
+function eftCancelDownload(){editingDownloadId=null;["dTitle","dDescription","dFile"].forEach(i=>$(i).value="");$("downloadHeading").textContent="नयाँ फाइल";$("downloadBtnTxt").textContent="Upload";
+  $("dFileLabel").textContent="फाइल (PDF, JPG, PNG, DOC/DOCX, XLS/XLSX)";$("downloadCancel").classList.add("hidden");$("downloadForm").classList.remove("editing")}
+function eftEditDownload(id){
+  const d=downloadCache[id];if(!d)return;editingDownloadId=id;$("dTitle").value=d.title||"";$("dDescription").value=d.description||"";$("dFile").value="";
+  $("downloadHeading").textContent="फाइल Edit गर्नुहोस्";$("downloadBtnTxt").textContent="Update";$("dFileLabel").textContent="नयाँ फाइल (खाली छोडे पुरानै फाइल रहन्छ)";
+  $("downloadCancel").classList.remove("hidden");$("downloadForm").classList.add("editing");if(lenis)lenis.scrollTo(0);else scrollTo(0,0);
+}
+async function eftUploadFile(){
+  const f=$("dFile").files[0],title=$("dTitle").value.trim();
+  if(!title)return eftMsg("शीर्षक आवश्यक छ।","err");
+  if(!editingDownloadId&&!f)return eftMsg("फाइल छान्नुहोस्।","err");
+  const allowed=["application/pdf","image/jpeg","image/png","application/vnd.openxmlformats-officedocument.wordprocessingml.document","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/msword","application/vnd.ms-excel"];
+  let fileInfo={};
+  if(f){
+    if(!allowed.includes(f.type))return eftMsg("PDF, JPG, PNG, DOC, DOCX, XLS वा XLSX फाइल मात्र।","err");
+    const path=crypto.randomUUID()+"-"+f.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const up=await sb.storage.from(EFT_BUCKET).upload(path,f,{upsert:false,contentType:f.type});
+    if(up.error)return eftMsg(up.error.message,"err");
+    fileInfo={file_path:path,file_name:f.name,mime_type:f.type};
+  }
+  const base={title,description:$("dDescription").value.trim()};
+  let error;
+  if(editingDownloadId){
+    const old=downloadCache[editingDownloadId];
+    ({error}=await sb.from("eft_downloads").update({...base,...fileInfo}).eq("id",editingDownloadId));
+    if(!error&&f&&old?.file_path)await sb.storage.from(EFT_BUCKET).remove([old.file_path]);
+  }else ({error}=await sb.from("eft_downloads").insert({...base,...fileInfo,is_active:true}));
+  if(error)return eftMsg(error.message,"err");
+  eftMsg(editingDownloadId?"फाइल अपडेट भयो।":"फाइल Upload भयो।");eftCancelDownload();eftLoadDownloads();eftRefresh();
+}
+async function eftLoadDownloads(){
+  const {data,error}=await sb.from("eft_downloads").select("*").order("created_at",{ascending:false});
+  if(error)return $("eftDownloadList").innerHTML=`<p class="muted">${esc(error.message)}</p>`;
+  downloadCache=Object.fromEntries((data||[]).map(d=>[d.id,d]));
+  $("eftDownloadList").innerHTML=(data||[]).map(d=>`<div class="list-item ${d.is_active?"":"off"}"><div class="row"><b>${esc(d.title)}</b><span class="chip ${d.is_active?"ok":"warn"}">${d.is_active?"Published":"Hidden"}</span></div>
+    <p class="muted">${esc(d.file_name||"")} ${d.description?"· "+esc(d.description):""}</p>
+    <div class="row" style="margin-top:8px"><button class="btn sm edit" onclick="eftEditDownload('${d.id}')"><i data-lucide="pencil"></i>Edit</button>
+    <button class="btn sm" onclick="eftToggle('eft_downloads','${d.id}',${!d.is_active})"><i data-lucide="${d.is_active?"eye-off":"eye"}"></i>${d.is_active?"Hide":"Publish"}</button>
+    <button class="btn sm danger" onclick="eftDelete('eft_downloads','${d.id}')"><i data-lucide="trash-2"></i>Delete</button></div></div>`).join("")||'<p class="muted">फाइल छैन।</p>';
+  icons();
+}
+
+/* ===== Search logs ===== */
+async function eftLoadLogs(){
+  let q=sb.from("eft_search_logs").select("*").order("created_at",{ascending:false}).limit(300);
+  const f=$("logFilter").value,s=$("logQuery").value.trim().replace(/[%,]/g,"");
+  if(f==="found")q=q.eq("matched",true);if(f==="miss")q=q.eq("matched",false);
+  if(s)q=q.or(`personal_id_tried.ilike.%${s}%,matched_name.ilike.%${s}%`);
+  const {data,error}=await q;
+  if(error){$("logBody").innerHTML=`<tr><td colspan="6">${esc(error.message)}</td></tr>`;return}
+  $("logCount").textContent=`देखाइएको: ${nepaliDigits((data||[]).length)} (पछिल्ला ३०० सम्म)`;
+  $("logBody").innerHTML=(data||[]).map(l=>`<tr><td>${new Date(l.created_at).toLocaleString()}</td><td><b>${esc(l.personal_id_tried)}</b></td>
+    <td><span class="chip ${l.matched?"ok":"bad"}">${l.matched?"भेटियो":"भेटिएन"}</span></td><td>${esc(l.matched_name||"")}</td><td>${esc((l.visitor_id||"").slice(0,8))}</td>
+    <td><button class="btn sm danger" onclick="eftDelete('eft_search_logs','${l.id}')"><i data-lucide="trash-2"></i></button></td></tr>`).join("")||'<tr><td colspan="6">Log छैन।</td></tr>';
+  icons();
+}
+$("logQuery").addEventListener("keydown",e=>{if(e.key==="Enter")eftLoadLogs()});
+async function eftClearLogs(){
+  if(!confirm("सबै खोजी Log मेट्ने? (गलत प्रयासको रोक पनि रिसेट हुन्छ)"))return;
+  const {error}=await sb.from("eft_search_logs").delete().not("id","is",null);
+  eftMsg(error?error.message:"सबै Log मेटियो।",error?"err":"ok");eftLoadLogs();eftRefresh();
+}
+
+/* ===== shared ===== */
+async function eftDelete(table,id){
+  if(!confirm("हटाउने निश्चित हो?"))return;
+  if(table==="eft_downloads"){
+    const {data}=await sb.from("eft_downloads").select("file_path").eq("id",id).maybeSingle();
+    if(data?.file_path)await sb.storage.from(EFT_BUCKET).remove([data.file_path]);
+  }
+  const {error}=await sb.from(table).delete().eq("id",id);
+  eftMsg(error?error.message:"हटाइयो।",error?"err":"ok");
+  reloadAll();
+}
+async function eftToggle(table,id,active){
+  const {error}=await sb.from(table).update({is_active:active}).eq("id",id);
+  if(error)eftMsg(error.message,"err");else reloadAll();
+}
+function reloadAll(){eftLoadContacts();eftLoadDownloads();eftLoadNotices();eftLoadInquiries();eftSearchRecords();eftLoadLogs();eftRefresh()}
+</script>
+</body>
+</html>

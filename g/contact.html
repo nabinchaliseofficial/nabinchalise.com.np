@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>सम्पर्क, डाउनलोड तथा जिज्ञासा · गलकोट नगरपालिका EFT पोर्टल</title>
+<meta content="EFT सम्बन्धी सम्पर्क विवरण, डाउनलोड फाराम, भुक्तानी सारांश तथा जिज्ञासा सेवा।" name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root{
+  --paper:#f5efe2;--paper-2:#fffdf7;--ink:#241f18;--ink-soft:#5a5346;
+  --blue:#0e2c52;--blue-2:#1c4a86;--vermillion:#a91f2c;--vermillion-deep:#7d1420;
+  --gold:#b3892f;--line:#d9cfb8;--radius:4px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  background:radial-gradient(circle at 12% 8%, rgba(14,44,82,0.05), transparent 40%),radial-gradient(circle at 90% 92%, rgba(169,31,44,0.05), transparent 45%),var(--paper);
+  color:var(--ink);min-height:100vh;display:flex;flex-direction:column;line-height:1.65;
+}
+body::before{
+  content:'';position:fixed;top:50%;left:50%;width:640px;height:640px;
+  background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="%23000" stroke-width="1"/><circle cx="50" cy="50" r="36" fill="none" stroke="%23000" stroke-width="1"/></svg>') center/contain no-repeat;
+  transform:translate(-50%,-50%);opacity:0.035;pointer-events:none;z-index:0;
+}
+.disclaimer-strip{position:relative;z-index:3;background:var(--ink);color:#f2ede0;text-align:center;font-size:0.8rem;padding:0.5rem 1rem;letter-spacing:0.2px;}
+a{color:inherit;}
+
+/* masthead */
+.masthead{position:relative;z-index:2;padding:1.4rem 2rem 1.1rem;border-bottom:3px double var(--gold);background:linear-gradient(180deg, rgba(255,255,255,0.5), transparent);}
+.masthead-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.office-id{display:flex;align-items:center;gap:14px;}
+.office-id h1{font-family:'Noto Serif Devanagari',serif;font-size:1.15rem;font-weight:700;color:var(--blue);letter-spacing:0.2px;}
+.office-id p{font-size:0.82rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.6px;font-family:'Inter',sans-serif;}
+.masthead-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.home-link,.login-link{display:inline-flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:2px;transition:background 0.25s, color 0.25s;position:relative;overflow:hidden;}
+.home-link{color:var(--vermillion-deep);border:1px solid var(--vermillion-deep);}
+.home-link:hover{background:var(--vermillion-deep);color:#fff;}
+.login-link{color:var(--blue);border:1px solid var(--blue);}
+.login-link:hover{background:var(--blue);color:#fff;}
+.home-link .ripple,.login-link .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);transform:scale(0);animation:ripple-effect 0.5s linear;pointer-events:none;}
+@keyframes ripple-effect{ to{ transform:scale(6); opacity:0; } }
+.home-link.clicked-exit,.login-link.clicked-exit{animation:exit-fade 0.4s ease forwards;}
+@keyframes exit-fade{ to{ opacity:0; transform:translateY(-6px); } }
+
+footer{position:relative;z-index:2;border-top:3px double var(--gold);padding:1.6rem 2rem;text-align:center;font-size:0.85rem;color:var(--ink-soft);}
+footer strong{ color:var(--blue); }
+@media print{ .masthead, footer{ display:none !important; } }
+
+/* ticker */
+.notice-ticker{position:relative;z-index:4;background:#102f52;color:#fff;overflow:hidden;border-bottom:3px solid #c49a3a;padding:10px 0}
+.notice-ticker strong{display:inline-block;background:#b51f32;padding:3px 12px;margin:0 12px;border-radius:4px}
+.notice-ticker marquee{font-weight:600;font-size:.92rem}
+
+/* top menu (sticky) */
+.site-menu{position:sticky;top:0;z-index:50;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 16px;background:#123b68;border-bottom:3px solid #c49a3a;box-shadow:0 4px 14px rgba(18,59,104,.16)}
+.site-menu .menu-link{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;border:1px solid rgba(255,255,255,.24);border-radius:7px;transition:.2s}
+.site-menu .menu-link:hover,.site-menu .menu-link.active{background:#c49a3a;color:#17283b;border-color:#c49a3a}
+.site-menu .sep{width:1px;height:22px;background:rgba(255,255,255,.28);margin:0 2px}
+.portal-top-label{display:inline-flex;align-items:center;gap:12px;color:#b3892f;font-family:Inter,sans-serif;font-size:1rem;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;text-align:center;padding:10px 18px;border-top:1px solid #b3892f;border-bottom:1px solid #b3892f}
+.portal-top-label::before,.portal-top-label::after{content:'';width:30px;height:1px;background:#b3892f}
+.main-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:18px 16px 8px}
+
+/* panels */
+.eft-wrap{width:min(1100px,calc(100% - 32px));margin:28px auto;position:relative;z-index:2}
+.eft-panel{background:#fffdf7;border:1px solid #d9cfb8;border-radius:18px;padding:clamp(18px,3vw,30px);box-shadow:0 18px 45px #123b6818;margin:18px 0;scroll-margin-top:84px}
+.eft-title{color:#123b68;font-family:'Noto Serif Devanagari',serif;font-size:1.45rem;margin-bottom:6px}
+.eft-muted{color:#665f52;font-size:.92rem}
+.eft-search{display:flex;gap:10px;margin-top:18px}
+.eft-search input,.eft-panel input,.eft-panel select,.eft-panel textarea{width:100%;padding:13px 14px;border:1px solid #d7dce5;border-radius:10px;background:#fff;font:inherit;min-width:0}
+.eft-search button,.eft-btn{border:0;border-radius:10px;padding:12px 20px;background:#123b68;color:white;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s}
+.eft-search button:hover,.eft-btn:hover{background:#b51f32;transform:translateY(-1px)}
+.eft-search button:disabled{opacity:.6;cursor:not-allowed}
+.eft-status{margin-top:14px;padding:12px;border-radius:10px;display:none;white-space:pre-wrap}
+.eft-status.show{display:block}.eft-status.info{background:#eaf2ff;color:#174a80}.eft-status.err{background:#fff0f0;color:#a21b2c}.eft-status.ok{background:#eaf8ef;color:#17643a}
+.eft-result{margin-top:18px;display:none}.eft-result.show{display:block}
+.eft-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.eft-field{padding:13px;background:#f7f8fb;border:1px solid #e7eaf0;border-radius:11px;min-width:0}
+.eft-field small{display:block;color:#667085;font-size:.78rem;margin-bottom:5px}.eft-field b{display:block;overflow-wrap:anywhere;color:#172b45}
+.eft-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:15px}
+.eft-stat{padding:17px;border-radius:13px;background:linear-gradient(135deg,#123b68,#245b91);color:#fff}
+.eft-stat small{opacity:.8}.eft-stat b{display:block;font-size:1.55rem;margin-top:5px}
+.eft-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.eft-form-grid .wide{grid-column:1/-1}
+.eft-form-grid label{display:block;font-size:.85rem;font-weight:700;margin-bottom:5px}
+.eft-small{font-size:.8rem;color:#687386}
+.eft-download-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.eft-download{padding:16px;border:1px solid #e3e7ed;border-radius:13px;background:#fff}
+.eft-download h3{color:#123b68;margin-bottom:6px}
+.eft-download a{color:#123b68;font-weight:700}
+
+/* payment history */
+.sub-title{font-family:'Noto Serif Devanagari',serif;color:#123b68;font-size:1.1rem;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.sub-title span{font-family:Inter,sans-serif;font-size:.74rem;background:#eaf2ff;color:#174a80;border-radius:999px;padding:3px 10px;font-weight:700}
+.pay-list{display:grid;gap:12px;position:relative}
+.pay-card{position:relative;display:grid;grid-template-columns:150px 1fr;gap:6px 18px;padding:16px 18px 16px 22px;background:#fff;border:1px solid #e3e7ed;border-radius:14px;box-shadow:0 6px 18px #123b6810}
+.pay-card::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:5px;border-radius:0 5px 5px 0;background:#c49a3a}
+.pay-card.latest{border-color:#123b68;background:linear-gradient(135deg,#f4f8ff,#fff)}
+.pay-card.latest::before{background:#123b68}
+.pay-date{font-weight:700;color:#123b68;font-size:1rem}
+.pay-amt{font-family:'Noto Serif Devanagari',serif;font-size:1.35rem;font-weight:700;color:#172b45}
+.badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.badge.new{background:#123b68;color:#fff}
+.pay-status{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 11px;border-radius:999px}
+.pay-status.ok{background:#eaf8ef;color:#17643a}.pay-status.warn{background:#fff6e0;color:#8a5a00}
+.pay-meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.84rem;color:#55607a;margin-top:4px}
+.pay-meta i{color:#b3892f;margin-right:5px}
+
+/* contacts (attractive) */
+.contact-group{margin-top:22px}
+.contact-group h3{display:flex;align-items:center;gap:10px;font-family:'Noto Serif Devanagari',serif;color:#123b68;font-size:1.1rem;margin-bottom:12px}
+.contact-group h3 .gic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-size:.9rem}
+.contact-group h3 .cnt{font-family:Inter,sans-serif;font-size:.72rem;background:#f0eadb;color:#7a5c1a;border-radius:999px;padding:2px 10px;font-weight:700}
+.contact-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.ccard{--c:#123b68;position:relative;background:#fff;border:1px solid #e6e1d2;border-radius:18px;padding:0 0 16px;overflow:hidden;box-shadow:0 10px 26px #123b6812;transition:transform .3s,box-shadow .3s}
+.ccard:hover{transform:translateY(-5px);box-shadow:0 18px 38px #123b6826}
+.ccard-head{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 60%,#000));color:#fff;padding:18px 18px 34px;position:relative}
+.ccard-head::after{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12)}
+.ccard-type{font-family:Inter,sans-serif;font-size:.68rem;letter-spacing:1.4px;text-transform:uppercase;opacity:.85;font-weight:700}
+.ccard-title{font-family:'Noto Serif Devanagari',serif;font-size:1.08rem;font-weight:700;margin-top:3px;line-height:1.35}
+.avatar{width:58px;height:58px;border-radius:50%;background:#fff;color:var(--c);display:grid;place-items:center;font-size:1.35rem;font-weight:700;border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.18);margin:-30px 0 0 18px;position:relative;z-index:1;font-family:'Noto Sans Devanagari',sans-serif}
+.ccard-body{padding:10px 18px 0}
+.cperson{font-weight:700;color:#172b45;font-size:1rem}
+.ctags{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.ctag{font-size:.72rem;font-weight:600;background:#f4f1e7;color:#6a5a2a;padding:3px 10px;border-radius:999px}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px dashed #e6e1d2;font-size:.9rem}
+.crow .val{display:flex;align-items:center;gap:8px;min-width:0;overflow-wrap:anywhere;color:#2b3a52;font-weight:500}
+.crow .val i{color:var(--c);width:16px;text-align:center}
+.cbtns{display:flex;gap:6px;flex-shrink:0}
+.cbtn{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;color:#fff;text-decoration:none;font-size:.9rem;transition:transform .2s}
+.cbtn:hover{transform:scale(1.12)}
+.cbtn.call{background:#123b68}.cbtn.wa{background:#25d366}.cbtn.mail{background:#b51f32}
+.cnote{margin-top:8px;font-size:.8rem;color:#7a7466;background:#faf7ee;border-left:3px solid #c49a3a;padding:7px 10px;border-radius:6px}
+
+@media(max-width:700px){
+  .pay-card{grid-template-columns:1fr}
+  .site-menu .sep{display:none}
+}
+@media(max-width:640px){
+  .masthead-inner{justify-content:center;text-align:center}
+  .site-menu{gap:6px;padding:9px 8px}
+  .site-menu .menu-link{font-size:.78rem;padding:7px 9px}
+  .portal-top-label{font-size:.82rem;letter-spacing:1.4px}
+  .eft-search{flex-direction:column}.eft-search button{width:100%}
+  .eft-form-grid{grid-template-columns:1fr}.eft-form-grid .wide{grid-column:auto}
+}
+</style>
+</head>
+<body>
+<div class="disclaimer-strip"><i class="fa-solid fa-circle-info"></i> गलकोट नगरपालिका · सामाजिक सुरक्षा भत्ता EFT सूचना तथा लाभग्राही पोर्टल</div>
+<header class="masthead">
+<div class="masthead-inner">
+<div class="office-id">
+<i class="fa-solid fa-address-card" style="font-size:1.9rem;color:var(--blue);width:52px;height:52px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:50%;"></i>
+<div>
+<h1>गलकोट नगरपालिका · सामाजिक सुरक्षा EFT पोर्टल</h1>
+<p>EFT BENEFICIARY &amp; INFORMATION PORTAL</p>
+</div>
+</div>
+<div class="masthead-actions">
+<a class="login-link" href="admin.html" id="interactiveLoginBtn"><i class="fa-solid fa-right-to-bracket"></i> EFT ADMIN LOGIN</a>
+<a class="home-link" href="https://nabinchalise.com.np/" id="interactiveHomeBtn"><i class="fa-solid fa-house"></i> लेखकको वेबसाइट</a>
+</div>
+</div>
+</header>
+
+<nav aria-label="मुख्य मेनु" class="site-menu">
+<a class="menu-link" href="index.html"><i class="fa-solid fa-wallet"></i> EFT Beneficiary</a>
+<a class="menu-link active" href="#contacts"><i class="fa-solid fa-address-book"></i> सम्पर्क तथा जानकारी</a>
+<a class="menu-link" href="#downloads"><i class="fa-solid fa-download"></i> डाउनलोड</a>
+<a class="menu-link" href="#inquiry"><i class="fa-solid fa-envelope-open-text"></i> जिज्ञासा</a>
+<span class="sep"></span>
+<a class="menu-link" href="ss.html"><i class="fa-solid fa-people-group"></i> सामाजिक सुरक्षा</a>
+<a class="menu-link" href="renew.html"><i class="fa-solid fa-id-card"></i> परिचयपत्र नवीकरण</a>
+<a class="menu-link" href="nsicreference.html"><i class="fa-solid fa-list"></i> NSIC Reference</a>
+<a class="menu-link" href="pan.html"><i class="fa-solid fa-file-invoice"></i> PAN / फर्म दर्ता</a>
+</nav>
+
+<div class="notice-ticker"><marquee behavior="scroll" direction="left" id="publicNotice" scrollamount="5"><strong>सूचना</strong> सामाजिक सुरक्षा भत्ता EFT सम्बन्धी सूचना यहाँ प्रकाशित हुनेछ।</marquee></div>
+<main class="main-content"><div class="portal-top-label">EFT · CONTACT &amp; SERVICES</div></main>
+
+<section class="eft-wrap" id="services">
+<div class="eft-panel" id="summary">
+<h2 class="eft-title">भुक्तानी सारांश</h2>
+<p class="eft-muted">लक्षित समूहअनुसार बैंकमा जम्मा भएको लाभग्राही संख्या।</p>
+<div class="eft-stats" id="eftSummary"><div class="eft-muted">सारांश लोड हुँदैछ…</div></div>
+</div>
+
+<div class="eft-panel" id="contacts">
+<h2 class="eft-title"><i class="fa-solid fa-address-book" style="color:#b3892f"></i> सम्पर्क तथा जानकारी</h2>
+<p class="eft-muted">EFT सम्बन्धी समस्या वा जानकारीका लागि सम्बन्धित व्यक्तिलाई सिधै सम्पर्क गर्नुहोस्।</p>
+<div id="eftContacts"><p class="eft-muted">सम्पर्क विवरण लोड हुँदैछ…</p></div>
+</div>
+
+<div class="eft-panel" id="downloads">
+<h2 class="eft-title"><i class="fa-solid fa-download" style="color:#b3892f"></i> डाउनलोड केन्द्र</h2>
+<p class="eft-muted">आवश्यक फाराम, ढाँचा तथा सूचनाहरू डाउनलोड गर्नुहोस्।</p>
+<div class="eft-download-grid" id="eftDownloads"><p class="eft-muted">फाइलहरू लोड हुँदैछन्…</p></div>
+</div>
+
+<div class="eft-panel" id="inquiry">
+<h2 class="eft-title"><i class="fa-solid fa-envelope-open-text" style="color:#b3892f"></i> जिज्ञासा / Inquiry पठाउनुहोस्</h2>
+<p class="eft-muted">सार्वजनिक, वडा, बैंक वा अन्य निकायबाट प्रश्न तथा सुझाव पठाउन सकिन्छ।</p>
+<form class="eft-form-grid" id="inquiryForm" style="margin-top:14px">
+<div><label for="inqType">कुन निकायबाट?</label><select id="inqType" required=""><option value="सार्वजनिक">सार्वजनिक</option><option value="वडा">वडा</option><option value="बैंक">बैंक</option><option value="अन्य">अन्य</option></select></div>
+<div><label for="inqName">नाम</label><input id="inqName" maxlength="120" required=""/></div>
+<div><label for="inqPhone">फोन नम्बर</label><input id="inqPhone" maxlength="40"/></div>
+<div><label for="inqEmail">इमेल</label><input id="inqEmail" maxlength="160" type="email"/></div>
+<div class="wide"><label for="inqContent">जिज्ञासा / सन्देश</label><textarea id="inqContent" maxlength="4000" required="" rows="4"></textarea></div>
+<div class="wide"><button class="eft-btn" type="submit">सन्देश पठाउनुहोस्</button></div>
+</form>
+<div class="eft-status" id="inquiryMessage" role="status"></div>
+</div>
+</section>
+
+<footer><strong>गलकोट नगरपालिका · सामाजिक सुरक्षा EFT सेवा</strong> · स्वतन्त्र सूचना तथा लाभग्राही सेवा पोर्टल · <a href="https://nabinchalise.com.np/" style="text-decoration:underline;">nabinchalise.com.np</a></footer>
+
+<script>
+function rippleNav(id){
+  document.getElementById(id).addEventListener('click', function(e){
+    e.preventDefault();
+    const targetUrl=this.getAttribute('href'),button=this,ripple=document.createElement('span');
+    ripple.classList.add('ripple');
+    const rect=button.getBoundingClientRect(),size=Math.max(rect.width,rect.height);
+    ripple.style.width=ripple.style.height=`${size}px`;
+    ripple.style.left=`${e.clientX-rect.left-size/2}px`;ripple.style.top=`${e.clientY-rect.top-size/2}px`;
+    button.appendChild(ripple);button.classList.add('clicked-exit');
+    setTimeout(()=>{window.location.href=targetUrl;},400);
+  });
+}
+rippleNav('interactiveHomeBtn');rippleNav('interactiveLoginBtn');
+
+// active menu highlight on scroll
+(function(){
+  const links=[...document.querySelectorAll('.site-menu a[href^="#"]')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(l=>l.classList.remove('active'));map.get(en.target.id)?.classList.add('active')}})},{rootMargin:'-40% 0px -55% 0px'});
+  map.forEach((_,id)=>{const el=document.getElementById(id);if(el)obs.observe(el)});
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const SUPABASE_URL = 'https://kbyfvqkfcxqgjjtfvvxf.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_-bOiDndDXdz_FgXq1MFkag_ioCcg8nv';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const show = (el, cls, text) => { el.className='eft-status show '+cls; el.textContent=text; };
+  /* ---------- contacts ---------- */
+  const TYPES={
+    'MIS Operator':{label:'MIS Operator',color:'#123b68',icon:'fa-laptop-code'},
+    'Bank':{label:'बैंक',color:'#b3892f',icon:'fa-building-columns'},
+    'Ward Secretary':{label:'वडा सचिव',color:'#a91f2c',icon:'fa-user-tie'},
+    'Other':{label:'अन्य',color:'#3d7a5a',icon:'fa-circle-info'}
+  };
+  const waLink = n => { let d=String(n).replace(/\D/g,''); if(d.startsWith('00'))d=d.slice(2); else if(d.startsWith('0'))d=d.slice(1); if(d.length===10)d='977'+d; return 'https://wa.me/'+d; };
+  const initials = s => { const t=String(s||'').trim(); return t?Array.from(t)[0].toUpperCase():'?'; };
+  function renderContacts(rows){
+    if(!rows.length){$('eftContacts').innerHTML='<p class="eft-muted">सम्पर्क विवरण थपिएको छैन।</p>';return;}
+    const groups={};
+    rows.forEach(c=>{const t=TYPES[c.contact_type]?c.contact_type:'Other';(groups[t]=groups[t]||[]).push(c);});
+    $('eftContacts').innerHTML=Object.keys(TYPES).filter(t=>groups[t]).map(t=>{
+      const T=TYPES[t];
+      return `<div class="contact-group"><h3><span class="gic" style="background:${T.color}"><i class="fa-solid ${T.icon}"></i></span>${esc(T.label)}<span class="cnt">${groups[t].length}</span></h3>
+      <div class="contact-cards">${groups[t].map(c=>{
+        const phones=(c.phone_numbers||[]).map(p=>`<div class="crow"><span class="val"><i class="fa-solid fa-phone"></i>${esc(p.number)}</span>
+          <span class="cbtns"><a class="cbtn call" href="tel:${esc(p.number)}" title="Call"><i class="fa-solid fa-phone"></i></a>${p.whatsapp?`<a class="cbtn wa" href="${esc(waLink(p.number))}" target="_blank" rel="noopener" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`:''}</span></div>`).join('');
+        const emails=(c.emails||[]).map(x=>`<div class="crow"><span class="val"><i class="fa-solid fa-envelope"></i>${esc(x)}</span><span class="cbtns"><a class="cbtn mail" href="mailto:${esc(x)}" title="Email"><i class="fa-solid fa-paper-plane"></i></a></span></div>`).join('');
+        const tags=[c.ward_no?`<span class="ctag"><i class="fa-solid fa-location-dot"></i> वडा नं. ${esc(c.ward_no)}</span>`:'',c.bank_name?`<span class="ctag"><i class="fa-solid fa-building-columns"></i> ${esc(c.bank_name)}</span>`:''].join('');
+        return `<article class="ccard" style="--c:${T.color}">
+          <div class="ccard-head"><div class="ccard-type">${esc(T.label)}</div><div class="ccard-title">${esc(c.title||c.contact_type)}</div></div>
+          <div class="avatar">${esc(initials(c.person_name||c.title))}</div>
+          <div class="ccard-body">${c.person_name?`<div class="cperson">${esc(c.person_name)}</div>`:''}${tags?`<div class="ctags">${tags}</div>`:''}${phones}${emails}${c.note?`<div class="cnote">${esc(c.note)}</div>`:''}</div></article>`;
+      }).join('')}</div></div>`;
+    }).join('');
+  }
+
+  async function loadPublic(){
+    const [notice,summary,contacts,downloads]=await Promise.all([
+      sb.rpc('eft_public_notice'),sb.rpc('eft_public_summary'),
+      sb.from('eft_contacts').select('*').eq('is_active',true).order('sort_order').order('created_at'),
+      sb.from('eft_downloads').select('id,title,description,file_path,file_name,created_at').eq('is_active',true).order('created_at',{ascending:false})
+    ]);
+    if(!notice.error&&notice.data?.notice){$('publicNotice').innerHTML=`<strong>सूचना</strong> ${esc(notice.data.notice)}`;}
+    if(!summary.error){
+      const rows=summary.data||[];
+      $('eftSummary').innerHTML=rows.length?rows.map(x=>`<div class="eft-stat"><small>${esc(x.category||'अन्य समूह')}</small><b>${Number(x.beneficiary_count||0).toLocaleString('en-IN')} जना</b><small>${esc(x.bank_name||'बैंक विवरण')}</small></div>`).join(''):'<p class="eft-muted">हाल सारांश उपलब्ध छैन।</p>';
+    }
+    if(!contacts.error) renderContacts(contacts.data||[]);
+    else $('eftContacts').innerHTML='<p class="eft-muted">सम्पर्क विवरण लोड गर्न सकिएन।</p>';
+    if(!downloads.error){
+      $('eftDownloads').innerHTML=(downloads.data||[]).map(d=>{
+        const {data}=sb.storage.from('eft-public-files').getPublicUrl(d.file_path);
+        return `<article class="eft-download"><h3>${esc(d.title)}</h3><p class="eft-small">${esc(d.description||'')}</p><p class="eft-small">${esc(d.file_name||'')}</p><a href="${esc(data.publicUrl)}" target="_blank" rel="noopener">⬇ डाउनलोड गर्नुहोस्</a></article>`;
+      }).join('')||'<p class="eft-muted">डाउनलोडका लागि फाइल उपलब्ध छैन।</p>';
+    }
+  }
+
+  $('inquiryForm').addEventListener('submit',async e=>{
+    e.preventDefault();const btn=e.submitter; if(btn)btn.disabled=true;
+    const payload={source_type:$('inqType').value,name:$('inqName').value.trim(),phone:$('inqPhone').value.trim(),email:$('inqEmail').value.trim(),content:$('inqContent').value.trim()};
+    const {error}=await sb.from('eft_inquiries').insert(payload);
+    if(error)show($('inquiryMessage'),'err','सन्देश पठाउन सकिएन। कृपया पुनः प्रयास गर्नुहोस्।');
+    else{$('inquiryForm').reset();show($('inquiryMessage'),'ok','तपाईंको जिज्ञासा सफलतापूर्वक पठाइयो। धन्यवाद!');}
+    if(btn)btn.disabled=false;
+  });
+  loadPublic();
+})();
+</script>
+</body>
+</html>
